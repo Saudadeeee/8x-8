@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3 uid="uid://b7nhht6nt280y"]
+
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_knight.png" id="1_og52t"]
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="2_ddgsg"]
+[ext_resource type="Texture2D" uid="uid://dg5xd1jdt7a1w" path="res://assets/towers/horse.png" id="3_i37n6"]
+
+[resource]
+script = ExtResource("2_ddgsg")
+id = "knight"
+name = "Knight"
+description = "Aggressive cavalry unit. High damage with medium range. Iron faction."
+cost = 15
+decree_cost = 1.5
+texture = ExtResource("3_i37n6")
+projectile_texture = ExtResource("1_og52t")
+base_damage = 18
+attack_speed = 1.0
+attack_range = 6
+type = 2
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

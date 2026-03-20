@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_warlock.png" id="2_warlock"]
+
+[resource]
+script = ExtResource("1_script")
+id = "warlock"
+name = "Warlock"
+description = "Slows enemies by 45% for 3s. Magic faction — synergy boosts damage and range."
+cost = 28
+decree_cost = 2.0
+base_damage = 18
+attack_speed = 1.8
+attack_range = 8
+attack_style = 3
+type = 7
+element = 6
+faction = "magic"
+slow_amount = 0.45
+slow_duration = 3.0
+splash_radius = 0.0
+burn_dps = 0
+burn_duration = 0.0
+projectile_count = 1
+projectile_texture = ExtResource("2_warlock")
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

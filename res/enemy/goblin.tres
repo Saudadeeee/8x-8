@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://goblin_stats_001"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_goblin"]
+[ext_resource type="Texture2D" uid="uid://cw2gk7vphckvh" path="res://assets/enemy/goblin.png" id="2_goblin"]
+
+[resource]
+script = ExtResource("1_goblin")
+id = "goblin"
+texture = ExtResource("2_goblin")
+scale = Vector2(1, 1)
+max_hp = 50
+speed = 62.0
+damage_to_base = 1
+gold_reward = 8
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

@@ -1,0 +1,43 @@
+# Godot 4 — generated files
+.godot/
+*.uid
+
+# Import metadata (regenerated on open)
+*.import
+
+# Mono / C# build artifacts
+.mono/
+data_*/
+mono_crash.*.json
+
+# Export presets (may contain sensitive paths)
+export_presets.cfg
+
+# Android / iOS build output
+android/
+ios/
+
+# macOS metadata
+.DS_Store
+
+# Windows thumbnails
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# Logs
+*.log
+
+# Claude Code memory
+.claude/
+
+# Ziva
+.ziva/
+
+# Temporary files
+*.TMP
+~*

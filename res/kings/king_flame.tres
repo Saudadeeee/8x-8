@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="KingStats" load_steps=2 format=3 uid="uid://king_flame"]
+
+[ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_kf"]
+
+[resource]
+script = ExtResource("1_kf")
+id = "king_flame"
+king_name = "Flame Queen"
+lore = "The Flame Queen rules through devastation. Her Queens and Bishops rain fire upon all who dare oppose her."
+base_health = 18
+base_royal_decree = 20.0
+decree_regen_rate = 1.8
+decree_max = 120.0
+starting_unit_ids = ["rook", "queen"]
+starting_unit_quantities = [4, 1]
+starting_territory_count = 3
+favored_unit_types = ["queen", "bishop"]
+favor_damage_bonus = 0.3
+favor_speed_bonus = 0.05
+favor_range_bonus = 0.1
+ability_name = "Royal Inferno"
+ability_description = "Deals 50 damage to all enemies on the field. Queens deal double damage for 10 seconds."
+ability_decree_cost = 50.0
+ability_cooldown = 90.0
+unlock_cost = 150
+is_starter_king = false

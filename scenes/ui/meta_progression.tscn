@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://e5vbt7r9xk3w1"]
+
+[ext_resource type="Script" path="res://scripts/ui/meta_progression.gd" id="1_mp"]
+
+[node name="MetaProgression" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_mp")

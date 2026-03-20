@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="KingStats" load_steps=2 format=3 uid="uid://king_phantom"]
+
+[ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_kp"]
+
+[resource]
+script = ExtResource("1_kp")
+id = "king_phantom"
+king_name = "Phantom King"
+lore = "A mysterious sovereign who commands the shadows. His Bishops and Knights operate from the darkness, striking at enemies who thought themselves safe."
+base_health = 15
+base_royal_decree = 25.0
+decree_regen_rate = 2.0
+decree_max = 150.0
+starting_unit_ids = ["bishop", "knight"]
+starting_unit_quantities = [4, 2]
+starting_territory_count = 2
+favored_unit_types = ["bishop", "knight"]
+favor_damage_bonus = 0.25
+favor_speed_bonus = 0.0
+favor_range_bonus = 0.2
+ability_name = "Shadow Veil"
+ability_description = "All units become temporarily invisible to enemies for 5 seconds, resetting attack cooldowns."
+ability_decree_cost = 40.0
+ability_cooldown = 60.0
+unlock_cost = 100
+is_starter_king = false

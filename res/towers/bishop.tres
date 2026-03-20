@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3 uid="uid://co3e5iobkxg5l"]
+
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_bishop.png" id="1_a3ulf"]
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_l05tt"]
+[ext_resource type="Texture2D" uid="uid://1nww26t71xfa" path="res://assets/towers/knight.png" id="3_pqus7"]
+
+[resource]
+script = ExtResource("1_l05tt")
+id = "bishop"
+name = "Bishop"
+description = "Chains attacks to nearby enemies. Good range and damage. Wild faction."
+cost = 15
+decree_cost = 1.5
+texture = ExtResource("3_pqus7")
+projectile_texture = ExtResource("1_a3ulf")
+base_damage = 22
+attack_speed = 2.0
+attack_range = 10
+attack_style = 2
+type = 4
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

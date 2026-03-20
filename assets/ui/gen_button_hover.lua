@@ -1,0 +1,71 @@
+-- Button Hover - Ancient Chinese (古風) style - brighter/glowing
+local OUT = "D:/Code/SourceCode/GameDev/8x-8/assets/ui/button_hover.aseprite"
+local PNG = "D:/Code/SourceCode/GameDev/8x-8/assets/ui/button_hover.png"
+local W, H = 192, 48
+
+local spr = Sprite(W, H)
+local img = spr.cels[1].image
+
+local function px(x, y, r, g, b, a)
+  a = a or 255
+  if x >= 0 and x < W and y >= 0 and y < H then
+    img:putPixel(x, y, Color(r, g, b, a))
+  end
+end
+local function hline(x0,x1,y,r,g,b) for x=x0,x1 do px(x,y,r,g,b) end end
+local function vline(x,y0,y1,r,g,b) for y=y0,y1 do px(x,y,r,g,b) end end
+local function rect(x,y,w,h,r,g,b)
+  hline(x,x+w-1,y,r,g,b); hline(x,x+w-1,y+h-1,r,g,b)
+  vline(x,y,y+h-1,r,g,b); vline(x+w-1,y,y+h-1,r,g,b)
+end
+local function fill(x0,y0,x1,y1,r,g,b)
+  for y=y0,y1 do for x=x0,x1 do px(x,y,r,g,b) end end
+end
+
+-- Background: slightly lighter, warm amber glow
+fill(0,0,W-1,H-1, 0x20,0x12,0x06)
+
+-- Inner glow - center brighter
+for y = 4, H-5 do
+  for x = 8, W-9 do
+    local cx = math.abs(x - W/2) / (W/2)
+    local cy = math.abs(y - H/2) / (H/2)
+    local dist = math.sqrt(cx*cx + cy*cy)
+    if dist < 0.5 then
+      px(x, y, 0x28, 0x18, 0x08)
+    end
+  end
+end
+
+-- Outer border: bright gold
+rect(0,0,W,H, 0xFF,0xD7,0x00)
+-- Second outer border: warm orange gold
+rect(1,1,W-2,H-2, 0xFF,0xA0,0x00)
+
+-- Corner ornaments - brighter
+px(2,2, 0xFF,0xFF,0xA0); px(3,2,0xFF,0xD7,0x00); px(4,2,0xFF,0xD7,0x00); px(5,2,0xFF,0xA0,0x00)
+px(2,3, 0xFF,0xD7,0x00); px(2,4, 0xFF,0xA0,0x00); px(2,5, 0xC8,0x96,0x0C)
+px(W-3,2,0xFF,0xFF,0xA0); px(W-4,2,0xFF,0xD7,0x00); px(W-5,2,0xFF,0xD7,0x00); px(W-6,2,0xFF,0xA0,0x00)
+px(W-3,3,0xFF,0xD7,0x00); px(W-3,4,0xFF,0xA0,0x00); px(W-3,5,0xC8,0x96,0x0C)
+px(2,H-3,0xFF,0xFF,0xA0); px(3,H-3,0xFF,0xD7,0x00); px(4,H-3,0xFF,0xD7,0x00); px(5,H-3,0xFF,0xA0,0x00)
+px(2,H-4,0xFF,0xD7,0x00); px(2,H-5,0xFF,0xA0,0x00); px(2,H-6,0xC8,0x96,0x0C)
+px(W-3,H-3,0xFF,0xFF,0xA0); px(W-4,H-3,0xFF,0xD7,0x00); px(W-5,H-3,0xFF,0xD7,0x00)
+px(W-3,H-4,0xFF,0xD7,0x00); px(W-3,H-5,0xFF,0xA0,0x00)
+
+-- Inner border
+rect(3,3,W-6,H-6, 0xC8,0x96,0x0C)
+
+-- Mid ornaments
+local MY = H//2
+px(4,MY, 0xFF,0xFF,0x80)
+px(5,MY-1,0xFF,0xD7,0x00); px(5,MY,0xFF,0xFF,0x80); px(5,MY+1,0xFF,0xD7,0x00)
+px(6,MY, 0xFF,0xD7,0x00)
+px(W-5,MY, 0xFF,0xFF,0x80)
+px(W-6,MY-1,0xFF,0xD7,0x00); px(W-6,MY,0xFF,0xFF,0x80); px(W-6,MY+1,0xFF,0xD7,0x00)
+px(W-7,MY, 0xFF,0xD7,0x00)
+
+-- Top highlight
+hline(4,W-5,4, 0x80,0x58,0x18)
+
+spr:saveAs(OUT)
+spr:saveCopyAs(PNG)

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_dark_mage.png" id="2_dark_mage"]
+
+[resource]
+script = ExtResource("1_script")
+id = "dark_mage"
+name = "Dark Mage"
+description = "Burns enemies for 5 DPS over 4s. Hell faction — synergy grants damage and speed bonuses."
+cost = 35
+decree_cost = 2.5
+base_damage = 16
+attack_speed = 1.5
+attack_range = 9
+attack_style = 2
+type = 9
+element = 5
+faction = "hell"
+slow_amount = 0.0
+slow_duration = 0.0
+splash_radius = 0.0
+burn_dps = 5
+burn_duration = 4.0
+projectile_count = 1
+projectile_texture = ExtResource("2_dark_mage")
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

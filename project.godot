@@ -1,0 +1,43 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="8x8"
+run/main_scene="res://scenes/ui/main_menu.tscn"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GameManagerSingleton="res://scripts/managers/GameManager.gd"
+SceneManagerSingleton="res://scripts/managers/SceneManager.gd"
+SettingsManagerSingleton="res://scripts/managers/SettingsManager.gd"
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/size/mode=3
+
+[layer_names]
+
+2d_render/layer_1="Tower"
+2d_render/layer_2="Enemy"
+2d_render/layer_3="Terrain"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+rendering_device/driver.windows="d3d12"

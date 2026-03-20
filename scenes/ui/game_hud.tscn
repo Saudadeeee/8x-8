@@ -1,0 +1,170 @@
+[gd_scene format=3 uid="uid://dpi4aivc0qu48"]
+
+[ext_resource type="Script" uid="uid://chgtedii8tphf" path="res://scripts/ui/game_hud.gd" id="1_xsr0h"]
+
+[node name="GameHUD" type="CanvasLayer" unique_id=1083824891]
+script = ExtResource("1_xsr0h")
+
+[node name="Control" type="Control" parent="." unique_id=41668768]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control" unique_id=1723884500]
+layout_mode = 0
+
+[node name="LabelHealth" type="Label" parent="Control/VBoxContainer" unique_id=59842473]
+layout_mode = 2
+text = "Máu: 20"
+
+[node name="LabelGold" type="Label" parent="Control/VBoxContainer" unique_id=1129237345]
+layout_mode = 2
+text = "Vàng: 100"
+
+[node name="LabelRoyalDecree" type="Label" parent="Control/VBoxContainer" unique_id=883127777]
+layout_mode = 2
+text = "Royal Decree: 0"
+
+[node name="LabelKingFavor" type="Label" parent="Control/VBoxContainer" unique_id=1256501173]
+layout_mode = 2
+text = "King Favor: None"
+
+[node name="LabelTerritories" type="Label" parent="Control/VBoxContainer" unique_id=1721426198]
+layout_mode = 2
+text = "Territories: None"
+
+[node name="LabelPhase" type="Label" parent="Control/VBoxContainer" unique_id=2020202020]
+layout_mode = 2
+text = "Phase: Waiting"
+
+[node name="RightPanel" type="PanelContainer" parent="Control" unique_id=690862628]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -160.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/RightPanel" unique_id=717180655]
+layout_mode = 2
+
+[node name="LabelKingName" type="Label" parent="Control/RightPanel/VBoxContainer" unique_id=400000001]
+layout_mode = 2
+text = "— King —"
+
+[node name="LabelAbilityInfo" type="Label" parent="Control/RightPanel/VBoxContainer" unique_id=400000002]
+layout_mode = 2
+text = "Ability: —"
+autowrap_mode = 3
+
+[node name="ButtonKingAbility" type="Button" parent="Control/RightPanel/VBoxContainer" unique_id=400000003]
+custom_minimum_size = Vector2(140, 28)
+layout_mode = 2
+text = "Use Ability"
+
+[node name="HSep" type="HSeparator" parent="Control/RightPanel/VBoxContainer" unique_id=400000004]
+layout_mode = 2
+
+[node name="TowerContainer" type="VBoxContainer" parent="Control/RightPanel/VBoxContainer" unique_id=400000005]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShopPanel" type="PanelContainer" parent="Control" unique_id=2018886758]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -240.0
+offset_right = 210.0
+offset_bottom = 240.0
+visible = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/ShopPanel" unique_id=590879511]
+layout_mode = 2
+
+[node name="LabelShopTitle" type="Label" parent="Control/ShopPanel/VBoxContainer" unique_id=110265879]
+layout_mode = 2
+text = "Royal Decree Shop"
+tooltip_text = "Spend Royal Decree (RD) to buy troops and upgrades between waves."
+
+[node name="ShopList" type="VBoxContainer" parent="Control/ShopPanel/VBoxContainer" unique_id=279123360]
+layout_mode = 2
+
+[node name="LabelStatus" type="Label" parent="Control/ShopPanel/VBoxContainer" unique_id=1168858937]
+layout_mode = 2
+text = "Ready"
+
+[node name="ButtonNextWave" type="Button" parent="Control/ShopPanel/VBoxContainer" unique_id=1717171717]
+custom_minimum_size = Vector2(220, 36)
+layout_mode = 2
+text = "Start Next Wave"
+
+[node name="ButtonOpenMetaShop" type="Button" parent="Control/ShopPanel/VBoxContainer" unique_id=572408983]
+custom_minimum_size = Vector2(220, 36)
+layout_mode = 2
+text = "Open Meta Shop"
+
+[node name="ShopPopup" type="PopupPanel" parent="Control" unique_id=1791638714]
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/ShopPopup" unique_id=588502610]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/ShopPopup/PanelContainer" unique_id=2133522895]
+layout_mode = 2
+
+[node name="LabelShopPopupTitle" type="Label" parent="Control/ShopPopup/PanelContainer/VBoxContainer" unique_id=183633102]
+layout_mode = 2
+text = "Shop Time!"
+
+[node name="LabelShopPopupMessage" type="Label" parent="Control/ShopPopup/PanelContainer/VBoxContainer" unique_id=758491215]
+layout_mode = 2
+text = "Prepare your troops before the next wave."
+
+[node name="HBoxButtons" type="HBoxContainer" parent="Control/ShopPopup/PanelContainer/VBoxContainer" unique_id=1696496050]
+layout_mode = 2
+
+[node name="ButtonShopPopupOpen" type="Button" parent="Control/ShopPopup/PanelContainer/VBoxContainer/HBoxButtons" unique_id=1613843980]
+layout_mode = 2
+text = "Open Shop"
+
+[node name="ButtonShopPopupClose" type="Button" parent="Control/ShopPopup/PanelContainer/VBoxContainer/HBoxButtons" unique_id=839734397]
+layout_mode = 2
+text = "Close"
+
+[node name="MetaShopPopup" type="PopupPanel" parent="Control" unique_id=1584997670]
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/MetaShopPopup" unique_id=929225384]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MetaShopPopup/PanelContainer" unique_id=923489526]
+layout_mode = 2
+
+[node name="LabelMetaShopTitle" type="Label" parent="Control/MetaShopPopup/PanelContainer/VBoxContainer" unique_id=1793914468]
+layout_mode = 2
+text = "Meta Shop"
+
+[node name="LabelMetaShopDescription" type="Label" parent="Control/MetaShopPopup/PanelContainer/VBoxContainer" unique_id=1075616553]
+layout_mode = 2
+text = "Unlock new units for future waves."
+
+[node name="MetaShopList" type="VBoxContainer" parent="Control/MetaShopPopup/PanelContainer/VBoxContainer" unique_id=745839901]
+layout_mode = 2
+
+[node name="LabelMetaStatus" type="Label" parent="Control/MetaShopPopup/PanelContainer/VBoxContainer" unique_id=1691545417]
+layout_mode = 2
+
+[node name="HBoxMetaButtons" type="HBoxContainer" parent="Control/MetaShopPopup/PanelContainer/VBoxContainer" unique_id=1929419284]
+layout_mode = 2
+
+[node name="ButtonMetaShopClose" type="Button" parent="Control/MetaShopPopup/PanelContainer/VBoxContainer/HBoxMetaButtons" unique_id=1815091392]
+layout_mode = 2
+text = "Close"

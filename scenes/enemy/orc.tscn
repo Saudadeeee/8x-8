@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dlh4w7me3nnap"]
+
+[ext_resource type="PackedScene" uid="uid://8m3mr4b1wcfk" path="res://scenes/enemy/enemy.tscn" id="1_a30td"]
+[ext_resource type="Resource" uid="uid://7p1wf5x8lf0k" path="res://res/enemy/orc.tres" id="2_gdpfx"]
+
+[node name="Orc" unique_id=47437634 instance=ExtResource("1_a30td")]
+stats = ExtResource("2_gdpfx")

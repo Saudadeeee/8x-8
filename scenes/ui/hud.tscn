@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dl4a64d6e1vxh"]
+
+[ext_resource type="Script" uid="uid://dsf4pnu07pclt" path="res://scripts/mechanic/camera/camera_controller.gd" id="1_bo48s"]
+[ext_resource type="PackedScene" uid="uid://c2xib3kr36r8r" path="res://scenes/map/game_map.tscn" id="2_8qguk"]
+[ext_resource type="PackedScene" uid="uid://dpi4aivc0qu48" path="res://scenes/ui/game_hud.tscn" id="3_136eg"]
+
+[node name="Test" type="Node2D" unique_id=723362077]
+position = Vector2(-3, -3)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=147854481]
+position = Vector2(196, 195)
+zoom = Vector2(0.425, 0.425)
+position_smoothing_enabled = true
+rotation_smoothing_enabled = true
+script = ExtResource("1_bo48s")
+
+[node name="GameMap" parent="." unique_id=2054337143 instance=ExtResource("2_8qguk")]
+position = Vector2(3, 3)
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=926701033 instance=ExtResource("3_136eg")]

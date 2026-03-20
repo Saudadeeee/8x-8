@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://dark_knight_stats_001"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_dk"]
+[ext_resource type="Texture2D" uid="uid://bjw5npqqu5hyj" path="res://assets/enemy/dark_knight.png" id="2_dk"]
+
+[resource]
+script = ExtResource("1_dk")
+id = "dark_knight"
+texture = ExtResource("2_dk")
+scale = Vector2(1, 1)
+max_hp = 320
+speed = 22.0
+damage_to_base = 4
+gold_reward = 30
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

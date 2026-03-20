@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_crossbow.png" id="2_crossbow"]
+
+[resource]
+script = ExtResource("1_script")
+id = "crossbowman"
+name = "Crossbowman"
+description = "Fires 3 bolts at 3 different targets. Wild faction — synergy with other Crossbowmen grants attack speed."
+cost = 20
+decree_cost = 2.0
+base_damage = 8
+attack_speed = 1.6
+attack_range = 7
+attack_style = 1
+type = 6
+element = 2
+faction = "wild"
+slow_amount = 0.0
+slow_duration = 0.0
+splash_radius = 0.0
+burn_dps = 0
+burn_duration = 0.0
+projectile_count = 3
+projectile_texture = ExtResource("2_crossbow")
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

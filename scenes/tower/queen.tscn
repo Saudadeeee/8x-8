@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://dh2stb2tjv7lx"]
+
+[ext_resource type="PackedScene" uid="uid://d0m5khc7nap44" path="res://scenes/tower/tower_base.tscn" id="1_lab8p"]
+[ext_resource type="Resource" uid="uid://dnlpxkoqtq8t4" path="res://res/towers/queen.tres" id="2_546pv"]
+[ext_resource type="Texture2D" uid="uid://djc41jxbwl82s" path="res://assets/towers/queen.png" id="3_e1yx6"]
+
+[node name="queen" unique_id=986138491 instance=ExtResource("1_lab8p")]
+stats = ExtResource("2_546pv")
+
+[node name="Visual" parent="." index="0" unique_id=132314099]
+texture = ExtResource("3_e1yx6")

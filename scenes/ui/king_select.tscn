@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b4nbxk1kqr2o7"]
+
+[ext_resource type="Script" path="res://scripts/ui/king_select.gd" id="1_ks"]
+
+[node name="KingSelect" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_ks")

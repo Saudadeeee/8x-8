@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_catapult.png" id="2_catapult"]
+
+[resource]
+script = ExtResource("1_script")
+id = "catapult"
+name = "Catapult"
+description = "Massive AoE splash (3-tile radius). Slow fire rate, devastating damage. Iron faction."
+cost = 42
+decree_cost = 3.0
+base_damage = 35
+attack_speed = 3.0
+attack_range = 9
+attack_style = 0
+type = 8
+element = 3
+faction = "iron"
+slow_amount = 0.0
+slow_duration = 0.0
+splash_radius = 48.0
+burn_dps = 0
+burn_duration = 0.0
+projectile_count = 1
+projectile_texture = ExtResource("2_catapult")
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

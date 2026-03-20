@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://demon_imp_stats_001"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_imp"]
+[ext_resource type="Texture2D" uid="uid://b8e3k07wrmhn0" path="res://assets/enemy/demon_imp.png" id="2_imp"]
+
+[resource]
+script = ExtResource("1_imp")
+id = "demon_imp"
+texture = ExtResource("2_imp")
+scale = Vector2(1, 1)
+max_hp = 75
+speed = 72.0
+damage_to_base = 2
+gold_reward = 20
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://skeleton_stats_001"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_skeleton"]
+[ext_resource type="Texture2D" uid="uid://b67ge5b3fgpxn" path="res://assets/enemy/skeleton.png" id="2_skeleton"]
+
+[resource]
+script = ExtResource("1_skeleton")
+id = "skeleton"
+texture = ExtResource("2_skeleton")
+scale = Vector2(1, 1)
+max_hp = 130
+speed = 33.0
+damage_to_base = 2
+gold_reward = 15
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

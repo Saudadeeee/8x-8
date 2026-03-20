@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://sawwlpm5c17l"]
+
+[ext_resource type="PackedScene" uid="uid://d0m5khc7nap44" path="res://scenes/tower/tower_base.tscn" id="1_5xhju"]
+[ext_resource type="Resource" uid="uid://d3k1guc7w6l5y" path="res://res/towers/pawn.tres" id="2_jl0sn"]
+[ext_resource type="Texture2D" uid="uid://b1tyj7ecbt3yi" path="res://assets/towers/Pawn.png" id="3_7inqg"]
+
+[node name="Pawn" unique_id=986138491 instance=ExtResource("1_5xhju")]
+stats = ExtResource("2_jl0sn")
+
+[node name="Visual" parent="." index="0" unique_id=132314099]
+texture = ExtResource("3_7inqg")

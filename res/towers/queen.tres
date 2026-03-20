@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3 uid="uid://dnlpxkoqtq8t4"]
+
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_2jgmk"]
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_queen.png" id="1_6dweh"]
+[ext_resource type="Texture2D" uid="uid://djc41jxbwl82s" path="res://assets/towers/queen.png" id="3_ctre6"]
+
+[resource]
+script = ExtResource("1_2jgmk")
+id = "queen"
+name = "Queen"
+description = "Elite unit with massive range and high damage. Most powerful ranged tower. Iron faction."
+cost = 55
+decree_cost = 4.0
+texture = ExtResource("3_ctre6")
+projectile_texture = ExtResource("1_6dweh")
+base_damage = 48
+attack_speed = 1.6
+attack_range = 14
+type = 3
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

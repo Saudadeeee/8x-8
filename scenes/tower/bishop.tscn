@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://j0qyvm880gfi"]
+
+[ext_resource type="PackedScene" uid="uid://d0m5khc7nap44" path="res://scenes/tower/tower_base.tscn" id="1_v1wks"]
+[ext_resource type="Resource" uid="uid://co3e5iobkxg5l" path="res://res/towers/bishop.tres" id="2_778um"]
+[ext_resource type="Texture2D" uid="uid://1nww26t71xfa" path="res://assets/towers/knight.png" id="3_1egk5"]
+
+[node name="bishop" unique_id=986138491 instance=ExtResource("1_v1wks")]
+stats = ExtResource("2_778um")
+
+[node name="Visual" parent="." index="0" unique_id=132314099]
+texture = ExtResource("3_1egk5")

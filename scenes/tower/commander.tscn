@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://2w77kgj5317c"]
+
+[ext_resource type="PackedScene" uid="uid://d0m5khc7nap44" path="res://scenes/tower/tower_base.tscn" id="1_gq4jk"]
+[ext_resource type="Resource" uid="uid://do3g7phmegnyu" path="res://res/towers/commander.tres" id="2_qba0n"]
+[ext_resource type="Texture2D" uid="uid://32wfy6lpqggo" path="res://assets/towers/flag.png" id="3_h8ufl"]
+
+[node name="commander" unique_id=986138491 instance=ExtResource("1_gq4jk")]
+stats = ExtResource("2_qba0n")
+
+[node name="Visual" parent="." index="0" unique_id=132314099]
+texture = ExtResource("3_h8ufl")

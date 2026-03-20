@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://7p1wf5x8lf0k"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_4wenm"]
+[ext_resource type="Texture2D" uid="uid://rr2vgdu1ae3f" path="res://assets/enemy/Orc.png" id="2_sfmrb"]
+
+[resource]
+script = ExtResource("1_4wenm")
+id = "orc"
+texture = ExtResource("2_sfmrb")
+max_hp = 80
+speed = 40.0
+damage_to_base = 1
+gold_reward = 10
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

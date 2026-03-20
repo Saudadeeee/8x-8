@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="KingStats" load_steps=2 format=3 uid="uid://king_iron"]
+
+[ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_ki"]
+
+[resource]
+script = ExtResource("1_ki")
+id = "king_iron"
+king_name = "Iron King"
+lore = "A steadfast ruler who built his kingdom on discipline and steel. His pawns fight with unwavering loyalty, their numbers compensating for what they lack in individual power."
+base_health = 20
+base_royal_decree = 15.0
+decree_regen_rate = 1.5
+decree_max = 100.0
+starting_unit_ids = ["pawn"]
+starting_unit_quantities = [8]
+starting_territory_count = 3
+favored_unit_types = ["pawn", "rook"]
+favor_damage_bonus = 0.15
+favor_speed_bonus = 0.1
+favor_range_bonus = 0.0
+ability_name = "Iron Decree"
+ability_description = "Instantly restore 30 Royal Decree and grant all Pawns +50% attack speed for 8 seconds."
+ability_decree_cost = 0.0
+ability_cooldown = 45.0
+unlock_cost = 0
+is_starter_king = true
