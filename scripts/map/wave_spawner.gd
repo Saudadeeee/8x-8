@@ -2,6 +2,7 @@
 # Quản lý spawn enemy, mùa (Season), và thống kê wave.
 # Được game_map.gd khởi tạo và làm con node.
 extends Node
+class_name WaveSpawner
 
 # --- SIGNALS ---
 signal enemy_reached_base(damage: int)
@@ -33,7 +34,6 @@ const SEASON_BUFFS := {
 enum Season { SPRING, SUMMER, AUTUMN, WINTER }
 
 # --- REFS (set bởi game_map sau khi add_child) ---
-var layer_grass: TileMapLayer = null
 var _parent_node: Node = null  # game_map — dùng để add_child enemy
 
 # --- STATE ---
@@ -57,9 +57,8 @@ func _ready() -> void:
 	add_child(_wave_spawn_timer)
 	_load_enemy_stats()
 
-func setup(path: Array[Vector2i], grass: TileMapLayer, parent: Node) -> void:
+func setup(path: Array[Vector2i], parent: Node) -> void:
 	current_path_grid = path
-	layer_grass = grass
 	_parent_node = parent
 
 # --- ĐIỀU KHIỂN WAVE ---
@@ -154,7 +153,7 @@ func spawn_enemy(from_wave: bool = false) -> bool:
 	if new_enemy.has_method("load_enemy_data"):
 		new_enemy.load_enemy_data(hp_mult, spd_mult)
 	if new_enemy.has_method("set_path"):
-		new_enemy.set_path(current_path_grid, layer_grass)
+		new_enemy.set_path(current_path_grid)
 
 	enemies_alive += 1
 	if from_wave:

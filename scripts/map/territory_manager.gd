@@ -1,7 +1,9 @@
 # res://scripts/map/territory_manager.gd
-# Quản lý toàn bộ hệ thống Territory/Biome: placement, sprite, stock, buff.
+# Quản lý toàn bộ hệ thống Territory/Biome: placement, visual 3D, stock, buff.
+# Territory visual = MeshInstance3D box mỏng (1.0 × 0.04 × 1.0) đặt trên mặt tile.
 # Được game_map.gd khởi tạo và làm con node.
 extends Node
+class_name TerritoryManager  # registered globally — dùng để type-check và access BIOME_STATS từ các file khác
 
 # --- SIGNALS ---
 signal territory_placed(pos: Vector2i, biome: String)
@@ -19,24 +21,32 @@ const BIOME_STATS: Dictionary = {
 	"thunder": {"name": "Lôi Vực",    "desc": "+3 Sát thương / +1 Tầm",  "damage_bonus": 3, "attack_speed_reduction": 0.0, "range_bonus": 1, "color": Color(0.55, 0.25, 1.0, 0.35)},
 }
 
+const TILE_HEIGHT: float = 0.04
+const TILE_Y:      float = 0.052
+
 # --- REFS ---
-var layer_grass: TileMapLayer = null
-var _parent_node: Node = null  # game_map — nơi add_child sprite
+var grid_controller: GridController = null
+var _parent_node: Node3D = null  # game_map — nơi add_child visual
 
 # --- STATE ---
 var owned_tiles: Dictionary = {}       # Vector2i → true
 var biome_tiles: Dictionary = {}       # Vector2i → biome_key String
 var _territory_stock: Dictionary = {}  # biome_key → int
 var _territory_textures: Dictionary = {} # biome_key → Texture2D
-var _territory_sprites: Dictionary = {}  # Vector2i → Sprite2D
-var _territory_preview: Sprite2D = null
+var _territory_meshes: Dictionary = {}   # Vector2i → MeshInstance3D
+var _territory_preview: MeshInstance3D = null
+var _preview_material: StandardMaterial3D = null
+var _preview_base_color: Color = Color(1, 1, 1, 0.8)
+var _tile_box: BoxMesh = null
 var _placement_mode: bool = false
 var _pending_biome: String = ""
 
 # --- SETUP ---
-func setup(grass: TileMapLayer, parent: Node) -> void:
-	layer_grass = grass
+func setup(gc: GridController, parent: Node3D) -> void:
+	grid_controller = gc
 	_parent_node = parent
+	_tile_box = BoxMesh.new()
+	_tile_box.size = Vector3(1.0, TILE_HEIGHT, 1.0)
 	_load_textures()
 	_setup_preview()
 
@@ -51,10 +61,27 @@ func _load_textures() -> void:
 				_territory_textures[key] = ImageTexture.create_from_image(img)
 
 func _setup_preview() -> void:
-	_territory_preview = Sprite2D.new()
-	_territory_preview.z_index = 5
+	_territory_preview = MeshInstance3D.new()
+	_territory_preview.mesh = _tile_box
+	_preview_material = _make_biome_material("", true)
+	_territory_preview.material_override = _preview_material
 	_territory_preview.visible = false
 	_parent_node.add_child(_territory_preview)
+
+func _make_biome_material(biome: String, transparent: bool) -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.roughness = 1.0
+	var tex: Texture2D = _territory_textures.get(biome, null)
+	if tex:
+		mat.albedo_texture = tex
+		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+		mat.albedo_color = Color.WHITE
+	else:
+		var biome_color: Color = BIOME_STATS.get(biome, {}).get("color", Color(0.5, 0.5, 0.5, 0.5))
+		mat.albedo_color = Color(biome_color.r, biome_color.g, biome_color.b, 1.0)
+	if transparent:
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	return mat
 
 # --- KHỞI TẠO LÃNH THỔ ĐẦU GAME ---
 func initialize(count: int, grid_data: Dictionary, km: KingManager, bottom_y: int = 4) -> void:
@@ -75,7 +102,7 @@ func initialize(count: int, grid_data: Dictionary, km: KingManager, bottom_y: in
 		var biome = BIOME_KEYS[randi() % BIOME_KEYS.size()]
 		owned_tiles[pos] = true
 		biome_tiles[pos] = biome
-		_create_sprite(pos, biome)
+		_create_tile_visual(pos, biome)
 		registered.append(pos)
 		given += 1
 
@@ -104,8 +131,13 @@ func select(biome_key: String) -> void:
 	_placement_mode = true
 	_pending_biome = biome_key
 	if _territory_preview:
-		_territory_preview.texture = _territory_textures.get(biome_key, null)
-		_territory_preview.modulate = Color(1, 1, 1, 0.8)
+		_preview_material = _make_biome_material(biome_key, true)
+		_preview_base_color = Color(
+			_preview_material.albedo_color.r,
+			_preview_material.albedo_color.g,
+			_preview_material.albedo_color.b, 0.8)
+		_preview_material.albedo_color = _preview_base_color
+		_territory_preview.material_override = _preview_material
 		_territory_preview.visible = true
 
 func cancel() -> void:
@@ -120,17 +152,17 @@ func is_placing() -> bool:
 func get_pending_biome() -> String:
 	return _pending_biome
 
-func update_preview(global_mouse_pos: Vector2, grid_data: Dictionary) -> void:
-	if not _territory_preview or not layer_grass:
+## Cập nhật preview theo ô đang hover — game_map tính cell từ ray chuột và truyền vào.
+func update_preview(cell: Vector2i, grid_data: Dictionary) -> void:
+	if not _territory_preview or not _preview_material:
 		return
-	var gpos = layer_grass.local_to_map(layer_grass.to_local(global_mouse_pos))
-	_territory_preview.position = layer_grass.map_to_local(gpos)
-	if get_available_tiles(grid_data).has(gpos):
-		_territory_preview.modulate = Color(1, 1, 1, 0.8)
+	_territory_preview.position = GridUtil.cell_to_world(cell) + Vector3(0.0, TILE_Y, 0.0)
+	if get_available_tiles(grid_data).has(cell):
+		_preview_material.albedo_color = _preview_base_color
 	else:
-		_territory_preview.modulate = Color(1, 0.2, 0.2, 0.5)
+		_preview_material.albedo_color = Color(1, 0.2, 0.2, 0.5)
 
-func get_preview_node() -> Sprite2D:
+func get_preview_node() -> MeshInstance3D:
 	return _territory_preview
 
 # --- ĐẶT TERRITORY ---
@@ -148,13 +180,13 @@ func _place_at(pos: Vector2i, biome_key: String, _grid_data: Dictionary, km: Kin
 		var arr: Array[Vector2i] = [pos]
 		km.register_territories(arr, biome_key)
 
-	_create_sprite(pos, biome_key)
+	_create_tile_visual(pos, biome_key)
 
 	# Cập nhật stock và placement mode
 	_territory_stock[biome_key] = max(0, _territory_stock.get(biome_key, 0) - 1)
 	if _territory_stock.get(biome_key, 0) > 0:
-		if _territory_preview:
-			_territory_preview.modulate = Color(1, 1, 1, 0.8)
+		if _territory_preview and _preview_material:
+			_preview_material.albedo_color = _preview_base_color
 			_territory_preview.visible = true
 	else:
 		cancel()
@@ -164,15 +196,18 @@ func _place_at(pos: Vector2i, biome_key: String, _grid_data: Dictionary, km: Kin
 	_emit_territories_changed()
 
 # --- QUERY ---
-func get_available_tiles(_grid_data: Dictionary) -> Array[Vector2i]:
+func get_available_tiles(grid_data: Dictionary) -> Array[Vector2i]:
+	# Mọi ô trong grid trừ ô path và ô đã có biome.
+	# Ô có tower vẫn hợp lệ (giống hành vi get_used_cells() của layer_grass cũ).
 	var results: Array[Vector2i] = []
-	if not layer_grass:
+	if not grid_controller:
 		return results
-	# Dùng layer_grass.get_used_cells() — path tiles đã bị erase_cell nên không xuất hiện ở đây.
-	# Empty grass tiles và tower tiles đều hợp lệ để đặt territory.
-	for p in layer_grass.get_used_cells():
-		if biome_tiles.has(p): continue   # đã có biome
-		results.append(p)
+	for x in range(grid_controller.grid_width):
+		for y in range(grid_controller.grid_height):
+			var p := Vector2i(x, y)
+			if grid_data.get(p) is String and grid_data.get(p) == "path": continue
+			if biome_tiles.has(p): continue
+			results.append(p)
 	return results
 
 func get_biome_at(pos: Vector2i) -> String:
@@ -188,34 +223,28 @@ func get_biome_counts() -> Dictionary:
 		counts[b] = counts.get(b, 0) + 1
 	return counts
 
-# --- SPRITE ---
-func _create_sprite(pos: Vector2i, biome: String) -> void:
-	# Xóa sprite cũ nếu có
-	if _territory_sprites.has(pos):
-		var old = _territory_sprites[pos]
+# --- VISUAL ---
+func _create_tile_visual(pos: Vector2i, biome: String) -> void:
+	# Xóa visual cũ nếu có
+	if _territory_meshes.has(pos):
+		var old = _territory_meshes[pos]
 		if is_instance_valid(old):
 			old.queue_free()
-		_territory_sprites.erase(pos)
+		_territory_meshes.erase(pos)
 
-	var spr = Sprite2D.new()
-	var tex = _territory_textures.get(biome, null)
-	if tex == null:
-		var biome_color: Color = BIOME_STATS.get(biome, {}).get("color", Color(0.5, 0.5, 0.5, 0.5))
-		var img = Image.create(16, 16, false, Image.FORMAT_RGBA8)
-		img.fill(biome_color)
-		tex = ImageTexture.create_from_image(img)
-	spr.texture = tex
-	spr.z_index = 0
-	spr.position = layer_grass.map_to_local(pos)
-	_parent_node.add_child(spr)
-	_territory_sprites[pos] = spr
+	var tile := MeshInstance3D.new()
+	tile.mesh = _tile_box
+	tile.material_override = _make_biome_material(biome, false)
+	tile.position = GridUtil.cell_to_world(pos) + Vector3(0.0, TILE_Y, 0.0)
+	_parent_node.add_child(tile)
+	_territory_meshes[pos] = tile
 
 # --- CLEAR (khi tạo map mới) ---
 func clear_all() -> void:
-	for spr in _territory_sprites.values():
-		if is_instance_valid(spr):
-			spr.queue_free()
-	_territory_sprites.clear()
+	for tile in _territory_meshes.values():
+		if is_instance_valid(tile):
+			tile.queue_free()
+	_territory_meshes.clear()
 	owned_tiles.clear()
 	biome_tiles.clear()
 	cancel()

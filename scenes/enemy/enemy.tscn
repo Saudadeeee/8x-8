@@ -1,18 +1,16 @@
-[gd_scene format=3 uid="uid://8m3mr4b1wcfk"]
+[gd_scene load_steps=3 format=3 uid="uid://8m3mr4b1wcfk"]
 
 [ext_resource type="Script" uid="uid://6y3k73xygst8" path="res://scripts/enemy/enemy.gd" id="1_a3pup"]
-[ext_resource type="Texture2D" uid="uid://rr2vgdu1ae3f" path="res://assets/enemy/Orc.png" id="2_40wdo"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_4a83h"]
-radius = 5.0
+[sub_resource type="SphereShape3D" id="SphereShape3D_4a83h"]
+radius = 0.3
 
-[node name="Enemy" type="Area2D" unique_id=1352244018]
+[node name="Enemy" type="Area3D"]
 collision_layer = 2
 collision_mask = 0
 script = ExtResource("1_a3pup")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1862307597]
-texture = ExtResource("2_40wdo")
+[node name="Visual" type="Node3D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1834117245]
-shape = SubResource("CircleShape2D_4a83h")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_4a83h")

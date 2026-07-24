@@ -1,20 +1,16 @@
-[gd_scene format=3 uid="uid://dro50qavdj68s"]
+[gd_scene load_steps=3 format=3 uid="uid://dro50qavdj68s"]
 
 [ext_resource type="Script" uid="uid://d01qqetbu4cbd" path="res://scripts/projectile/projectile.gd" id="1_2dulq"]
-[ext_resource type="Texture2D" uid="uid://bvmqrfkhvwkek" path="res://assets/projectile/arrow.png" id="1_t8015"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2dulq"]
-radius = 4.0
-height = 28.0
+[sub_resource type="SphereShape3D" id="SphereShape3D_2dulq"]
+radius = 0.15
 
-[node name="Projectile" type="Area2D" unique_id=1995576329]
+[node name="Projectile" type="Area3D"]
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("1_2dulq")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1096723646]
-rotation = 4.712389
-texture = ExtResource("1_t8015")
+[node name="Mesh" type="MeshInstance3D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=983374282]
-shape = SubResource("CapsuleShape2D_2dulq")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_2dulq")

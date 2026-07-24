@@ -1,12 +1,163 @@
 # Project Instructions: 8x-8
 
 ## Tools
-- **Sprite/Pixel Art**: Dùng Aseprite MCP (custom version tại `D:\Code\SourceCode\Project\Custom-mcp\aseprite-mcp`) — 90 functions, phong cách pixel art, chủ đề trung cổ/chiến tranh/cổ điển
-  - Palette: tối, trầm — nâu đất, xám đá, đỏ máu, vàng đồng
-  - `draw_line` hoạt động bình thường trong phiên bản này (có tham số `thickness`)
-  - Có thêm: `create_layer_group`, `set_layer_blend_mode`, `set_layer_opacity`, `create_palette`, `replace_color`, `select_rectangle`, image effects, AI features
-- **Godot**: Dùng Godot MCP cho mọi thao tác engine (scene, node, run...)
-  - Engine: Godot 4.6.1 stable, GDScript
+
+### Aseprite MCP — Pixel Art
+Server: `D:\Code\SourceCode\Project\Godot x Aseprite MCP\aseprite-mcp`
+
+Dùng cho mọi thao tác vẽ, sprite, animation. **KHÔNG dùng Godot tools để tạo art.**
+
+**Project style:** Pixel art trung cổ/chiến tranh/cổ điển
+- Palette: tối, trầm — nâu đất `#3d2b1f`, xám đá `#4a4a4a`, đỏ máu `#8b1a1a`, vàng đồng `#c8a000`, xanh rêu `#2d4a1e`
+- Tile size chuẩn: **16×16 px**
+- Unit sprites: **32×32** hoặc **48×48**
+- UI icons: **16×16** hoặc **32×32**
+
+**97 tools (tất cả đã có trong allow list):**
+```
+Canvas/File:  create_canvas · get_sprite_info · resize_sprite · crop_sprite · expand_canvas
+              scale_sprite · trim_sprite · smart_resize_preserve_pixels · rotate_image
+              flip_horizontal · flip_vertical · convert_color_mode · backup_sprite
+              restore_sprite · optimize_file_size · compare_sprites
+              batch_convert · batch_process_sprites
+
+Drawing:      draw_pixels · draw_line (có thickness) · draw_rectangle · draw_circle
+              draw_polygon · draw_bezier_curve · draw_gradient · draw_pattern
+              draw_text · fill_area · erase_area
+
+Layer:        add_layer · create_layer_group · move_layer_to_group · rename_layer
+              set_layer_opacity · set_layer_blend_mode · toggle_layer_visibility
+              copy_layer · merge_layers
+
+Frame/Cel:    add_frame · clear_cel · copy_cel · move_cel · link_cel · set_cel_opacity
+
+Palette:      create_palette · get_palette_colors · add_color_to_palette · replace_color
+              load_palette_from_file · extract_color_palette_smart · invert_colors
+
+Selection:    select_rectangle · select_all · deselect · invert_selection · delete_selection
+
+Effects:      apply_blur · adjust_hue_saturation · adjust_brightness_contrast
+              posterize · pixelate · outline · drop_shadow
+
+Export:       export_sprite · export_sprite_sheet · export_sprite_sheet_with_json
+              export_frames_separately · export_layers_separately · export_slices · export_tileset
+
+Tileset:      create_tileset · create_tilemap_layer · import_tileset_from_image · get_tile · set_tile
+
+Slices:       create_slice · create_nine_patch_slice · list_slices · export_slices
+
+Clipboard:    copy_to_clipboard · paste_from_clipboard · paste_as_new_layer · cut_to_clipboard
+
+Brush:        create_custom_brush · apply_brush_stroke · list_brushes
+              set_brush_size · set_brush_angle · set_brush_pattern
+
+Grid:         set_grid · toggle_grid · snap_to_grid
+
+AI:           auto_color_sprite · auto_outline_sprite · upscale_sprite_ai
+              generate_sprite_variations · auto_cleanup_lineart · suggest_improvements
+```
+
+---
+
+### Godot MCP — Engine
+Server: `D:\Code\SourceCode\Project\Godot x Aseprite MCP\Godot-MCP\server\dist\index.js`
+
+Dùng cho mọi thao tác engine. **KHÔNG dùng Aseprite tools để build scene.**
+Engine: **Godot 4.6.1 stable**, GDScript
+
+**119 tools (tất cả đã có trong allow list):**
+```
+Node:         create_node · delete_node · update_node_property
+              get_node_properties · list_nodes
+
+Scene:        create_scene · save_scene · open_scene · get_current_scene
+              get_project_info · create_resource
+
+Script:       create_script · edit_script · get_script · create_script_template
+
+Editor:       execute_editor_script
+
+Playback:     play_main_scene · play_current_scene · play_custom_scene
+              stop_playing_scene · get_play_status
+
+Config:       set_project_setting · get_project_setting · list_project_settings
+              add_input_action · add_input_event · remove_input_action · list_input_actions
+              add_audio_bus · set_bus_volume · add_bus_effect · list_audio_buses
+              set_physics_layer_name
+
+TileMap:      set_tile_cell · erase_tile_cell · paint_tile_area · get_tile_data
+              get_used_tiles · clear_tilemap_layer
+              set_gridmap_cell · erase_gridmap_cell · get_gridmap_used_cells
+
+Animation:    create_animation · delete_animation · list_animations
+              add_animation_track · remove_animation_track
+              insert_animation_key · remove_animation_key
+              get_animation_data · play_animation · stop_animation
+
+AnimTree:     configure_animation_tree · add_animation_tree_node
+              connect_animation_tree_nodes
+              set_animation_tree_parameter · get_animation_tree_parameter
+              add_state_machine_transition · get_animation_tree_info
+
+Material:     create_material · set_material_property · get_material_properties
+              set_shader_code · set_shader_parameter
+
+Import:       scan_filesystem · reimport_file · get_import_settings
+              set_import_setting · list_filesystem_files
+
+Navigation:   bake_navigation_mesh · get_navigation_path · set_navigation_target
+              get_navigation_agent_info · configure_navigation_region
+              set_navigation_mesh_property
+
+Particles:    configure_particles · set_particle_material
+              set_particle_emission_shape · restart_particles · get_particle_info
+
+Environment:  set_light_property · configure_environment · set_sky · set_fog
+              configure_camera · get_environment_info
+
+Skeleton:     get_skeleton_info · set_bone_pose_rotation · set_bone_pose_position
+              set_bone_pose_scale · get_bone_pose · configure_skeleton_ik
+              start_skeleton_ik · reset_bone_poses
+
+Theme:        create_theme · set_theme_color · set_theme_font · set_theme_font_size
+              set_theme_constant · set_theme_stylebox · assign_theme_to_node · get_theme_items
+
+Tween:        animate_node_property · create_tween_script · create_animation_from_tween
+
+Path:         add_path_point · remove_path_point · set_path_point · get_path_info
+              clear_path · configure_path_follow · set_curve_baked_resolution
+
+Mesh:         create_primitive_mesh · create_array_mesh · get_mesh_info
+              set_mesh_surface_material · generate_mesh_normals
+              create_mesh_from_height_map · save_mesh_to_file
+```
+
+---
+
+### Quy tắc phối hợp giữa hai tools
+
+| Task | Tool |
+|---|---|
+| Vẽ sprite, texture, tile | Aseprite |
+| Tạo animation frames, export sheet | Aseprite |
+| Apply effect, transform ảnh | Aseprite |
+| Tạo/chỉnh scene, node | Godot |
+| Load sprite vào node | Godot (`load_sprite`) |
+| Config TileMap ingame | Godot |
+| Viết/chỉnh GDScript | Editor (trực tiếp) |
+
+**Workflow chuẩn cho asset mới:**
+```
+[Aseprite] create_canvas → vẽ → export PNG vào assets/
+                                        ↓
+[Godot]    load_sprite → add_node (Sprite2D / AnimatedSprite2D) → edit_node
+```
+
+Asset export luôn đi vào đúng thư mục:
+- Sprites đơn: `res://assets/towers/` hoặc `res://assets/enemy/`
+- Tilesets: `res://assets/tiles/`
+- UI icons: `res://assets/ui/shop_icons/`
+- Backgrounds: `res://assets/background/`
 
 ---
 
@@ -325,15 +476,13 @@ AudioManager play sound tương ứng
 
 ---
 
-**Autoload Singletons (thực tế trong project):**
-- `GameManager` (`scripts/managers/GameManager.gd`) — game state, gold, HP, Royal Decree, run stats
-- `SceneManager` (`scripts/managers/SceneManager.gd`) — chuyển scene
-- `SettingsManager` (`scripts/managers/SettingsManager.gd`) — settings
-- `WaveManager` (`scripts/managers/WaveManager.gd`) — enemy wave spawning
-- `GridManager` (`scripts/managers/GridManager.gd`) — grid & tile management
-- `ShopManager` (`scripts/managers/ShopManager.gd`) — shop pool, buy/dismiss/refresh
-- `SynergyManager` (`scripts/managers/SynergyManager.gd`) — synergy buff tracking
-- `EncounterManager` (`scripts/managers/EncounterManager.gd`) — random encounter triggers
+**Autoload Singletons (thực tế trong project.godot — chỉ 3 singleton):**
+- `GameManagerSingleton` (`scripts/managers/GameManager.gd`) — game state, gold, HP, Royal Decree, run stats, meta save
+- `SceneManagerSingleton` (`scripts/managers/SceneManager.gd`) — chuyển scene
+- `SettingsManagerSingleton` (`scripts/managers/SettingsManager.gd`) — settings
+
+**Lưu ý:** SynergyManager, EncounterManager, WaveSpawner, TerritoryManager, ShopPanelManager, KingManager
+**KHÔNG phải autoload** — chúng là child node của `game_map` hoặc được khởi tạo bằng code trong `game_map._ready()`.
 
 ---
 
@@ -348,19 +497,20 @@ res://
 │   └── ui/           # main_menu.tscn, king_select.tscn, game_hud.tscn, encounter_screen.tscn,
 │                     # game_over_screen.tscn, victory_screen.tscn, meta_progression.tscn, settings_screen.tscn
 ├── scripts/
-│   ├── managers/     # GameManager, SceneManager, SettingsManager, WaveManager, GridManager, ShopManager, SynergyManager, EncounterManager
-│   ├── map/          # game_map.gd (1294 dòng — orchestration chính), map_generator.gd
+│   ├── managers/     # GameManager, SceneManager, SettingsManager, SynergyManager, EncounterManager
+│   ├── map/          # game_map.gd (1106 dòng — orchestration chính), map_generator.gd,
+│   │                 # wave_spawner.gd, territory_manager.gd
 │   ├── towers/       # tower.gd, TowerStats.gd
 │   ├── enemy/        # enemy.gd, EnemyStats.gd
 │   ├── king/         # king_manager.gd, king_data.gd
-│   ├── entities/     # KingEntity.gd, SoldierEntity.gd
 │   ├── projectile/   # projectile.gd
-│   ├── shop/         # shop_manager.gd, shop_item_data.gd
+│   ├── shop/         # shop_manager.gd (class ShopPanelManager), shop_item_data.gd
 │   ├── meta/         # meta_shop_manager.gd, meta_shop_item_data.gd
 │   ├── resources/    # KingStats.gd, TowerStats.gd, EnemyStats.gd, WaveData.gd, MetaProgress.gd,
 │   │                 # EncounterData.gd, EncounterChoice.gd, SynergyDefinition.gd, SoldierStats.gd, TerritoryStats.gd
-│   ├── ui/           # main_menu.gd, king_select.gd, game_hud.gd, ShopScreen.gd, encounter_screen.gd,
-│   │                 # game_over_screen.gd, victory_screen.gd, meta_progression.gd, settings_screen.gd
+│   ├── ui/           # main_menu.gd, king_select.gd, game_hud.gd, encounter_screen.gd,
+│   │                 # game_over_screen.gd, victory_screen.gd, meta_progression.gd, settings_screen.gd,
+│   │                 # hud_encounter_bridge.gd
 │   └── mechanic/camera/  # camera_controller.gd
 ├── res/              # .tres resource files
 │   ├── kings/        # king_iron.tres, king_phantom.tres, king_flame.tres
@@ -396,10 +546,12 @@ res://
 - Encounter trigger mỗi 3 wave
 - Game Over khi King HP = 0, Victory ở wave 10
 
-*Grid & Map:*
-- Grid 8×8, tile size 16px
+*Grid & Map (3D từ 2026-07-24):*
+- Grid 8×8, tile = **1.0 m** trong 3D (Y-up, cell (x,y) → world `Vector3(x+0.5, 0, y+0.5)`)
+- Toạ độ đi qua `GridUtil` (scripts/map/grid_util.gd): `cell_to_world` / `world_to_cell` / `mouse_to_cell` (ray-plane y=0)
+- Board render bằng MeshInstance3D BoxMesh per cell (GridController), KHÔNG còn TileMapLayer
 - DFS pathfinding cho enemy route, sinh ngẫu nhiên mỗi map
-- Territory tiles với biome buff (Fire/Swamp/Ice/Forest/Desert/Thunder)
+- Territory tiles với biome buff (Fire/Swamp/Ice/Forest/Desert/Thunder) — mesh phẳng y=0.052
 
 *Tower/Unit (cố định, auto-attack):*
 - 10 loại unit: Pawn, Knight, Rook, Bishop, Queen, Commander, Crossbowman, Catapult, Warlock, Dark Mage
@@ -445,10 +597,7 @@ res://
 ---
 
 **Đang implement / còn thiếu:**
-- WaveManager: `_spawn_wave()` chưa hoàn chỉnh
-- GridManager: Territory tile rendering còn TODO
-- ShopManager: Tier-based filtering chưa xong
-- King Ability execution: field `ability_script` chuẩn bị sẵn nhưng chưa chạy được
+- King Ability execution: field `ability_script` trong KingStats chuẩn bị sẵn nhưng chưa chạy được (hiện tại 3 kings dùng hardcoded match trong game_map.gd `execute_king_ability()`)
 - Một số encounter type chưa implement đầy đủ
 
 ---
@@ -456,10 +605,19 @@ res://
 **Đặc thù game cần nhớ:**
 - Unit là **tower cố định** — KHÔNG di chuyển, KHÔNG có MovementSpeed
 - Grid mở rộng xuống dưới theo tiến trình (không phải lên trên như GDD ban đầu)
-- `game_map.gd` (1294 dòng) là file orchestration chính — đọc trước khi sửa bất cứ gì liên quan gameplay
+- `game_map.gd` là file orchestration chính — đọc trước khi sửa bất cứ gì liên quan gameplay
 - Node groups: `"towers"`, `"enemies"`, `"projectiles"` — dùng để tìm target
 - Buff stacking có 6 lớp, **không** apply trực tiếp lên base stat — luôn recalculate từ đầu
 - Save meta dùng `ResourceSaver.save()` vào `user://meta_progress.tres`
+
+**3D pipeline (từ 2026-07-24):**
+- Game là **3D** (Node3D/Area3D/Camera3D), camera diorama kiểu Towerscaper: orbit rig trong `camera_controller.gd` (yaw pivot → Pitch −50° → Camera3D fov 45; wheel zoom, middle-drag orbit, WASD pan)
+- Model 3D low-poly voxel tạo bằng **Blockbench MCP**, export glTF vào `assets/models/<id>.gltf` — `<id>` = field `id` trong .tres stats (pawn, knight, rook, bishop, queen, commander, crossbowman, catapult, warlock, dark_mage, water, orc, goblin, skeleton, dark_knight, demon_imp, king)
+- Scale Blockbench: **16 units = 1 m = 1 tile** — model tower cao ~18-29 units
+- Mọi load model đều guard `ResourceLoader.exists()` + fallback Sprite3D billboard (pixel_size 0.03, nearest) từ sprite 2D cũ
+- Data .tres giữ nguyên đơn vị px cũ: speed/radius chia 16 tại runtime (enemy.gd, projectile.gd)
+- HUD vẫn là CanvasLayer 2D — không đổi
+- Godot binary: `D:/Games/Steam/steamapps/common/Godot Engine/godot.windows.opt.tools.64.exe` (4.7.1 Steam); project.godot đặt fullscreen (mode=3) — khi test tự động nhớ window có thể nuốt input chuột thật
 
 ---
 

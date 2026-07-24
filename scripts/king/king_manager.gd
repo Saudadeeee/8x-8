@@ -31,12 +31,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if current_king == null:
 		return
-	var regen_amount = current_king.decree_regen * delta
-	if regen_amount > 0.0:
-		var next_amount = clamp(royal_decree + regen_amount, 0.0, decree_cap)
-		if !is_equal_approx(next_amount, royal_decree):
-			royal_decree = next_amount
-			royal_decree_changed.emit(royal_decree)
+	# RD không regen tự động — chỉ nhận khi thắng wave (grant_wave_clear_decree)
 	if _ability_cooldown_remaining > 0.0:
 		_ability_cooldown_remaining = max(0.0, _ability_cooldown_remaining - delta)
 		ability_cooldown_changed.emit(_ability_cooldown_remaining)
@@ -63,6 +58,13 @@ func spend_royal_decree(cost: float) -> bool:
 
 func can_afford(cost: float) -> bool:
 	return royal_decree >= cost
+
+## Gọi khi player thắng một wave — phần thưởng RD duy nhất
+func grant_wave_clear_decree() -> void:
+	var grant := 25.0
+	if _king_stats_ref:
+		grant = _king_stats_ref.base_royal_decree
+	add_royal_decree(grant)
 
 func add_royal_decree(amount: float) -> void:
 	if amount <= 0.0:

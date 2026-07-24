@@ -1,0 +1,170 @@
+# res://scripts/map/phase_controller.gd
+# Quản lý state machine PREPARE → WAVE → SHOP và đếm ngược phase.
+# Được game_map.gd khởi tạo và làm con node.
+extends Node
+class_name PhaseController
+
+# --- SIGNALS ---
+signal phase_changed(phase: GamePhase)
+signal prep_countdown_updated(seconds: int)
+signal wave_started(wave_number: int, enemy_count: int)
+signal shop_phase_entered(wave_number: int, interest_gold: int)
+signal season_buffs_apply_requested(wave_number: int)
+signal shop_panel_show_requested
+signal phase_message_changed(text: String)
+
+# --- ENUMS / CONSTANTS ---
+enum GamePhase { PREPARE, WAVE, SHOP }
+
+const MAX_WAVES:     int   = 10
+const PREP_DURATION: float = 30.0
+
+# --- STATE ---
+var current_phase:          GamePhase = GamePhase.PREPARE
+var wave_number:            int   = 1
+var prep_countdown:         float = PREP_DURATION
+var _wave_confirmed:        bool  = false
+var upcoming_shop_boost:    bool  = false
+var active_shop_boost:      bool  = false
+var _shop_shown_this_phase: bool  = false
+var phase_message:          String = ""
+
+# --- REFS (set bởi game_map) ---
+var wave_spawner   = null
+var shop_manager   = null
+var _game_manager  = null
+var _grid_controller              = null
+var _gold_getter: Callable      # game_map cung cấp: returns current_gold: int
+
+func setup(ws, sm, gm, gc, gold_getter: Callable) -> void:
+	wave_spawner     = ws
+	shop_manager     = sm
+	_game_manager    = gm
+	_grid_controller = gc
+	_gold_getter     = gold_getter
+
+# --- LIFECYCLE ---
+
+func _process(delta: float) -> void:
+	match current_phase:
+		GamePhase.PREPARE: _tick_prepare(delta)
+		GamePhase.WAVE:    _tick_wave()
+		GamePhase.SHOP:    pass
+
+# --- PUBLIC API ---
+
+func start_prep_phase() -> void:
+	current_phase   = GamePhase.PREPARE
+	prep_countdown  = PREP_DURATION
+	_wave_confirmed = false
+	phase_changed.emit(current_phase)
+	_set_phase_message("Đọc thông tin wave rồi xác nhận để bắt đầu chuẩn bị...")
+
+	if wave_spawner:
+		_emit_wave_intel()
+
+func confirm_wave_ready() -> void:
+	if current_phase != GamePhase.PREPARE or _wave_confirmed:
+		return
+	_wave_confirmed = true
+	_set_phase_message("Chuẩn bị %ds | %s" % [
+		int(ceil(prep_countdown)),
+		wave_spawner.get_wave_intel_text(wave_number) if wave_spawner else "",
+	])
+
+## Gọi sau khi wave_cleared signal đến.
+func enter_shop_phase() -> void:
+	if current_phase == GamePhase.SHOP:
+		return
+	if wave_number >= MAX_WAVES:
+		if _game_manager:
+			_game_manager.force_victory()
+		return
+
+	if wave_spawner:
+		wave_spawner.stop()
+	if _game_manager:
+		_game_manager.current_wave = wave_number
+
+	current_phase          = GamePhase.SHOP
+	active_shop_boost      = false
+	upcoming_shop_boost    = false
+	_shop_shown_this_phase = false
+
+	# Tính lãi gold: 10% capped 15
+	var gold: int    = _gold_getter.call() if _gold_getter.is_valid() else 0
+	var interest: int = min(int(gold * 0.10), 15)
+	var interest_msg := " | Lãi: +%d vàng" % interest if interest > 0 else ""
+
+	if shop_manager:
+		shop_manager.update_wave(wave_number)
+		shop_manager.refresh_shop(true)
+
+	_set_phase_message("Wave %d hoàn thành!%s Mua quân rồi bấm NEXT WAVE." % [wave_number, interest_msg])
+	phase_changed.emit(current_phase)
+	shop_phase_entered.emit(wave_number, interest)
+
+## Gọi sau khi encounter resolved — hiện shop panel.
+func show_shop_after_encounter() -> void:
+	if current_phase != GamePhase.SHOP or _shop_shown_this_phase:
+		return
+	_shop_shown_this_phase = true
+	shop_panel_show_requested.emit()
+
+## Gọi khi player bấm Next Wave.
+## game_map gọi expand rồi gọi start_prep_phase().
+func request_next_wave() -> void:
+	if current_phase != GamePhase.SHOP:
+		return
+	wave_number += 1
+
+# --- INTERNAL PHASE TICKS ---
+
+func _tick_prepare(delta: float) -> void:
+	if not _wave_confirmed:
+		return
+	if prep_countdown > 0.0:
+		prep_countdown = max(prep_countdown - delta, 0.0)
+		var extra      := " (Reinforced)" if upcoming_shop_boost else ""
+		_set_phase_message("Chuẩn bị %ds%s" % [int(ceil(prep_countdown)), extra])
+		prep_countdown_updated.emit(int(ceil(prep_countdown)))
+	if prep_countdown <= 0.0:
+		prep_countdown_updated.emit(0)
+		_start_wave_phase()
+
+func _start_wave_phase() -> void:
+	current_phase       = GamePhase.WAVE
+	active_shop_boost   = upcoming_shop_boost
+	upcoming_shop_boost = false
+	phase_changed.emit(current_phase)
+	season_buffs_apply_requested.emit(wave_number)
+
+	if wave_spawner and _grid_controller:
+		wave_spawner.setup(_grid_controller.current_path_grid, get_parent())
+		var enemy_count: int = wave_spawner.calculate_enemies_for_wave(wave_number, active_shop_boost)
+		wave_spawner.start_wave(wave_number, enemy_count, active_shop_boost)
+		_set_phase_message("%s | Wave %d — Spawning %d enemies" % [
+			wave_spawner.get_season_name(wave_number), wave_number, enemy_count,
+		])
+		wave_started.emit(wave_number, enemy_count)
+
+func _tick_wave() -> void:
+	if not wave_spawner:
+		return
+	var s_name:   String = wave_spawner.get_season_name(wave_number)
+	var spawned:  int    = wave_spawner.enemies_spawned
+	var to_spawn: int    = wave_spawner.get_enemies_to_spawn()
+	var alive:    int    = wave_spawner.enemies_alive
+	var status:   String = "%s | Wave %d — %d/%d | Active %d" % [s_name, wave_number, spawned, to_spawn, alive]
+	if active_shop_boost:
+		status += " (Reinforced)"
+	_set_phase_message(status)
+
+func _emit_wave_intel() -> void:
+	# game_map lắng nghe phase_changed và đọc wave_spawner trực tiếp để cập nhật HUD
+	pass
+
+func _set_phase_message(text: String) -> void:
+	if phase_message != text:
+		phase_message = text
+		phase_message_changed.emit(text)

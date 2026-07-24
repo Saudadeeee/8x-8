@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="KingStats" load_steps=2 format=3 uid="uid://king_flame"]
+[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_flame"]
 
 [ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_kf"]
+[ext_resource type="Script" path="res://scripts/king/abilities/flame_inferno_ability.gd" id="2_ab"]
 
 [resource]
 script = ExtResource("1_kf")
@@ -22,5 +23,6 @@ ability_name = "Royal Inferno"
 ability_description = "Deals 50 damage to all enemies on the field. Queens deal double damage for 10 seconds."
 ability_decree_cost = 50.0
 ability_cooldown = 90.0
+ability_script = ExtResource("2_ab")
 unlock_cost = 150
 is_starter_king = false

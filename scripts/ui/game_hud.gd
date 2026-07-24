@@ -796,7 +796,7 @@ func _build_right_panel_extensions() -> void:
 	refresh_dismiss_stock(0)
 
 func refresh_territories(_biome_counts: Dictionary) -> void:
-	pass  # Hiển thị trực tiếp trên bàn cờ qua Sprite2D
+	pass  # Hiển thị trực tiếp trên bàn cờ qua visual 3D
 
 func refresh_territory_stock(stock: Dictionary) -> void:
 	if not _territory_container:
@@ -949,7 +949,7 @@ func _build_tower_info_panel() -> void:
 	_tower_info_panel.add_theme_stylebox_override("panel", _make_panel_style(C_BG_DARK, C_BORDER_HI, 0))
 	root_ctrl.add_child(_tower_info_panel)
 
-func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node2D = null) -> void:
+func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node3D = null) -> void:
 	if not _tower_info_panel:
 		return
 	for child in _tower_info_panel.get_children():
@@ -1013,7 +1013,8 @@ func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node
 	if stats.burn_dps > 0:
 		_add_info_row(vbox, "🔥 Thiêu đốt", "%d DPS × %.1fs" % [stats.burn_dps, stats.burn_duration])
 	if stats.splash_radius > 0.0:
-		_add_info_row(vbox, "💥 AoE Splash", "%.0fpx" % stats.splash_radius)
+		# splash_radius trong .tres vẫn là px (16 px = 1 ô) — chỉ quy đổi khi hiển thị
+		_add_info_row(vbox, "💥 AoE Splash", "%.1f ô" % (stats.splash_radius / 16.0))
 	if stats.projectile_count > 1:
 		_add_info_row(vbox, "🎯 Số đạn", "×%d" % stats.projectile_count)
 
@@ -1321,7 +1322,7 @@ func _on_meta_item_purchased(item: MetaShopItemData) -> void:
 	_refresh_tower_buttons()
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
-func _find_game_map() -> Node2D:
+func _find_game_map() -> Node3D:
 	var scene = get_tree().get_current_scene()
 	if scene:
 		var found = _search_for_game_map(scene)
@@ -1329,10 +1330,10 @@ func _find_game_map() -> Node2D:
 			return found
 	return _search_for_game_map(get_tree().get_root())
 
-func _search_for_game_map(node: Node) -> Node2D:
+func _search_for_game_map(node: Node) -> Node3D:
 	if not node:
 		return null
-	if node.name == "GameMap" and node is Node2D:
+	if node.name == "GameMap" and node is Node3D:
 		return node
 	for child in node.get_children():
 		var found = _search_for_game_map(child)
@@ -1551,7 +1552,8 @@ func show_wave_intel_popup(data: Dictionary) -> void:
 			e.get("display", "?"),
 			"×%d" % e.get("count", 0),
 			str(e.get("hp", 0)),
-			"%d px/s" % e.get("speed", 0),
+			# speed trong .tres vẫn là px/s (16 px = 1 ô) — chỉ quy đổi khi hiển thị
+			"%.1f ô/s" % (float(e.get("speed", 0)) / 16.0),
 			"-%d HP" % e.get("damage", 1),
 			ENEMY_ABILITY_NOTES.get(e.get("id", ""), "—"),
 		]

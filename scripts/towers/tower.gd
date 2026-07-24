@@ -1,14 +1,31 @@
 # res://scripts/towers/tower.gd
-extends Node2D
+extends Node3D
 
 @export var stats: TowerStats
 
-const TILE_SIZE       = 16.0
-const SHOW_RANGE_DEBUG: bool = false
+const TILE_SIZE: float = 1.0
+const SHOW_RANGE_DEBUG: bool = false   # giữ flag — không còn debug draw trong 3D
+const MUZZLE_HEIGHT: float = 0.5
+const MODEL_DIR := "res://assets/models/%s.gltf"
 
-@onready var visual:           Sprite2D          = $Visual
-@onready var range_area:       Area2D            = $RangeArea
-@onready var collision_shape:  CollisionShape2D  = $RangeArea/CollisionShape2D
+# Màu đạn theo loại tower — dùng cho bolt mesh + burst khi trúng
+const PROJ_COLORS: Dictionary = {
+	"pawn":        Color(1.0, 0.85, 0.5),
+	"knight":      Color(1.0, 0.55, 0.2),
+	"rook":        Color(0.8, 0.8, 0.85),
+	"bishop":      Color(0.4, 0.9, 1.0),
+	"queen":       Color(1.0, 0.8, 0.15),
+	"commander":   Color(0.95, 0.25, 0.25),
+	"crossbowman": Color(0.9, 0.75, 0.5),
+	"catapult":    Color(0.6, 0.6, 0.6),
+	"warlock":     Color(0.75, 0.3, 0.95),
+	"dark_mage":   Color(0.85, 0.2, 0.85),
+	"water":       Color(0.3, 0.6, 1.0),
+}
+
+@onready var visual:          Node3D           = $Visual
+@onready var range_area:      Area3D           = $RangeArea
+@onready var collision_shape: CollisionShape3D = $RangeArea/CollisionShape3D
 
 var projectile_scene = preload("res://scenes/projectile/projectile.tscn")
 
@@ -38,19 +55,24 @@ var current_target:   Enemy        = null
 var can_shoot:        bool         = true
 var cooldown_timer:   Timer
 
+# ── Juice ─────────────────────────────────────────────────────────────────
+var _visual_tween: Tween = null
+
 # ==========================================================================
 # LIFECYCLE
 # ==========================================================================
 
 func _ready() -> void:
 	add_to_group("towers")
-	z_index = 2
 
 	cooldown_timer = Timer.new()
 	cooldown_timer.one_shot = true
 	cooldown_timer.timeout.connect(_on_cooldown_timeout)
 	add_child(cooldown_timer)
 	collision_shape.visible = false
+	# Shape trong .tscn là sub-resource dùng chung giữa mọi instance —
+	# phải thay bằng shape riêng, nếu không radius của tower này ghi đè tower khác.
+	collision_shape.shape = SphereShape3D.new()
 
 	range_area.area_entered.connect(_on_area_entered)
 	range_area.area_exited.connect(_on_area_exited)
@@ -58,22 +80,70 @@ func _ready() -> void:
 	if stats:
 		load_tower_data()
 
-func _process(_delta) -> void:
+func _process(delta) -> void:
 	targets_in_range = targets_in_range.filter(func(e): return is_instance_valid(e))
 	if not is_instance_valid(current_target):
 		update_target()
+	_face_target(delta)
 	if current_target and can_shoot:
 		shoot()
 
+## Xoay model (yaw) hướng về target hiện tại — mượt, không xoay root để giữ range area.
+func _face_target(delta: float) -> void:
+	if not visual or not is_instance_valid(current_target):
+		return
+	var dir: Vector3 = current_target.global_position - global_position
+	dir.y = 0.0
+	if dir.length_squared() < 0.0001:
+		return
+	var target_yaw := atan2(-dir.x, -dir.z)
+	visual.rotation.y = lerp_angle(visual.rotation.y, target_yaw, clampf(10.0 * delta, 0.0, 1.0))
+
 func load_tower_data() -> void:
-	if stats.texture == null:
-		var fallback = "res://assets/towers/%s.png" % stats.id
-		if ResourceLoader.exists(fallback):
-			stats.texture = load(fallback)
-	if stats.texture:
-		visual.texture = stats.texture
+	_build_visual()
 	recalculate_stats()
 	update_range_visual()
+
+## Load model 3D theo stats.id; fallback = Sprite3D billboard dùng texture 2D cũ.
+func _build_visual() -> void:
+	if not visual or not stats:
+		return
+	for child in visual.get_children():
+		child.queue_free()
+
+	var model_path := MODEL_DIR % stats.id
+	if ResourceLoader.exists(model_path):
+		var scene := load(model_path) as PackedScene
+		if scene:
+			visual.add_child(scene.instantiate())
+			_play_spawn_pop()
+			return
+
+	# Fallback billboard
+	if stats.texture == null:
+		var fallback := "res://assets/towers/%s.png" % stats.id
+		if ResourceLoader.exists(fallback):
+			stats.texture = load(fallback)
+	var billboard := Sprite3D.new()
+	billboard.pixel_size = 0.03
+	billboard.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	billboard.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	billboard.position = Vector3(0.0, 0.5, 0.0)
+	if stats.texture:
+		billboard.texture = stats.texture
+	visual.add_child(billboard)
+	_play_spawn_pop()
+
+## Pop scale khi đặt tower.
+func _play_spawn_pop() -> void:
+	if not is_inside_tree():
+		return
+	if _visual_tween:
+		_visual_tween.kill()
+	visual.scale = Vector3(0.15, 0.15, 0.15)
+	_visual_tween = create_tween()
+	_visual_tween.tween_property(visual, "scale", Vector3.ONE, 0.35) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 # ==========================================================================
 # BUFF SYSTEM
@@ -170,11 +240,10 @@ func apply_season_buff(damage_mult: float, speed_penalty: float) -> void:
 func update_range_visual() -> void:
 	if not stats:
 		return
-	if not (collision_shape.shape is CircleShape2D):
-		collision_shape.shape = CircleShape2D.new()
+	if not (collision_shape.shape is SphereShape3D):
+		collision_shape.shape = SphereShape3D.new()
 	var range_to_use = current_range if current_range > 0 else stats.attack_range
 	collision_shape.shape.radius = range_to_use * TILE_SIZE + (TILE_SIZE / 2.0)
-	queue_redraw()
 
 # ==========================================================================
 # COMBAT
@@ -202,18 +271,28 @@ func shoot() -> void:
 		used_targets.append(tgt)
 		_fire_projectile(tgt)
 
+	_play_recoil()
 	cooldown_timer.start(current_attack_speed)
+
+## Recoil nhẹ khi bắn — squash rồi bật lại.
+func _play_recoil() -> void:
+	if not visual or not is_inside_tree():
+		return
+	if _visual_tween and _visual_tween.is_running():
+		return   # đừng cắt spawn pop / recoil đang chạy
+	_visual_tween = create_tween()
+	visual.scale = Vector3(1.08, 0.9, 1.08)
+	_visual_tween.tween_property(visual, "scale", Vector3.ONE, 0.14) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _fire_projectile(tgt: Enemy) -> void:
 	if not projectile_scene or not is_instance_valid(tgt):
 		return
 	var bullet = projectile_scene.instantiate()
-	bullet.global_position = global_position
 	bullet.target = tgt
 	bullet.damage = current_damage
 	if stats:
-		if stats.projectile_texture:
-			bullet.texture_data = stats.projectile_texture
+		bullet.color = PROJ_COLORS.get(stats.id, Color(1.0, 0.9, 0.5))
 		bullet.slow_amount   = stats.slow_amount
 		bullet.slow_duration = stats.slow_duration
 		bullet.splash_radius = stats.splash_radius
@@ -224,6 +303,7 @@ func _fire_projectile(tgt: Enemy) -> void:
 		bullet.burn_dps      = 5
 		bullet.burn_duration = 3.0
 	get_parent().add_child(bullet)
+	bullet.global_position = global_position + Vector3(0.0, MUZZLE_HEIGHT, 0.0)
 	bullet.add_to_group("projectiles")
 
 func _on_cooldown_timeout() -> void:
@@ -244,9 +324,3 @@ func _on_area_exited(area) -> void:
 		targets_in_range.erase(area)
 		if current_target == area:
 			current_target = null
-
-func _draw() -> void:
-	if not SHOW_RANGE_DEBUG:
-		return
-	if collision_shape.shape is CircleShape2D:
-		draw_circle(Vector2.ZERO, collision_shape.shape.radius, Color(0, 1, 0, 0.2))

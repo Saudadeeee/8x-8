@@ -45,10 +45,8 @@ var run_meta_points_earned: int = 0
 func _ready() -> void:
 	meta_progress = MetaProgress.load_or_create()
 
-func _process(delta: float) -> void:
-	# Hồi Decree theo thời gian khi đang trong ván
-	if current_state == GameState.PREPARING or current_state == GameState.WAVE_ACTIVE:
-		_regen_decree(delta)
+func _process(_delta: float) -> void:
+	pass  # RD không regen tự động — chỉ nhận khi thắng wave
 
 # --- KHỞI ĐỘNG VÁN CHƠI ---
 func start_run(king: KingStats) -> void:
@@ -127,11 +125,18 @@ func _deferred_goto_game_over() -> void:
 	var sm = get_node_or_null("/root/SceneManagerSingleton")
 	if sm and sm.has_method("go_to_scene"):
 		sm.go_to_scene("res://scenes/ui/game_over_screen.tscn")
+	else:
+		push_warning("GameManager: SceneManagerSingleton không tồn tại — đổi scene trực tiếp.")
+		get_tree().change_scene_to_file("res://scenes/ui/game_over_screen.tscn")
 
 func force_game_over() -> void:
 	_trigger_game_over()
 
 func _trigger_victory() -> void:
+	# force_victory() được gọi từ PhaseController.enter_shop_phase() khi wave cuối
+	# vừa được clear — hàm đó return sớm TRƯỚC khi gán current_wave = wave_number,
+	# nên phải cộng bù wave cuối vào đây để stats/meta ghi nhận đúng (wave 10 thay vì 9).
+	current_wave += 1
 	change_state(GameState.VICTORY)
 	_update_meta_on_run_end(true)
 	run_ended.emit(true)
@@ -141,6 +146,18 @@ func _deferred_goto_victory() -> void:
 	var sm = get_node_or_null("/root/SceneManagerSingleton")
 	if sm and sm.has_method("go_to_scene"):
 		sm.go_to_scene("res://scenes/ui/victory_screen.tscn")
+		# victory_screen chỉ nghe run_ended trong _ready (không tự đọc stats như
+		# game_over_screen) — signal đã emit TRƯỚC khi scene load nên phát lại
+		# sau khi chuyển cảnh xong để màn hình hiển thị đúng thống kê.
+		if sm.has_signal("transition_finished"):
+			await sm.transition_finished
+			run_ended.emit(true)
+	else:
+		push_warning("GameManager: SceneManagerSingleton không tồn tại — đổi scene trực tiếp.")
+		get_tree().change_scene_to_file("res://scenes/ui/victory_screen.tscn")
+		await get_tree().process_frame
+		await get_tree().process_frame
+		run_ended.emit(true)
 
 func force_victory() -> void:
 	_trigger_victory()

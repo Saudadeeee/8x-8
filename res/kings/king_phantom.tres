@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="KingStats" load_steps=2 format=3 uid="uid://king_phantom"]
+[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_phantom"]
 
 [ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_kp"]
+[ext_resource type="Script" path="res://scripts/king/abilities/phantom_veil_ability.gd" id="2_ab"]
 
 [resource]
 script = ExtResource("1_kp")
@@ -22,5 +23,6 @@ ability_name = "Shadow Veil"
 ability_description = "All units become temporarily invisible to enemies for 5 seconds, resetting attack cooldowns."
 ability_decree_cost = 40.0
 ability_cooldown = 60.0
+ability_script = ExtResource("2_ab")
 unlock_cost = 100
 is_starter_king = false

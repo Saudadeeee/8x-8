@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="KingStats" load_steps=2 format=3 uid="uid://king_iron"]
+[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_iron"]
 
 [ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_ki"]
+[ext_resource type="Script" path="res://scripts/king/abilities/iron_decree_ability.gd" id="2_ab"]
 
 [resource]
 script = ExtResource("1_ki")
@@ -22,5 +23,6 @@ ability_name = "Iron Decree"
 ability_description = "Instantly restore 30 Royal Decree and grant all Pawns +50% attack speed for 8 seconds."
 ability_decree_cost = 0.0
 ability_cooldown = 45.0
+ability_script = ExtResource("2_ab")
 unlock_cost = 0
 is_starter_king = true
