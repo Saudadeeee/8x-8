@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://shaman_stats_001"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_shaman"]
+[ext_resource type="Texture2D" uid="uid://cw2gk7vphckvh" path="res://assets/enemy/goblin.png" id="2_shaman"]
+
+[resource]
+script = ExtResource("1_shaman")
+id = "shaman"
+texture = ExtResource("2_shaman")
+scale = Vector2(1, 1)
+max_hp = 90
+speed = 40.0
+damage_to_base = 1
+gold_reward = 18
+heal_aura_amount = 6
+heal_aura_radius = 1.6
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

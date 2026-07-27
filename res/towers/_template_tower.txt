@@ -1,0 +1,83 @@
+# ============================================================================
+# TEMPLATE TẠO TOWER MỚI (.tres) — file .txt để Godot bỏ qua, KHÔNG import.
+#
+# CÁCH DÙNG:
+#   1. Copy toàn bộ khối "[gd_resource ...]" ở dưới (phần sau dòng ====CUT====)
+#      vào file mới:  res/towers/<id_moi>.tres   (vd: res/towers/halberdier.tres)
+#   2. XÓA HẾT các dòng bắt đầu bằng "#" — định dạng .tres KHÔNG hỗ trợ comment.
+#   3. Đổi id + stats theo chú thích từng dòng bên dưới.
+#   4. Mở lại Godot editor (hoặc scan filesystem) — shop TỰ NHẬN tower mới
+#      từ thư mục res://res/towers/ (shop_manager.gd → _populate_default_items).
+#
+# CHÚ THÍCH TỪNG FIELD:
+#   script          — giữ nguyên: trỏ tới TowerStats.gd (uid bên dưới là thật).
+#   id              — ID duy nhất, snake_case, TRÙNG với tên file .tres và tên
+#                     model 3D assets/models/<id>.gltf (nếu có).
+#   name            — tên hiển thị trong shop/HUD.
+#   description     — mô tả hiển thị tooltip + shop card.
+#   texture         — icon 2D (shop card + fallback billboard 3D khi không có
+#                     model gltf). Dùng png có sẵn trong assets/towers/.
+#   cost            — giá VÀNG mua trong shop (int).
+#   decree_cost     — giá ROYAL DECREE khi triển khai lên bàn cờ (float).
+#   base_damage     — sát thương mỗi đòn (int).
+#   attack_speed    — GIÂY giữa 2 đòn đánh (float) — càng NHỎ càng nhanh.
+#   attack_range    — tầm bắn tính bằng SỐ Ô (int) — 1 ô = 1 m trong 3D.
+#   attack_style    — 0=AOE · 1=SINGLE_TARGET · 2=CHAIN_ATTACK · 3=DEBUFF_ATTACK
+#   type            — chỉ số enum UnitType, quyết định NHÓM SYNERGY:
+#                     0=PAWN 1=ROOK 2=KNIGHT 3=QUEEN 4=BISHOP 5=WISP
+#                     6=CROSSBOWMAN 7=WARLOCK 8=CATAPULT 9=DARK_MAGE
+#                     10=LONGBOWMAN 11=PALADIN 12=ALCHEMIST 13=ICE_GUARDIAN
+#                     14=BALLISTA
+#                     Muốn type HOÀN TOÀN MỚI phải thêm vào enum trong
+#                     scripts/towers/TowerStats.gd + khai báo synergy trong
+#                     scripts/managers/SynergyManager.gd (xem docs/CONTENT_AUTHORING.md).
+#   element         — 0=FIRE 1=WATER 2=WOOD 3=EARTH 4=METAL 5=DARK 6=LIGHT
+#   faction         — "iron" | "wild" | "hell" | "magic"
+#   slow_amount     — 0.0–1.0: tỉ lệ giảm tốc địch (0.55 = chậm 55%). 0 = không.
+#   slow_duration   — thời gian slow (giây).
+#   splash_radius   — bán kính nổ AoE tính bằng PX (16 px = 1 ô; runtime tự
+#                     chia 16). 0 = không splash.
+#   burn_dps        — sát thương thiêu đốt mỗi giây (DoT). 0 = không.
+#   burn_duration   — thời gian cháy (giây).
+#   projectile_count— số đạn mỗi đòn (>1 = multishot).
+#   projectile_texture — sprite viên đạn (assets/projectile/*.png).
+#
+# SAU KHI TẠO FILE .tres, NHỚ (không bắt buộc nhưng nên):
+#   - Model 3D:   assets/models/<id>.gltf (16 units Blockbench = 1 ô) — thiếu
+#                 thì game tự fallback billboard từ texture.
+#   - Gate wave:  thêm "<id>": <wave> vào BOSS_TROOP_MIN_WAVE trong
+#                 scripts/shop/shop_manager.gd nếu muốn khóa tới wave N
+#                 (mặc định xuất hiện từ wave 1).
+#   - Synergy:    nếu dùng type có sẵn thì tự hưởng synergy của type đó.
+#
+# ====CUT==== (copy từ dòng dưới vào file .tres mới, xóa mọi dòng "#") =======
+
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/towers/Pawn.png" id="2_icon"]
+[ext_resource type="Texture2D" path="res://assets/projectile/arrow.png" id="3_proj"]
+
+[resource]
+script = ExtResource("1_script")
+id = "ten_tower_moi"
+name = "Tên Tower Mới"
+description = "Mô tả ngắn hiển thị trong shop và tooltip."
+texture = ExtResource("2_icon")
+cost = 50
+decree_cost = 1.5
+base_damage = 15
+attack_speed = 1.2
+attack_range = 3
+attack_style = 1
+type = 0
+element = 0
+faction = "iron"
+slow_amount = 0.0
+slow_duration = 0.0
+splash_radius = 0.0
+burn_dps = 0
+burn_duration = 0.0
+projectile_count = 1
+projectile_texture = ExtResource("3_proj")
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

@@ -1,0 +1,64 @@
+# ============================================================================
+# TEMPLATE TẠO ENEMY MỚI (.tres) — file .txt để Godot bỏ qua, KHÔNG import.
+#
+# CÁCH DÙNG:
+#   1. Copy khối "[gd_resource ...]" (sau dòng ====CUT====) vào file mới:
+#      res/enemy/<id_moi>.tres   (vd: res/enemy/ghoul.tres)
+#   2. XÓA HẾT các dòng bắt đầu bằng "#" — .tres KHÔNG hỗ trợ comment.
+#   3. Đổi id + stats theo chú thích bên dưới.
+#   4. WaveSpawner TỰ NẠP mọi .tres trong res://res/enemy/ theo field id
+#      (wave_spawner.gd → _load_enemy_stats). NHƯNG enemy chỉ THỰC SỰ xuất
+#      hiện khi được thêm vào pool mùa — xem bước "SAU KHI TẠO" bên dưới.
+#
+# CHÚ THÍCH TỪNG FIELD:
+#   script          — giữ nguyên: trỏ tới EnemyStats.gd (uid là thật).
+#   id              — ID duy nhất, snake_case, KHÔNG ĐƯỢC RỖNG (rỗng = bị bỏ
+#                     qua khi nạp). Trùng tên model assets/models/<id>.gltf.
+#   texture         — sprite 2D fallback (billboard) khi không có model gltf.
+#   scale           — scale sprite 2D, thường Vector2(1, 1).
+#   max_hp          — máu gốc (int). Mỗi wave scale thêm +12%/wave.
+#   speed           — tốc độ di chuyển tính bằng PX/GIÂY (16 px = 1 ô/s;
+#                     runtime tự chia 16). Mỗi wave scale thêm +3%/wave.
+#                     Tham khảo: golem 22 (chậm) · orc 40 · wraith 90 (nhanh).
+#   damage_to_base  — máu King bị trừ khi enemy lọt tới đích (int).
+#   gold_reward     — vàng nhận khi tiêu diệt (int).
+#
+# FIELD ĐẶC BIỆT (Abilities — bỏ qua = 0 nếu không dùng):
+#   armor           — giáp phẳng: MỖI đòn đánh bị trừ [armor] sát thương,
+#                     tối thiểu còn 1 (golem = 6).
+#   regen_per_sec   — máu hồi mỗi giây, không vượt max HP đã scale (troll = 8).
+#   heal_aura_amount— máu hồi cho ĐỒNG MINH xung quanh mỗi nhịp aura (shaman = 6).
+#   heal_aura_radius— bán kính aura tính bằng MÉT (1 ô = 1 m; shaman = 1.6).
+#                     Cả amount và radius phải > 0 thì aura mới hoạt động.
+#
+# SAU KHI TẠO FILE .tres, BẮT BUỘC để enemy xuất hiện trong game:
+#   1. Thêm id vào pool mùa: scripts/map/wave_spawner.gd →
+#      _get_season_enemy_pool() — append _get_enemy("<id>") vào mùa muốn spawn.
+#   2. Tên hiển thị: thêm "<id>": "Tên VN" vào _ENEMY_DISPLAY_NAMES
+#      (cũng trong wave_spawner.gd) — thiếu thì hiện id capitalize.
+#   3. Ghi chú năng lực trên HUD trinh sát: thêm "<id>": "mô tả ngắn" vào
+#      ENEMY_ABILITY_NOTES trong scripts/ui/game_hud.gd — thiếu thì hiện "—".
+#   4. Model 3D (tùy chọn): assets/models/<id>.gltf — thiếu thì fallback
+#      billboard từ texture.
+#
+# ====CUT==== (copy từ dòng dưới vào file .tres mới, xóa mọi dòng "#") =======
+
+[gd_resource type="Resource" script_class="EnemyStats" format=3]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_stats"]
+[ext_resource type="Texture2D" path="res://assets/enemy/Orc.png" id="2_tex"]
+
+[resource]
+script = ExtResource("1_stats")
+id = "ten_enemy_moi"
+texture = ExtResource("2_tex")
+scale = Vector2(1, 1)
+max_hp = 100
+speed = 40.0
+damage_to_base = 2
+gold_reward = 12
+armor = 0
+regen_per_sec = 0.0
+heal_aura_amount = 0
+heal_aura_radius = 0.0
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

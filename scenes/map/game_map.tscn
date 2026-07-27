@@ -18,8 +18,8 @@ glow_strength = 1.0
 glow_bloom = 0.05
 glow_hdr_threshold = 1.0
 fog_enabled = true
-fog_light_color = Color(0.14, 0.1, 0.12, 1)
-fog_density = 0.006
+fog_light_color = Color(0.22, 0.17, 0.13, 1)
+fog_density = 0.008
 fog_sky_affect = 0.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ground1"]
@@ -45,12 +45,15 @@ script = ExtResource("5_ktlxi")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, 0.409576, -0.286788, 0, 0.573576, 0.819152, 0.5, -0.709406, 0.496732, 0, 10, 0)
+light_color = Color(1, 0.941176, 0.823529, 1)
+light_energy = 1.15
 shadow_enabled = true
+shadow_bias = 0.03
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_gm3d1")
 
 [node name="GroundPlane" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6, 0)
 mesh = SubResource("PlaneMesh_ground1")
 surface_material_override/0 = SubResource("StandardMaterial3D_grnd")

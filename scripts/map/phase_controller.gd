@@ -72,11 +72,26 @@ func confirm_wave_ready() -> void:
 		wave_spawner.get_wave_intel_text(wave_number) if wave_spawner else "",
 	])
 
+## Wave cuối chỉ được tính là thắng khi Rival King đã rời sân (bị hạ hoặc lọt
+## qua King). Spawner cũ không có khái niệm boss → giữ nguyên hành vi cũ.
+func _is_boss_resolved() -> bool:
+	if wave_spawner == null:
+		return true
+	# is_boss_pending() phản ánh trạng thái thực tế: boss spawn hỏng cũng trả false
+	# nên wave cuối không bao giờ bị treo.
+	if wave_spawner.has_method("is_boss_pending"):
+		return not wave_spawner.is_boss_pending()
+	return true   # spawner không biết khái niệm boss → giữ nguyên hành vi cũ
+
 ## Gọi sau khi wave_cleared signal đến.
 func enter_shop_phase() -> void:
 	if current_phase == GamePhase.SHOP:
 		return
 	if wave_number >= MAX_WAVES:
+		# Hết giờ / hết quái thường KHÔNG còn tự thắng — phải hạ Rival King.
+		if not _is_boss_resolved():
+			_set_phase_message("☠ Rival King vẫn đứng vững — hạ hắn để thống nhất vương quốc!")
+			return
 		if _game_manager:
 			_game_manager.force_victory()
 		return
@@ -91,9 +106,15 @@ func enter_shop_phase() -> void:
 	upcoming_shop_boost    = false
 	_shop_shown_this_phase = false
 
-	# Tính lãi gold: 10% capped 15
-	var gold: int    = _gold_getter.call() if _gold_getter.is_valid() else 0
-	var interest: int = min(int(gold * 0.10), 15)
+	# Tính lãi gold: mặc định 10% capped 15 — perk kinh tế nâng rate/cap qua GameManager
+	var gold: int   = _gold_getter.call() if _gold_getter.is_valid() else 0
+	var rate: float = 0.10
+	var cap: int    = 15
+	if _game_manager and _game_manager.has_method("get_interest_rate"):
+		rate = _game_manager.get_interest_rate()
+	if _game_manager and _game_manager.has_method("get_interest_cap"):
+		cap = _game_manager.get_interest_cap()
+	var interest: int = min(int(gold * rate), cap)
 	var interest_msg := " | Lãi: +%d vàng" % interest if interest > 0 else ""
 
 	if shop_manager:
@@ -139,6 +160,10 @@ func _start_wave_phase() -> void:
 	phase_changed.emit(current_phase)
 	season_buffs_apply_requested.emit(wave_number)
 
+	var am = get_node_or_null("/root/AudioManagerSingleton")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx("wave_start", -3.0)
+
 	if wave_spawner and _grid_controller:
 		wave_spawner.setup(_grid_controller.current_path_grid, get_parent())
 		var enemy_count: int = wave_spawner.calculate_enemies_for_wave(wave_number, active_shop_boost)
@@ -158,6 +183,11 @@ func _tick_wave() -> void:
 	var status:   String = "%s | Wave %d — %d/%d | Active %d" % [s_name, wave_number, spawned, to_spawn, alive]
 	if active_shop_boost:
 		status += " (Reinforced)"
+	# Wave boss: nhắc người chơi mục tiêu thật sự là Rival King
+	if wave_spawner.has_method("is_boss_wave") and wave_spawner.is_boss_wave(wave_number):
+		var boss: Variant = wave_spawner.get("current_boss")
+		if boss != null and is_instance_valid(boss):
+			status = "☠ BOSS | " + status
 	_set_phase_message(status)
 
 func _emit_wave_intel() -> void:

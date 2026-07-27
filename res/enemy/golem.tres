@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://golem_stats_001"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_golem"]
+[ext_resource type="Texture2D" uid="uid://bjw5npqqu5hyj" path="res://assets/enemy/dark_knight.png" id="2_golem"]
+
+[resource]
+script = ExtResource("1_golem")
+id = "golem"
+texture = ExtResource("2_golem")
+scale = Vector2(1, 1)
+max_hp = 180
+speed = 25.0
+damage_to_base = 3
+gold_reward = 26
+armor = 6
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

@@ -8,7 +8,10 @@ signal shop_offers_refreshed(items: Array)
 
 @export var shop_items: Array[ShopItemData] = []
 
-const SHOP_SLOT_COUNT: int = 4
+# 5 chu khong 4: quay nay con phai chua o nguyen to (pity), trang bi va di vat.
+# Voi 4 o, ba loai do chiem het cho va co luot KHONG CON QUAN NAO de mua —
+# nguoi choi khong the dat thap ca wave do.
+const SHOP_SLOT_COUNT: int = 5
 
 # Tower stats paths — only needed for upgrade items that reference a specific tower
 const TOWER_PATHS := {
@@ -27,11 +30,29 @@ const BIOME_ICON_PATHS := {
 }
 const DISMISS_ICON_PATH := "res://assets/ui/shop_icons/icon_dismiss.png"
 
-const REROLL_COST: int = 2
+# ── Giá xáo shop ──────────────────────────────────────────────────────────
+# 2 vàng là quá rẻ để làm gì: đo thực tế cho thấy người chơi tồn hơn 1200 vàng ở
+# wave 9 mà không có chỗ tiêu. Xáo shop CHÍNH LÀ nơi tiêu số vàng dư đó — trả
+# tiền để đào đúng món mình cần. Giá tăng dần trong CÙNG một phiên shop rồi reset
+# ở phiên sau, nên xáo một hai lần thì rẻ, xáo lì thì đắt dần.
+const REROLL_COST: int = 10
+const REROLL_COST_STEP: int = 6
+const REROLL_COST_MAX: int = 40
 
-# Boss troops that are locked until wave 4 (Summer season)
+var _rerolls_this_phase: int = 0
+
+func get_reroll_cost() -> int:
+	return mini(REROLL_COST + _rerolls_this_phase * REROLL_COST_STEP, REROLL_COST_MAX)
+
+## PhaseController gọi khi mở phiên shop mới — giá xáo về mức nền.
+func reset_reroll_cost() -> void:
+	_rerolls_this_phase = 0
+
+# Troop wave gates: boss troops locked until wave 4 (Summer season),
+# content-pack-2 towers (longbowman/paladin/alchemist/ice_guardian/ballista) from wave 2.
 const BOSS_TROOP_MIN_WAVE: Dictionary = {
-	"queen": 4, "commander": 4, "warlock": 4, "catapult": 4, "dark_mage": 4
+	"queen": 4, "commander": 4, "warlock": 4, "catapult": 4, "dark_mage": 4,
+	"longbowman": 2, "paladin": 2, "alchemist": 2, "ice_guardian": 2, "ballista": 2,
 }
 
 var active_shop_offers: Array[ShopItemData] = []
@@ -39,9 +60,6 @@ var unit_stock: Dictionary = {}
 var unit_stats_registry: Dictionary = {}
 var limited_units: Dictionary = {}
 var current_wave: int = 1
-
-func get_reroll_cost() -> int:
-	return REROLL_COST
 
 func remove_from_active_offers(item_id: String) -> void:
 	for i in range(active_shop_offers.size() - 1, -1, -1):
@@ -61,10 +79,41 @@ func _ready() -> void:
 func get_items() -> Array[ShopItemData]:
 	return active_shop_offers
 
-func refresh_shop(_is_free: bool = false) -> void:
-	# Gold cost is handled by game_map.attempt_shop_reroll() before this is called.
+func refresh_shop(is_free: bool = false) -> void:
+	# Tiền do game_map.attempt_shop_reroll() trừ TRƯỚC khi gọi vào đây.
+	if not is_free:
+		_rerolls_this_phase += 1
 	_roll_shop_offers()
 	shop_offers_refreshed.emit(active_shop_offers.duplicate())
+
+## Giá thực trả sau giảm giá. Hiện chỉ ô lãnh thổ/nguyên tố được giảm
+## (di vật "Địa Chất Sư", perk "Địa Chủ"); các loại khác trả nguyên giá.
+## HUD gọi cùng hàm này để số hiển thị luôn khớp số bị trừ.
+func effective_cost(item: ShopItemData) -> float:
+	if item == null:
+		return 0.0
+	if item.item_type != ShopItemData.ItemType.TERRITORY \
+			and item.item_type != ShopItemData.ItemType.EQUIPMENT:
+		return item.cost
+	# ShopPanelManager không nằm trong cây scene → không dùng được get_node_or_null
+	# của chính nó; đi vòng qua SceneTree gốc.
+	var loop := Engine.get_main_loop()
+	if not (loop is SceneTree):
+		return item.cost
+	var gm: Node = (loop as SceneTree).root.get_node_or_null("GameManagerSingleton")
+	if gm == null:
+		return item.cost
+	# Gán từng nhánh chứ không dùng ternary: literal mảng trong ternary suy ra
+	# kiểu `Array` (không phải `Array[String]`) và Godot từ chối gán.
+	var fields: Array[String] = ["perk_equip_discount"]
+	if item.item_type == ShopItemData.ItemType.TERRITORY:
+		fields = ["relic_tile_discount", "perk_tile_discount"]
+	var discount := 0.0
+	for field in fields:
+		var value: Variant = gm.get(field)
+		if value is int or value is float:
+			discount += maxf(0.0, float(value))
+	return maxf(0.0, item.cost * (1.0 - clampf(discount, 0.0, 0.85)))
 
 func attempt_purchase(item_id: String, king_manager: KingManager) -> bool:
 	var item = _find_item(item_id)
@@ -74,10 +123,11 @@ func attempt_purchase(item_id: String, king_manager: KingManager) -> bool:
 	if king_manager == null:
 		shop_purchase_failed.emit(item_id, "Chưa chọn vua.")
 		return false
-	if item.cost > 0.0 and not king_manager.can_afford(item.cost):
+	var price: float = effective_cost(item)
+	if price > 0.0 and not king_manager.can_afford(price):
 		shop_purchase_failed.emit(item_id, "Royal Decree không đủ.")
 		return false
-	if not king_manager.spend_royal_decree(item.cost):
+	if not king_manager.spend_royal_decree(price):
 		shop_purchase_failed.emit(item_id, "Không thể trừ Royal Decree.")
 		return false
 	shop_item_purchased.emit(item)
@@ -225,14 +275,21 @@ func _populate_default_items() -> void:
 		shop_items.append(u4)
 
 	# --- TERRITORY ITEMS (Royal Decree) ---
+	# Tên + giá ở đây; MÔ TẢ lấy thẳng từ TerritoryManager.BIOME_STATS để không bao
+	# giờ lệch với chỉ số thật (bảng cũ viết cứng "+6 Sát thương" và đã lệch sau
+	# khi buff ô chuyển sang phần trăm).
 	var biome_defs = [
-		{"id": "territory_fire",    "name": "Hỏa Địa",    "cost": 3.0, "tag": "fire",    "desc": "Vùng đất lửa: quân đứng đây được +6 Sát thương."},
-		{"id": "territory_swamp",   "name": "Đầm Lầy",    "cost": 2.0, "tag": "swamp",   "desc": "Đầm lầy: quân đứng đây được -0.2s Cooldown tấn công."},
-		{"id": "territory_ice",     "name": "Băng Nguyên", "cost": 2.5, "tag": "ice",     "desc": "Băng tuyết: quân đứng đây được +2 Tầm bắn."},
-		{"id": "territory_forest",  "name": "Rừng Rậm",   "cost": 2.5, "tag": "forest",  "desc": "Rừng rậm: quân đứng đây được +3 Sát thương và +1 Tầm."},
-		{"id": "territory_desert",  "name": "Sa Mạc",      "cost": 2.5, "tag": "desert",  "desc": "Sa mạc: quân đứng đây được +4 Sát thương và -0.1s CD."},
-		{"id": "territory_thunder", "name": "Lôi Vực",    "cost": 3.0, "tag": "thunder", "desc": "Vùng sấm sét: quân đứng đây được +3 Sát thương và +1 Tầm."},
+		{"id": "territory_fire",    "name": "Mạch Hoả",  "cost": 3.0, "tag": "fire"},
+		{"id": "territory_swamp",   "name": "Mạch Thuỷ", "cost": 2.0, "tag": "swamp"},
+		{"id": "territory_ice",     "name": "Mạch Băng", "cost": 2.5, "tag": "ice"},
+		{"id": "territory_forest",  "name": "Mạch Độc",  "cost": 2.5, "tag": "forest"},
+		{"id": "territory_desert",  "name": "Mạch Thổ",  "cost": 2.5, "tag": "desert"},
+		{"id": "territory_thunder", "name": "Mạch Lôi",  "cost": 3.0, "tag": "thunder"},
 	]
+	for bd in biome_defs:
+		bd["desc"] = str((TerritoryManager.BIOME_STATS.get(bd["tag"], {}) as Dictionary)
+			.get("desc", ""))
+
 	for bd in biome_defs:
 		var ti = ShopItemData.new()
 		ti.id = bd["id"]
@@ -256,6 +313,107 @@ func _populate_default_items() -> void:
 	dismiss_item.icon = dismiss_icon
 	shop_items.append(dismiss_item)
 
+# ── Trang bị & Di vật trong shop ──────────────────────────────────────────
+# Shop tiêu Royal Decree, còn catalog trang bị/di vật ghi giá bằng VÀNG (dùng
+# cho giá bán lại). Quy đổi bằng hai hằng dưới thay vì viết hai bảng giá — một
+# nguồn số liệu, chỉnh cân bằng ở một chỗ.
+const EQUIP_GOLD_PER_RD: float = 40.0
+const RELIC_GOLD_PER_RD: float = 60.0
+## Wave tối thiểu để di vật xuất hiện — di vật đổi luật chơi, ra sớm quá thì
+## run bị quyết định trước khi người chơi kịp hiểu bàn cờ.
+const RELIC_MIN_WAVE: int = 5
+
+var equipment_system: Node = null
+var relic_system: Node = null
+
+## game_map gắn hai hệ này sau khi tạo. Không gắn → shop chạy y như cũ.
+func setup_item_systems(equipment: Node, relics: Node) -> void:
+	equipment_system = equipment
+	relic_system = relics
+
+## Wave tối thiểu bật pity — trước đó người chơi chưa có build để mà "khớp".
+const PITY_MIN_WAVE: int = 3
+## Ô lãnh thổ pity: từ wave này, quầy luôn có ≥1 ô khớp nguyên tố đang mạnh nhất.
+## Lý do tồn tại (futureplan §6.2): không ai được chết vì shop không ra đồ.
+var _pity_element_provider: Callable = Callable()
+
+## game_map gắn hàm trả về nguyên tố người chơi đang có nhiều tháp nhất.
+func set_pity_element_provider(provider: Callable) -> void:
+	_pity_element_provider = provider
+
+func _dominant_element() -> String:
+	if not _pity_element_provider.is_valid():
+		return ""
+	var value = _pity_element_provider.call()
+	return str(value) if value is String else ""
+
+## Ô lãnh thổ khớp nguyên tố đang mạnh nhất — chèn vào quầy khi pity bật.
+## Trả null nếu chưa đủ wave, chưa có build, hoặc quầy đã có sẵn ô đó.
+func _make_pity_tile_offer() -> ShopItemData:
+	if current_wave < PITY_MIN_WAVE:
+		return null
+	var element := _dominant_element()
+	if element.is_empty():
+		return null
+	var biome: String = TerritoryManager.biome_of_element(element)
+	if biome.is_empty():
+		return null
+	for existing in shop_items:
+		if existing and existing.item_type == ShopItemData.ItemType.TERRITORY \
+				and existing.territory_tag == biome:
+			return existing
+	return null
+
+## Lay mot the TROOP ngau nhien trong danh sach ung vien (da loc theo min_wave).
+## Tra null neu khong con quan nao hop le — luc do quay danh chiu, nhung it nhat
+## khong phai do cac loai hang khac chen cho.
+func _pick_guaranteed_troop(candidates: Array) -> ShopItemData:
+	var troops: Array[ShopItemData] = []
+	for item in candidates:
+		if item != null and item.item_type == ShopItemData.ItemType.TROOP:
+			troops.append(item)
+	if troops.is_empty():
+		return null
+	return troops[randi() % troops.size()]
+
+func _make_equipment_offer() -> ShopItemData:
+	if equipment_system == null or not is_instance_valid(equipment_system):
+		return null
+	var id: String = str(equipment_system.call("roll_random"))
+	if id.is_empty():
+		return null
+	var data: Dictionary = equipment_system.call("item_data", id)
+	if data.is_empty():
+		return null
+	var item := ShopItemData.new()
+	item.id = "equip_%s" % id
+	item.catalog_id = id
+	item.item_type = ShopItemData.ItemType.EQUIPMENT
+	item.display_name = str(data.get("name", id))
+	item.description = str(data.get("desc", ""))
+	item.cost = maxf(1.0, ceil(float(data.get("cost", 80)) / EQUIP_GOLD_PER_RD))
+	return item
+
+func _make_relic_offer() -> ShopItemData:
+	if relic_system == null or not is_instance_valid(relic_system):
+		return null
+	if bool(relic_system.call("is_full")):
+		return null
+	var id: String = str(relic_system.call("roll_random"))
+	if id.is_empty():
+		return null
+	var data: Dictionary = relic_system.call("relic_data", id)
+	if data.is_empty():
+		return null
+	var item := ShopItemData.new()
+	item.id = "relic_%s" % id
+	item.catalog_id = id
+	item.item_type = ShopItemData.ItemType.RELIC
+	item.display_name = "★ %s" % str(data.get("name", id))
+	item.description = str(data.get("desc", ""))
+	item.cost = maxf(2.0, ceil(float(data.get("cost", 200)) / RELIC_GOLD_PER_RD))
+	return item
+
 func _roll_shop_offers() -> void:
 	active_shop_offers.clear()
 	var unit_candidates: Array[ShopItemData] = []
@@ -275,6 +433,31 @@ func _roll_shop_offers() -> void:
 				unit_candidates.append(item)
 	unit_candidates.shuffle()
 	upgrade_candidates.shuffle()
+
+	# Vật phẩm chiếm ô TRƯỚC: bốc sau cùng thì gần như luôn hết chỗ, và trang bị
+	# chính là thứ mở khoá lối chơi — không thấy nó thì build không thành hình.
+	# BAO DAM MOT QUAN moi luot roll. Khong co dong nay thi cac loai hang khac
+	# (o nguyen to / trang bi / di vat / nang cap) co the chiem sach quay va
+	# nguoi choi khong mua duoc thap nao ca wave.
+	var troop_offer := _pick_guaranteed_troop(unit_candidates)
+	if troop_offer != null:
+		active_shop_offers.append(troop_offer)
+		unit_candidates.erase(troop_offer)
+
+	# Pity ĐẦU TIÊN: đây là ô được bảo đảm, mọi thứ khác chỉ lấp chỗ còn lại.
+	var pity_offer := _make_pity_tile_offer()
+	if pity_offer != null:
+		active_shop_offers.append(pity_offer)
+		unit_candidates.erase(pity_offer)   # không để nó ra hai lần trong cùng quầy
+
+	var equip_offer := _make_equipment_offer()
+	if equip_offer != null:
+		active_shop_offers.append(equip_offer)
+	if current_wave >= RELIC_MIN_WAVE:
+		var relic_offer := _make_relic_offer()
+		if relic_offer != null:
+			active_shop_offers.append(relic_offer)
+
 	var pick_upgrade = randi() % 2 == 0
 	while active_shop_offers.size() < SHOP_SLOT_COUNT and (unit_candidates.size() + upgrade_candidates.size()) > 0:
 		if pick_upgrade and upgrade_candidates.size() > 0:

@@ -1,0 +1,24 @@
+[
+	{
+		"id": "luoi_giao_tien_tuyen",
+		"name": "Lưỡi Giáo Tiền Tuyến",
+		"rarity": "common",
+		"desc": "Thợ rèn mài lại toàn bộ khí giới: +8% sát thương cho toàn bộ tháp.",
+		"tower": {"damage_bonus": 0.08}
+	},
+	{
+		"id": "thue_chu_hau",
+		"name": "Thuế Chư Hầu",
+		"rarity": "rare",
+		"desc": "Các lãnh chúa chư hầu cống nạp: +2 vàng mỗi khi tiêu diệt một địch.",
+		"economy": {"gold_per_kill": 2}
+	},
+	{
+		"id": "quan_su_hoang_trieu",
+		"name": "Quân Sư Hoàng Triều",
+		"rarity": "epic",
+		"desc": "Quân sư dâng kế sách: +12% sát thương toàn bộ tháp và +3 Sắc Lệnh Hoàng Gia mỗi khi wave mới bắt đầu.",
+		"tower": {"damage_bonus": 0.12},
+		"rd": {"per_wave_start": 3.0}
+	}
+]

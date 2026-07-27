@@ -64,6 +64,10 @@ func grant_wave_clear_decree() -> void:
 	var grant := 25.0
 	if _king_stats_ref:
 		grant = _king_stats_ref.base_royal_decree
+	# Perk "Quyền Uy": nhân hệ số RD nhận được khi thắng wave (RD không regen tự động)
+	var gm := get_node_or_null("/root/GameManagerSingleton") as GameManager
+	if gm:
+		grant *= gm.perk_decree_grant_mult
 	add_royal_decree(grant)
 
 func add_royal_decree(amount: float) -> void:
@@ -103,6 +107,22 @@ func register_territories(positions: Array[Vector2i], tile_type: String) -> void
 func get_territory_count() -> int:
 	return territory_map.size()
 
+## Bản đồ mở rộng về WEST/NORTH → GridController đã dịch toàn bộ toạ độ ô đi `delta`.
+## territory_map keyed theo Vector2i nên phải dịch theo, nếu không lãnh thổ sẽ trỏ sai ô.
+## Clear + nạp lại IN-PLACE để mọi reference bên ngoài vẫn hợp lệ.
+func rebase_territories(delta: Vector2i) -> void:
+	if delta == Vector2i.ZERO or territory_map.is_empty():
+		return
+	var shifted: Dictionary = {}
+	for key in territory_map.keys():
+		if key is Vector2i:
+			shifted[(key as Vector2i) + delta] = territory_map[key]
+		else:
+			shifted[key] = territory_map[key]
+	territory_map.clear()
+	for key in shifted.keys():
+		territory_map[key] = shifted[key]
+
 func format_favor_summary() -> String:
 	if favor_tracker.is_empty():
 		return "None"
@@ -111,13 +131,30 @@ func format_favor_summary() -> String:
 		tokens.append("%s ×%.1f" % [tag, favor_tracker[tag]])
 	return ", ".join(tokens)
 
+## Tóm tắt lãnh thổ cho HUD: gộp theo loại biome kèm số lượng.
+## Ô đường ("path") KHÔNG phải lãnh thổ — trước đây bị in ra thành
+## "path, path, path, ..." dài cả dòng, rất rối.
 func get_territory_summary() -> String:
 	if territory_map.is_empty():
 		return "None"
-	var tokens: Array[String] = []
+	var counts: Dictionary = {}
 	for entry in territory_map.values():
-		if entry.has("tile_type"):
-			tokens.append(entry["tile_type"])
+		if not (entry is Dictionary) or not entry.has("tile_type"):
+			continue
+		var tile_type: String = str(entry["tile_type"])
+		if tile_type == "" or tile_type == "path":
+			continue
+		counts[tile_type] = int(counts.get(tile_type, 0)) + 1
+	if counts.is_empty():
+		return "None"
+
+	var tokens: Array[String] = []
+	for key in counts.keys():
+		var label: String = str(key)
+		var spec: Dictionary = TerritoryManager.BIOME_STATS.get(key, {})
+		if spec.has("name"):
+			label = str(spec["name"])
+		tokens.append("%s ×%d" % [label, int(counts[key])])
 	return ", ".join(tokens)
 
 func adjust_favor(tag: String, delta: float = 1.0) -> void:

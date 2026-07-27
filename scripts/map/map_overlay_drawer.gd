@@ -51,7 +51,9 @@ func _hovered_cell() -> Vector2i:
 	var camera := get_viewport().get_camera_3d()
 	if camera == null:
 		return Vector2i(-9999, -9999)
-	return GridUtil.mouse_to_cell(camera, get_viewport().get_mouse_position())
+	# Cùng cách chọn như game_map: ô được tô sáng phải TRÙNG ô sẽ nhận click,
+	# nếu không con trỏ ✕ (dismiss) sẽ sáng ở một ô rồi click lại ăn ô khác.
+	return PickUtil.mouse_to_cell(camera, get_viewport().get_mouse_position())
 
 func _compute_state_key() -> String:
 	var gc := grid_controller
@@ -113,10 +115,20 @@ func _build_territory_placement(gc: GridController) -> void:
 		var bc: Color = bdata["color"]
 		hi_col = Color(bc.r, bc.g, bc.b, 0.4)
 
-	for vpos in territory_manager.get_available_tiles(gc.grid_data):
+	# get_placeable_tiles gồm CẢ ô nâng cấp được (cùng loại, chưa đủ cấp) — nếu chỉ
+	# dùng get_available_tiles thì ô nâng cấp không được tô, player không biết đặt lên được.
+	var cells: Array = []
+	if territory_manager.has_method("get_placeable_tiles"):
+		cells = territory_manager.get_placeable_tiles(gc.grid_data, biome_tag)
+	else:
+		cells = territory_manager.get_available_tiles(gc.grid_data)
+	for vpos in cells:
 		var center: Vector3 = GridUtil.cell_to_world(vpos)
-		_add_quad(center, hi_col)
-		_add_label(center, "+", Color(1, 1, 1, 0.95))
+		var is_upgrade: bool = territory_manager.has_method("is_upgrade_target") \
+			and territory_manager.is_upgrade_target(vpos, biome_tag)
+		# Ô nâng cấp tô VÀNG + nhãn ▲ để phân biệt với ô đặt mới
+		_add_quad(center, Color(1.0, 0.85, 0.25, 0.45) if is_upgrade else hi_col)
+		_add_label(center, "▲" if is_upgrade else "+", Color(1, 1, 1, 0.95))
 
 func _build_dismiss_overlay(gc: GridController, tp: TowerPlacer) -> void:
 	if not tp._dismiss_mode:

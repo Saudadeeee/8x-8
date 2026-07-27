@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://wraith_stats_001"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_wraith"]
+[ext_resource type="Texture2D" path="res://assets/enemy/skeleton.png" id="2_wraith"]
+
+[resource]
+script = ExtResource("1_wraith")
+id = "wraith"
+texture = ExtResource("2_wraith")
+scale = Vector2(1, 1)
+max_hp = 45
+speed = 90.0
+damage_to_base = 1
+gold_reward = 10
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

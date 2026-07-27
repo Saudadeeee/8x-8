@@ -6,6 +6,8 @@ enum ItemType {
 	TERRITORY,
 	DISMISS,
 	UPGRADE,
+	EQUIPMENT,   # trang bị gắn lên tháp (EquipmentSystem)
+	RELIC,       # di vật cả run (RelicSystem)
 }
 
 @export var id: String = ""
@@ -24,3 +26,5 @@ enum ItemType {
 @export var upgrade_description: String = ""
 @export var dismiss_reward: int = 0
 @export var min_wave: int = 1     # Minimum wave before this item appears in shop
+## Id trong catalog của EquipmentSystem / RelicSystem (chỉ dùng cho 2 loại đó).
+@export var catalog_id: String = ""

@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/boss.gd" id="1_boss"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_boss"]
+radius = 0.55
+
+[node name="Boss" type="Area3D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_boss")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_boss")

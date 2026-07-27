@@ -26,38 +26,40 @@ func _ready() -> void:
 
 func _build_ui() -> void:
 	# Semi-transparent background
-	_bg = ColorRect.new()
-	_bg.color = Color(0, 0, 0, 0.85)
-	_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	_bg = UIStyle.dim_overlay(0.85)
 	add_child(_bg)
 
-	# Center panel
+	# Center panel — giấy da có khối
 	_panel = PanelContainer.new()
-	_panel.custom_minimum_size = Vector2(600, 500)
+	_panel.custom_minimum_size = Vector2(620, 520)
 	_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	_panel.offset_left = -300
-	_panel.offset_top = -250
-	_panel.offset_right = 300
-	_panel.offset_bottom = 250
+	_panel.offset_left = -310
+	_panel.offset_top = -260
+	_panel.offset_right = 310
+	_panel.offset_bottom = 260
+	UIStyle.apply_panel(_panel, "parchment")
 	add_child(_panel)
 
 	var panel_vbox = VBoxContainer.new()
-	panel_vbox.add_theme_constant_override("separation", 12)
+	panel_vbox.add_theme_constant_override("separation", 10)
 	_panel.add_child(panel_vbox)
 
-	# Icon placeholder
-	var icon_hbox = HBoxContainer.new()
-	icon_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	panel_vbox.add_child(icon_hbox)
+	# Icon trong khung rarity (đổi màu khung theo rarity ở show_encounter)
+	var icon_frame = PanelContainer.new()
+	icon_frame.name = "IconFrame"
+	icon_frame.add_theme_stylebox_override("panel", UIStyle.rarity_frame("common"))
+	icon_frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	UIStyle.pixel_filter(icon_frame)
+	panel_vbox.add_child(icon_frame)
 
 	_icon_rect = ColorRect.new()
 	_icon_rect.color = Color(0, 0, 0, 0)
-	_icon_rect.custom_minimum_size = Vector2(80, 80)
-	icon_hbox.add_child(_icon_rect)
+	_icon_rect.custom_minimum_size = Vector2(88, 88)
+	icon_frame.add_child(_icon_rect)
 
 	var icon_tex = TextureRect.new()
 	icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_tex.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	icon_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	icon_tex.name = "IconTexture"
 	_icon_rect.add_child(icon_tex)
@@ -66,8 +68,7 @@ func _build_ui() -> void:
 	_title_label = Label.new()
 	_title_label.text = "Encounter"
 	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title_label.add_theme_font_size_override("font_size", 32)
-	_title_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))
+	UIStyle.title(_title_label, 32, UIStyle.GOLD)
 	panel_vbox.add_child(_title_label)
 
 	# Flavor text
@@ -75,8 +76,7 @@ func _build_ui() -> void:
 	_flavor_label.text = ""
 	_flavor_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_flavor_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_flavor_label.add_theme_font_size_override("font_size", 16)
-	_flavor_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85, 1))
+	UIStyle.body(_flavor_label, 16, Color(0.88, 0.86, 0.80, 1))
 	_flavor_label.custom_minimum_size = Vector2(500, 0)
 	panel_vbox.add_child(_flavor_label)
 
@@ -84,12 +84,10 @@ func _build_ui() -> void:
 	_rarity_label = Label.new()
 	_rarity_label.text = "COMMON"
 	_rarity_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_rarity_label.add_theme_font_size_override("font_size", 14)
+	UIStyle.title(_rarity_label, 14, UIStyle.RARITY_COMMON)
 	panel_vbox.add_child(_rarity_label)
 
-	# Separator
-	var sep = HSeparator.new()
-	panel_vbox.add_child(sep)
+	panel_vbox.add_child(UIStyle.separator(UIStyle.BORDER_HI))
 
 	# Choices container
 	_choices_container = VBoxContainer.new()
@@ -98,9 +96,10 @@ func _build_ui() -> void:
 
 	# Skip button
 	_skip_button = Button.new()
-	_skip_button.text = "Skip / Close"
-	_skip_button.custom_minimum_size = Vector2(160, 40)
-	_skip_button.add_theme_font_size_override("font_size", 16)
+	_skip_button.text = "✖  Skip / Close"
+	_skip_button.custom_minimum_size = Vector2(180, 44)
+	_skip_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	UIStyle.apply_button(_skip_button, 16)
 	_skip_button.pressed.connect(_on_skip_pressed)
 	panel_vbox.add_child(_skip_button)
 
@@ -111,20 +110,25 @@ func show_encounter(encounter) -> void:
 	_title_label.text = encounter.title
 	_flavor_label.text = encounter.flavor_text
 
-	# Rarity color
+	# Rarity: chữ + khung icon đổi màu theo độ hiếm
+	var rarity_key := "common"
 	match encounter.rarity:
 		0: # COMMON
-			_rarity_label.text = "COMMON"
-			_rarity_label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+			_rarity_label.text = "◆ COMMON"
+			rarity_key = "common"
 		1: # UNCOMMON
-			_rarity_label.text = "UNCOMMON"
-			_rarity_label.add_theme_color_override("font_color", Color(0.2, 0.9, 0.2, 1))
+			_rarity_label.text = "◆ UNCOMMON"
+			rarity_key = "rare"
 		2: # RARE
-			_rarity_label.text = "RARE"
-			_rarity_label.add_theme_color_override("font_color", Color(0.3, 0.5, 1.0, 1))
+			_rarity_label.text = "◆ RARE"
+			rarity_key = "epic"
 		3: # LEGENDARY
-			_rarity_label.text = "LEGENDARY"
-			_rarity_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1))
+			_rarity_label.text = "◆ LEGENDARY"
+			rarity_key = "legendary"
+	_rarity_label.add_theme_color_override("font_color", UIStyle.rarity_color(rarity_key))
+	var icon_frame := _panel.find_child("IconFrame", true, false) as PanelContainer
+	if icon_frame:
+		icon_frame.add_theme_stylebox_override("panel", UIStyle.rarity_frame(rarity_key))
 
 	# Icon texture based on type
 	var icon_paths = {
@@ -143,6 +147,7 @@ func show_encounter(encounter) -> void:
 	for child in _choices_container.get_children():
 		child.queue_free()
 
+	var choice_index := 0
 	for choice_res in encounter.choices:
 		var choice = choice_res
 		if not choice:
@@ -151,12 +156,17 @@ func show_encounter(encounter) -> void:
 		btn.text = choice.choice_text
 		if choice.outcome_preview != "":
 			btn.tooltip_text = choice.outcome_preview
-		btn.custom_minimum_size = Vector2(500, 50)
-		btn.add_theme_font_size_override("font_size", 16)
+		btn.custom_minimum_size = Vector2(500, 52)
+		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		UIStyle.apply_button(btn, 16)
 		btn.pressed.connect(func(): _on_choice_pressed(choice))
 		_choices_container.add_child(btn)
+		UIStyle.pop_in(btn, 0.14 + choice_index * 0.06)
+		choice_index += 1
 
 	visible = true
+	UIStyle.pop_in(_panel)
+	UIStyle.pulse(_title_label, 1.08)
 
 func _on_choice_pressed(choice) -> void:
 	if not visible:

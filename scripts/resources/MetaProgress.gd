@@ -18,6 +18,13 @@ class_name MetaProgress
 # Mỗi upgrade là một Dictionary: { "id": "...", "level": 1, "max_level": 5 }
 @export var meta_upgrades: Array[Dictionary] = []
 
+# --- ASCENSION (bậc độ khó tăng dần) ---
+## Bậc cao nhất đã MỞ KHOÁ (chọn được ở màn king_select). Thắng bậc N mở bậc N+1.
+## Save cũ thiếu field này sẽ nhận default 0 → không phá tương thích.
+@export var ascension_unlocked: int = 0
+## Danh sách các bậc đã từng thắng (để hiện huy hiệu / thống kê).
+@export var ascension_cleared: Array[int] = []
+
 # --- THỐNG KÊ ---
 @export var best_wave_reached: int = 0
 @export var total_enemies_killed: int = 0

@@ -12,7 +12,7 @@ config_version=5
 
 config/name="8x8"
 run/main_scene="res://scenes/ui/main_menu.tscn"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GameManagerSingleton="res://scripts/managers/GameManager.gd"
 SceneManagerSingleton="res://scripts/managers/SceneManager.gd"
 SettingsManagerSingleton="res://scripts/managers/SettingsManager.gd"
+AudioManagerSingleton="res://scripts/managers/AudioManager.gd"
 
 [display]
 
@@ -32,6 +33,7 @@ window/size/mode=3
 3d_physics/layer_1="Tower"
 3d_physics/layer_2="Enemy"
 3d_physics/layer_3="Terrain"
+3d_physics/layer_4="Pick"
 
 [physics]
 

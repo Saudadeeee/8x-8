@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BossStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/BossStats.gd" id="1_boss_frost"]
+[ext_resource type="Texture2D" uid="uid://bjw5npqqu5hyj" path="res://assets/enemy/dark_knight.png" id="2_boss_frost"]
+
+[resource]
+script = ExtResource("1_boss_frost")
+id = "boss_frost"
+texture = ExtResource("2_boss_frost")
+scale = Vector2(1, 1)
+max_hp = 1600
+speed = 20.0
+damage_to_base = 5
+gold_reward = 200
+armor = 10
+regen_per_sec = 0.0
+heal_aura_amount = 0
+heal_aura_radius = 0.0
+display_name = "Vua Băng Giá"
+title = "Chúa Tể Mùa Đông Bất Tận"
+accent_color = Color(0.55, 0.85, 1, 1)
+phase_armor = Array[int]([10, 6, 2])
+phase_speed_bonus = 0.12
+phase_cooldown_scale = Array[float]([1.0, 0.85, 0.7])
+ability_id = "eternal_frost"
+ability_name = "Giá Băng Vĩnh Cửu"
+ability_cooldown = 7.0
+ability_radius = 3.0
+summon_count = 0
+disable_duration = 0.0
+slow_cooldown_add = 0.25
+slow_duration = 4.0
+self_heal_pct = 0.03

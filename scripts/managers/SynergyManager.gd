@@ -61,6 +61,27 @@ func _ensure_default_definitions() -> void:
 		["dark_mage","Hell's Covenant",[2,3],   [
 			{"damage_bonus":0.15,"speed_bonus":0.10,"range_bonus":0.0},
 			{"damage_bonus":0.30,"speed_bonus":0.20,"range_bonus":1.0}]],
+		# --- Towers content pack 2 ---
+		["longbowman","Hàng Cung Dài",   [2,4,6], [
+			{"damage_bonus":0.12,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.22,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.35,"speed_bonus":0.00,"range_bonus":0.0}]],
+		["paladin",  "Thập Tự Chinh",    [2,4,6], [
+			{"damage_bonus":0.10,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.18,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.30,"speed_bonus":0.00,"range_bonus":0.0}]],
+		["alchemist","Hội Giả Kim",      [2,4,6], [
+			{"damage_bonus":0.10,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.20,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.30,"speed_bonus":0.00,"range_bonus":0.0}]],
+		["ice_guardian","Vệ Binh Băng",  [2,4,6], [
+			{"damage_bonus":0.08,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.16,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.28,"speed_bonus":0.00,"range_bonus":0.0}]],
+		["ballista", "Đại Pháo Đài",     [2,4,6], [
+			{"damage_bonus":0.15,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.25,"speed_bonus":0.00,"range_bonus":0.0},
+			{"damage_bonus":0.40,"speed_bonus":0.00,"range_bonus":0.0}]],
 	]
 	for d in defaults:
 		var def = SynergyDefinition.new()

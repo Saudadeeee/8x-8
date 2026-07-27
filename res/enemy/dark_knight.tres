@@ -11,5 +11,5 @@ scale = Vector2(1, 1)
 max_hp = 320
 speed = 22.0
 damage_to_base = 4
-gold_reward = 30
+gold_reward = 42
 metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

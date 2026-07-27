@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/towers/warlock.png" id="2_icon"]
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_warlock.png" id="3_proj"]
+
+[resource]
+script = ExtResource("1_script")
+id = "alchemist"
+name = "Alchemist"
+description = "Ném độc dược: sát thương trực tiếp thấp nhưng gây độc 12 DPS trong 4s. Magic faction."
+texture = ExtResource("2_icon")
+cost = 48
+decree_cost = 2.0
+base_damage = 8
+attack_speed = 1.0
+attack_range = 3
+attack_style = 3
+type = 12
+element = 2
+faction = "magic"
+slow_amount = 0.0
+slow_duration = 0.0
+splash_radius = 0.0
+burn_dps = 14
+burn_duration = 4.0
+projectile_count = 1
+projectile_texture = ExtResource("3_proj")
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BossStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/BossStats.gd" id="1_boss_hell"]
+[ext_resource type="Texture2D" uid="uid://b8e3k07wrmhn0" path="res://assets/enemy/demon_imp.png" id="2_boss_hell"]
+
+[resource]
+script = ExtResource("1_boss_hell")
+id = "boss_hell"
+texture = ExtResource("2_boss_hell")
+scale = Vector2(1, 1)
+max_hp = 1200
+speed = 24.0
+damage_to_base = 5
+gold_reward = 200
+armor = 5
+regen_per_sec = 0.0
+heal_aura_amount = 0
+heal_aura_radius = 0.0
+display_name = "Vua Địa Ngục"
+title = "Kẻ Thiêu Rụi Vương Quốc"
+accent_color = Color(1, 0.4, 0.12, 1)
+phase_armor = Array[int]([5, 3, 1])
+phase_speed_bonus = 0.12
+phase_cooldown_scale = Array[float]([1.0, 0.85, 0.7])
+ability_id = "lava_breath"
+ability_name = "Hơi Thở Dung Nham"
+ability_cooldown = 6.0
+ability_radius = 2.5
+summon_count = 0
+disable_duration = 3.0
+slow_cooldown_add = 0.0
+slow_duration = 0.0
+self_heal_pct = 0.0

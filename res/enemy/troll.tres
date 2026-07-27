@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://troll_stats_001"]
+
+[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_troll"]
+[ext_resource type="Texture2D" uid="uid://rr2vgdu1ae3f" path="res://assets/enemy/Orc.png" id="2_troll"]
+
+[resource]
+script = ExtResource("1_troll")
+id = "troll"
+texture = ExtResource("2_troll")
+scale = Vector2(1, 1)
+max_hp = 250
+speed = 30.0
+damage_to_base = 3
+gold_reward = 34
+regen_per_sec = 8.0
+metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

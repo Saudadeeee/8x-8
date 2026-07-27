@@ -35,38 +35,41 @@ func _ready() -> void:
 func _build_ui() -> void:
 	# Background
 	var bg = ColorRect.new()
-	bg.color = Color(0.08, 0.05, 0.12, 1)
+	bg.color = Color(0.055, 0.038, 0.075, 1)
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 
 	# Back button
 	var back_btn = Button.new()
-	back_btn.text = "< Back"
-	back_btn.custom_minimum_size = Vector2(120, 44)
-	back_btn.add_theme_font_size_override("font_size", 18)
+	back_btn.text = "←  Back"
+	back_btn.custom_minimum_size = Vector2(130, 46)
 	back_btn.position = Vector2(20, 20)
+	UIStyle.apply_button(back_btn, 17)
 	back_btn.pressed.connect(func(): _go_to("res://scenes/ui/main_menu.tscn"))
 	add_child(back_btn)
+	UIStyle.slide_in(back_btn, Vector2(-160, 0), 0.3)
 
 	# Title
 	var title = Label.new()
-	title.text = "Meta Progression"
+	title.text = "★  META PROGRESSION"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 48)
-	title.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))
+	UIStyle.title(title, 48, UIStyle.GOLD)
 	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	title.offset_top = 20
 	title.offset_bottom = 90
 	add_child(title)
+	UIStyle.pop_in(title)
 
 	# Stats panel at top
 	var stats_panel = PanelContainer.new()
 	stats_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	stats_panel.offset_top = 100
-	stats_panel.offset_bottom = 170
+	stats_panel.offset_bottom = 176
 	stats_panel.offset_left = 40
 	stats_panel.offset_right = -40
+	UIStyle.apply_panel(stats_panel, "stone")
 	add_child(stats_panel)
+	UIStyle.slide_in(stats_panel, Vector2(0, -110), 0.34)
 
 	var stats_hbox = HBoxContainer.new()
 	stats_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -77,15 +80,15 @@ func _build_ui() -> void:
 		"Total Runs: %d" % _meta.total_runs,
 		"Total Wins: %d" % _meta.total_wins,
 		"Best Wave: %d" % _meta.best_wave_reached,
-		"Meta Points: %d *" % _meta.meta_points,
+		"Meta Points: %d ★" % _meta.meta_points,
 	]
 	for s in stat_entries:
 		var lbl = Label.new()
 		lbl.text = s
-		lbl.add_theme_font_size_override("font_size", 18)
-		lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 1))
+		UIStyle.body(lbl, 18, Color(0.9, 0.9, 0.9, 1))
 		if "Meta Points" in s:
-			lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))
+			UIStyle.glyph(lbl, 20, Color(1.0, 0.84, 0.0, 1.0))
+			lbl.set_meta("pts", _meta.meta_points)   # mốc cho count_to lần sau
 			_meta_points_label = lbl
 		stats_hbox.add_child(lbl)
 
@@ -109,13 +112,13 @@ func _build_ui() -> void:
 	left_scroll.add_child(left_vbox)
 
 	var kings_title = Label.new()
-	kings_title.text = "Unlocked Kings"
-	kings_title.add_theme_font_size_override("font_size", 24)
-	kings_title.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))
+	kings_title.text = "♛  UNLOCKED KINGS"
+	UIStyle.title(kings_title, 24, UIStyle.GOLD)
 	left_vbox.add_child(kings_title)
 
-	left_vbox.add_child(HSeparator.new())
+	left_vbox.add_child(UIStyle.separator(UIStyle.BORDER_DIM))
 
+	var king_index := 0
 	for king_path in KING_PATHS:
 		if not ResourceLoader.exists(king_path):
 			continue
@@ -125,6 +128,8 @@ func _build_ui() -> void:
 		var is_unlocked = king.is_starter_king or king.id in _meta.unlocked_king_ids
 		var card = _create_king_card(king, is_unlocked)
 		left_vbox.add_child(card)
+		UIStyle.pop_in(card, 0.10 + king_index * 0.05)
+		king_index += 1
 
 	# RIGHT: Meta Upgrades
 	var right_scroll = ScrollContainer.new()
@@ -136,51 +141,63 @@ func _build_ui() -> void:
 	right_scroll.add_child(right_vbox)
 
 	var upgrades_title = Label.new()
-	upgrades_title.text = "Meta Upgrades"
-	upgrades_title.add_theme_font_size_override("font_size", 24)
-	upgrades_title.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))
+	upgrades_title.text = "⚒  META UPGRADES"
+	UIStyle.title(upgrades_title, 24, UIStyle.GOLD)
 	right_vbox.add_child(upgrades_title)
 
-	right_vbox.add_child(HSeparator.new())
+	right_vbox.add_child(UIStyle.separator(UIStyle.BORDER_DIM))
 
+	var up_index := 0
 	for upgrade_def in META_UPGRADES:
 		var row = _create_upgrade_row(upgrade_def, right_vbox)
 		right_vbox.add_child(row)
+		UIStyle.pop_in(row, 0.14 + up_index * 0.05)
+		up_index += 1
 
+## Card King: khung vàng (legendary) khi đã mở, khung xám (common) khi chưa.
 func _create_king_card(king: KingStats, is_unlocked: bool) -> Control:
-	var panel = PanelContainer.new()
+	var rarity := "legendary" if is_unlocked else "common"
+	var boxes := UIStyle.framed_card(rarity, "wood", 4, 6)
+	var panel: PanelContainer = boxes[0]
+	var inner: PanelContainer = boxes[1]
+	panel.custom_minimum_size = Vector2(0, 60)
 	var hbox = HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 12)
-	panel.add_child(hbox)
+	inner.add_child(hbox)
 
 	var id_label = Label.new()
 	id_label.text = "[%s]" % king.id
-	id_label.add_theme_font_size_override("font_size", 14)
-	id_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6, 1))
+	UIStyle.body(id_label, 14, Color(0.6, 0.6, 0.6, 1))
 	id_label.custom_minimum_size = Vector2(120, 0)
+	id_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	hbox.add_child(id_label)
 
 	var name_label = Label.new()
 	name_label.text = king.king_name
-	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	if is_unlocked:
-		name_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))
+		UIStyle.title(name_label, 18, Color(1.0, 0.84, 0.0, 1.0))
 	else:
-		name_label.text += " (Locked)"
-		name_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 1))
+		name_label.text += " 🔒"
+		UIStyle.body(name_label, 18, Color(0.5, 0.5, 0.5, 1))
 	hbox.add_child(name_label)
 
 	if not is_unlocked:
+		var spacer = Control.new()
+		spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		hbox.add_child(spacer)
+
 		var cost_label = Label.new()
-		cost_label.text = "Cost: %d pts" % king.unlock_cost
-		cost_label.add_theme_font_size_override("font_size", 14)
-		cost_label.add_theme_color_override("font_color", Color(0.8, 0.6, 0.2, 1))
+		cost_label.text = "%d ★" % king.unlock_cost
+		UIStyle.glyph(cost_label, 15, Color(0.95, 0.75, 0.25, 1))
+		cost_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		hbox.add_child(cost_label)
 
 		var unlock_btn = Button.new()
 		unlock_btn.text = "Unlock"
-		unlock_btn.custom_minimum_size = Vector2(90, 36)
-		unlock_btn.add_theme_font_size_override("font_size", 14)
+		unlock_btn.custom_minimum_size = Vector2(100, 38)
+		unlock_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		UIStyle.apply_button_accent(unlock_btn, UIStyle.GREEN, 14)
 		unlock_btn.disabled = _meta.meta_points < king.unlock_cost
 		unlock_btn.pressed.connect(func(): _on_unlock_king_pressed(king, unlock_btn, name_label))
 		hbox.add_child(unlock_btn)
@@ -195,14 +212,24 @@ func _on_unlock_king_pressed(king: KingStats, btn: Button, name_lbl: Label) -> v
 	_meta.save()
 	btn.queue_free()
 	name_lbl.text = king.king_name
-	name_lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))
+	UIStyle.title(name_lbl, 18, Color(1.0, 0.84, 0.0, 1.0))
+	# Card đổi sang khung vàng ngay khi mở khoá
+	var card := name_lbl.get_parent()
+	while card != null and not (card is PanelContainer and card.get_parent() is VBoxContainer):
+		card = card.get_parent()
+	if card is PanelContainer:
+		(card as PanelContainer).add_theme_stylebox_override("panel", UIStyle.rarity_frame("legendary"))
+		UIStyle.flash_node(card as Control, 2)
 	_refresh_currency_display()
 
 func _create_upgrade_row(upgrade_def: Dictionary, _parent_vbox: VBoxContainer) -> Control:
-	var panel = PanelContainer.new()
+	var boxes := UIStyle.framed_card("rare", "wood", 4, 6)
+	var panel: PanelContainer = boxes[0]
+	var inner: PanelContainer = boxes[1]
+	panel.custom_minimum_size = Vector2(0, 60)
 	var hbox = HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 12)
-	panel.add_child(hbox)
+	inner.add_child(hbox)
 
 	var current_level = _get_upgrade_level(upgrade_def["id"])
 	var max_level = upgrade_def["max_level"]
@@ -210,28 +237,29 @@ func _create_upgrade_row(upgrade_def: Dictionary, _parent_vbox: VBoxContainer) -
 	var name_lbl = Label.new()
 	name_lbl.text = upgrade_def["name"]
 	name_lbl.custom_minimum_size = Vector2(220, 0)
-	name_lbl.add_theme_font_size_override("font_size", 18)
-	name_lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 1))
+	name_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	UIStyle.body(name_lbl, 17, Color(0.9, 0.9, 0.9, 1))
 	hbox.add_child(name_lbl)
 
 	var level_lbl = Label.new()
 	level_lbl.text = "Lv %d/%d" % [current_level, max_level]
-	level_lbl.custom_minimum_size = Vector2(80, 0)
-	level_lbl.add_theme_font_size_override("font_size", 16)
-	level_lbl.add_theme_color_override("font_color", Color(0.7, 0.9, 0.7, 1))
+	level_lbl.custom_minimum_size = Vector2(84, 0)
+	level_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	UIStyle.glyph(level_lbl, 16, Color(0.7, 0.95, 0.7, 1))
 	hbox.add_child(level_lbl)
 
 	var cost_lbl = Label.new()
-	cost_lbl.text = "%d pts" % upgrade_def["cost"]
-	cost_lbl.custom_minimum_size = Vector2(70, 0)
-	cost_lbl.add_theme_font_size_override("font_size", 16)
-	cost_lbl.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0, 1.0))
+	cost_lbl.text = "%d ★" % upgrade_def["cost"]
+	cost_lbl.custom_minimum_size = Vector2(74, 0)
+	cost_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	UIStyle.glyph(cost_lbl, 16, Color(1.0, 0.84, 0.0, 1.0))
 	hbox.add_child(cost_lbl)
 
 	var upgrade_btn = Button.new()
 	upgrade_btn.text = "Upgrade"
-	upgrade_btn.custom_minimum_size = Vector2(100, 36)
-	upgrade_btn.add_theme_font_size_override("font_size", 16)
+	upgrade_btn.custom_minimum_size = Vector2(108, 38)
+	upgrade_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	UIStyle.apply_button_accent(upgrade_btn, UIStyle.BLUE, 15)
 	upgrade_btn.disabled = (current_level >= max_level) or (_meta.meta_points < upgrade_def["cost"])
 	upgrade_btn.set_meta("upgrade_id", upgrade_def["id"])
 	upgrade_btn.set_meta("cost", upgrade_def["cost"])
@@ -272,12 +300,21 @@ func _on_upgrade_pressed(upgrade_def: Dictionary, level_lbl: Label, _cost_lbl: L
 	_meta.save()
 
 	level_lbl.text = "Lv %d/%d" % [new_level, max_level]
+	UIStyle.pulse(level_lbl, 1.28)
+	UIStyle.flash_node(upgrade_btn)
 	upgrade_btn.disabled = (new_level >= max_level) or (_meta.meta_points < cost)
 	_refresh_currency_display()
 
 func _refresh_currency_display() -> void:
 	if is_instance_valid(_meta_points_label):
-		_meta_points_label.text = "Meta Points: %d *" % _meta.meta_points
+		var old_pts := 0
+		if _meta_points_label.has_meta("pts"):
+			old_pts = int(_meta_points_label.get_meta("pts"))
+		_meta_points_label.set_meta("pts", _meta.meta_points)
+		if old_pts > 0:
+			UIStyle.count_to(_meta_points_label, old_pts, _meta.meta_points, "Meta Points: %d ★")
+		else:
+			_meta_points_label.text = "Meta Points: %d ★" % _meta.meta_points
 	for btn in _upgrade_buttons:
 		if not is_instance_valid(btn):
 			continue

@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" uid="uid://b7lp8i4x25fsm" path="res://scripts/towers/TowerStats.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/towers/Wisp.png" id="2_icon"]
+[ext_resource type="Texture2D" path="res://assets/projectile/proj_bishop.png" id="3_proj"]
+
+[resource]
+script = ExtResource("1_script")
+id = "ice_guardian"
+name = "Ice Guardian"
+description = "Vệ binh băng giá: làm chậm 55% trong 2.5s, lan sang mục tiêu gần. Magic faction."
+texture = ExtResource("2_icon")
+cost = 45
+decree_cost = 2.0
+base_damage = 10
+attack_speed = 1.0
+attack_range = 3
+attack_style = 0
+type = 13
+element = 1
+faction = "magic"
+slow_amount = 0.55
+slow_duration = 2.5
+splash_radius = 24.0
+burn_dps = 0
+burn_duration = 0.0
+projectile_count = 1
+projectile_texture = ExtResource("3_proj")
+metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

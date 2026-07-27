@@ -16,6 +16,8 @@ const PREVIEW_HEIGHT: float = 0.5
 const MODEL_DIR := "res://assets/models/%s.gltf"
 const GHOST_VALID   := Color(0.35, 1.0, 0.45, 0.55)
 const GHOST_INVALID := Color(1.0, 0.25, 0.25, 0.55)
+const GHOST_MERGE   := Color(1.0, 0.85, 0.25, 0.6)   # vàng = đặt lên để HỢP NHẤT
+const MERGE_FX_COLOR := Color(1.0, 0.85, 0.25)
 
 # --- STATE ---
 var current_building_stats: TowerStats = null
@@ -121,37 +123,93 @@ func update_preview(mouse_pos: Vector2) -> void:
 	var camera := get_viewport().get_camera_3d()
 	if camera == null:
 		return
-	var grid_pos := GridUtil.mouse_to_cell(camera, mouse_pos)
+	# Preview phải bám ĐÚNG ô mà click sẽ nhận. Đặc biệt quan trọng với hợp nhất ★:
+	# rê lên thân tháp cùng loại thì ghost phải sáng vàng ở chính tháp đó.
+	var grid_pos := PickUtil.mouse_to_cell(camera, mouse_pos)
 
 	var gc         = grid_controller
 	var valid_pos: bool = grid_pos.x >= 0 and grid_pos.x < gc.grid_width \
 		and grid_pos.y >= 0 and grid_pos.y < gc.grid_height
-	var decree_ok: bool = king_manager and king_manager.can_afford(current_building_stats.decree_cost)
+	var affordable: bool = _can_afford_unit(current_building_stats)
 	var ok: bool = valid_pos and is_buildable(grid_pos) \
-		and not (grid_data.get(grid_pos) is Node3D) and decree_ok
+		and not (grid_data.get(grid_pos) is Node3D) and affordable
+	# Ô đã có tháp cùng loại, chưa max sao và đủ tài nguyên → báo vàng (hợp nhất được)
+	var merge_ok: bool = valid_pos and affordable and can_merge_at(grid_pos, current_building_stats)
 
 	if has_ghost:
 		_ghost.visible = valid_pos
 		_ghost.position = GridUtil.cell_to_world(grid_pos)
-		var tint := GHOST_VALID if ok else GHOST_INVALID
+		var tint := GHOST_MERGE if merge_ok else (GHOST_VALID if ok else GHOST_INVALID)
 		for m in _ghost_mats:
 			m.albedo_color = tint
 	else:
 		build_preview_sprite.position = GridUtil.cell_to_world(grid_pos) + Vector3(0.0, PREVIEW_HEIGHT, 0.0)
-		build_preview_sprite.modulate = Color(0, 1, 0, 0.6) if ok else Color(1, 0, 0, 0.6)
+		if merge_ok:
+			build_preview_sprite.modulate = GHOST_MERGE
+		else:
+			build_preview_sprite.modulate = Color(0, 1, 0, 0.6) if ok else Color(1, 0, 0, 0.6)
+
+## Có thể HỢP NHẤT một unit `stats` vào tháp đang đứng ở `cell` không?
+## Điều kiện: ô có tháp hợp lệ · cùng stats.id · tháp đó chưa đạt ★ tối đa.
+func can_merge_at(cell: Vector2i, stats: TowerStats) -> bool:
+	if stats == null:
+		return false
+	var entry = grid_data.get(cell)
+	if not (entry is Node3D) or not is_instance_valid(entry):
+		return false
+	var entry_stats = entry.get("stats")
+	if entry_stats == null or entry_stats.id != stats.id:
+		return false
+	if not entry.has_method("can_star_up") or not entry.has_method("set_star"):
+		return false
+	return entry.can_star_up()
+
+## Kiểm tra (KHÔNG trừ) tài nguyên cho một lần đặt/hợp nhất — dùng cho preview.
+func _can_afford_unit(stats: TowerStats) -> bool:
+	if stats == null:
+		return false
+	if shop_manager and shop_manager.is_unit_limited(stats.id) \
+			and shop_manager.get_unit_stock_amount(stats.id) <= 0:
+		return false
+	if king_manager and not king_manager.can_afford(stats.decree_cost):
+		return false
+	return true
+
+## Trừ tài nguyên cho một lần đặt/hợp nhất. Trả false = huỷ thao tác.
+## Kiểm Royal Decree TRƯỚC khi tiêu stock để không mất unit khi thiếu Decree.
+func _pay_for_unit(stats: TowerStats) -> bool:
+	if stats == null:
+		return false
+	if king_manager and not king_manager.can_afford(stats.decree_cost):
+		push_warning("TowerPlacer: Không đủ Royal Decree! Cần: %.1f" % stats.decree_cost)
+		return false
+	if shop_manager and shop_manager.is_unit_limited(stats.id):
+		if not shop_manager.consume_unit_stock(stats.id):
+			push_warning("TowerPlacer: Không còn %s để đặt." % stats.name)
+			return false
+	if king_manager and not king_manager.spend_royal_decree(stats.decree_cost):
+		push_warning("TowerPlacer: Không đủ Royal Decree! Cần: %.1f" % stats.decree_cost)
+		return false
+	return true
 
 ## Đặt tháp tại grid_pos — gọi khi player click trong build mode.
+## Nếu ô đã có tháp CÙNG LOẠI chưa max sao → hợp nhất (★+1) thay vì đặt mới.
 func place(grid_pos: Vector2i) -> void:
 	if current_building_stats == null:
 		return
 
-	if shop_manager and shop_manager.is_unit_limited(current_building_stats.id):
-		if not shop_manager.consume_unit_stock(current_building_stats.id):
-			push_warning("TowerPlacer: Không còn %s để đặt." % current_building_stats.name)
-			return
+	var occupant = grid_data.get(grid_pos)
+	var merging: bool = can_merge_at(grid_pos, current_building_stats)
+	# Ô đã có tháp nhưng không hợp nhất được (khác loại hoặc đã ★ tối đa) → giữ
+	# hành vi cũ: không đặt được, không trừ tài nguyên.
+	if not merging and occupant is Node3D and is_instance_valid(occupant):
+		return
 
-	if king_manager and not king_manager.spend_royal_decree(current_building_stats.decree_cost):
-		push_warning("TowerPlacer: Không đủ Royal Decree! Cần: %.1f" % current_building_stats.decree_cost)
+	if not _pay_for_unit(current_building_stats):
+		return
+
+	if merging:
+		_merge_into(grid_pos, occupant)
 		return
 
 	var new_tower = _tower_scene.instantiate()
@@ -175,7 +233,46 @@ func place(grid_pos: Vector2i) -> void:
 		synergy_manager.on_tower_placed(new_tower, current_building_stats)
 
 	_refresh_commander_aura()
+	var am = get_node_or_null("/root/AudioManagerSingleton")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx("tower_place", -4.0)
 	tower_placed.emit(grid_pos, new_tower)
+
+## Hợp nhất: nâng sao tháp có sẵn, KHÔNG tạo node mới.
+## Tài nguyên đã được _pay_for_unit() trừ trước khi vào đây.
+func _merge_into(grid_pos: Vector2i, tower: Node3D) -> void:
+	if not is_instance_valid(tower) or not tower.has_method("set_star"):
+		push_warning("TowerPlacer: _merge_into gọi trên node không hợp lệ tại %s." % str(grid_pos))
+		return
+
+	tower.set_star(int(tower.get("star")) + 1)
+
+	# Áp lại các nguồn buff phụ thuộc loại/ô — buff layer ghi đè nên idempotent.
+	_apply_upgrade_to_tower(tower)
+	if king_manager:
+		king_manager.apply_favor_to_tower(tower)
+	var biome: String = territory_manager.get_biome_at(grid_pos) if territory_manager else ""
+	if biome != "":
+		_apply_biome_buff_to_tower(tower, biome)
+
+	# CỐ Ý không gọi synergy_manager.on_tower_placed(): số tháp trên bàn KHÔNG đổi
+	# khi hợp nhất, gọi thêm sẽ khiến count synergy tăng sai (đếm 1 node 2 lần).
+	_refresh_commander_aura()
+
+	var am = get_node_or_null("/root/AudioManagerSingleton")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx("tower_place", -4.0)
+	var host := get_parent()
+	if host and host.is_inside_tree():
+		FX.spawn_burst(host, tower.global_position + Vector3(0.0, 0.35, 0.0), MERGE_FX_COLOR, 20, 1.15)
+
+	# Emit như đặt thường để perk / tile buff / props chạy đúng luồng cũ.
+	tower_placed.emit(grid_pos, tower)
+
+# Click hợp nhất đi qua game_map._unhandled_input() như đặt tháp thường:
+# gate ở đó đã nới để gọi place() khi ô có tháp CÙNG LOẠI hợp nhất được
+# (xem game_map.gd, nhánh `mergeable`). Không có đường input thứ hai ở đây —
+# một chỗ xử lý duy nhất, không sợ hai luồng tranh nhau.
 
 func is_in_build_mode() -> bool:
 	return current_building_stats != null
@@ -202,15 +299,26 @@ func dismiss_at(grid_pos: Vector2i) -> void:
 	if entry is Node3D and is_instance_valid(entry):
 		if synergy_manager:
 			synergy_manager.on_tower_removed(entry)
+		# Hoàn theo SỐ QUÂN đã đầu tư: tháp ★N tốn N quân để tạo ra,
+		# nếu chỉ hoàn 1 quân thì hợp nhất trở thành cái bẫy kinh tế.
 		var reward := 0
 		if entry.get("stats") and entry.stats:
-			reward = int(entry.stats.cost * 0.5)
+			var invested: int = maxi(1, int(entry.get("star")) if entry.get("star") != null else 1)
+			reward = int(entry.stats.cost * 0.5 * float(invested))
+		# Trả trang bị về kho TRƯỚC khi free: sau queue_free thì instance_id không
+		# còn tra được, món gắn trên tháp sẽ mất trắng.
+		var equipment = get_parent().get("equipment_system") if get_parent() else null
+		if equipment != null and equipment.has_method("release_tower"):
+			equipment.release_tower(entry)
 		entry.queue_free()
 		grid_data.erase(grid_pos)
 		_dismiss_stock = max(0, _dismiss_stock - 1)
 		if _dismiss_stock <= 0:
 			_dismiss_mode = false
 		_refresh_commander_aura()
+		var am = get_node_or_null("/root/AudioManagerSingleton")
+		if am and am.has_method("play_sfx"):
+			am.play_sfx("dismiss", -4.0)
 		dismiss_stock_changed.emit(_dismiss_stock)
 		tower_dismissed.emit(grid_pos, reward)
 	else:

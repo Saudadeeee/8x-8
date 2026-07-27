@@ -264,6 +264,33 @@ func _build_default_encounters() -> Array[Resource]:
 			"Nữ Hoàng không quỳ trước bất kỳ ngọn lửa nào.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_shrine.png", "king_flame"))
 
+	# ── LONG MẠCH LỘ THIÊN ───────────────────────────────────────────
+	# Đổi HP/vàng lấy Ô NGUYÊN TỐ (futureplan §2.4). Ba lựa chọn = ba triết lý:
+	# đào sâu build hiện tại · mở rộng sang hệ khác · giữ tài nguyên.
+	result.append(_enc("exposed_ley_line", "Long Mạch Lộ Thiên",
+		"Mặt đất nứt ra, để lộ mạch nguyên tố đang chảy bên dưới. Khai thác nó không miễn phí.",
+		EncounterData.EncounterType.MIXED, EncounterData.Rarity.UNCOMMON, 3, 1.2,
+		[_choice_tiles("Đào sâu theo mạch\n[-8 HP  →  3 ô cùng hệ ngươi đang mạnh nhất]",
+			"Ba ô cùng loại xếp chồng thành một Long Mạch Lv3.", 0, -8, 3, "dominant"),
+		 _choice_tiles("Khoan ngang tìm mạch lạ\n[-70 Vàng  →  2 ô nguyên tố ngẫu nhiên]",
+			"Mở đường sang một nguyên tố khác — rủi ro, nhưng biết đâu.", -70, 0, 2, "random"),
+		 _choice("Bịt mạch lại và đi tiếp\n[+35 Vàng (bán quặng vụn) — không có ô]",
+			"Không phải lúc nào cũng cần đào sâu.", 35, 0, 0.0)],
+		"res://assets/ui/encounters/encounter_shrine.png"))
+
+	# ── THỢ KHẮC ĐÁ CÂM ──────────────────────────────────────────────
+	# Phiên bản "an toàn" của Long Mạch: chỉ tốn vàng, cho ít ô hơn.
+	result.append(_enc("silent_stonecutter", "Thợ Khắc Đá Câm",
+		"Một ông lão không nói được, tay chai sạn, bày ra mấy phiến đá khắc rune nguyên tố.",
+		EncounterData.EncounterType.REWARD, EncounterData.Rarity.COMMON, 2, 1.0,
+		[_choice_tiles("Mua hai phiến cùng loại\n[-90 Vàng  →  2 ô cùng hệ đang mạnh nhất]",
+			"Hai ô chồng lên nhau thành một Nguồn Lv2.", -90, 0, 2, "dominant"),
+		 _choice_tiles("Mua một phiến bất kỳ\n[-40 Vàng  →  1 ô ngẫu nhiên]",
+			"Rẻ, và biết đâu lại là mảnh còn thiếu của Bát Quái.", -40, 0, 1, "random"),
+		 _choice("Chỉ ngắm rồi đi\n[Miễn phí — ông lão gật đầu]",
+			"Không mất gì. Cũng không được gì.", 0, 0, 0.0)],
+		"res://assets/ui/encounters/encounter_merchant.png"))
+
 	return result
 
 func _enc(id: String, title: String, flavor: String, etype, rarity, min_w: int, weight: float, choices_list: Array, icon_path: String = "", king_id: String = "") -> EncounterData:
@@ -287,6 +314,45 @@ func _choice(text: String, preview: String, gold: int, hp: int, rd: float = 0.0)
 	c.health_delta = hp
 	c.decree_delta = rd
 	return c
+
+## Biến thể của `_choice` kèm thưởng ô nguyên tố.
+func _choice_tiles(text: String, preview: String, gold: int, hp: int,
+		tiles: int, kind: String = "dominant") -> EncounterChoice:
+	var c := _choice(text, preview, gold, hp, 0.0)
+	c.element_tiles = tiles
+	c.element_tile_kind = kind
+	return c
+
+## Đưa `count` ô nguyên tố loại `kind` vào kho lãnh thổ.
+## `kind`: "dominant" (theo build hiện tại) · "random" · id nguyên tố cụ thể.
+func _grant_element_tiles(map: Node, count: int, kind: String) -> void:
+	if map == null:
+		return
+	var tm = map.get_node_or_null("TerritoryManager")
+	if tm == null or not tm.has_method("add_stock"):
+		push_warning("EncounterManager: element_tiles cần TerritoryManager — bỏ qua.")
+		return
+
+	var element := kind
+	if kind == "dominant":
+		element = str(map.call("_dominant_element")) if map.has_method("_dominant_element") else ""
+		if element.is_empty():
+			element = ElementTypes.ALL[randi() % ElementTypes.ALL.size()]
+	elif kind == "random":
+		element = ElementTypes.ALL[randi() % ElementTypes.ALL.size()]
+	if not ElementTypes.is_valid(element):
+		push_warning("EncounterManager: element_tile_kind '%s' không hợp lệ — bỏ qua." % kind)
+		return
+
+	var biome: String = TerritoryManager.biome_of_element(element)
+	if biome.is_empty():
+		return
+	for _i in range(count):
+		tm.call("add_stock", biome)
+	var phase = map.get("phase_controller")
+	if phase != null and is_instance_valid(phase):
+		phase.set("phase_message", "✦ Nhận %d ô %s từ sự kiện!" % [
+			count, ElementTypes.display_name(element)])
 
 # --- Kích hoạt encounter ngẫu nhiên ---
 func trigger_random_encounter() -> void:
@@ -445,6 +511,12 @@ func _apply_extended_outcomes(choice: EncounterChoice) -> void:
 				push_warning("EncounterManager: biome '%s' không hợp lệ cho add_territory." % biome_key)
 		else:
 			push_warning("EncounterManager: add_territory cần TerritoryStats + TerritoryManager — bỏ qua.")
+
+	# 3b) element_tiles: tặng N ô nguyên tố vào kho (futureplan §2.4).
+	#     Tặng vào KHO chứ không đặt sẵn lên bàn — vị trí đặt là quyết định của
+	#     người chơi, và đó chính là chỗ hay của hệ ô nguyên tố.
+	if choice.element_tiles > 0:
+		_grant_element_tiles(map, choice.element_tiles, choice.element_tile_kind)
 
 	# 4) trigger_script: logic phức tạp — script phải có execute(ctx: Dictionary)
 	if choice.trigger_script:
