@@ -878,6 +878,22 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Đường hiển thị của nội dung (2026-07-28) — ĐỌC TRƯỚC KHI THÊM LOẠI HÀNG MỚI:*
+- **Tên file ảnh = `id`**, code ghép chuỗi `thư_mục % id`, KHÔNG có bảng ánh xạ.
+  `HudIcons` là điểm nạp duy nhất: `potion/relic/equipment/perk/tower/enemy`.
+- Đã vá 3 lỗ thật: card shop **trang bị và di vật chưa bao giờ có icon** (32 file
+  icon nằm sẵn trên đĩa mà `_make_equipment_offer`/`_make_relic_offer` không gán
+  `item.icon`); **perk không đọc được PNG** (chỉ ModelIcon hoặc glyph); **quân cờ
+  không gán `texture` trong .tres thì card shop trống trơn** — nay tự thử
+  `assets/towers/<id>.png` ở giữa.
+- Thứ tự dự phòng card shop quân cờ: `stats.texture` → `assets/towers/<id>.png`
+  → `stats.projectile_texture`. Bước giữa là lý do KHÔNG cần mở editor gán texture.
+- Card perk: PNG 48×48 → ModelIcon (nếu perk có `unit_id`) → ký hiệu `icon` → ◆.
+- `check_content.py` giờ đọc header PNG (không cần thư viện) để kiểm kích thước,
+  và **báo LỖI khi một quân cờ không có ảnh nào cả**.
+- `tools/new_content.py <loại> <id>` sinh khung .tres/JSON rồi in danh sách ảnh
+  cần vẽ kèm cỡ. `--list` liệt kê mọi id đã dùng (gồm cả món built-in trong .gd).
+
 *Bộ test chức năng — `python tools/run_tests.py` (2026-07-28):*
 - 5 batch trong `tests/`, **149 khẳng định**, chạy TRÊN GAME THẬT (dựng game_map, đặt tháp,
   mua đồ, nổ phản ứng) chứ không mock: `test_1_core_loop` (đặt/ghép ★/sa thải/shop/ô) ·

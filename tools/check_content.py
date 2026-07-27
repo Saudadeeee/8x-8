@@ -16,9 +16,12 @@ Exit code 1 neu co LOI.
 import json
 import os
 import re
+import struct
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+PNG_MAGIC = bytes([137, 80, 78, 71, 13, 10, 26, 10])
 
 errors = []
 warns = []
@@ -63,6 +66,33 @@ def files(rel, ext):
 def has_asset(rel_path):
     return os.path.isfile(os.path.join(ROOT, rel_path))
 
+def png_size(rel_path):
+    """(rong, cao) cua mot PNG, doc thang tu header IHDR — khong can thu vien."""
+    full = os.path.join(ROOT, rel_path)
+    if not os.path.isfile(full):
+        return None
+    try:
+        with open(full, 'rb') as f:
+            head = f.read(24)
+        if head[:8] != PNG_MAGIC:
+            return None
+        return struct.unpack('>II', head[16:24])
+    except Exception:
+        return None
+
+
+def check_size(rel_path, want_w, want_h, label):
+    """Canh bao neu anh sai kich thuoc chuan. Sai co la UI ra to/nho bat thuong
+    hoac bi mo — pixel art phong to khong phai boi so nguyen se nhoe."""
+    size = png_size(rel_path)
+    if size is None:
+        return
+    if size != (want_w, want_h):
+        warn('%s: %s la %dx%d, chuan la %dx%d'
+             % (label, rel_path, size[0], size[1], want_w, want_h))
+
+
+
 
 # ── 1. QUAN CO (res/towers/*.tres) ───────────────────────────────────────────
 # Nguon su that cua tam ban va tran hoi chieu — phai khop hang so trong tower.gd.
@@ -99,9 +129,16 @@ for path in files('res/towers', '.tres'):
     if as_num(f.get('cost', 0)) <= 0:
         warn('%s: cost = 0 — quan nay se mien phi' % base)
 
-    if not has_asset('assets/models/%s.gltf' % tid):
+    has_model = has_asset('assets/models/%s.gltf' % tid)
+    has_sprite = has_asset('assets/towers/%s.png' % tid)
+    has_tex_field = 'texture' in f
+    if not has_model:
         warn('%s: chua co assets/models/%s.gltf — se dung sprite 2D thay the'
              % (base, tid))
+    if not (has_model or has_sprite or has_tex_field):
+        err('%s: khong co model .gltf, khong co assets/towers/%s.png, .tres cung '
+            'khong gan `texture` — card shop se TRONG TRON' % (base, tid))
+    check_size('assets/towers/%s.png' % tid, 32, 32, 'quan co')
 
 # ── 2. DICH (res/enemy/*.tres) ───────────────────────────────────────────────
 seen_enemy_ids = {}
@@ -130,6 +167,7 @@ for path in files('res/enemy', '.tres'):
         spawnable.append(eid)
     if not has_asset('assets/models/%s.gltf' % eid):
         warn('%s: chua co assets/models/%s.gltf' % (base, eid))
+    check_size('assets/enemy/%s.png' % eid, 32, 32, 'dich')
 
 # Dich khong nam trong bang mua cung MA cung khong khai spawn_seasons thi khong
 # bao gio xuat hien — day chinh la loai loi "co ma khong chay".
@@ -200,9 +238,33 @@ for label, json_dir, icon_dir, gd_path in ITEM_SOURCES:
     if os.path.isfile(gd_full):
         ids |= set(re.findall(r'"id"\s*:\s*"(\w+)"', read(gd_full)))
     for item_id in sorted(ids):
-        if not has_asset('%s/%s.png' % (icon_dir, item_id)):
-            warn('%s "%s": thieu icon %s/%s.png — o se hien nhan chu viet tat'
-                 % (label, item_id, icon_dir, item_id))
+        rel = '%s/%s.png' % (icon_dir, item_id)
+        if not has_asset(rel):
+            warn('%s "%s": thieu icon %s — o se hien nhan chu viet tat'
+                 % (label, item_id, rel))
+        else:
+            check_size(rel, 32, 32, '%s "%s"' % (label, item_id))
+
+# ── 5. ANH DUNG CHUNG: perk / o nguyen to / crest shop ──────────────────────
+# Perk khong bat buoc co PNG (card tu roi ve ky hieu ◆), nhung neu CO thi phai
+# dung 48x48 — card danh o vuong 76px, anh lech cỡ se bi keo mo.
+for pid in sorted(seen_perk_ids):
+    check_size('assets/ui/perks/%s.png' % pid, 48, 48, 'perk "%s"' % pid)
+
+# O nguyen to va crest shop PHAI dung mot rune — nguoi choi doi chieu
+# "icon trong shop = o tren ban". Thieu mot trong hai la mat lien ket do.
+TILE_KEYS = ['fire', 'ice', 'thunder', 'swamp', 'forest', 'desert']
+for key in TILE_KEYS:
+    tile = 'assets/tiles/territory_%s.png' % key
+    crest = 'assets/ui/shop_icons/icon_%s.png' % key
+    if not has_asset(tile):
+        err('thieu texture o nguyen to: %s' % tile)
+    else:
+        check_size(tile, 32, 32, 'o nguyen to')
+    if not has_asset(crest):
+        err('thieu crest shop: %s' % crest)
+    else:
+        check_size(crest, 32, 32, 'crest shop')
 
 # ── Bao cao ──────────────────────────────────────────────────────────────────
 print('=' * 78)

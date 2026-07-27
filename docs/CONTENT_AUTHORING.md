@@ -17,6 +17,23 @@ sửa code lõi. Mọi mô tả dưới đây đã được đối chiếu với
 | **Nhánh synergy MỚI** | thêm giá trị vào `enum UnitType` + `res/synergies/<tag>.tres` | Có, 1 dòng |
 | **Nguyên tố / phản ứng mới** | `element_types.gd` + `reaction_table.gd` | Có |
 
+### Tạo khung file bằng một lệnh
+
+```
+python tools/new_content.py tower  halberdier
+python tools/new_content.py enemy  snow_wolf
+python tools/new_content.py perk   loi_the_ho
+python tools/new_content.py potion binh_khoi_den
+python tools/new_content.py equip  giap_gai
+python tools/new_content.py relic  vuong_mien_vo
+
+python tools/new_content.py --list      # xem mọi id đã dùng (tránh trùng)
+```
+
+Lệnh này ghi sẵn file `.tres`/JSON đúng định dạng, đúng thư mục, rồi **in ra
+danh sách ảnh phải vẽ kèm kích thước**. Không ghi đè file đã có. Việc còn lại
+chỉ là thay các chỗ ghi `TODO` và vẽ ảnh.
+
 Xong thì **luôn chạy**:
 
 ```
@@ -190,7 +207,7 @@ MỚI thì dùng field, không phải đụng vào bảng đó.
   - `armor` — giáp phẳng, mỗi đòn trừ đi [armor] dmg, tối thiểu còn 1 (golem 6).
   - `regen_per_sec` — hồi máu/giây (troll 8).
   - `heal_aura_amount` + `heal_aura_radius` — hồi máu đồng minh trong bán kính
-    **mét** (shaman 6 / 1.6 m). Cả hai phải > 0.
+	**mét** (shaman 6 / 1.6 m). Cả hai phải > 0.
 
 ### Khắc / kháng nguyên tố
 
@@ -230,13 +247,13 @@ lặng trôi qua. Xem Output của Godot sau khi sửa JSON.
 ```json
 [
   {
-    "id": "vong_lua",
-    "name": "Vòng Lửa",
-    "slot": "accessory",
-    "rarity": "epic",
-    "cost": 130,
-    "desc": "Luôn bắn Dấu Hoả và phản ứng mạnh thêm 25%.",
-    "effect": {"grant_element": "fire", "reaction_power_mult": 1.25}
+	"id": "vong_lua",
+	"name": "Vòng Lửa",
+	"slot": "accessory",
+	"rarity": "epic",
+	"cost": 130,
+	"desc": "Luôn bắn Dấu Hoả và phản ứng mạnh thêm 25%.",
+	"effect": {"grant_element": "fire", "reaction_power_mult": 1.25}
   }
 ]
 ```
@@ -249,12 +266,12 @@ Decree bằng `ShopPanelManager.EQUIP_GOLD_PER_RD`.
 ```json
 [
   {
-    "id": "chuong_bao_tu",
-    "name": "Chuông Báo Tử",
-    "rarity": "legendary",
-    "cost": 300,
-    "desc": "Địch mang Dấu nhận thêm 25% sát thương từ mọi nguồn.",
-    "effect": {"marked_damage_taken": 0.25}
+	"id": "chuong_bao_tu",
+	"name": "Chuông Báo Tử",
+	"rarity": "legendary",
+	"cost": 300,
+	"desc": "Địch mang Dấu nhận thêm 25% sát thương từ mọi nguồn.",
+	"effect": {"marked_damage_taken": 0.25}
   }
 ]
 ```
@@ -286,8 +303,120 @@ helper `_choice_tiles`):
 ```gdscript
 _choice_tiles("Đào sâu theo mạch
 [-8 HP  →  3 ô cùng hệ]",
-    "Ba ô cùng loại xếp chồng thành một Long Mạch Lv3.", 0, -8, 3, "dominant")
+	"Ba ô cùng loại xếp chồng thành một Long Mạch Lv3.", 0, -8, 3, "dominant")
 ```
+
+---
+
+## 6. HIỂN THỊ — ảnh nào, đặt đâu, kích thước bao nhiêu
+
+Nguyên tắc xuyên suốt: **tên file phải trùng ĐÚNG `id`**. Không có bảng ánh xạ
+nào cả — code ghép chuỗi `thư_mục % id`. Sai một ký tự là ảnh không lên, và
+game vẫn chạy bình thường nên rất dễ trôi lọt.
+
+Nguyên tắc thứ hai: **thiếu ảnh không bao giờ làm vỡ UI**. Mọi chỗ nạp ảnh đều
+guard `ResourceLoader.exists` rồi rơi về phương án dự phòng. Nhờ vậy thêm nội
+dung mới mà chưa kịp vẽ vẫn chơi được — nhưng cũng vì vậy mà quên vẽ thì không
+ai báo, nên phải chạy `check_content.py`.
+
+### Bảng tra toàn bộ
+
+| Nội dung | File ảnh | Cỡ | Hiện ở đâu | Thiếu thì sao |
+|---|---|---|---|---|
+| Quân cờ | `assets/models/<id>.gltf` | 16 đv = 1 m | model trên bàn + icon xoay trên card shop | rơi về sprite 2D |
+| Quân cờ | `assets/towers/<id>.png` | 32×32 | card shop, billboard dự phòng | **card shop trống** nếu cũng không có `.gltf` |
+| Địch | `assets/models/<id>.gltf` | 16 đv = 1 m | model trên đường | rơi về sprite 2D |
+| Địch | `assets/enemy/<id>.png` | 32×32 | billboard dự phòng | hiện hình trắng |
+| Thuốc | `assets/ui/potions/<id>.png` | 32×32 | ô túi thuốc góc dưới-trái | nhãn chữ viết tắt (BLN…) |
+| Trang bị | `assets/ui/equipment/<id>.png` | 32×32 | card shop + ô trang bị panel tháp | nhãn chữ viết tắt |
+| Di vật | `assets/ui/relics/<id>.png` | 32×32 | card shop + thanh di vật góc trên-phải | nhãn chữ viết tắt |
+| Perk | `assets/ui/perks/<id>.png` | 48×48 | card draft perk | ký hiệu trong field `icon`, mặc định ◆ |
+| Ô nguyên tố | `assets/tiles/territory_<key>.png` | 32×32 | mặt ô trên bàn cờ 3D | ô màu trơn |
+| Crest shop | `assets/ui/shop_icons/icon_<key>.png` | 32×32 | card ô trong shop | không có ảnh |
+| Encounter | `assets/ui/encounters/<id>.png` | 32×32 | popup sự kiện | không có ảnh |
+
+`<key>` của ô nguyên tố là khoá biome (`fire` `ice` `thunder` `swamp` `forest`
+`desert`), **không phải** id nguyên tố. Ô và crest phải dùng **cùng một rune** —
+người chơi đối chiếu "icon trong shop = ô trên bàn"; vẽ khác nhau là mất liên
+kết đó.
+
+### Thứ tự dự phòng của card shop quân cờ
+
+`shop_manager._populate_default_items()` chọn ảnh theo thứ tự:
+
+```
+1. stats.texture          (gán trong .tres)
+2. assets/towers/<id>.png (HudIcons.tower — chỉ cần thả file đúng tên)
+3. stats.projectile_texture
+```
+
+Bước 2 chính là lý do bạn **không cần** mở Godot editor để gán texture: thả PNG
+đúng tên vào `assets/towers/` là xong.
+
+Riêng icon trên card shop ưu tiên **model 3D xoay** (`ModelIcon`) nếu có `.gltf`.
+Có trần `MAX_LIVE_3D = 8` icon 3D sống cùng lúc — vượt thì tự rơi về ảnh 2D, nên
+ảnh 2D vẫn đáng vẽ dù đã có model.
+
+### Model 3D
+
+- Làm bằng Blockbench, export **glTF** vào `assets/models/<id>.gltf`.
+- Tỉ lệ: **16 đơn vị Blockbench = 1 m = 1 ô**. Tháp cao khoảng **18–29 đơn vị**
+  (~1.1–1.8 m). Cao hơn nhiều thì thân tháp che mất ô phía sau.
+- Godot nạp bằng `load()` rồi `instantiate()` vào node `$Visual` của tháp.
+  Material trong glTF được **`duplicate()` cho từng instance** — nếu không, hiệu
+  ứng overcharge tint một tháp sẽ lan sang mọi tháp cùng loại.
+- Không cần animation: tháp tự xoay về phía mục tiêu bằng code.
+
+### Sprite 2D
+
+- Pixel art, nền trong suốt, palette dự án (nâu đất `#3d2b1f`, xám đá `#4a4a4a`,
+  đỏ máu `#8b1a1a`, vàng đồng `#c8a000`, xanh rêu `#2d4a1e`).
+- Billboard dùng `pixel_size = 0.03` và `TEXTURE_FILTER_NEAREST`. Ảnh 32×32 →
+  cao khoảng 0.96 m trên bàn, vừa đúng một ô.
+- **Đúng 32×32.** Cỡ khác sẽ bị kéo giãn; pixel art phóng không phải bội số
+  nguyên thì nhoè. `check_content.py` cảnh báo khi lệch.
+
+### Icon vật phẩm 32×32 — quy ước hình
+
+Nhận ra nhóm TRƯỚC khi đọc chữ:
+
+- **Thuốc**: bình tròn = buff tháp · lọ cao = gắn Dấu · dáng riêng = ném/khẩn cấp.
+- **Trang bị**: vũ khí vẽ **chéo 45°** · phụ kiện là vật thể tròn/nhỏ · loại
+  "nền tảng" có bệ đá dưới chân.
+- Outline `#14100c` kín, nguồn sáng cố định **trên-trái**, bóng dưới-phải.
+
+Ở 32px chi tiết mảnh **không đọc được**: dây đeo mảnh thành đốm rối, lưỡi lao vẽ
+bằng hình tròn thành cục. Vẽ lưỡi bằng hình thoi dọc trục, và bỏ hẳn dây đeo.
+
+### Vẽ bằng Aseprite MCP
+
+`run_lua_script` là đường hiệu quả nhất: dựng một thư viện primitive
+(chữ nhật / đĩa / hình thang) + một hàm `outline()` chạy theo mặt nạ, rồi vẽ
+hàng loạt — thay vì đặt từng pixel.
+
+Hai bẫy đã dính nhiều lần:
+
+- Server **không nhận ký tự ngoài ASCII** trong script Lua (`charmap codec`
+  lỗi) → chú thích trong Lua phải viết không dấu.
+- Hàm `taper()` thu hẹp **xuống dưới**. Mái, lều, xô đều **loe ra** → phải dùng
+  hàm hai cạnh độc lập `trapV(topL, topR, botL, botR)`.
+- Rune 32px phải **cao hơn rộng**. Hình bè ngang + hai chóp thì mắt đọc thành
+  khuôn mặt (đã phải vẽ lại rune Hoả 4 lần vì lỗi này).
+
+### Chữ và ký hiệu
+
+Font mặc định của Godot **không có glyph emoji** — dùng emoji sẽ ra ô tofu.
+Vì vậy icon nguyên tố trong HUD là **chữ cái** (H/B/L/N/Đ/T), và field `icon`
+của perk nên dùng ký hiệu hình học (`◆ ✦ ★ ⚔`) chứ không phải emoji màu.
+
+### Kiểm tra ảnh
+
+```
+python tools/check_content.py
+```
+
+Báo: thiếu icon · sai kích thước · quân cờ **không có ảnh nào cả** (lỗi, vì card
+shop sẽ trống trơn) · ô nguyên tố hoặc crest shop bị thiếu.
 
 ---
 
@@ -296,14 +425,17 @@ _choice_tiles("Đào sâu theo mạch
 - [ ] **Chạy `python tools/check_content.py` — 0 LOI** (bắt phần lớn mục dưới)
 - [ ] `id` snake_case, duy nhất, trùng tên file `.tres` / model `.gltf`
 - [ ] JSON perk: array hợp lệ, không trailing comma, chạy game xem Output có
-      warning `PerkSystem:` nào không
+	  warning `PerkSystem:` nào không
 - [ ] Tower mới: kiểm tra xuất hiện trong shop (roll vài lần — quầy 5 slot,
-      trong đó **1 slot luôn được giữ cho quân**, xem `_pick_guaranteed_troop`)
+	  trong đó **1 slot luôn được giữ cho quân**, xem `_pick_guaranteed_troop`)
 - [ ] Perk mới: `rarity` quyết định wave sớm nhất nó xuất hiện —
-      thường 1 · hiếm 3 · sử thi 5 · huyền thoại 8 (`RARITY_UNLOCK_WAVE`).
-      Đặt `legendary` cho perk nhỏ thì cả run sẽ không ai thấy nó
+	  thường 1 · hiếm 3 · sử thi 5 · huyền thoại 8 (`RARITY_UNLOCK_WAVE`).
+	  Đặt `legendary` cho perk nhỏ thì cả run sẽ không ai thấy nó
 - [ ] Enemy mới: đã điền `spawn_seasons` chưa? (rỗng = không bao giờ spawn)
 - [ ] Vật phẩm mới: khoá trong `effect` phải nằm trong `EFFECT_KEYS` của hệ
-      tương ứng, và phải có nơi ĐỌC giá trị đó (khai khoá thôi thì món vô dụng)
+	  tương ứng, và phải có nơi ĐỌC giá trị đó (khai khoá thôi thì món vô dụng)
+- [ ] Ảnh: tên file trùng ĐÚNG `id`, đúng thư mục, đúng kích thước (§6)
+- [ ] Chạy thử `python tools/run_tests.py` — 149 khẳng định, phải 0 lỗi
 - [ ] Template chú thích: `res/towers/_template_tower.txt` ·
-      `res/enemy/_template_enemy.txt` (nhớ XÓA dòng `#` khi lưu thành `.tres`)
+	  `res/enemy/_template_enemy.txt` (nhớ XÓA dòng `#` khi lưu thành `.tres`).
+	  Hoặc dùng `python tools/new_content.py` cho nhanh.

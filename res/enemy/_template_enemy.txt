@@ -7,8 +7,10 @@
 #   2. XÓA HẾT các dòng bắt đầu bằng "#" — .tres KHÔNG hỗ trợ comment.
 #   3. Đổi id + stats theo chú thích bên dưới.
 #   4. WaveSpawner TỰ NẠP mọi .tres trong res://res/enemy/ theo field id
-#      (wave_spawner.gd → _load_enemy_stats). NHƯNG enemy chỉ THỰC SỰ xuất
-#      hiện khi được thêm vào pool mùa — xem bước "SAU KHI TẠO" bên dưới.
+#      (wave_spawner.gd → _load_enemy_stats). Điền `spawn_seasons` là xong —
+#      KHÔNG phải sửa code nữa.
+#
+#   NHANH HƠN: python tools/new_content.py enemy <id> — tự sinh file này.
 #
 # CHÚ THÍCH TỪNG FIELD:
 #   script          — giữ nguyên: trỏ tới EnemyStats.gd (uid là thật).
@@ -31,15 +33,26 @@
 #   heal_aura_radius— bán kính aura tính bằng MÉT (1 ô = 1 m; shaman = 1.6).
 #                     Cả amount và radius phải > 0 thì aura mới hoạt động.
 #
-# SAU KHI TẠO FILE .tres, BẮT BUỘC để enemy xuất hiện trong game:
-#   1. Thêm id vào pool mùa: scripts/map/wave_spawner.gd →
-#      _get_season_enemy_pool() — append _get_enemy("<id>") vào mùa muốn spawn.
-#   2. Tên hiển thị: thêm "<id>": "Tên VN" vào _ENEMY_DISPLAY_NAMES
-#      (cũng trong wave_spawner.gd) — thiếu thì hiện id capitalize.
-#   3. Ghi chú năng lực trên HUD trinh sát: thêm "<id>": "mô tả ngắn" vào
-#      ENEMY_ABILITY_NOTES trong scripts/ui/game_hud.gd — thiếu thì hiện "—".
-#   4. Model 3D (tùy chọn): assets/models/<id>.gltf — thiếu thì fallback
-#      billboard từ texture.
+# FIELD LỊCH SPAWN + HIỂN THỊ (điền ở ĐÂY, không phải sửa code):
+#   spawn_seasons   — Array[int] mùa loài này xuất hiện.
+#                     0 = Xuân (wave 1-2) · 1 = Hạ (3-5) · 2 = Thu (6-8) ·
+#                     3 = Đông (9+).  ĐỂ RỖNG = KHÔNG BAO GIỜ SPAWN.
+#   spawn_weight    — số bản sao thả vào pool mỗi mùa; càng lớn càng hay gặp.
+#   display_name    — tên hiển thị ở popup trinh sát + codex. Rỗng = id viết hoa.
+#   ability_note    — một dòng mô tả năng lực ở popup trinh sát. Rỗng = "—".
+#
+# ÁI LỰC NGUYÊN TỐ (nên điền — không có điểm yếu thì mọi hệ đánh nó như nhau):
+#   weak_element    — nguyên tố khắc chế nó: sát thương ×1.5.
+#   weak_element_2  — điểm yếu phụ (tuỳ chọn).
+#   resist_element  — nguyên tố nó kháng: ×0.6.
+#   Để RỖNG cả ba thì lấy mặc định theo id trong EnemyStats.DEFAULT_AFFINITY.
+#
+# HÌNH ẢNH:
+#   assets/models/<id>.gltf — model 3D (tuỳ chọn). 16 đơn vị Blockbench = 1 m.
+#   assets/enemy/<id>.png   — sprite 32×32, billboard dự phòng khi thiếu model.
+#
+# KIỂM TRA SAU KHI TẠO:
+#   python tools/check_content.py   ← báo ngay nếu loài này không bao giờ spawn.
 #
 # ====CUT==== (copy từ dòng dưới vào file .tres mới, xóa mọi dòng "#") =======
 
@@ -61,4 +74,11 @@ armor = 0
 regen_per_sec = 0.0
 heal_aura_amount = 0
 heal_aura_radius = 0.0
+weak_element = ""
+weak_element_2 = ""
+resist_element = ""
+display_name = ""
+ability_note = ""
+spawn_seasons = Array[int]([0, 1])
+spawn_weight = 2
 metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

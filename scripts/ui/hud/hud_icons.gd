@@ -13,6 +13,13 @@ extends Object
 const POTION_DIR: String = "res://assets/ui/potions/%s.png"
 const RELIC_DIR:  String = "res://assets/ui/relics/%s.png"
 const EQUIP_DIR:  String = "res://assets/ui/equipment/%s.png"
+## Perk: 48×48. Không có thì card tự dùng ký hiệu ◆ theo bậc hiếm.
+const PERK_DIR:   String = "res://assets/ui/perks/%s.png"
+## Quân cờ: ảnh 2D dự phòng khi chưa có model 3D. Cũng là ảnh trên card shop
+## nếu .tres không gán `texture`.
+const TOWER_DIR:  String = "res://assets/towers/%s.png"
+## Địch: ảnh 2D dự phòng, cùng vai trò như trên.
+const ENEMY_DIR:  String = "res://assets/enemy/%s.png"
 
 ## Cache theo đường dẫn đầy đủ. Lưu cả kết quả null để không thử load lại mỗi
 ## frame một file không tồn tại.
@@ -38,3 +45,12 @@ static func relic(id: String) -> Texture2D:
 
 static func equipment(id: String) -> Texture2D:
 	return load_icon(EQUIP_DIR, id)
+
+static func perk(id: String) -> Texture2D:
+	return load_icon(PERK_DIR, id)
+
+static func tower(id: String) -> Texture2D:
+	return load_icon(TOWER_DIR, id)
+
+static func enemy(id: String) -> Texture2D:
+	return load_icon(ENEMY_DIR, id)

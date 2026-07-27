@@ -124,9 +124,23 @@ func _create_perk_card(perk: Dictionary, on_pick: Callable) -> Control:
 	UIStyle.title(rarity_lbl, 12, accent)
 	vbox.add_child(rarity_lbl)
 
-	# Icon: model 3D nếu perk có unit_id, ngược lại glyph lớn theo rarity
+	# Icon, theo thứ tự ưu tiên:
+	#   1. PNG 48×48 tại assets/ui/perks/<id>.png — tác giả nội dung chỉ cần thả
+	#      file đúng tên id là card có tranh riêng, không phải đụng code.
+	#   2. Model 3D nếu perk gắn với một loại quân (`unit_id`).
+	#   3. Ký hiệu ◆ theo bậc hiếm — luôn có, nên card không bao giờ trống.
 	var perk_unit_id := String(perk.get("unit_id", ""))
-	if perk_unit_id != "" and ResourceLoader.exists("res://assets/models/%s.gltf" % perk_unit_id):
+	var perk_tex: Texture2D = HudIcons.perk(String(perk.get("id", "")))
+	if perk_tex != null:
+		var art := TextureRect.new()
+		art.texture = perk_tex
+		art.custom_minimum_size = Vector2(76, 76)
+		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		art.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(art)
+	elif perk_unit_id != "" and ResourceLoader.exists("res://assets/models/%s.gltf" % perk_unit_id):
 		var icon := ModelIcon.new()
 		icon.name = "PerkModelIcon"
 		icon.set_icon_size(76)

@@ -207,7 +207,14 @@ func _populate_default_items() -> void:
 					item.description = stats.description
 					item.cost = float(stats.cost)
 					item.use_royal_decree = false
-					item.icon = stats.texture if stats.texture else stats.projectile_texture
+					# Thu tu: texture trong .tres -> assets/towers/<id>.png ->
+					# projectile_texture. Nho buoc giua, tac gia noi dung chi can
+					# tha mot PNG dung ten id la card shop co anh ngay.
+					item.icon = stats.texture
+					if item.icon == null:
+						item.icon = HudIcons.tower(stats.id)
+					if item.icon == null:
+						item.icon = stats.projectile_texture
 					item.item_type = ShopItemData.ItemType.TROOP
 					item.tower_stats = stats
 					item.min_wave = BOSS_TROOP_MIN_WAVE.get(stats.id, 1)
@@ -392,6 +399,8 @@ func _make_equipment_offer() -> ShopItemData:
 	item.display_name = str(data.get("name", id))
 	item.description = str(data.get("desc", ""))
 	item.cost = maxf(1.0, ceil(float(data.get("cost", 80)) / EQUIP_GOLD_PER_RD))
+	# Icon 32x32 theo id — thieu file thi card tu roi ve nhan chu, khong vo UI.
+	item.icon = HudIcons.equipment(id)
 	return item
 
 func _make_relic_offer() -> ShopItemData:
@@ -412,6 +421,7 @@ func _make_relic_offer() -> ShopItemData:
 	item.display_name = "★ %s" % str(data.get("name", id))
 	item.description = str(data.get("desc", ""))
 	item.cost = maxf(2.0, ceil(float(data.get("cost", 200)) / RELIC_GOLD_PER_RD))
+	item.icon = HudIcons.relic(id)
 	return item
 
 func _roll_shop_offers() -> void:

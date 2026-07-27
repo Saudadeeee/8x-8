@@ -9,6 +9,19 @@
 #   4. Mở lại Godot editor (hoặc scan filesystem) — shop TỰ NHẬN tower mới
 #      từ thư mục res://res/towers/ (shop_manager.gd → _populate_default_items).
 #
+#   NHANH HƠN: python tools/new_content.py tower <id> — tự sinh file này.
+#
+# HÌNH ẢNH (tên file phải TRÙNG ĐÚNG id):
+#   assets/models/<id>.gltf — model 3D trên bàn cờ + icon xoay trên card shop.
+#                             16 đơn vị Blockbench = 1 m = 1 ô; tháp cao 18-29.
+#   assets/towers/<id>.png  — sprite 32×32. Vừa là ảnh card shop khi .tres không
+#                             gán `texture`, vừa là billboard dự phòng khi chưa
+#                             có model. Thiếu CẢ BA thì card shop TRỐNG TRƠN —
+#                             check_content.py báo lỗi chỗ này.
+#
+# TẦM BẮN: dải hợp lệ 1-7 ô (bàn khởi đầu chỉ 8×8, chéo ~11 ô). Vượt 7 thì mọi
+# tháp phủ trọn bàn, đặt ở đâu cũng như nhau — check_content.py chặn.
+#
 # CHÚ THÍCH TỪNG FIELD:
 #   script          — giữ nguyên: trỏ tới TowerStats.gd (uid bên dưới là thật).
 #   id              — ID duy nhất, snake_case, TRÙNG với tên file .tres và tên

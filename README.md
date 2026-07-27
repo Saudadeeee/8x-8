@@ -24,7 +24,7 @@ godot --path .
 
 ```bash
 python tools/run_tests.py        # 149 khẳng định trên game thật — chạy 2 lần cho chắc
-python tools/check_content.py    # validate .tres / JSON nội dung
+python tools/check_content.py    # validate .tres / JSON + kích thước ảnh
 python tools/audit_wiring.py     # tìm dữ liệu khai mà không ai đọc
 ```
 
@@ -80,15 +80,36 @@ giờ lệch với luật thật.
 Gần như mọi thứ là **data-driven** — thả một file vào đúng thư mục là xong, không phải
 viết code:
 
-| Muốn thêm | Sửa gì |
-|---|---|
-| Quân cờ | `res/towers/<id>.tres` + `assets/models/<id>.gltf` |
-| Địch | `res/enemy/<id>.tres` (nhớ điền `spawn_seasons`) |
-| Perk | JSON trong `data/perks/` |
-| Trang bị / Di vật / Thuốc | JSON trong `data/equipment/` · `data/relics/` · `data/potions/` + icon 32×32 |
+Tạo khung file bằng một lệnh — nó ghi sẵn file đúng định dạng rồi **in ra danh
+sách ảnh phải vẽ kèm kích thước**:
 
-Xong thì chạy `python tools/check_content.py`. Chi tiết + ví dụ copy-paste:
-**[docs/CONTENT_AUTHORING.md](docs/CONTENT_AUTHORING.md)**.
+```bash
+python tools/new_content.py tower  halberdier
+python tools/new_content.py enemy  snow_wolf
+python tools/new_content.py perk   loi_the_ho
+python tools/new_content.py potion binh_khoi_den
+python tools/new_content.py equip  giap_gai
+python tools/new_content.py relic  vuong_mien_vo
+
+python tools/new_content.py --list        # xem mọi id đã dùng
+```
+
+| Muốn thêm | Dữ liệu | Ảnh (tên file = `id`) |
+|---|---|---|
+| Quân cờ | `res/towers/<id>.tres` | `assets/models/<id>.gltf` · `assets/towers/<id>.png` 32×32 |
+| Địch | `res/enemy/<id>.tres` (nhớ `spawn_seasons`) | `assets/models/<id>.gltf` · `assets/enemy/<id>.png` 32×32 |
+| Perk | JSON trong `data/perks/` | `assets/ui/perks/<id>.png` 48×48 |
+| Thuốc | JSON trong `data/potions/` | `assets/ui/potions/<id>.png` 32×32 |
+| Trang bị | JSON trong `data/equipment/` | `assets/ui/equipment/<id>.png` 32×32 |
+| Di vật | JSON trong `data/relics/` | `assets/ui/relics/<id>.png` 32×32 |
+
+**Tên file ảnh phải trùng đúng `id`** — code ghép chuỗi `thư_mục % id`, không có
+bảng ánh xạ. Thiếu ảnh không làm vỡ UI (mọi chỗ đều có phương án dự phòng),
+nhưng cũng vì thế mà quên vẽ thì không ai báo — chạy `check_content.py`.
+
+Xong thì chạy `python tools/check_content.py`. Chi tiết từng field, quy ước vẽ
+icon, tỉ lệ model 3D: **[docs/CONTENT_AUTHORING.md](docs/CONTENT_AUTHORING.md)**
+(chương 6 nói riêng về hiển thị).
 
 ## Cấu trúc
 
@@ -108,7 +129,7 @@ res/             .tres: towers · enemy · kings
 data/            JSON nội dung: perks · potions · equipment · relics
 assets/          models .gltf · textures · ui · audio
 tests/           5 batch test chức năng
-tools/           run_tests · check_content · audit_wiring
+tools/           run_tests · check_content · new_content · audit_wiring
 ```
 
 `scripts/map/game_map.gd` là file điều phối chính — đọc nó trước khi sửa bất cứ thứ gì
