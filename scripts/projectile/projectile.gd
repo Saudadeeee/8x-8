@@ -231,11 +231,16 @@ func hit_target():
 		if raw_bonus is float or raw_bonus is int:
 			mark_duration_bonus = maxf(0.0, float(raw_bonus))
 
+	# Tháp bắn ra viên này có thể đã bị SA THẢI trong lúc đạn còn bay. Truyền
+	# thẳng một Object đã free vào tham số có kiểu Node là lỗi runtime — phải
+	# quy về null. ElementMarks chấp nhận source null (chỉ mất thông tin nguồn).
+	var src: Node = element_source if is_instance_valid(element_source) else null
+
 	if ElementTypes.is_valid(element) and target.has_method("apply_element"):
-		target.apply_element(element, element_source, mark_duration_mult, mark_duration_bonus)
+		target.apply_element(element, src, mark_duration_mult, mark_duration_bonus)
 		# Dấu phụ ("Bình Chứa Kép"/"Lăng Kính Đôi") — có thể tự kích phản ứng một mình
 		if ElementTypes.is_valid(element_secondary) and is_instance_valid(target):
-			target.apply_element(element_secondary, element_source, mark_duration_mult,
+			target.apply_element(element_secondary, src, mark_duration_mult,
 				mark_duration_bonus)
 
 	# Splash AoE — tìm tất cả quái trong bán kính
@@ -262,7 +267,7 @@ func hit_target():
 				# nếu không một quả nổ sẽ rải phản ứng khắp bầy chỉ bằng một viên đạn.
 				if ElementTypes.is_valid(element) and is_instance_valid(body) \
 						and body.has_method("apply_element"):
-					body.apply_element(element, element_source, mark_duration_mult,
+					body.apply_element(element, src, mark_duration_mult,
 						mark_duration_bonus)
 
 	queue_free()

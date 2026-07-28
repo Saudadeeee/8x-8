@@ -223,6 +223,7 @@ static func button_styles() -> Dictionary:
 	var tn := texture("btn_normal.png")
 	var th := texture("btn_hover.png")
 	var tp := texture("btn_pressed.png")
+	var td := texture("btn_disabled.png")
 	if tn:
 		var normal := _tex_box(tn, BTN_MARGIN, 8)
 		var hover := _tex_box(th if th else tn, BTN_MARGIN, 8)
@@ -232,8 +233,10 @@ static func button_styles() -> Dictionary:
 		pressed.content_margin_bottom -= 1.0
 		pressed.content_margin_left += 1.0
 		pressed.content_margin_right -= 1.0
-		var disabled := _tex_box(tn, BTN_MARGIN, 8)
-		disabled.modulate_color = Color(0.55, 0.55, 0.55, 0.55)
+		# Có texture disabled riêng thì dùng nguyên; không thì làm mờ bản normal.
+		var disabled := _tex_box(td if td else tn, BTN_MARGIN, 8)
+		if td == null:
+			disabled.modulate_color = Color(0.55, 0.55, 0.55, 0.55)
 		return {"normal": normal, "hover": hover, "pressed": pressed, "disabled": disabled}
 
 	# Fallback vẽ bằng code

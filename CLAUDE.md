@@ -894,8 +894,16 @@ res://
   phẳng), mọi mesh bàn cờ/overlay/vòng nguyên tố, số sát thương (`Label3D`).
 - Mọi màn UI trừ HUD dựng 100% bằng code — file `.tscn` chỉ có 1 node gốc. Sửa bố
   cục menu là sửa code, mở editor kéo thả không thấy gì.
-- **~294 file asset chết**: `assets/board` (274) · `assets/background` · 
-  `assets/generated` · 6 file lẻ trong `assets/ui` — không dòng code nào tham chiếu.
+- **Đã dọn 449 file asset chết** (assets 9 MB → 3.0 MB), còn trong git history.
+  Lớn nhất: **130 file `assets/models/<id>_N.png`** — rác export Blockbench, vì
+  mọi `.gltf` NHÚNG texture base64 (`uri: "data:image/png;base64,…"`), kiểm
+  130/130 ảnh, 0 file trỏ texture ngoài.
+- **BẪY: tên file lệch hoa–thường.** `Pawn.png` / `Orc.png` trong khi id là
+  `pawn` / `orc`. Windows không phân biệt hoa thường nên chạy tốt, export Linux
+  là hỏng. `check_art.py` giờ bắt lớp lỗi này.
+- `check_art.py` cũng liệt kê ảnh không ai tham chiếu — quét CẢ `.gltf`, và loại
+  trừ `assets/textures/terrain` vì nó nạp bằng chuỗi ghép qua `BiomeLibrary.tex_path()`
+  nên tìm theo tên file sẽ báo nhầm 25 file đang sống.
 
 *Đường hiển thị của nội dung (2026-07-28) — ĐỌC TRƯỚC KHI THÊM LOẠI HÀNG MỚI:*
 - **Tên file ảnh = `id`**, code ghép chuỗi `thư_mục % id`, KHÔNG có bảng ánh xạ.

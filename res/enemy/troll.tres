@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://troll_stats_001"]
 
 [ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_troll"]
-[ext_resource type="Texture2D" uid="uid://rr2vgdu1ae3f" path="res://assets/enemy/Orc.png" id="2_troll"]
+[ext_resource type="Texture2D" uid="uid://rr2vgdu1ae3f" path="res://assets/enemy/orc.png" id="2_troll"]
 
 [resource]
 script = ExtResource("1_troll")

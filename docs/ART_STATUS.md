@@ -18,7 +18,7 @@ khách quan để tách "art thật" khỏi "programmer art".
 | 2 | Vẽ lại **11 panel/nút UI** `assets/ui/panels/` | **Cao** | 48–127 màu. Khung bao mọi thứ trong game |
 | 3 | Đóng gói **một font** vào `assets/fonts/` | **Cao** | Hiện KHÔNG có font nào — 35 ký hiệu đang mượn font hệ thống Windows |
 | 4 | Vẽ **13 icon perk** `assets/ui/perks/` | Trung | Thư mục rỗng, card perk đang hiện ký hiệu ◆ |
-| 5 | Xoá **~280 file asset chết** (`assets/board`, `background`, `generated`) | Trung | Không dòng code nào tham chiếu |
+| 5 | ~~Xoá asset chết~~ **ĐÃ XONG** — 449 file | — | Xem §7 |
 | 6 | Vẽ lại `queen.png` cho đúng 32×32 | Thấp | Đang 32×40, lệch chuẩn |
 
 ---
@@ -201,22 +201,45 @@ Id perk cần vẽ: `luoi_giao_tien_tuyen` · `thue_chu_hau` · `quan_su_hoang_t
 
 ---
 
-## 7. ASSET CHẾT — không code nào tham chiếu
+## 7. ASSET CHẾT — ĐÃ DỌN (2026-07-28)
 
-Đã grep toàn bộ `.gd` và `.tscn`:
+**449 file đã xoá**, `assets/` từ ~9 MB xuống **3.0 MB**. Tất cả vẫn nằm trong
+git history (commit `2aaf152`) nên khôi phục được bất cứ lúc nào.
 
-| Thư mục | Số file | Dung lượng ước tính |
+| Nhóm | Số file | Lý do |
 |---|---|---|
-| `assets/board/` | 274 | phần lớn 128–592px, tileset nước/xương/cây |
-| `assets/background/` | 6 | gồm `desert_bg.png` 352 màu |
-| `assets/generated/` | 8 | icon shop tạm thời, tên có timestamp |
-| `assets/ui/hud_stat_frame.png` | 1 | |
-| `assets/ui/panel_frame.png` | 1 | |
-| `assets/ui/icon_coin/crown/heart/shield.png` | 4 | |
+| `assets/models/<id>_N.png` | 130 | **Rác export Blockbench.** Kiểm 130/130 ảnh trong các file `.gltf` đều nhúng base64 (`uri: "data:image/png;base64,…"`), **0 file tham chiếu texture ngoài** — nên các PNG cạnh nó không ai đọc |
+| `assets/board/` | 274 | Tileset 2D (nước/xương/cây), không dòng code nào tham chiếu |
+| `assets/background/` | 6 | Nền 2D cũ |
+| `assets/generated/` | 8 | Icon shop tạm, tên có timestamp |
+| `assets/ui/` lẻ | 6 | `hud_stat_frame` · `panel_frame` · `icon_coin/crown/heart/shield` |
+| `assets/towers/` lẻ | 3 | `Tower.png` · `Wisp.png` · `horse.png` — không khớp id nào |
+| `assets/tiles/` lẻ | 3 | `territory_tiles.png` · `fire_tile.png` · `ice_tile.png` |
+| `assets/ui/panels/panel_dark.png` | 1 | `PANEL_SPEC["dark"]` khai `"file": ""` → không bao giờ nạp |
+| `res/map.tres` · `res/water.tres` | 2 | TileSet 2D, chỉ trỏ tới `assets/board` và `assets/background` |
+| `scenes/ui/hud.tscn` · `scenes/map/tile_map.tscn` | 2 | Scene 2D mồ côi |
+| `.import` / `.uid` mồ côi | ~14 | Theo file gốc đã xoá |
 
-Tổng ~294 file. Đây là di sản thời 2D trước khi chuyển 3D. Xoá được ngay, không
-ảnh hưởng gì — nhưng nên xác nhận trước vì `assets/board` là tileset mua/tải về,
-có thể còn muốn dùng lại.
+### Hai bug thật phát hiện trong lúc dọn
+
+**1. Tên file lệch hoa–thường** — `assets/towers/Pawn.png` và `assets/enemy/Orc.png`
+trong khi id là `pawn` / `orc`. Windows không phân biệt hoa thường nên chạy được,
+**export sang Linux/macOS là hỏng**. Đã đổi tên và sửa 4 file `.tres` trỏ tới chúng.
+
+**2. `btn_disabled.png` chưa bao giờ được dùng** — `UIStyle.button_styles()` chỉ nạp
+normal/hover/pressed rồi tự làm mờ bản normal cho trạng thái disabled. Art có sẵn
+mà code không đọc. Đã nối vào (thiếu texture thì vẫn fallback làm mờ như cũ).
+
+### Chống tái phát
+
+`python tools/check_art.py` giờ báo thêm hai mục:
+
+- **Tên file lệch hoa–thường** so với id (Windows che mất lớp lỗi này)
+- **Ảnh không ai tham chiếu** — quét cả `.gltf` vì model nhúng texture base64.
+  Thư mục nạp bằng chuỗi ghép (`assets/textures/terrain`, qua
+  `BiomeLibrary.tex_path()`) được loại trừ tường minh để không báo nhầm.
+
+Hiện tại: **0 ảnh chết, 0 tên file lệch**.
 
 ---
 

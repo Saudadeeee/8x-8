@@ -15,6 +15,7 @@ Doc PNG bang zlib + tay — khong can thu vien ngoai.
 Bao cao chi tiet: docs/ART_STATUS.md
 """
 import os
+import re
 import struct
 import sys
 import zlib
@@ -101,6 +102,86 @@ def main():
         print('  %-52s %3dx%-4d %4d mau' % (p, w, h, c))
     clean = [r for r in rows if r[3] <= 40 and r[2] <= 64]
     print('\n== PIXEL ART SACH (<=40 mau): %d file ==' % len(clean))
+
+    check_case()
+    check_unused()
+
+
+def check_case():
+    """Ten file phai trung DUNG hoa-thuong voi id.
+
+    Windows khong phan biet hoa thuong nen assets/towers/Pawn.png van nap duoc
+    khi code hoi pawn.png — nhung export sang Linux thi hong. Da dinh that voi
+    Pawn.png va Orc.png.
+    """
+    ids = set()
+    for d in ('res/towers', 'res/enemy'):
+        if not os.path.isdir(d):
+            continue
+        for f in os.listdir(d):
+            if not f.endswith('.tres'):
+                continue
+            txt = open(os.path.join(d, f), encoding='utf-8').read()
+            m = re.search(r'^id\s*=\s*"([^"]+)"', txt, re.M)
+            if m:
+                ids.add(m.group(1))
+    bad = []
+    for d in ('assets/towers', 'assets/enemy'):
+        if not os.path.isdir(d):
+            continue
+        for f in sorted(os.listdir(d)):
+            if not f.endswith('.png'):
+                continue
+            stem = f[:-4]
+            if stem not in ids and stem.lower() in ids:
+                bad.append('%s/%s  ->  nen la %s.png' % (d, f, stem.lower()))
+    print()
+    print('== TEN FILE LECH HOA-THUONG (hong khi export Linux) ==')
+    for b in bad:
+        print('  LOI  ' + b)
+    if not bad:
+        print('  (sach)')
+
+
+def check_unused():
+    """Anh khong dong code/scene/resource nao tham chieu."""
+    refs = ''
+    for root, _, files in os.walk('.'):
+        if '.git' in root:
+            continue
+        for f in files:
+            # .gltf PHAI co trong danh sach: model tham chieu texture cua no
+            # (`<id>_0.png`…) tu ben trong file gltf, khong phai tu code.
+            if not f.endswith(('.gd', '.tscn', '.tres', '.godot', '.json', '.gltf')):
+                continue
+            try:
+                refs += open(os.path.join(root, f), encoding='utf-8',
+                             errors='ignore').read()
+            except Exception:
+                pass
+    # Thu muc nap bang CHUOI GHEP nen khong the tim theo ten file:
+    #   BiomeLibrary.tex_path() dung "%s%s_%s.png" % [dir, tex_prefix, kind]
+    # Bo qua de khong bao nham 25 texture dia hinh dang song.
+    BUILT_AT_RUNTIME = ('assets/textures/terrain',)
+    dead = []
+    for root, _, files in os.walk('assets'):
+        if '_src' in root:
+            continue
+        if any(root.replace(os.sep, '/').startswith(d) for d in BUILT_AT_RUNTIME):
+            continue
+        for f in sorted(files):
+            if not f.endswith('.png'):
+                continue
+            # Nhieu anh nap bang chuoi ghep `thu_muc % id` nen chi can tim ten
+            # file hoac ten khong duoi la du; tim duong dan day du se bao nham.
+            if f not in refs and f[:-4] not in refs:
+                dead.append(os.path.join(root, f).replace(os.sep, '/'))
+    print()
+    print('== ANH KHONG AI THAM CHIEU: %d ==' % len(dead))
+    for d in dead[:40]:
+        print('  CANH  ' + d)
+    if len(dead) > 40:
+        print('  ... con %d file nua' % (len(dead) - 40))
 
 
 if __name__ == '__main__':
