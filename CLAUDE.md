@@ -878,6 +878,25 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Save meta chống hỏng (2026-07-29) — lỗi CHẶN PHÁT HÀNH đã sửa:*
+- `MetaProgress.load_or_create()` từng là `return load(SAVE_PATH) as MetaProgress`.
+  File hỏng → `load()` null → cast null → `GameManager.meta_progress` đứng NULL
+  VĨNH VIỄN. Không crash (mọi nơi có guard) nên KHÔNG AI BIẾT, nhưng tiến trình
+  meta chết câm và không bao giờ tự phục hồi. Mất điện lúc ghi save là đủ.
+- Nay: luôn trả về MetaProgress dùng được; file hỏng đổi tên sang
+  `meta_progress.corrupt.tres` (không xoá — còn mẫu để truy nguyên).
+- `save()` ghi file TẠM rồi rename đè. **Tên tạm PHẢI giữ đuôi `.tres`**:
+  ResourceSaver suy định dạng từ phần mở rộng, `.tres.tmp` trả lỗi 15
+  (ERR_FILE_UNRECOGNIZED). Đã dính.
+- Test batch 5 phủ 3 dạng hỏng: rác · rỗng · resource sai kiểu.
+
+*Đánh giá phát hành — xem docs/RELEASE_READINESS.md (2026-07-29):*
+- Bot chơi ngẫu nhiên (mua 3 tháp/wave, đặt bừa) vẫn THẮNG wave 10 với 17/45 HP
+  và tồn 2095 vàng ⇒ độ khó thấp + kinh tế thiếu chỗ tiêu cuối ván.
+- Chưa từng export (`export_presets.cfg` không tồn tại) → chưa biết bản build ra sao.
+- Không có tutorial. Bất biến "nguyên tố đến từ Ô" không ai tự đoán ra được.
+- `MAX_WAVES = 10`, một boss duy nhất — GDD hứa nhiều Rival King.
+
 *Mũi tên chỉ hướng đường đi (2026-07-28):*
 - `scripts/map/path_arrows.gd` (`PathArrows`) rải chevron vàng dọc `current_path_grid`,
   mỗi mũi tên xoay về ô kế tiếp. MultiMesh → cả đường 100+ ô vẫn MỘT draw call.

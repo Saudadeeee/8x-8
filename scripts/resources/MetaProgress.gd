@@ -32,11 +32,52 @@ class_name MetaProgress
 
 const SAVE_PATH = "user://meta_progress.tres"
 
-static func load_or_create() -> MetaProgress:
-	if ResourceLoader.exists(SAVE_PATH):
-		return load(SAVE_PATH) as MetaProgress
-	var new_data = MetaProgress.new()
-	return new_data
+## File save hỏng được đổi sang tên này thay vì xoá — người chơi còn cơ hội
+## khiếu nại/khôi phục thủ công, và ta có mẫu để tìm nguyên nhân.
+const CORRUPT_PATH = "user://meta_progress.corrupt.tres"
+## Đuôi PHẢI giữ `.tres`: ResourceSaver suy ra định dạng từ phần mở rộng, đặt
+## `.tres.tmp` sẽ trả lỗi 15 (ERR_FILE_UNRECOGNIZED).
+const TMP_PATH = "user://meta_progress.tmp.tres"
 
+## Nạp tiến trình meta. LUÔN trả về một MetaProgress dùng được.
+##
+## Trước đây hàm này `return load(...) as MetaProgress` — save hỏng thì `load()`
+## trả null, cast ra null, và GameManager.meta_progress đứng null VĨNH VIỄN:
+## không crash (mọi nơi đều có guard) nhưng toàn bộ tiến trình chết câm và
+## không bao giờ tự phục hồi. Mất điện giữa lúc ghi save là đủ để hỏng.
+static func load_or_create() -> MetaProgress:
+	if not ResourceLoader.exists(SAVE_PATH):
+		return MetaProgress.new()
+
+	var loaded: Resource = load(SAVE_PATH)
+	var data := loaded as MetaProgress
+	if data != null:
+		return data
+
+	# Tới đây = file có tồn tại nhưng hỏng hoặc sai kiểu.
+	push_warning("MetaProgress: save hỏng hoặc sai kiểu — đổi tên sang %s và tạo mới."
+		% CORRUPT_PATH)
+	var dir := DirAccess.open("user://")
+	if dir != null:
+		# Xoá bản .corrupt cũ trước: DirAccess.rename() không ghi đè được.
+		if dir.file_exists(CORRUPT_PATH.get_file()):
+			dir.remove(CORRUPT_PATH.get_file())
+		dir.rename(SAVE_PATH.get_file(), CORRUPT_PATH.get_file())
+	return MetaProgress.new()
+
+## Ghi ra file TẠM rồi mới đổi tên đè lên bản thật. Ghi thẳng thì tiến trình bị
+## giết giữa chừng sẽ để lại file cụt — chính là ca hỏng ở trên.
 func save() -> void:
-	ResourceSaver.save(self, SAVE_PATH)
+	var err := ResourceSaver.save(self, TMP_PATH)
+	if err != OK:
+		push_error("MetaProgress: không ghi được save tạm (lỗi %d)." % err)
+		return
+	var dir := DirAccess.open("user://")
+	if dir == null:
+		push_error("MetaProgress: không mở được thư mục user://.")
+		return
+	if dir.file_exists(SAVE_PATH.get_file()):
+		dir.remove(SAVE_PATH.get_file())
+	var rename_err := dir.rename(TMP_PATH.get_file(), SAVE_PATH.get_file())
+	if rename_err != OK:
+		push_error("MetaProgress: không đổi tên được save tạm (lỗi %d)." % rename_err)

@@ -23,7 +23,7 @@ godot --path .
 ## Kiểm tra
 
 ```bash
-python tools/run_tests.py        # 176 khẳng định trên game thật — chạy 2 lần cho chắc
+python tools/run_tests.py        # 187 khẳng định trên game thật — chạy 2 lần cho chắc
 python tools/check_content.py    # validate .tres / JSON + kích thước ảnh
 python tools/audit_wiring.py     # tìm dữ liệu khai mà không ai đọc
 python tools/check_art.py        # tìm ảnh do script sinh (cần vẽ lại)
@@ -31,6 +31,8 @@ python tools/check_art.py        # tìm ảnh do script sinh (cần vẽ lại)
 
 Tình trạng hình ảnh — cái gì đang do code sinh, cái gì cần vẽ lại:
 **[docs/ART_STATUS.md](docs/ART_STATUS.md)**
+
+Đánh giá sẵn sàng phát hành: **[docs/RELEASE_READINESS.md](docs/RELEASE_READINESS.md)**
 
 `run_tests.py` dựng game_map thật rồi đặt tháp, mua đồ, nổ phản ứng, mở rộng bản đồ —
 không mock. Sửa hằng `GODOT` trong file nếu binary nằm chỗ khác.
@@ -133,7 +135,7 @@ scripts/
 res/             .tres: towers · enemy · kings
 data/            JSON nội dung: perks · potions · equipment · relics
 assets/          models .gltf · textures · ui · audio
-tests/           6 batch test chức năng
+tests/           7 batch test chức năng
 tools/           run_tests · check_content · new_content · audit_wiring
 ```
 

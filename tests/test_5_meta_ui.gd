@@ -175,5 +175,28 @@ func _run() -> void:
 		ok(reloaded != null and reloaded.total_runs == gm.meta_progress.total_runs,
 			"doc lai meta dung so lieu")
 
+	print("\n--- SAVE HONG PHAI TU PHUC HOI ---")
+	# Mat dien giua luc ghi save de lai file cut. Truoc day load_or_create() tra
+	# null va toan bo tien trinh meta chet cam vinh vien (khong crash nen khong
+	# ai biet). Nay phai luon tra ve mot MetaProgress dung duoc.
+	var MP = load("res://scripts/resources/MetaProgress.gd")
+	var bad_cases: Array[String] = [
+		"rac khong phai resource",
+		"",
+		"[gd_resource type=\"Resource\" format=3]",
+	]
+	for bad_text in bad_cases:
+		var bf := FileAccess.open(MP.SAVE_PATH, FileAccess.WRITE)
+		bf.store_string(bad_text)
+		bf.close()
+		var got = MP.load_or_create()
+		ok(got != null and got is MetaProgress,
+			"save hong -> van tra ve MetaProgress dung duoc", str(got))
+	# Ghi lai save sach de khong de rac cho lan chay sau
+	var fresh = MP.new()
+	fresh.save()
+	ok(ResourceLoader.exists(MP.SAVE_PATH), "ghi lai duoc save sach sau khi hong")
+
+
 	print("\n== BATCH 5 FAIL=%d ==" % fail)
 	quit()
