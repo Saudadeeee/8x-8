@@ -65,8 +65,15 @@ func _run() -> void:
 	var w0: int = gc.grid_width
 	var h0: int = gc.grid_height
 	var path0: int = gc.current_path_grid.size()
-	var rebased := Vector2i.ZERO
-	gc.map_rebased.connect(func(d: Vector2i): rebased = d)
+	# Lambda GDScript bat bien local theo GIA TRI — phai dung Array de nhan ket qua.
+	var rebase_log: Array[Vector2i] = []
+	gc.map_rebased.connect(func(d: Vector2i): rebase_log.append(d))
+	# Duong mo rong duoc phep DE LEN o lanh tho: TerritoryManager don mesh va
+	# hoan kho qua signal nay. Phai tinh den, khong thi test flaky.
+	var overwritten: Array[Vector2i] = []
+	if gc.has_signal("territory_overwritten_on_expand"):
+		gc.territory_overwritten_on_expand.connect(
+			func(cells: Array[Vector2i]): overwritten.append_array(cells))
 	# Dat 1 thap + 1 o de kiem tra du lieu con dung sau rebase
 	var st: TowerStats = load("res://res/towers/pawn.tres")
 	map.shop_manager.register_troop_purchase(st)
@@ -110,13 +117,17 @@ func _run() -> void:
 	for c in gc.grid_data.keys():
 		var v: Variant = gc.grid_data[c]
 		if v is Node and v == tower_ref: still = true
+	var rebased: Vector2i = rebase_log[0] if not rebase_log.is_empty() else Vector2i.ZERO
 	ok(is_instance_valid(tower_ref) and still, "thap cu con nguyen sau mo rong",
 		"rebase delta=%s" % str(rebased))
 	# O lanh tho phai theo kip rebase
 	if tile_placed:
 		var moved := tile_cell + rebased
-		ok(tm.has_biome_at(moved), "o lanh tho theo kip rebase",
-			"%s + %s = %s" % [str(tile_cell), str(rebased), str(moved)])
+		var was_overwritten := overwritten.has(tile_cell) or overwritten.has(moved)
+		ok(tm.has_biome_at(moved) or was_overwritten,
+			"o lanh tho theo kip rebase (hoac bi duong moi de len hop le)",
+			"%s + %s = %s | de len=%s" % [str(tile_cell), str(rebased), str(moved),
+				str(was_overwritten)])
 	# Duong quai phai lien tuc (moi buoc ke nhau)
 	var broken := 0
 	for i in range(1, gc.current_path_grid.size()):

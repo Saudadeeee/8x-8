@@ -23,7 +23,7 @@ godot --path .
 ## Kiểm tra
 
 ```bash
-python tools/run_tests.py        # 149 khẳng định trên game thật — chạy 2 lần cho chắc
+python tools/run_tests.py        # 176 khẳng định trên game thật — chạy 2 lần cho chắc
 python tools/check_content.py    # validate .tres / JSON + kích thước ảnh
 python tools/audit_wiring.py     # tìm dữ liệu khai mà không ai đọc
 ```
@@ -120,6 +120,7 @@ scripts/
                  + SynergyManager · EncounterManager
   map/           game_map (orchestration) · grid_controller · map_generator
                  wave_spawner · territory_manager · tower_placer · phase_controller
+                 potion_controller · boss_controller
   elements/      element_types · reaction_table · element_marks · formation_detector
                  element_synergy · formation_overlay
   items/         potion_system · equipment_system · relic_system
@@ -128,7 +129,7 @@ scripts/
 res/             .tres: towers · enemy · kings
 data/            JSON nội dung: perks · potions · equipment · relics
 assets/          models .gltf · textures · ui · audio
-tests/           5 batch test chức năng
+tests/           6 batch test chức năng
 tools/           run_tests · check_content · new_content · audit_wiring
 ```
 

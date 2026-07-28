@@ -71,37 +71,17 @@ const ELITE_POTION_DROP_CHANCE: float = 0.15
 const BOSS_POTION_DROPS: int = 2
 ## Bình tặng lúc bắt đầu run để người chơi biết hệ thống tồn tại ("" = không tặng).
 const STARTING_POTION_ID: String = "bom_lua"
-## Cao độ vòng ngắm. BẤT BIẾN: mặt tile y = 0, territory mesh y = 0.052,
-## overlay quad y = 0.06 → vòng ngắm 0.07 để không z-fight với bất cứ lớp nào.
-const POTION_RING_Y: float = 0.07
-## Bán kính VẼ tối đa — thuốc "toàn map" (r = 999) chỉ vẽ tới đây cho dễ nhìn.
-const POTION_RING_MAX_DRAW: float = 6.0
-## Nhịp quét đếm mục tiêu khi ngắm (giây) — không cần mỗi frame.
-const POTION_AIM_SCAN_INTERVAL: float = 0.1
-## Nhịp quét địch Elite để móc signal rơi thuốc (giây).
-const POTION_ELITE_SCAN_INTERVAL: float = 0.5
-## Meta đánh dấu địch đã được móc signal rơi thuốc (tránh nối 2 lần).
-const POTION_HOOK_META: String = "_potion_drop_hooked"
 
 ## Ô túi đang ngắm (-1 = không ở chế độ ngắm).
-var _potion_aim_slot: int = -1
-var _potion_aim_radius: float = 2.5
-var _potion_aim_ring: MeshInstance3D = null
-var _potion_aim_mat: StandardMaterial3D = null
-var _potion_aim_label: Label3D = null
-var _potion_aim_scan_accum: float = 0.0
-var _potion_elite_scan_accum: float = 0.0
 ## Thời gian còn lại của "Khiên Vương Triều" (giây, đếm theo delta nên tôn trọng
 ## tốc độ game và tự dừng khi pause).
-var _potion_shield_left: float = 0.0
 
 var _game_manager: GameManager = null
 var _was_e_pressed: bool = false
 var _game_over_triggered: bool = false
 ## Rival King đang trên sân — dùng để bơm HP vào thanh máu boss của HUD.
-var _active_boss: Node = null
-var _boss_last_hp: int = -1
-var _boss_phase: int = 1
+## Thân xử lý boss ở scripts/map/boss_controller.gd.
+var boss_controller: BossController = null
 ## Tween đang chạy cho môi trường — kill trước khi bắt đầu tween mới để không giằng nhau.
 var _biome_env_tween: Tween = null
 
@@ -146,6 +126,7 @@ func _ready() -> void:
 	wave_spawner = WaveSpawner.new()
 	wave_spawner.name = "WaveSpawner"
 	add_child(wave_spawner)
+	boss_controller = BossController.attach(self)
 	wave_spawner.enemy_reached_base.connect(_on_enemy_reached_base)
 	wave_spawner.enemy_defeated.connect(_on_enemy_defeated)
 	wave_spawner.wave_cleared.connect(_on_wave_cleared)
@@ -185,7 +166,8 @@ func _ready() -> void:
 	potion_system = PotionSystem.new()
 	potion_system.name = "PotionSystem"
 	add_child(potion_system)
-	potion_system.bag_changed.connect(_on_potion_bag_changed)
+	potion_controller = PotionController.attach(self)
+	potion_system.bag_changed.connect(potion_controller._on_potion_bag_changed)
 
 	# ── EquipmentSystem + RelicSystem ─────────────────────────────────────
 	# Tạo TRƯỚC TowerPlacer: placer đọc `equipment_system` của game_map khi bán tháp.
@@ -197,7 +179,7 @@ func _ready() -> void:
 	relic_system.name = "RelicSystem"
 	add_child(relic_system)
 	relic_system.setup(equipment_system, potion_system)
-	relic_system.relics_changed.connect(_on_relics_changed)
+	relic_system.relics_changed.connect(potion_controller._on_relics_changed)
 
 	element_synergy = ElementSynergy.new()
 	element_synergy.name = "ElementSynergy"
@@ -284,9 +266,9 @@ func _ready() -> void:
 		hud.tower_selected.connect(_on_tower_selected)
 	# Túi thuốc: HUD lo hiển thị + phím tắt, game_map lo vòng ngắm 3D và thi triển.
 	if hud and hud.has_signal("potion_aim_requested"):
-		hud.potion_aim_requested.connect(_on_potion_aim_requested)
+		hud.potion_aim_requested.connect(potion_controller._on_potion_aim_requested)
 	if hud and hud.has_signal("potion_aim_cancelled"):
-		hud.potion_aim_cancelled.connect(_on_potion_aim_cancelled)
+		hud.potion_aim_cancelled.connect(potion_controller._on_potion_aim_cancelled)
 
 	if king_manager:
 		king_manager.royal_decree_changed.connect(func(_v): update_ui())
@@ -327,7 +309,7 @@ func _ready() -> void:
 
 	phase_controller.start_prep_phase()
 	_center_camera_on_board()
-	_grant_starting_potions()
+	if potion_controller: potion_controller._grant_starting_potions()
 	update_ui()
 
 	# Nhạc nền — gọi 1 lần khi game_map sẵn sàng
@@ -342,8 +324,8 @@ func _process(delta: float) -> void:
 		wave_spawner.spawn_enemy()
 	_was_e_pressed = e_pressed
 
-	_sync_boss_bar()
-	_tick_potion_systems(delta)
+	if boss_controller: boss_controller.tick()
+	if potion_controller: potion_controller.tick(delta)
 
 	# Preview update
 	var mouse_pos := get_viewport().get_mouse_position()
@@ -366,8 +348,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	# ── Ngắm thuốc: nhánh ƯU TIÊN CAO NHẤT ────────────────────────────────
 	# Chèn TRƯỚC mọi nhánh cũ (overcharge/territory/dismiss/build/merge ★) để
 	# lúc đang ngắm thì không nhánh nào khác chạm được vào click.
-	if _potion_aim_slot >= 0 and _handle_potion_aim_input(event):
-		return
+	if potion_controller != null and potion_controller.is_aiming():
+		if _handle_potion_aim_input(event):
+			return
 
 	# Right-click: khi KHÔNG ở mode nào → thử Overcharge tháp; ngược lại giữ hành vi cancel cũ
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
@@ -602,7 +585,7 @@ func game_over() -> void:
 	if _game_over_triggered:
 		return
 	_game_over_triggered = true
-	_clear_boss_ui()
+	if boss_controller: boss_controller._clear_boss_ui()
 	_cancel_potion_aim()   # dọn vòng ngắm còn treo trước khi khoá màn hình
 	var hud := get_node_or_null("HUD")
 	if hud:
@@ -691,166 +674,6 @@ func equipment_lifesteal_heal(amount: int) -> void:
 	current_health += heal
 	update_ui()
 
-# ==========================================================================
-# BOSS (Rival King) — wiring HUD + thưởng
-# ==========================================================================
-
-## WaveSpawner báo boss ra sân. Mọi call HUD đều guard has_method: HUD chưa có
-## API boss thì boss vẫn đánh bình thường, chỉ thiếu thanh máu.
-func _on_boss_spawned(boss: Node) -> void:
-	if boss == null or not is_instance_valid(boss):
-		return
-	_active_boss  = boss
-	_boss_phase   = 1
-	_boss_last_hp = -1
-
-	# connect() theo tên signal — tránh truy cập member không có trên base Node
-	if boss.has_signal("boss_phase_changed"):
-		boss.connect("boss_phase_changed", _on_boss_phase_changed)
-	if boss.has_signal("boss_defeated"):
-		boss.connect("boss_defeated", _on_boss_defeated)
-
-	var boss_name: String = str(boss.call("get_display_name")) if boss.has_method("get_display_name") else "Rival King"
-	var boss_title: String = str(boss.call("get_title")) if boss.has_method("get_title") else ""
-	var max_hp: int = int(boss.call("get_max_hp")) if boss.has_method("get_max_hp") else int(boss.get("current_hp"))
-
-	var hud := get_node_or_null("HUD")
-	if hud:
-		if hud.has_method("show_boss_intro"): hud.show_boss_intro(boss_name, boss_title)
-		if hud.has_method("show_boss_bar"):   hud.show_boss_bar(boss_name, max_hp)
-
-	phase_controller.phase_message = "☠ %s đã xuất trận! Hạ hắn để thống nhất vương quốc." % boss_name
-	update_ui()
-
-## Bơm HP vào thanh máu HUD — chỉ gọi khi máu ĐỔI để không tốn frame budget.
-func _sync_boss_bar() -> void:
-	if _active_boss == null:
-		return
-	if not is_instance_valid(_active_boss):
-		_clear_boss_ui()   # boss lọt qua King / bị dọn khi expand
-		return
-	var hp: int = int(_active_boss.get("current_hp"))
-	if hp == _boss_last_hp:
-		return
-	_boss_last_hp = hp
-	var hud := get_node_or_null("HUD")
-	if hud and hud.has_method("update_boss_bar"):
-		hud.update_boss_bar(maxi(hp, 0), _boss_phase)
-
-func _on_boss_phase_changed(phase: int) -> void:
-	_boss_phase   = phase
-	_boss_last_hp = -1   # ép cập nhật ngay frame sau để HUD đổi màu theo pha
-	phase_controller.phase_message = "☠ Rival King bước sang PHA %d — hắn mạnh hơn!" % phase
-	update_ui()
-
-func _on_boss_defeated() -> void:
-	current_gold += BOSS_BONUS_GOLD
-	if _game_manager:
-		_game_manager.run_gold_earned += BOSS_BONUS_GOLD
-	var am = get_node_or_null("/root/AudioManagerSingleton")
-	if am and am.has_method("play_sfx"):
-		am.play_sfx("victory", -2.0)
-	_clear_boss_ui()
-	# Chiến lợi phẩm: 2 bình thuốc (đặt TRƯỚC dòng thông báo boss để message boss thắng thế).
-	for _i in BOSS_POTION_DROPS:
-		_grant_random_potion("Rival King")
-	phase_controller.phase_message = "👑 RIVAL KING ĐÃ GỤC NGÃ! +%d vàng" % BOSS_BONUS_GOLD
-	update_ui()
-	_offer_boss_reward()
-
-# ── Chiến lợi phẩm boss: chọn 1 trong 3 (futureplan §6.4) ──────────────────
-# Ba lá LUÔN có đúng ba vai: khớp build · đổi hướng · vàng. Đó là cách đảm bảo
-# "không lối nào sai": đi đúng hướng thì được thưởng sâu, muốn quay xe thì có
-# đường, và kẹt tiền thì vẫn có lối thoát.
-const BOSS_REWARD_GOLD: int = 250
-const BOSS_REWARD_TILES: int = 2
-
-func _offer_boss_reward() -> void:
-	var hud := get_node_or_null("HUD")
-	if hud == null or not hud.has_method("show_perk_draft"):
-		return   # không có UI → thưởng vàng đã cộng ở trên, không mất gì
-	var choices: Array = []
-
-	var dominant := _dominant_element()
-	if dominant.is_empty():
-		dominant = ElementTypes.ALL[randi() % ElementTypes.ALL.size()]
-	choices.append({
-		"id": "boss_tile_%s" % dominant,
-		"name": "Long Mạch %s" % ElementTypes.display_name(dominant),
-		"desc": "Nhận %d ô %s — đặt chồng lên nhau để lên Lv2 ngay." % [
-			BOSS_REWARD_TILES, ElementTypes.display_name(dominant)],
-		"rarity": "epic", "icon": ElementTypes.icon(dominant),
-	})
-
-	# Lá đổi hướng: di vật (đổi luật chơi) — có thì lấy, hết thì thay bằng ô khác hệ.
-	var relic_id: String = relic_system.roll_random() if relic_system else ""
-	if relic_id != "" and relic_system != null and not relic_system.is_full():
-		var relic: Dictionary = relic_system.relic_data(relic_id)
-		choices.append({
-			"id": "boss_relic_%s" % relic_id,
-			"name": str(relic.get("name", relic_id)),
-			"desc": str(relic.get("desc", "")),
-			"rarity": "legendary", "icon": "★",
-		})
-	else:
-		var other := _other_element(dominant)
-		choices.append({
-			"id": "boss_tile_%s" % other,
-			"name": "Mạch %s" % ElementTypes.display_name(other),
-			"desc": "Nhận %d ô %s — mở hướng đi mới." % [
-				BOSS_REWARD_TILES, ElementTypes.display_name(other)],
-			"rarity": "rare", "icon": ElementTypes.icon(other),
-		})
-
-	choices.append({
-		"id": "boss_gold",
-		"name": "Kho Báu Chiến Tranh",
-		"desc": "+%d vàng ngay lập tức." % BOSS_REWARD_GOLD,
-		"rarity": "rare", "icon": "⛁",
-	})
-
-	hud.show_perk_draft(choices, _apply_boss_reward)
-
-func _other_element(exclude: String) -> String:
-	for element in ElementTypes.ALL:
-		if element != exclude:
-			return element
-	return ElementTypes.FIRE
-
-## Áp phần thưởng boss theo id lá đã chọn. Id mã hoá luôn loại + tham số nên
-## không cần giữ state giữa lúc mở UI và lúc người chơi bấm.
-func _apply_boss_reward(choice_id: String) -> void:
-	var hud := get_node_or_null("HUD")
-	if hud and hud.has_method("hide_perk_draft"):
-		hud.hide_perk_draft()
-
-	if choice_id == "boss_gold":
-		current_gold += BOSS_REWARD_GOLD
-		if _game_manager:
-			_game_manager.run_gold_earned += BOSS_REWARD_GOLD
-		phase_controller.phase_message = "⛁ Kho Báu Chiến Tranh: +%d vàng!" % BOSS_REWARD_GOLD
-	elif choice_id.begins_with("boss_relic_"):
-		var relic_id := choice_id.substr("boss_relic_".length())
-		if relic_system and relic_system.add_relic(relic_id):
-			phase_controller.phase_message = "★ Nhận di vật: %s" % \
-				str(relic_system.relic_data(relic_id).get("name", relic_id))
-	elif choice_id.begins_with("boss_tile_"):
-		var element := choice_id.substr("boss_tile_".length())
-		var biome: String = TerritoryManager.biome_of_element(element)
-		if biome != "" and territory_manager:
-			for _i in range(BOSS_REWARD_TILES):
-				territory_manager.add_stock(biome)
-			phase_controller.phase_message = "✦ Nhận %d ô %s!" % [
-				BOSS_REWARD_TILES, ElementTypes.display_name(element)]
-	update_ui()
-
-func _clear_boss_ui() -> void:
-	_active_boss  = null
-	_boss_last_hp = -1
-	var hud := get_node_or_null("HUD")
-	if hud and hud.has_method("hide_boss_bar"):
-		hud.hide_boss_bar()
-
 func _on_map_chunk_created(path: Array[Vector2i]) -> void:
 	if king_manager:
 		king_manager.register_territories(path, "path")
@@ -861,7 +684,8 @@ func _on_map_expanded(_new_height: int, _path: Array[Vector2i]) -> void:
 	_center_camera_on_board()
 	for node in get_tree().get_nodes_in_group("enemies"):    node.queue_free()
 	for node in get_tree().get_nodes_in_group("projectiles"): node.queue_free()
-	_clear_boss_ui()   # boss (nếu có) vừa bị dọn cùng đàn quái
+	# boss (nếu có) vừa bị dọn cùng đàn quái
+	if boss_controller: boss_controller._clear_boss_ui()
 	update_ui()
 
 ## Ô lãnh thổ bị đường mở rộng đè lên — dọn mesh/state và hoàn lại kho.
@@ -1121,331 +945,6 @@ func _on_perk_picked(perk: Dictionary) -> void:
 	if current_health <= 0:
 		game_over()
 
-# ==========================================================================
-# HỆ THUỐC — vòng ngắm 3D, wiring HUD, nguồn rơi thuốc, hiệu ứng khẩn cấp
-# ==========================================================================
-# PotionSystem lo dữ liệu + hiệu ứng lên tháp/địch. game_map lo:
-#   (1) vòng ngắm trong thế giới 3D và luồng click,
-#   (2) nguồn rơi thuốc (Elite / Rival King / khởi đầu),
-#   (3) các `special` cần máu/khiên — nguồn sự thật nằm ở đây.
-# Ngắm thuốc dùng được CẢ TRONG PHA WAVE (khác đặt tháp) — đó là điểm cốt lõi.
-
-## Nhịp mỗi frame cho hệ thuốc: đếm ngược khiên, di chuyển vòng ngắm, quét Elite.
-func _tick_potion_systems(delta: float) -> void:
-	if _potion_shield_left > 0.0:
-		_potion_shield_left = maxf(0.0, _potion_shield_left - delta)
-
-	_potion_elite_scan_accum += delta
-	if _potion_elite_scan_accum >= POTION_ELITE_SCAN_INTERVAL:
-		_potion_elite_scan_accum = 0.0
-		_hook_elite_potion_drops()
-		_tick_alchemist_perk()
-
-	if _potion_aim_slot < 0 or not is_instance_valid(_potion_aim_ring):
-		return
-	var camera := get_viewport().get_camera_3d()
-	if camera == null:
-		return
-	var ground := GridUtil.mouse_to_ground(camera, get_viewport().get_mouse_position())
-	if ground.x < -1e5:
-		return   # ray không cắt mặt đất (camera nhìn lên trời) — giữ vòng ở chỗ cũ
-	_potion_aim_ring.global_position = Vector3(ground.x, POTION_RING_Y, ground.z)
-	if is_instance_valid(_potion_aim_label):
-		_potion_aim_label.global_position = Vector3(ground.x, 0.95, ground.z)
-
-	_potion_aim_scan_accum += delta
-	if _potion_aim_scan_accum < POTION_AIM_SCAN_INTERVAL:
-		return
-	_potion_aim_scan_accum = 0.0
-	_refresh_potion_aim_feedback(ground)
-
-## Đổi màu vòng + nhãn đếm mục tiêu. Chỉ đọc group (RẺ) — KHÔNG đụng tower.gd.
-func _refresh_potion_aim_feedback(ground: Vector3) -> void:
-	if potion_system == null:
-		return
-	var data: Dictionary = potion_system.get_potion_at(_potion_aim_slot)
-	if data.is_empty():
-		_cancel_potion_aim()
-		return
-	var target: String = PotionSystem.target_of(data)
-	var count: int = potion_system.count_targets(data, ground)
-	var valid: bool = count > 0 or target == "self"
-	var tint: Color = Color(0.35, 0.95, 0.45) if valid else Color(0.95, 0.55, 0.20)
-	if _potion_aim_mat:
-		_potion_aim_mat.albedo_color = Color(tint.r, tint.g, tint.b, 0.22)
-		_potion_aim_mat.emission = tint
-	if is_instance_valid(_potion_aim_label):
-		match target:
-			"allies":  _potion_aim_label.text = "🎯 %d tháp" % count
-			"enemies": _potion_aim_label.text = "🎯 %d địch" % count
-			_:         _potion_aim_label.text = "👑 Khẩn cấp"
-		_potion_aim_label.modulate = tint
-
-# ── Vòng ngắm ───────────────────────────────────────────────────────────────
-
-## Dựng lại vòng ngắm cho bán kính `radius` (luôn dọn cái cũ trước).
-func _build_potion_aim_ring(radius: float) -> void:
-	_free_potion_aim_ring()
-	var draw_radius: float = minf(maxf(radius, 0.3), POTION_RING_MAX_DRAW)
-
-	_potion_aim_mat = StandardMaterial3D.new()
-	_potion_aim_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_potion_aim_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_potion_aim_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_potion_aim_mat.albedo_color = Color(0.35, 0.95, 0.45, 0.22)
-	_potion_aim_mat.emission_enabled = true
-	_potion_aim_mat.emission = Color(0.35, 0.95, 0.45)
-	_potion_aim_mat.emission_energy_multiplier = 1.1
-
-	var disc := CylinderMesh.new()
-	disc.top_radius = draw_radius
-	disc.bottom_radius = draw_radius
-	disc.height = 0.02
-	disc.radial_segments = 48
-	disc.material = _potion_aim_mat
-
-	_potion_aim_ring = MeshInstance3D.new()
-	_potion_aim_ring.name = "PotionAimRing"
-	_potion_aim_ring.mesh = disc
-	_potion_aim_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(_potion_aim_ring)
-	_potion_aim_ring.global_position = Vector3(0.0, POTION_RING_Y, 0.0)
-
-	_potion_aim_label = Label3D.new()
-	_potion_aim_label.name = "PotionAimLabel"
-	_potion_aim_label.text = "🎯"
-	_potion_aim_label.font_size = 26
-	_potion_aim_label.pixel_size = 0.01
-	_potion_aim_label.outline_size = 8
-	_potion_aim_label.outline_modulate = Color(0.0, 0.0, 0.0, 0.9)
-	_potion_aim_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_potion_aim_label.no_depth_test = true
-	add_child(_potion_aim_label)
-	_potion_aim_label.global_position = Vector3(0.0, 0.95, 0.0)
-
-## Dọn sạch vòng ngắm — gọi ở MỌI đường thoát chế độ ngắm.
-func _free_potion_aim_ring() -> void:
-	if is_instance_valid(_potion_aim_ring):
-		_potion_aim_ring.queue_free()
-	if is_instance_valid(_potion_aim_label):
-		_potion_aim_label.queue_free()
-	_potion_aim_ring = null
-	_potion_aim_label = null
-	_potion_aim_mat = null
-
-# ── Luồng ngắm / thả ────────────────────────────────────────────────────────
-
-## HUD yêu cầu ngắm ô `slot`.
-func _on_potion_aim_requested(slot: int) -> void:
-	if potion_system == null or _game_over_triggered:
-		_cancel_potion_aim()
-		return
-	# Đang tạm dừng thì _process/_unhandled_input của game_map không chạy → vòng
-	# ngắm sẽ đứng yên và click không tới nơi. Từ chối thẳng thay vì kẹt người chơi.
-	if is_inside_tree() and get_tree().paused:
-		_cancel_potion_aim()
-		return
-	if not potion_system.can_use(slot):
-		_cancel_potion_aim()
-		return
-	# Ngắm thuốc ưu tiên hơn mọi mode khác → tắt build/dismiss/territory trước.
-	if tower_placer:
-		tower_placer.cancel_build()
-
-	_potion_aim_slot = slot
-	_potion_aim_radius = potion_system.radius_at(slot)
-	_build_potion_aim_ring(_potion_aim_radius)
-	_potion_aim_scan_accum = POTION_AIM_SCAN_INTERVAL   # cập nhật nhãn ngay frame đầu
-
-	var hud := get_node_or_null("HUD")
-	if hud and hud.has_method("set_potion_aiming"):
-		hud.set_potion_aiming(true, _potion_aim_radius)
-	var am = get_node_or_null("/root/AudioManagerSingleton")
-	if am and am.has_method("play_sfx"):
-		am.play_sfx("click_magic", -8.0)
-
-## HUD tự huỷ ngắm (ESC / bấm lại ô đang ngắm) — HUD đã tự cập nhật nên không báo ngược.
-func _on_potion_aim_cancelled() -> void:
-	_cancel_potion_aim(false)
-
-## Thoát chế độ ngắm và dọn vòng tròn. [param notify_hud] = false khi chính HUD
-## là bên khởi xướng (tránh vòng lặp signal).
-func _cancel_potion_aim(notify_hud: bool = true) -> void:
-	var was_aiming: bool = _potion_aim_slot >= 0
-	_potion_aim_slot = -1
-	_potion_aim_scan_accum = 0.0
-	_free_potion_aim_ring()
-	if notify_hud and was_aiming:
-		var hud := get_node_or_null("HUD")
-		if hud and hud.has_method("set_potion_aiming"):
-			hud.set_potion_aiming(false, 0.0)
-
-## Input trong chế độ ngắm. Trả true nếu event đã bị "tiêu thụ".
-func _handle_potion_aim_input(event: InputEvent) -> bool:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if (event as InputEventKey).keycode == KEY_ESCAPE:
-			_cancel_potion_aim()
-			get_viewport().set_input_as_handled()
-			return true
-		return false
-	if not (event is InputEventMouseButton) or not event.pressed:
-		return false
-	var mb := event as InputEventMouseButton
-	if mb.button_index == MOUSE_BUTTON_RIGHT:
-		_cancel_potion_aim()
-		get_viewport().set_input_as_handled()
-		return true
-	if mb.button_index != MOUSE_BUTTON_LEFT:
-		return false
-	var camera := get_viewport().get_camera_3d()
-	if camera == null:
-		_cancel_potion_aim()
-		get_viewport().set_input_as_handled()
-		return true
-	var ground := GridUtil.mouse_to_ground(camera, get_viewport().get_mouse_position())
-	get_viewport().set_input_as_handled()
-	if ground.x < -1e5:
-		return true   # click lên trời — nuốt click nhưng GIỮ chế độ ngắm
-	_throw_potion_at(ground)
-	return true
-
-## Thả bình đang ngắm xuống `ground`. Dọn vòng ngắm TRƯỚC khi thi triển để
-## FX của thuốc không bị vòng tròn che.
-func _throw_potion_at(ground: Vector3) -> void:
-	var slot: int = _potion_aim_slot
-	_cancel_potion_aim()
-	if potion_system == null or slot < 0:
-		return
-	var data: Dictionary = potion_system.get_potion_at(slot)
-	var potion_name: String = str(data.get("name", "Thuốc"))
-	if not potion_system.use_potion(slot, ground):
-		return
-	if phase_controller:
-		phase_controller.phase_message = "🧪 Đã dùng %s!" % potion_name
-	update_ui()
-
-# ── Wiring HUD ──────────────────────────────────────────────────────────────
-
-func _on_potion_bag_changed(bag: Array) -> void:
-	var hud := get_node_or_null("HUD")
-	if hud and hud.has_method("refresh_potion_bag"):
-		hud.refresh_potion_bag(bag)
-
-func _on_relics_changed(ids: Array) -> void:
-	var hud := get_node_or_null("HUD")
-	if hud and hud.has_method("refresh_relics"):
-		hud.refresh_relics(ids)
-
-# ── Nguồn rơi thuốc ─────────────────────────────────────────────────────────
-
-func _grant_starting_potions() -> void:
-	if potion_system == null or STARTING_POTION_ID.is_empty():
-		return
-	potion_system.add_potion(STARTING_POTION_ID)
-
-## Bốc 1 bình ngẫu nhiên bỏ vào túi. Túi đầy → báo HUD, không mất bình nào.
-func _grant_random_potion(source: String = "") -> bool:
-	if potion_system == null:
-		return false
-	if potion_system.free_slots() <= 0:
-		if phase_controller:
-			phase_controller.phase_message = "🧪 Túi thuốc đã đầy — dùng bớt (Z/X/C) để nhận thêm!"
-			update_ui()
-		return false
-	var potion_id: String = potion_system.roll_random()
-	if potion_id.is_empty() or not potion_system.add_potion(potion_id):
-		return false
-	var data: Dictionary = potion_system.get_potion_by_id(potion_id)
-	if phase_controller:
-		var suffix: String = " (%s)" % source if not source.is_empty() else ""
-		phase_controller.phase_message = "🧪 Nhận thuốc: %s%s" % [str(data.get("name", potion_id)), suffix]
-		update_ui()
-	var am = get_node_or_null("/root/AudioManagerSingleton")
-	if am and am.has_method("play_sfx"):
-		am.play_sfx("gold", -5.0)
-	return true
-
-## Móc signal `enemy_defeated` của các Elite mới xuất hiện. WaveSpawner chỉ phát
-## `enemy_defeated(gold)` (không kèm node) nên phải nghe thẳng từ chính con Elite —
-## quét theo nhịp POTION_ELITE_SCAN_INTERVAL, mỗi con chỉ móc một lần.
-func _hook_elite_potion_drops() -> void:
-	if potion_system == null:
-		return
-	for enemy in get_tree().get_nodes_in_group("enemies"):
-		if not is_instance_valid(enemy) or enemy.has_meta(POTION_HOOK_META):
-			continue
-		if not bool(enemy.get("is_elite")):
-			continue
-		enemy.set_meta(POTION_HOOK_META, true)
-		if enemy.has_signal("enemy_defeated"):
-			enemy.connect("enemy_defeated", _on_elite_defeated_potion_drop, CONNECT_ONE_SHOT)
-
-## Perk "Nhà Giả Kim" — cứ N phản ứng nổ ra thì tặng 1 bình. Kiểm theo NHỊP
-## quét (không phải mỗi phản ứng) vì ReactionTable là static, không phát signal.
-var _alchemist_last_count: int = 0
-
-func _tick_alchemist_perk() -> void:
-	if _game_manager == null or potion_system == null:
-		return
-	var per: Variant = _game_manager.get("perk_potion_per_reactions")
-	var threshold: int = int(per) if (per is int or per is float) else 0
-	if threshold <= 0:
-		return
-	var total: int = ReactionTable.reaction_count
-	# Mỗi mốc chỉ thưởng MỘT lần: so mốc đã vượt của lần trước với lần này.
-	if int(total / threshold) <= int(_alchemist_last_count / threshold):
-		_alchemist_last_count = total
-		return
-	_alchemist_last_count = total
-	_grant_random_potion("Nhà Giả Kim")
-
-func _on_elite_defeated_potion_drop(_gold: int) -> void:
-	# Di vật "Bản Đồ Kho Báu" biến tỉ lệ 15% thành chắc chắn.
-	var guaranteed: bool = _game_manager != null and bool(_game_manager.get("relic_elite_always_drop"))
-	if guaranteed or randf() < ELITE_POTION_DROP_CHANCE:
-		_grant_random_potion("Elite")
-
-# ── Hiệu ứng khẩn cấp (PotionSystem gọi ngược lên qua has_method) ───────────
-
-## "Máu Vua" — hồi máu cho Nhà Vua.
-func potion_heal_king(amount: int) -> void:
-	if amount <= 0:
-		return
-	current_health += amount
-	FX.damage_number(self, _king_world_pos() + Vector3(0.0, 1.2, 0.0),
-		"+%d ❤" % amount, Color(0.4, 1.0, 0.5), 26)
-	FX.spawn_burst(self, _king_world_pos() + Vector3(0.0, 0.4, 0.0), Color(0.4, 1.0, 0.5), 16, 1.0)
-	if phase_controller:
-		phase_controller.phase_message = "❤ Máu Vua: +%d máu!" % amount
-	update_ui()
-
-## "Khiên Vương Triều" — Nhà Vua miễn sát thương trong `seconds` giây.
-## Gọi chồng thì LÀM MỚI thời hạn (lấy giá trị lớn hơn), không cộng dồn.
-func potion_king_shield(seconds: float) -> void:
-	_potion_shield_left = maxf(_potion_shield_left, maxf(0.1, seconds))
-	FX.spawn_burst(self, _king_world_pos() + Vector3(0.0, 0.5, 0.0), Color(0.55, 0.8, 1.0), 22, 1.3)
-	if phase_controller:
-		phase_controller.phase_message = "🛡 Khiên Vương Triều: miễn sát thương %.0f giây!" % _potion_shield_left
-	update_ui()
-
-func _is_king_shielded() -> bool:
-	return _potion_shield_left > 0.0
-
-## Phản hồi khi khiên chặn một đòn — nếu không hiện gì, player tưởng game lỗi.
-func _show_shield_block() -> void:
-	var pos := _king_world_pos() + Vector3(0.0, 1.0, 0.0)
-	FX.damage_number(self, pos, "🛡 MIỄN", Color(0.55, 0.8, 1.0), 22)
-	FX.spawn_burst(self, pos, Color(0.55, 0.8, 1.0), 10, 0.8)
-	var am = get_node_or_null("/root/AudioManagerSingleton")
-	if am and am.has_method("play_sfx"):
-		am.play_sfx("hit", -8.0, 1.4)
-
-## Vị trí world của ô King (cuối đường đi). Fallback về tâm board nếu chưa có path.
-func _king_world_pos() -> Vector3:
-	if grid_controller and not grid_controller.current_path_grid.is_empty():
-		return GridUtil.cell_to_world(grid_controller.current_path_grid.back())
-	return Vector3.ZERO
-
 func enter_dismiss_mode() -> void:
 	if tower_placer:
 		tower_placer.enter_dismiss_mode()
@@ -1555,3 +1054,41 @@ func _refresh_hud_dismiss_stock(stock: int) -> void:
 		hud.refresh_dismiss_stock(stock)
 
 # Background 2D _draw() cũ đã bỏ — thay bằng WorldEnvironment + GroundPlane trong game_map.tscn.
+
+# ── Boss (uỷ quyền sang BossController) ───────────────────────────────────────
+# Giữ tên hàm cũ vì WaveSpawner connect thẳng vào chúng.
+
+func _on_boss_spawned(boss: Node) -> void:
+	if boss_controller: boss_controller._on_boss_spawned(boss)
+
+func _on_boss_phase_changed(phase: int) -> void:
+	if boss_controller: boss_controller._on_boss_phase_changed(phase)
+
+func _on_boss_defeated() -> void:
+	if boss_controller: boss_controller._on_boss_defeated()
+
+# ── Thuốc (uỷ quyền sang PotionController) ────────────────────────────────────
+# Giữ tên hàm cũ vì PotionSystem và HUD gọi thẳng vào chúng.
+
+var potion_controller: PotionController = null
+
+func potion_heal_king(amount: int) -> void:
+	if potion_controller: potion_controller.potion_heal_king(amount)
+
+func potion_king_shield(seconds: float) -> void:
+	if potion_controller: potion_controller.potion_king_shield(seconds)
+
+func _is_king_shielded() -> bool:
+	return potion_controller != null and potion_controller._is_king_shielded()
+
+func _show_shield_block() -> void:
+	if potion_controller: potion_controller._show_shield_block()
+
+func _grant_random_potion(source: String = "") -> bool:
+	return potion_controller != null and potion_controller._grant_random_potion(source)
+
+func _handle_potion_aim_input(event: InputEvent) -> bool:
+	return potion_controller != null and potion_controller._handle_potion_aim_input(event)
+
+func _cancel_potion_aim(notify_hud: bool = true) -> void:
+	if potion_controller: potion_controller._cancel_potion_aim(notify_hud)

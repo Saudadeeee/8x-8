@@ -26,6 +26,8 @@ TESTS = [
     ("3", "tests/test_3_items.gd",    "Vat pham: thuoc, trang bi, di vat"),
     ("4", "tests/test_4_waves_map.gd", "Wave, boss, ascension, mo rong ban do + rebase"),
     ("5", "tests/test_5_meta_ui.gd",  "Perk, King, encounter, meta-save, moi man UI"),
+    ("6", "tests/test_6_combat_economy.gd",
+     "Buff stacking, sao, giap, may trang thai pha, kinh te, thua"),
 ]
 
 # Mo rong ban do chay DFS tren ban 24x24 nen batch 4 lau hon han cac batch khac.
@@ -47,7 +49,17 @@ def run(path):
     n_ok = len(re.findall(r"^  OK ", out, re.M))
     if m is None:
         return None, n_ok, out
-    return int(m.group(1)), n_ok, out
+    fails = int(m.group(1))
+    # Loi RUNTIME khong lam khang dinh nao that bai nhung van la bug — vi du goi
+    # mot ham khong ton tai moi frame. Parse khong bat duoc (call dong), nen phai
+    # soi log. Da bat duoc that: potion_controller.tick() goi nham ten ham.
+    runtime = sorted(set(re.findall(r"^SCRIPT ERROR: .*$", out, re.M)))
+    if runtime:
+        fails += len(runtime)
+        header = chr(10) + "-- LOI RUNTIME (moi dong tinh la 1 loi) --" + chr(10)
+        out += header + chr(10).join(
+            "  FAIL runtime: " + r for r in runtime)
+    return fails, n_ok, out
 
 
 def main():

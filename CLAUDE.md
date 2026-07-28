@@ -894,12 +894,32 @@ res://
 - `tools/new_content.py <loại> <id>` sinh khung .tres/JSON rồi in danh sách ảnh
   cần vẽ kèm cỡ. `--list` liệt kê mọi id đã dùng (gồm cả món built-in trong .gd).
 
+*Tách game_map.gd (2026-07-28): 1557 → 1094 dòng*
+- `scripts/map/potion_controller.gd` (367) — vòng ngắm 3D, wiring HUD, nguồn rơi thuốc,
+  hồi máu Vua, khiên chặn một đòn. Hằng số `POTION_*` chuyển theo luôn.
+- `scripts/map/boss_controller.gd` (189) — thanh máu boss, đổi pha, thưởng hạ boss.
+- Cùng khuôn với component HUD: `extends Node`, gắn bằng `X.attach(game_map)`, giữ
+  `var map: Node3D`. game_map giữ NGUYÊN tên hàm công khai (`potion_heal_king`,
+  `_on_boss_spawned`…) dưới dạng uỷ quyền → PotionSystem/WaveSpawner/HUD không đổi.
+- **Signal phải connect vào CONTROLLER, không phải game_map**: `bag_changed`,
+  `relics_changed`, `potion_aim_requested/cancelled` nay trỏ thẳng
+  `potion_controller._on_*`. Quên chỗ này thì parse vẫn sạch mà tính năng chết.
+
 *Bộ test chức năng — `python tools/run_tests.py` (2026-07-28):*
-- 5 batch trong `tests/`, **149 khẳng định**, chạy TRÊN GAME THẬT (dựng game_map, đặt tháp,
+- **`run_tests.py` đếm mọi dòng `SCRIPT ERROR:` trong log là LỖI.** Bài học từ chính
+  đợt tách này: đổi lời gọi thành `potion_controller.tick(delta)` nhưng hàm vẫn tên
+  `_tick_potion_systems` → lỗi runtime MỖI FRAME, parse không bắt được (call động),
+  và mọi khẳng định vẫn xanh. Không soi log thì bug đó trôi thẳng vào build.
+- **Bẫy test thứ tư**: đường mở rộng được phép ĐÈ LÊN ô lãnh thổ (signal
+  `territory_overwritten_on_expand` dọn mesh + hoàn kho). Assert "ô còn nguyên sau
+  rebase" mà không tính nhánh này thì flaky theo hướng mở rộng ngẫu nhiên.
+- 6 batch trong `tests/`, **176 khẳng định**, chạy TRÊN GAME THẬT (dựng game_map, đặt tháp,
   mua đồ, nổ phản ứng) chứ không mock: `test_1_core_loop` (đặt/ghép ★/sa thải/shop/ô) ·
   `test_2_elements` (Dấu, 10 phản ứng, khắc-kháng, cấp ô, hình thế, synergy) ·
   `test_3_items` (thuốc/trang bị/di vật) · `test_4_waves_map` (wave, boss, ascension,
-  mở rộng + rebase) · `test_5_meta_ui` (perk, King, encounter, meta-save, 8 màn UI).
+  mở rộng + rebase) · `test_5_meta_ui` (perk, King, encounter, meta-save, 8 màn UI) ·
+  `test_6_combat_economy` (buff stacking 13 lớp, sao là phép NHÂN, trần tầm/sàn hồi
+  chiêu, giáp phẳng, máy trạng thái pha, kinh tế, hai controller vừa tách).
 - Chạy `python tools/run_tests.py` (hoặc `... 2 4` để chọn batch). Batch 4 lâu nhất
   (DFS mở rộng trên bàn 24×24) nên timeout đặt 420s.
 - Không dùng framework test: game cần SceneTree THẬT (Node3D, tween, autoload) —
