@@ -878,6 +878,25 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Khảo sát hình ảnh (2026-07-28) — xem docs/ART_STATUS.md:*
+- **Không có font nào được đóng gói.** `ThemeDB.fallback_font` = Open Sans SemiBold,
+  `has_char()` trả FALSE cho cả 35 ký hiệu đang dùng (★ ⚔ ✓ ♥ ⚡ 🌍 …). Nhưng render
+  ra ảnh rồi đếm pixel thì chúng VẪN HIỆN — Godot fallback sang font hệ thống
+  Windows. Nghĩa là export sang máy khác sẽ thành ô tofu. `has_char()` KHÔNG phải
+  bằng chứng đủ; phải render rồi đếm pixel (tofu chuẩn U+E000 = 855px ở cỡ 48).
+- **Thước đo art thật vs programmer art: SỐ MÀU.** Pixel art vẽ tay 5–15 màu;
+  ảnh sinh bằng script jitter từng pixel ra 48–142 màu cùng kích thước. Khoảng
+  trống giữa hai nhóm rất rộng (14 vs 48) nên ngưỡng 40 tách sạch.
+  `python tools/check_art.py` quét toàn bộ.
+- Đang là programmer art: **32 texture địa hình** (48–142 màu — chiếm phần lớn
+  diện tích màn hình) và **11 panel/nút UI** (48–127 màu).
+- Hoàn toàn do code, KHÔNG có file ảnh: viên đạn (`BoxMesh`), nền menu (2 ColorRect
+  phẳng), mọi mesh bàn cờ/overlay/vòng nguyên tố, số sát thương (`Label3D`).
+- Mọi màn UI trừ HUD dựng 100% bằng code — file `.tscn` chỉ có 1 node gốc. Sửa bố
+  cục menu là sửa code, mở editor kéo thả không thấy gì.
+- **~294 file asset chết**: `assets/board` (274) · `assets/background` · 
+  `assets/generated` · 6 file lẻ trong `assets/ui` — không dòng code nào tham chiếu.
+
 *Đường hiển thị của nội dung (2026-07-28) — ĐỌC TRƯỚC KHI THÊM LOẠI HÀNG MỚI:*
 - **Tên file ảnh = `id`**, code ghép chuỗi `thư_mục % id`, KHÔNG có bảng ánh xạ.
   `HudIcons` là điểm nạp duy nhất: `potion/relic/equipment/perk/tower/enemy`.
