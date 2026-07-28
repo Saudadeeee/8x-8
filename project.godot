@@ -28,6 +28,13 @@ window/size/viewport_width=1600
 window/size/viewport_height=900
 window/size/mode=3
 
+[gui]
+
+theme/default_font_antialiasing=0
+theme/default_font_subpixel_positioning=0
+theme/custom="res://assets/fonts/game_theme.tres"
+"#Fontpixeltuve(tools/make_font.py)âdo3viec:#1.Hopchudepixelarttrungco,khongcondungOpenSanscuaengine.#2.Chuasanmoikyhieugame(sao,kiem,sodua...)nenKHONGconphuthuoc#fonthethongâtruocdayexportsangLinux/macOSseraovuongrong.#3.DudautiengViet(gheptuchugoc+dau,xemmake_font.py).theme/custom"="res://assets/fonts/game_theme.tres"
+
 [layer_names]
 
 3d_physics/layer_1="Tower"

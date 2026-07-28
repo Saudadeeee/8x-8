@@ -556,7 +556,7 @@ func update_ui() -> void:
 		var bk: String = territory_manager.get_pending_biome()
 		var bname: String = TerritoryManager.BIOME_STATS.get(bk, {}).get("name", bk)
 		var remaining: int = territory_manager.get_stock(bk)
-		phase_display = "🌍 Đặt [%s] (x%d) — Click ô hợp lệ / RMB hủy" % [bname, remaining]
+		phase_display = " Đặt [%s] (x%d) — Click ô hợp lệ / RMB hủy" % [bname, remaining]
 	elif tower_placer and tower_placer.is_in_dismiss_mode():
 		phase_display = "[DISMISS] Click tháp để giải tán (RMB để hủy)"
 
@@ -1039,7 +1039,7 @@ func _on_shop_item_purchased(item: ShopItemData) -> void:
 				tower_placer.start_build(item.tower_stats)
 		ShopItemData.ItemType.EQUIPMENT:
 			if equipment_system and not equipment_system.add_item(item.catalog_id):
-				phase_controller.phase_message = "🔧 Kho trang bị đã đầy!"
+				phase_controller.phase_message = " Kho trang bị đã đầy!"
 			if shop_manager:  # món trang bị là duy nhất — mua rồi thì biến khỏi quầy
 				shop_manager.remove_from_active_offers(item.id)
 		ShopItemData.ItemType.RELIC:

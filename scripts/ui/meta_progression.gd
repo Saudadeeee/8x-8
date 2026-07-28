@@ -178,7 +178,7 @@ func _create_king_card(king: KingStats, is_unlocked: bool) -> Control:
 	if is_unlocked:
 		UIStyle.title(name_label, 18, Color(1.0, 0.84, 0.0, 1.0))
 	else:
-		name_label.text += " 🔒"
+		name_label.text += " "
 		UIStyle.body(name_label, 18, Color(0.5, 0.5, 0.5, 1))
 	hbox.add_child(name_label)
 

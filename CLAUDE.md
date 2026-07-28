@@ -878,6 +878,25 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Font pixel tự vẽ (2026-07-29) — `python tools/make_font.py`:*
+- `assets/fonts/pixel_8x8.{png,fnt}` — **287 glyph** do generator vẽ, mỗi pixel
+  đặt tay: ASCII + **đủ dấu tiếng Việt** + 58 ký hiệu game. Thân chữ 5×7, ô chứa
+  9×14 (3 hàng trên cho dấu chồng như "ế", 2 hàng dưới cho dấu nặng và chữ g/y).
+- Chữ Việt có dấu được **ghép** từ chữ gốc + dấu, không vẽ tay 134 lần.
+- `assets/fonts/game_theme.tres` gán qua `gui/theme/custom`. **Phải đặt bằng
+  `ProjectSettings.set_setting()` + `save()`** — viết tay vào project.godot thì
+  Godot ghi đè và bỏ mất dòng đó (giữ lại chú thích nhưng xoá setting).
+- **BẪY LỚN — Emoji_Presentation**: 16 ký tự (⚡ 🔥 🌍 🧪 …) mang thuộc tính
+  Unicode `Emoji_Presentation=Yes`. TextServer ÉP chúng sang font emoji của hệ
+  thống *bất kể font chính có glyph hay không* — đo được advance 19px thay vì 6px
+  và vẽ ra màu cam. Giải: đưa 16 ký hiệu đó vào **Private Use Area** (U+E001..E010).
+  PUA không mang thuộc tính Unicode nên không bao giờ bị định tuyến lại.
+  Tên hằng ở `scripts/ui/glyphs.gd`; trong chuỗi dùng escape `` chứ đừng
+  dán ký tự thô.
+- `has_char()` MỘT MÌNH KHÔNG ĐỦ để kết luận — nó trả true cho cả 16 ký tự bị ép.
+  Phải đo thêm advance. Batch test 8 kiểm cả hai cách.
+- Bitmap font phải tắt antialias + subpixel, nếu không pixel bị nhoè.
+
 *Save meta chống hỏng (2026-07-29) — lỗi CHẶN PHÁT HÀNH đã sửa:*
 - `MetaProgress.load_or_create()` từng là `return load(SAVE_PATH) as MetaProgress`.
   File hỏng → `load()` null → cast null → `GameManager.meta_progress` đứng NULL

@@ -146,23 +146,23 @@ func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node
 		var spd_bonus: float = stats.attack_speed - cur_spd
 		var rng_bonus: int = cur_rng - stats.attack_range
 		_add_buffed_int_row(vbox, "⚔ Sát thương", stats.base_damage, dmg_bonus)
-		_add_buffed_float_row(vbox, "⚡ Tốc đánh", stats.attack_speed, -spd_bonus, "s")
+		_add_buffed_float_row(vbox, " Tốc đánh", stats.attack_speed, -spd_bonus, "s")
 		_add_buffed_int_row(vbox, "◎ Tầm bắn", stats.attack_range, rng_bonus)
 	else:
 		_add_info_row(vbox, "⚔ Sát thương", str(stats.base_damage))
-		_add_info_row(vbox, "⚡ Tốc đánh", "%.2fs" % stats.attack_speed)
+		_add_info_row(vbox, " Tốc đánh", "%.2fs" % stats.attack_speed)
 		_add_info_row(vbox, "◎ Tầm bắn", str(stats.attack_range))
 
 	# Special effects
 	if stats.slow_amount > 0.0:
 		_add_info_row(vbox, "❄ Làm chậm", "%.0f%% × %.1fs" % [stats.slow_amount * 100, stats.slow_duration])
 	if stats.burn_dps > 0:
-		_add_info_row(vbox, "🔥 Thiêu đốt", "%d DPS × %.1fs" % [stats.burn_dps, stats.burn_duration])
+		_add_info_row(vbox, " Thiêu đốt", "%d DPS × %.1fs" % [stats.burn_dps, stats.burn_duration])
 	if stats.splash_radius > 0.0:
 		# splash_radius trong .tres vẫn là px (16 px = 1 ô) — chỉ quy đổi khi hiển thị
-		_add_info_row(vbox, "💥 AoE Splash", "%.1f ô" % (stats.splash_radius / 16.0))
+		_add_info_row(vbox, " AoE Splash", "%.1f ô" % (stats.splash_radius / 16.0))
 	if stats.projectile_count > 1:
-		_add_info_row(vbox, "🎯 Số đạn", "×%d" % stats.projectile_count)
+		_add_info_row(vbox, " Số đạn", "×%d" % stats.projectile_count)
 
 	# Territory buff on tile
 	if biome_key != "":
@@ -223,7 +223,7 @@ func _resize_tower_panel() -> void:
 
 # ── Nguyên tố + Trang bị trong panel tháp (futureplan §2, §3.2) ────────────
 
-## Dòng "Nguyên tố: 🔥 Hoả" — cho biết ngay tháp này đang bắn Dấu gì.
+## Dòng "Nguyên tố:  Hoả" — cho biết ngay tháp này đang bắn Dấu gì.
 ## Đây là thông tin QUAN TRỌNG NHẤT của hệ ô nguyên tố: nguyên tố đến từ Ô chứ
 ## không từ loại tháp, nên không hiện ra thì người chơi không đọc được bàn cờ.
 func _build_element_row(parent: VBoxContainer, tower_node: Node3D) -> void:
@@ -263,7 +263,7 @@ func _build_equipment_section(parent: VBoxContainer, tower_node: Node3D) -> void
 	var title := Label.new()
 	var slots: int = int(equipment.get("slots_per_tower"))
 	var fitted: Array = equipment.call("equipped_on", tower_node)
-	title.text = "🔧 Trang bị (%d/%d)" % [fitted.size(), slots]
+	title.text = " Trang bị (%d/%d)" % [fitted.size(), slots]
 	UIStyle.title(title, 12, UIStyle.GOLD)
 	parent.add_child(title)
 
@@ -539,10 +539,10 @@ func show_territory_info(biome_key: String, biome_data: Dictionary,
 	var dmg: int = int(biome_data.get("damage_bonus", 0))
 	var spd: float = float(biome_data.get("attack_speed_reduction", 0.0))
 	if dmg_pct > 0.0: _add_info_row(vbox, "⚔ Sát thương", "+%.0f%%" % (dmg_pct * 100.0))
-	if spd_pct > 0.0: _add_info_row(vbox, "⚡ Hồi chiêu", "-%.0f%%" % (spd_pct * 100.0))
+	if spd_pct > 0.0: _add_info_row(vbox, " Hồi chiêu", "-%.0f%%" % (spd_pct * 100.0))
 	var rng: int = biome_data.get("range_bonus", 0)
 	if dmg != 0: _add_info_row(vbox, "⚔ Sát thương", "+%d" % dmg)
-	if spd != 0.0: _add_info_row(vbox, "⚡ Cooldown", "-%.1fs" % spd)
+	if spd != 0.0: _add_info_row(vbox, " Cooldown", "-%.1fs" % spd)
 	if rng != 0: _add_info_row(vbox, "◎ Tầm bắn", "+%d" % rng)
 
 	_build_tile_element_section(vbox, biome_key, pos)

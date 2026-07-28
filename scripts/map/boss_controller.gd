@@ -91,7 +91,7 @@ func _on_boss_defeated() -> void:
 	# Chiến lợi phẩm: 2 bình thuốc (đặt TRƯỚC dòng thông báo boss để message boss thắng thế).
 	for _i in map.BOSS_POTION_DROPS:
 		map._grant_random_potion("Rival King")
-	map.phase_controller.phase_message = "👑 RIVAL KING ĐÃ GỤC NGÃ! +%d vàng" % map.BOSS_BONUS_GOLD
+	map.phase_controller.phase_message = " RIVAL KING ĐÃ GỤC NGÃ! +%d vàng" % map.BOSS_BONUS_GOLD
 	map.update_ui()
 	_offer_boss_reward()
 

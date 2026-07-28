@@ -194,7 +194,7 @@ func set_potion_aiming(active: bool, radius: float) -> void:
 			var data := _potion_slot_data(_potion_aim_slot)
 			var pname: String = str(data.get("name", "Thuốc"))
 			var scope: String = "TOÀN MAP" if radius >= 100.0 else "bán kính %.1fm" % radius
-			_potion_hint.text = "🧪 %s — Chọn vùng thả (%s) · Chuột phải để huỷ" % [pname, scope]
+			_potion_hint.text = " %s — Chọn vùng thả (%s) · Chuột phải để huỷ" % [pname, scope]
 			UIStyle.pulse(_potion_hint, 1.08)
 	Input.set_default_cursor_shape(Input.CURSOR_CROSS if active else Input.CURSOR_ARROW)
 	for i in _potion_slots.size():

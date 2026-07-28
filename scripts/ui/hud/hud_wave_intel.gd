@@ -154,6 +154,31 @@ func show_wave_intel_popup(data: Dictionary) -> void:
 			map.confirm_wave_ready()
 	, CONNECT_ONE_SHOT)
 
+	# Popup PHẢI co theo nội dung. `popup_centered()` không truyền kích thước thì
+	# Window tự phình (đo được 580×2064 trong khi nội dung chỉ cao 336). Đo
+	# minimum size của khung rồi truyền THẲNG vào popup_centered — gán `size`
+	# trước lời gọi không có tác dụng vì popup_centered ghi đè.
 	_intel_popup.min_size = Vector2i(580, 0)
-	_intel_popup.popup_centered()
+	_intel_popup.popup_centered(Vector2i(580, 400))
+	# Đo SAU một frame: ngay lúc vừa dựng, Label autowrap chưa xuống dòng nên
+	# minimum size báo ~2056 thay vì 336 — popup sẽ dài hết màn hình.
+	_resize_to_content(frame)
+
+## Co popup vừa đúng nội dung. Tách hàm vì phải `await`, mà nơi gọi không phải
+## coroutine.
+func _resize_to_content(frame: Control) -> void:
+	if hud == null or not is_instance_valid(hud):
+		return
+	await hud.get_tree().process_frame
+	await hud.get_tree().process_frame
+	if not is_instance_valid(_intel_popup) or not is_instance_valid(frame):
+		return
+	var want: Vector2 = frame.get_combined_minimum_size()
+	var w: int = maxi(580, int(want.x) + 24)
+	var h: int = int(want.y) + 24
+	_intel_popup.min_size = Vector2i(w, h)
+	_intel_popup.size = Vector2i(w, h)
+	# Căn giữa lại thủ công vì popup_centered() đã chạy với kích thước cũ.
+	var screen := DisplayServer.window_get_size()
+	_intel_popup.position = Vector2i((screen.x - w) / 2, (screen.y - h) / 2)
 	UIStyle.pop_in(frame)

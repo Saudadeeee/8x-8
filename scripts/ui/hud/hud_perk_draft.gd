@@ -64,7 +64,7 @@ func show_perk_draft(perks: Array, on_pick: Callable) -> void:
 	_perk_draft_overlay.add_child(center)
 
 	var title = Label.new()
-	title.text = "⭐  CHỌN 1 ĐẶC QUYỀN"
+	title.text = "  CHỌN 1 ĐẶC QUYỀN"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 30, UIStyle.GOLD)
 	center.add_child(title)

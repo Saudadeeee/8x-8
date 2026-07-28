@@ -485,7 +485,7 @@ static func body(label: Label, size: int, color: Color = TEXT) -> void:
 	label.add_theme_color_override("font_outline_color", OUTLINE)
 	label.add_theme_constant_override("outline_size", 3)
 
-## Icon dạng ký tự (♥ ◆ ⚡) — outline dày để trông như huy hiệu nổi.
+## Icon dạng ký tự (♥ ◆ ) — outline dày để trông như huy hiệu nổi.
 static func glyph(label: Label, size: int, color: Color) -> void:
 	if not is_instance_valid(label):
 		return

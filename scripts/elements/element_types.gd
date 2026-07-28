@@ -21,7 +21,7 @@ const ALL: Array[String] = [FIRE, ICE, THUNDER, WATER, POISON, EARTH]
 ## dps/slow chỉ là hiệu ứng NỀN — sức mạnh thật nằm ở phản ứng khi ghép 2 Dấu.
 const SPEC: Dictionary = {
 	FIRE: {
-		"name": "Hoả", "icon": "H", "emoji": "🔥", "color": Color("ff6a12"),
+		"name": "Hoả", "icon": "H", "emoji": "", "color": Color("ff6a12"),
 		"dps": 12.0, "slow": 0.0, "duration": 4.0,
 		"pierce_armor": false, "stacking": false,
 		"desc": "Cháy 12 sát thương/giây",
@@ -33,13 +33,13 @@ const SPEC: Dictionary = {
 		"desc": "Làm chậm 35%",
 	},
 	THUNDER: {
-		"name": "Lôi", "icon": "L", "emoji": "⚡", "color": Color("c86aff"),
+		"name": "Lôi", "icon": "L", "emoji": "", "color": Color("c86aff"),
 		"dps": 8.0, "slow": 0.0, "duration": 4.0,
 		"pierce_armor": true, "stacking": false,
 		"desc": "Giật 8 sát thương/giây, bỏ qua giáp",
 	},
 	WATER: {
-		"name": "Thuỷ", "icon": "N", "emoji": "💧", "color": Color("3a7ab0"),
+		"name": "Thuỷ", "icon": "N", "emoji": "", "color": Color("3a7ab0"),
 		"dps": 0.0, "slow": 0.0, "duration": 5.0,
 		"pierce_armor": false, "stacking": false,
 		"amplify_from": [ICE, THUNDER], "amplify_pct": 0.20,
@@ -52,7 +52,7 @@ const SPEC: Dictionary = {
 		"desc": "6 sát thương/giây, cộng dồn tối đa 5 tầng",
 	},
 	EARTH: {
-		"name": "Thổ", "icon": "T", "emoji": "🪨", "color": Color("8a7550"),
+		"name": "Thổ", "icon": "T", "emoji": "", "color": Color("8a7550"),
 		"dps": 0.0, "slow": 0.25, "duration": 5.0,
 		"pierce_armor": false, "stacking": false,
 		"desc": "Làm chậm 25%, địch chết để lại mảnh vàng",

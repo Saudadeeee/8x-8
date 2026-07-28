@@ -100,7 +100,7 @@ func _build_ui() -> void:
 	vbox.add_child(spacer)
 
 	var save_btn = Button.new()
-	save_btn.text = "💾  Save Settings"
+	save_btn.text = "  Save Settings"
 	save_btn.custom_minimum_size = Vector2(220, 52)
 	save_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	UIStyle.apply_button_accent(save_btn, UIStyle.GREEN, 18)

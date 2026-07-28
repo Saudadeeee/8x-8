@@ -138,7 +138,7 @@ func _build_ui() -> void:
 	vbox.add_child(btn_hbox)
 
 	var menu_btn = Button.new()
-	menu_btn.text = "🏠  Return to Menu"
+	menu_btn.text = "  Return to Menu"
 	menu_btn.custom_minimum_size = Vector2(210, 52)
 	UIStyle.apply_button(menu_btn, 18)
 	menu_btn.pressed.connect(_go_to.bind("res://scenes/ui/main_menu.tscn"))

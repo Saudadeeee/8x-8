@@ -30,6 +30,8 @@ TESTS = [
      "Buff stacking, sao, giap, may trang thai pha, kinh te, thua"),
     ("7", "tests/test_7_path_arrows.gd",
      "Mui ten vang chi huong dich di (so luong, huong, ton tai qua mo rong)"),
+    ("8", "tests/test_8_font_safety.gd",
+     "Font pixel phu moi ky tu — chan loi o vuong rong khi export"),
 ]
 
 # Mo rong ban do chay DFS tren ban 24x24 nen batch 4 lau hon han cac batch khac.

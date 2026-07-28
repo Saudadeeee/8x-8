@@ -697,7 +697,7 @@ func _ensure_biome_banner() -> void:
 	UIStyle.body(_biome_banner_desc, 14, C_WHITE)
 	vbox.add_child(_biome_banner_desc)
 
-## Banner "🌍 <tên vùng>" giữa màn hình ~2s khi bước vào vùng môi trường mới.
+## Banner " <tên vùng>" giữa màn hình ~2s khi bước vào vùng môi trường mới.
 ## Tên hàm CỐ ĐỊNH — hệ render biome gọi trực tiếp hàm này.
 ## Trượt từ trên xuống + pulse → giữ → fade, cùng ngôn ngữ với wave banner.
 func show_biome_banner(biome_name: String, desc: String) -> void:
@@ -707,7 +707,7 @@ func show_biome_banner(biome_name: String, desc: String) -> void:
 	var display_name := biome_name.strip_edges()
 	if display_name == "":
 		display_name = "Vùng Đất Vô Danh"
-	_biome_banner_title.text = "🌍  %s" % display_name.to_upper()
+	_biome_banner_title.text = "  %s" % display_name.to_upper()
 	var subtitle := desc.strip_edges()
 	_biome_banner_desc.text = subtitle
 	_biome_banner_desc.visible = subtitle != ""
@@ -740,7 +740,7 @@ func show_biome_banner(biome_name: String, desc: String) -> void:
 		if is_instance_valid(banner):
 			banner.visible = false)
 
-## Chỉ báo "🌍 <tên biome>" thường trực trong stats panel; tooltip liệt kê mod.
+## Chỉ báo " <tên biome>" thường trực trong stats panel; tooltip liệt kê mod.
 ## Dùng _stats_vbox đã cache (VBoxContainer đã bị reparent vào StatsHolder).
 func update_biome_indicator(biome_name: String, mod: Dictionary, desc: String = "") -> void:
 	if not is_instance_valid(_biome_label):
@@ -758,7 +758,7 @@ func update_biome_indicator(biome_name: String, mod: Dictionary, desc: String = 
 	var display_name := biome_name.strip_edges()
 	if display_name == "":
 		display_name = "—"
-	var new_text := "🌍 %s" % display_name
+	var new_text := " %s" % display_name
 	var changed: bool = (_biome_label.text != new_text)
 	_biome_label.text = new_text
 	var lines: Array[String] = _biome_mod_lines(mod)
@@ -866,8 +866,8 @@ func _biome_intel_line(data: Dictionary) -> String:
 		return ""
 	var lines: Array[String] = _biome_mod_lines(mod)
 	if lines.is_empty():
-		return "🌍 Vùng: %s" % display_name
-	return "🌍 Vùng: %s  —  %s" % [display_name, " · ".join(lines)]
+		return " Vùng: %s" % display_name
+	return " Vùng: %s  —  %s" % [display_name, " · ".join(lines)]
 
 # ── Combo Meter ───────────────────────────────────────────────────────────────
 func _build_combo_meter() -> void:
@@ -941,7 +941,7 @@ func _on_combo_changed(count: int, mult: float) -> void:
 					_combo_panel.modulate.a = 1.0)
 		return
 	var tier_color := _combo_color(mult)
-	_combo_label.text = "🔥 Combo ×%d  (%.1f×)" % [count, mult]
+	_combo_label.text = " Combo ×%d  (%.1f×)" % [count, mult]
 	_combo_label.add_theme_color_override("font_color", tier_color)
 	# Panel nhuộm theo mốc → cảm giác "nóng" dần lên
 	_combo_panel.add_theme_stylebox_override(
@@ -1013,7 +1013,7 @@ func _build_pause_ui() -> void:
 
 	_add_menu_button(menu_vbox, "▶  Tiếp tục  (ESC)", func(): _close_esc_menu())
 	_add_menu_button(menu_vbox, "⚙  Cài đặt", func(): _show_settings_panel())
-	_add_menu_button(menu_vbox, "🏠  Menu chính", func(): _go_main_menu())
+	_add_menu_button(menu_vbox, "  Menu chính", func(): _go_main_menu())
 	_add_menu_button(menu_vbox, "✖  Thoát game", func(): get_tree().quit())
 
 	# Settings inline panel
@@ -1069,7 +1069,7 @@ func _build_pause_ui() -> void:
 	fs_row.add_child(fs_chk)
 
 	var save_btn = Button.new()
-	save_btn.text = "💾  Lưu cài đặt"
+	save_btn.text = "  Lưu cài đặt"
 	save_btn.custom_minimum_size = Vector2(180, 40)
 	save_btn.process_mode = Node.PROCESS_MODE_ALWAYS
 	UIStyle.apply_button_accent(save_btn, C_GREEN, 14)
@@ -1335,11 +1335,11 @@ func update_king_info(king_stats, king_mgr) -> void:
 		btn_king_ability.disabled = not can_afford or on_cooldown
 		if on_cooldown and king_mgr.get("_ability_cooldown_remaining") != null:
 			var cd = king_mgr._ability_cooldown_remaining
-			btn_king_ability.text = "⏳ %.0fs" % cd
+			btn_king_ability.text = " %.0fs" % cd
 		else:
 			# KHONG cat chuoi: `.left(10)` bien "Iron Decree" thanh "Iron Decre".
 			# Cot phai rong 210px, font 12 du cho ten day du.
-			btn_king_ability.text = "⚡ %s" % king_stats.ability_name
+			btn_king_ability.text = " %s" % king_stats.ability_name
 
 func _on_king_ability_pressed() -> void:
 	var map_node = _find_game_map()
@@ -1504,7 +1504,7 @@ func _create_shop_item_card(item: ShopItemData) -> Control:
 		cost_lbl.text = "FREE"
 		UIStyle.glyph(cost_lbl, 13, C_GREEN)
 	elif item.use_royal_decree:
-		cost_lbl.text = "⚡ %.1f" % item.cost
+		cost_lbl.text = " %.1f" % item.cost
 		UIStyle.glyph(cost_lbl, 13, C_BLUE)
 	else:
 		cost_lbl.text = "◆ %.0f" % item.cost
@@ -1596,7 +1596,7 @@ func _create_tower_card(stats: TowerStats, stock_count: int = 0) -> void:
 	vbox.add_child(stats_row)
 
 	var decree_lbl = Label.new()
-	decree_lbl.text = "⚡ %.0f" % stats.decree_cost
+	decree_lbl.text = " %.0f" % stats.decree_cost
 	UIStyle.glyph(decree_lbl, 12, C_BLUE)
 	stats_row.add_child(decree_lbl)
 
@@ -1923,7 +1923,7 @@ func _refresh_meta_shop_list() -> void:
 
 		if not is_unlocked:
 			var cost_lbl = Label.new()
-			cost_lbl.text = "⚡ %.0f" % item.cost
+			cost_lbl.text = " %.0f" % item.cost
 			UIStyle.glyph(cost_lbl, 13, C_BLUE)
 			vbox.add_child(cost_lbl)
 
@@ -2014,7 +2014,7 @@ func update_labels(health: int, gold: int, royal_decree: float = 0.0, favor_summ
 
 	# ── Royal Decree: số + bar ───────────────────────────────────────────
 	var rd = round(royal_decree * 10.0) / 10.0
-	label_decree.text  = "⚡ %.1f RD" % rd
+	label_decree.text  = " %.1f RD" % rd
 	if _rd_bar:
 		UIStyle.tween_bar(_rd_bar, royal_decree / maxf(1.0, _decree_max()))
 
@@ -2144,7 +2144,7 @@ func _inject_shop_header(shop_vbox: VBoxContainer) -> void:
 	stats_row.add_child(sep_lbl)
 
 	var rd_icon = Label.new()
-	rd_icon.text = "⚡"
+	rd_icon.text = ""
 	UIStyle.glyph(rd_icon, 18, C_BLUE)
 	stats_row.add_child(rd_icon)
 
@@ -2171,7 +2171,7 @@ func _inject_shop_header(shop_vbox: VBoxContainer) -> void:
 
 	var roll_btn = Button.new()
 	roll_btn.name = "RollButton"
-	roll_btn.text = "🎲 Roll"
+	roll_btn.text = " Roll"
 	roll_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	roll_btn.custom_minimum_size = Vector2(0, 38)
 	UIStyle.apply_button_accent(roll_btn, C_BLUE, 14)

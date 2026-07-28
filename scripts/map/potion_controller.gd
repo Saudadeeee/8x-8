@@ -93,9 +93,9 @@ func _refresh_potion_aim_feedback(ground: Vector3) -> void:
 		_potion_aim_mat.emission = tint
 	if is_instance_valid(_potion_aim_label):
 		match target:
-			"allies":  _potion_aim_label.text = "🎯 %d tháp" % count
-			"enemies": _potion_aim_label.text = "🎯 %d địch" % count
-			_:         _potion_aim_label.text = "👑 Khẩn cấp"
+			"allies":  _potion_aim_label.text = " %d tháp" % count
+			"enemies": _potion_aim_label.text = " %d địch" % count
+			_:         _potion_aim_label.text = " Khẩn cấp"
 		_potion_aim_label.modulate = tint
 
 # ── Vòng ngắm ───────────────────────────────────────────────────────────────
@@ -130,7 +130,7 @@ func _build_potion_aim_ring(radius: float) -> void:
 
 	_potion_aim_label = Label3D.new()
 	_potion_aim_label.name = "PotionAimLabel"
-	_potion_aim_label.text = "🎯"
+	_potion_aim_label.text = ""
 	_potion_aim_label.font_size = 26
 	_potion_aim_label.pixel_size = 0.01
 	_potion_aim_label.outline_size = 8
@@ -238,7 +238,7 @@ func _throw_potion_at(ground: Vector3) -> void:
 	if not map.potion_system.use_potion(slot, ground):
 		return
 	if map.phase_controller:
-		map.phase_controller.phase_message = "🧪 Đã dùng %s!" % potion_name
+		map.phase_controller.phase_message = " Đã dùng %s!" % potion_name
 	map.update_ui()
 
 # ── Wiring HUD ──────────────────────────────────────────────────────────────
@@ -266,7 +266,7 @@ func _grant_random_potion(source: String = "") -> bool:
 		return false
 	if map.potion_system.free_slots() <= 0:
 		if map.phase_controller:
-			map.phase_controller.phase_message = "🧪 Túi thuốc đã đầy — dùng bớt (Z/X/C) để nhận thêm!"
+			map.phase_controller.phase_message = " Túi thuốc đã đầy — dùng bớt (Z/X/C) để nhận thêm!"
 			map.update_ui()
 		return false
 	var potion_id: String = map.potion_system.roll_random()
@@ -275,7 +275,7 @@ func _grant_random_potion(source: String = "") -> bool:
 	var data: Dictionary = map.potion_system.get_potion_by_id(potion_id)
 	if map.phase_controller:
 		var suffix: String = " (%s)" % source if not source.is_empty() else ""
-		map.phase_controller.phase_message = "🧪 Nhận thuốc: %s%s" % [str(data.get("name", potion_id)), suffix]
+		map.phase_controller.phase_message = " Nhận thuốc: %s%s" % [str(data.get("name", potion_id)), suffix]
 		map.update_ui()
 	var am = get_node_or_null("/root/AudioManagerSingleton")
 	if am and am.has_method("play_sfx"):
