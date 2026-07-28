@@ -972,6 +972,10 @@ res://
   `godot --script res://tests/...` là cách rẻ nhất để có đúng môi trường đó.
 - **Chạy lặp lại vài lần**: hướng mở rộng bản đồ và nội dung quầy shop là ngẫu nhiên,
   test chỉ chạy một lần thì bỏ lọt lỗi phụ thuộc may rủi (đã bắt được 2 lỗi kiểu này).
+- Thỉnh thoảng một batch **không khởi động được** giữa chuỗi 7 lần chạy Godot liên
+  tiếp (cho ra 0 khẳng định, không phải chết giữa chừng — chạy riêng batch đó 9 lần
+  đều sạch). Runner thử lại MỘT lần và in `! batch khong khoi dong duoc` để flaky
+  vẫn nhìn thấy được. Nếu lần thứ hai cũng hỏng thì đó là lỗi thật.
 
 *Ba cái bẫy khi VIẾT test cho dự án này (2026-07-28):*
 - **Lambda GDScript bắt biến local theo GIÁ TRỊ.** `var got := ""` rồi

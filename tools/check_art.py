@@ -162,7 +162,17 @@ def check_unused():
     # Thu muc nap bang CHUOI GHEP nen khong the tim theo ten file:
     #   BiomeLibrary.tex_path() dung "%s%s_%s.png" % [dir, tex_prefix, kind]
     # Bo qua de khong bao nham 25 texture dia hinh dang song.
-    BUILT_AT_RUNTIME = ('assets/textures/terrain',)
+    # KHONG BAO GIO liet ke la "chet":
+    #
+    # assets/textures/terrain — nap bang CHUOI GHEP, khong tim theo ten file duoc:
+    #   BiomeLibrary.tex_path() dung "%s%s_%s.png" % [dir, tex_prefix, kind]
+    #
+    # assets/models/<id>_N.png — texture Godot TRICH XUAT khi import glTF.
+    #   Khong dong code nao tro toi, nhung file .scn bien dich trong
+    #   .godot/imported/ PHU THUOC vao chung. Xoa di thi CA 45 MODEL CHET, ma
+    #   `--import` van bao sach vi phu thuoc chi kiem luc LOAD. Da dinh that
+    #   ngay 2026-07-28 va phai khoi phuc tu git. DUNG XOA.
+    BUILT_AT_RUNTIME = ('assets/textures/terrain', 'assets/models')
     dead = []
     for root, _, files in os.walk('assets'):
         if '_src' in root:

@@ -85,6 +85,14 @@ def main():
         print("  BATCH %s — %s" % (key, desc))
         print("=" * 78)
         fails, n_ok, log = run(path)
+        # Da gap 1 lan Godot khong khoi dong noi giua chuoi 7 lan chay lien tiep
+        # (batch cho ra 0 khang dinh, khong phai chet giua chung). Thu LAI MOT LAN
+        # va BAO RO — flaky van nhin thay duoc, nhung khong chan ca bo test.
+        if fails is None and n_ok == 0:
+            print("  ! batch khong khoi dong duoc — thu lai 1 lan")
+            fails, n_ok, log = run(path)
+            if fails is not None:
+                print("  ! lan thu hai chay duoc → lan dau la loi nhat thoi")
         total_ok += n_ok
         if fails is None:
             print("  KHONG CHAY XONG — xem log duoi:")

@@ -247,9 +247,11 @@ mà code không đọc. Đã nối vào (thiếu texture thì vẫn fallback là
 `python tools/check_art.py` giờ báo thêm hai mục:
 
 - **Tên file lệch hoa–thường** so với id (Windows che mất lớp lỗi này)
-- **Ảnh không ai tham chiếu** — quét cả `.gltf` vì model nhúng texture base64.
-  Thư mục nạp bằng chuỗi ghép (`assets/textures/terrain`, qua
-  `BiomeLibrary.tex_path()`) được loại trừ tường minh để không báo nhầm.
+- **Ảnh không ai tham chiếu**. Hai thư mục được loại trừ tường minh vì báo nhầm
+  ở đây rất nguy hiểm:
+  - `assets/textures/terrain` — nạp bằng chuỗi ghép qua `BiomeLibrary.tex_path()`
+  - `assets/models` — `<id>_N.png` là texture Godot trích xuất khi import glTF;
+    không code nào trỏ tới nhưng `.godot/imported/*.scn` phụ thuộc vào chúng
 
 Hiện tại: **0 ảnh chết, 0 tên file lệch**.
 
