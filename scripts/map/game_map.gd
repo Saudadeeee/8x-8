@@ -25,6 +25,7 @@ var tower_placer:         TowerPlacer        = null
 var phase_controller:     PhaseController    = null
 var king_ability_executor: KingAbilityExecutor = null
 var overlay_drawer:       MapOverlayDrawer   = null
+var path_arrows:          PathArrows         = null
 var perk_system:          PerkSystem         = null
 var potion_system:        PotionSystem       = null
 var equipment_system:     EquipmentSystem    = null
@@ -259,6 +260,11 @@ func _ready() -> void:
 	overlay_drawer.name = "MapOverlayDrawer"
 	add_child(overlay_drawer)
 	overlay_drawer.setup(territory_manager, tower_placer, grid_controller)
+
+	# ── PathArrows ────────────────────────────────────────────────────────
+	# Mũi tên vàng chỉ hướng địch đi. Tách riêng khỏi overlay_drawer vì cái đó
+	# rebuild theo ô đang hover, còn đường đi chỉ đổi vài lần mỗi ván.
+	path_arrows = PathArrows.attach(self, grid_controller)
 
 	# ── Signal connections ────────────────────────────────────────────────
 	var hud := get_node_or_null("HUD")
@@ -677,6 +683,8 @@ func equipment_lifesteal_heal(amount: int) -> void:
 func _on_map_chunk_created(path: Array[Vector2i]) -> void:
 	if king_manager:
 		king_manager.register_territories(path, "path")
+	if path_arrows:
+		path_arrows.rebuild()
 
 func _on_map_expanded(_new_height: int, _path: Array[Vector2i]) -> void:
 	if wave_spawner:
@@ -686,6 +694,8 @@ func _on_map_expanded(_new_height: int, _path: Array[Vector2i]) -> void:
 	for node in get_tree().get_nodes_in_group("projectiles"): node.queue_free()
 	# boss (nếu có) vừa bị dọn cùng đàn quái
 	if boss_controller: boss_controller._clear_boss_ui()
+	# Đường dài thêm → phải rải lại mũi tên chỉ hướng.
+	if path_arrows: path_arrows.rebuild()
 	update_ui()
 
 ## Ô lãnh thổ bị đường mở rộng đè lên — dọn mesh/state và hoàn lại kho.
@@ -716,6 +726,9 @@ func _on_map_rebased(delta: Vector2i) -> void:
 	# Overlay hình thế vẽ theo toạ độ thế giới của ô → phải dựng lại sau khi ô dời.
 	if formation_overlay:
 		formation_overlay.rebuild()
+	# Mũi tên cũng đặt theo toạ độ thế giới → dời ô là phải rải lại.
+	if path_arrows:
+		path_arrows.rebuild()
 
 func _center_camera_on_board() -> void:
 	var cam := get_node_or_null("CameraRig")

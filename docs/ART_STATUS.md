@@ -203,12 +203,18 @@ Id perk cần vẽ: `luoi_giao_tien_tuyen` · `thue_chu_hau` · `quan_su_hoang_t
 
 ## 7. ASSET CHẾT — ĐÃ DỌN (2026-07-28)
 
-**449 file đã xoá**, `assets/` từ ~9 MB xuống **3.0 MB**. Tất cả vẫn nằm trong
-git history (commit `2aaf152`) nên khôi phục được bất cứ lúc nào.
+**316 file đã xoá.** Tất cả vẫn nằm trong git history (commit `2aaf152`).
+
+> **Đã thử xoá 130 file `assets/models/<id>_N.png` rồi PHẢI KHÔI PHỤC.** Ban đầu
+> tôi kết luận chúng là rác export Blockbench, vì mọi `.gltf` đều nhúng texture
+> base64 và không file nào trỏ texture ngoài. **Kết luận đó sai.** Godot khi
+> import glTF sẽ **trích xuất** texture nhúng ra chính các PNG đó, và file `.scn`
+> biên dịch trong `.godot/imported/` phụ thuộc vào chúng. Xoá đi thì **cả 45 model
+> không load nổi** — mà `--import` vẫn báo sạch, vì phụ thuộc chỉ được kiểm lúc
+> LOAD chứ không phải lúc import. Đừng đụng vào thư mục đó.
 
 | Nhóm | Số file | Lý do |
 |---|---|---|
-| `assets/models/<id>_N.png` | 130 | **Rác export Blockbench.** Kiểm 130/130 ảnh trong các file `.gltf` đều nhúng base64 (`uri: "data:image/png;base64,…"`), **0 file tham chiếu texture ngoài** — nên các PNG cạnh nó không ai đọc |
 | `assets/board/` | 274 | Tileset 2D (nước/xương/cây), không dòng code nào tham chiếu |
 | `assets/background/` | 6 | Nền 2D cũ |
 | `assets/generated/` | 8 | Icon shop tạm, tên có timestamp |
@@ -226,7 +232,13 @@ git history (commit `2aaf152`) nên khôi phục được bất cứ lúc nào.
 trong khi id là `pawn` / `orc`. Windows không phân biệt hoa thường nên chạy được,
 **export sang Linux/macOS là hỏng**. Đã đổi tên và sửa 4 file `.tres` trỏ tới chúng.
 
-**2. `btn_disabled.png` chưa bao giờ được dùng** — `UIStyle.button_styles()` chỉ nạp
+**2. Xoá nhầm 3 sprite đang được dùng** — `Tower.png` · `Wisp.png` · `horse.png`
+không khớp `id` nào nên tôi tưởng là rác, nhưng `rook.tres` · `ice_guardian.tres` ·
+`knight.tres` trỏ tới chúng qua field `texture`. Shop im lặng bỏ qua ba tháp đó
+(`if stats:` guard) nên test vẫn xanh. Đã khôi phục, và `check_content.py` giờ
+kiểm **mọi `path="res://…"` trong `.tres`/`.tscn` phải tồn tại**.
+
+**3. `btn_disabled.png` chưa bao giờ được dùng** — `UIStyle.button_styles()` chỉ nạp
 normal/hover/pressed rồi tự làm mờ bản normal cho trạng thái disabled. Art có sẵn
 mà code không đọc. Đã nối vào (thiếu texture thì vẫn fallback làm mờ như cũ).
 

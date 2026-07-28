@@ -266,6 +266,26 @@ for key in TILE_KEYS:
     else:
         check_size(crest, 32, 32, 'crest shop')
 
+# ── 6. MOI DUONG DAN TRONG .tres/.tscn PHAI TON TAI ─────────────────────────
+# Xoa nham mot file ma resource van tro toi thi Godot chi in "ERROR: Failed
+# loading resource" roi bo qua — shop lang le thieu mot thap, test van xanh.
+# Da dinh that khi don asset: Tower.png / Wisp.png / horse.png bi xoa nhung
+# rook / ice_guardian / knight van dung chung lam `texture`.
+for folder in ('res', 'res/towers', 'res/enemy', 'res/kings', 'scenes',
+               'scenes/map', 'scenes/ui', 'scenes/tower', 'scenes/enemy',
+               'scenes/projectile'):
+    d = os.path.join(ROOT, folder)
+    if not os.path.isdir(d):
+        continue
+    for name in sorted(os.listdir(d)):
+        if not name.endswith(('.tres', '.tscn')):
+            continue
+        rel = '%s/%s' % (folder, name)
+        for m in re.finditer(r'path="res://([^"]+)"', read(os.path.join(ROOT, folder, name))):
+            target = m.group(1)
+            if not has_asset(target):
+                err('%s tro toi file KHONG TON TAI: res://%s' % (rel, target))
+
 # ── Bao cao ──────────────────────────────────────────────────────────────────
 print('=' * 78)
 print('  KIEM TRA NOI DUNG — %d quan co · %d dich · %d perk'

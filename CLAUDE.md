@@ -878,6 +878,17 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Mũi tên chỉ hướng đường đi (2026-07-28):*
+- `scripts/map/path_arrows.gd` (`PathArrows`) rải chevron vàng dọc `current_path_grid`,
+  mỗi mũi tên xoay về ô kế tiếp. MultiMesh → cả đường 100+ ô vẫn MỘT draw call.
+- **Không nhét vào MapOverlayDrawer**: drawer đó `free()` toàn bộ con mỗi khi state
+  key đổi, mà key có cả ô đang hover → rebuild liên tục lúc rê chuột. Đường đi chỉ
+  đổi vài lần mỗi ván nên tách riêng.
+- Cao độ `ARROW_Y = 0.07` — trên overlay quad (0.06) và mesh ô lãnh thổ (0.052).
+  `no_depth_test` vì ô đường có vệt bánh xe dày lên sẽ cắt mất mũi tên.
+- Phải `rebuild()` ở CẢ `map_chunk_created`, `map_expanded` và `map_rebased` —
+  mũi tên đặt theo toạ độ thế giới nên rebase là lệch hết.
+
 *Khảo sát hình ảnh (2026-07-28) — xem docs/ART_STATUS.md:*
 - **Không có font nào được đóng gói.** `ThemeDB.fallback_font` = Open Sans SemiBold,
   `has_char()` trả FALSE cho cả 35 ký hiệu đang dùng (★ ⚔ ✓ ♥ ⚡ 🌍 …). Nhưng render
@@ -894,10 +905,18 @@ res://
   phẳng), mọi mesh bàn cờ/overlay/vòng nguyên tố, số sát thương (`Label3D`).
 - Mọi màn UI trừ HUD dựng 100% bằng code — file `.tscn` chỉ có 1 node gốc. Sửa bố
   cục menu là sửa code, mở editor kéo thả không thấy gì.
-- **Đã dọn 449 file asset chết** (assets 9 MB → 3.0 MB), còn trong git history.
-  Lớn nhất: **130 file `assets/models/<id>_N.png`** — rác export Blockbench, vì
-  mọi `.gltf` NHÚNG texture base64 (`uri: "data:image/png;base64,…"`), kiểm
-  130/130 ảnh, 0 file trỏ texture ngoài.
+- Đã dọn **316 file asset chết**, còn trong git history (`2aaf152`).
+- **KHÔNG BAO GIỜ xoá `assets/models/<id>_N.png`.** Trông như rác export
+  Blockbench (mọi `.gltf` nhúng texture base64, không file nào trỏ texture ngoài)
+  nhưng Godot khi import glTF **trích xuất** texture nhúng ra chính các PNG đó, và
+  `.godot/imported/*.scn` phụ thuộc vào chúng. Xoá → **cả 45 model chết**, mà
+  `--import` VẪN BÁO SẠCH vì phụ thuộc chỉ kiểm lúc LOAD. Đã dính và phải khôi phục.
+- **Trước khi xoá asset phải GREP tham chiếu, không chỉ so tên với id.**
+  `Tower.png`/`Wisp.png`/`horse.png` không khớp id nào nhưng `rook`/`ice_guardian`/
+  `knight` .tres dùng làm `texture`. Shop `if stats:` nuốt lỗi nên test vẫn xanh.
+- `check_content.py` giờ kiểm mọi `path="res://…"` trong `.tres`/`.tscn` phải tồn
+  tại; `run_tests.py` đếm cả `ERROR: Failed loading resource` (trước chỉ đếm
+  `SCRIPT ERROR`, nên lớp lỗi này lọt lưới).
 - **BẪY: tên file lệch hoa–thường.** `Pawn.png` / `Orc.png` trong khi id là
   `pawn` / `orc`. Windows không phân biệt hoa thường nên chạy tốt, export Linux
   là hỏng. `check_art.py` giờ bắt lớp lỗi này.

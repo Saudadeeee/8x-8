@@ -28,6 +28,8 @@ TESTS = [
     ("5", "tests/test_5_meta_ui.gd",  "Perk, King, encounter, meta-save, moi man UI"),
     ("6", "tests/test_6_combat_economy.gd",
      "Buff stacking, sao, giap, may trang thai pha, kinh te, thua"),
+    ("7", "tests/test_7_path_arrows.gd",
+     "Mui ten vang chi huong dich di (so luong, huong, ton tai qua mo rong)"),
 ]
 
 # Mo rong ban do chay DFS tren ban 24x24 nen batch 4 lau hon han cac batch khac.
@@ -53,7 +55,13 @@ def run(path):
     # Loi RUNTIME khong lam khang dinh nao that bai nhung van la bug — vi du goi
     # mot ham khong ton tai moi frame. Parse khong bat duoc (call dong), nen phai
     # soi log. Da bat duoc that: potion_controller.tick() goi nham ten ham.
-    runtime = sorted(set(re.findall(r"^SCRIPT ERROR: .*$", out, re.M)))
+    # Ca hai loai: SCRIPT ERROR (loi GDScript luc chay) va ERROR resource
+    # (thieu file .png/.tres). Loai thu hai da tung lot luoi: xoa nham mot
+    # sprite ma .tres van tro toi, shop im lang bo qua thap do, test van xanh.
+    runtime = sorted(set(
+        re.findall(r"^SCRIPT ERROR: .*$", out, re.M)
+        + re.findall(r"^ERROR: (?:Failed loading resource|Resource file not found).*$",
+                     out, re.M)))
     if runtime:
         fails += len(runtime)
         header = chr(10) + "-- LOI RUNTIME (moi dong tinh la 1 loi) --" + chr(10)
