@@ -313,6 +313,7 @@ func _ready() -> void:
 		territory_count = _game_manager.selected_king.starting_territory_count
 	territory_manager.initialize(territory_count, grid_controller.grid_data, king_manager, int(grid_controller.grid_height / 2.0))
 
+	_maybe_show_tutorial()
 	phase_controller.start_prep_phase()
 	_center_camera_on_board()
 	if potion_controller: potion_controller._grant_starting_potions()
@@ -762,7 +763,10 @@ func _on_phase_changed(phase: PhaseController.GamePhase) -> void:
 					var intel_text: String = wave_spawner.get_wave_intel_text(phase_controller.wave_number)
 					var intel_data: Dictionary = wave_spawner.build_wave_intel_data(phase_controller.wave_number)
 					if hud.has_method("show_wave_intel"):       hud.show_wave_intel(intel_text)
-					if hud.has_method("show_wave_intel_popup"): hud.show_wave_intel_popup(intel_data)
+					# Popup trinh sát là Window nên vẽ ĐÈ lên mọi CanvasLayer —
+					# kể cả lớp hướng dẫn. Hoãn lại tới khi đọc xong hướng dẫn.
+					if hud.has_method("show_wave_intel_popup") and not _tutorial_open():
+						hud.show_wave_intel_popup(intel_data)
 			PhaseController.GamePhase.WAVE:
 				if hud.has_method("hide_shop_popup"):  hud.hide_shop_popup()
 				if hud.has_method("hide_shop_panel"):  hud.hide_shop_panel()
@@ -1105,3 +1109,25 @@ func _handle_potion_aim_input(event: InputEvent) -> bool:
 
 func _cancel_potion_aim(notify_hud: bool = true) -> void:
 	if potion_controller: potion_controller._cancel_potion_aim(notify_hud)
+
+## Hiện hướng dẫn nhập môn ở ván ĐẦU TIÊN. Tạm dừng game trong lúc đọc để người
+## chơi không bị wave đầu chạy mất.
+func _maybe_show_tutorial() -> void:
+	if TutorialOverlay.already_seen():
+		return
+	var tut := TutorialOverlay.show_for(self)
+	get_tree().paused = true
+	tut.finished.connect(_on_tutorial_finished)
+
+## Đang mở hướng dẫn — dùng để hoãn các popup có thể che mất nó.
+func _tutorial_open() -> bool:
+	var t := get_node_or_null("TutorialOverlay")
+	return t != null and is_instance_valid(t) and not t.is_queued_for_deletion()
+
+func _on_tutorial_finished() -> void:
+	get_tree().paused = false
+	# Giờ mới hiện popup trinh sát wave đầu — trước đó nó che mất hướng dẫn.
+	var hud := get_node_or_null("HUD")
+	if hud and hud.has_method("show_wave_intel_popup") and wave_spawner:
+		hud.show_wave_intel_popup(
+			wave_spawner.build_wave_intel_data(phase_controller.wave_number))

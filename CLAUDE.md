@@ -878,6 +878,22 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Export + hướng dẫn nhập môn (2026-07-29):*
+- `export_presets.cfg` GIỮ TRONG REPO (trước bị .gitignore nên dự án chưa export
+  lần nào). 3 preset: Windows · Linux · Web. Máy này chỉ cài template **Web**;
+  desktop cần tải template ~800MB qua editor.
+- Build Web đã chạy thật: **0 lỗi**, `index.pck` 1.5 MB, đã xác minh font
+  (`pixel_8x8`, `game_theme`) và asset nằm trong gói.
+- `scripts/ui/tutorial_overlay.gd` — 5 thẻ, tự hiện ván ĐẦU rồi ghi cờ
+  `MetaProgress.seen_tutorial`. Nút "Xem lại hướng dẫn" ở màn Cài Đặt bật lại.
+- **Popup trinh sát là Window nên vẽ ĐÈ lên mọi CanvasLayer**, kể cả lớp hướng
+  dẫn. `game_map._tutorial_open()` hoãn popup tới khi đọc xong.
+- Tutorial tạm dừng game → test nào đo máy trạng thái pha phải đặt
+  `seen_tutorial = true` trước, nếu không đếm ngược chuẩn bị không chạy.
+- **Sau mỗi lần `python tools/make_font.py` PHẢI chạy tiếp**
+  `godot --headless --script res://tools/rebuild_font_resource.gd` — `.tres` là
+  SNAPSHOT của `.fnt`, không tự đọc lại. Quên thì font mới không có tác dụng.
+
 *Font pixel tự vẽ (2026-07-29) — `python tools/make_font.py`:*
 - `assets/fonts/pixel_8x8.{png,fnt}` — **287 glyph** do generator vẽ, mỗi pixel
   đặt tay: ASCII + **đủ dấu tiếng Việt** + 58 ký hiệu game. Thân chữ 5×7, ô chứa

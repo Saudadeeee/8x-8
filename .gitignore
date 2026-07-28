@@ -10,8 +10,9 @@
 data_*/
 mono_crash.*.json
 
-# Export presets (may contain sensitive paths)
-export_presets.cfg
+# Export presets: GIU trong repo — day la cau hinh dong goi, khong chua bi mat.
+# Truoc day bi ignore nen du an chua bao gio export duoc lan nao.
+build/
 
 # Android / iOS build output
 android/

@@ -26,6 +26,9 @@ func _place(map, gc, st) -> Node3D:
 func _run() -> void:
 	await process_frame
 	var gm = root.get_node("/root/GameManagerSingleton")
+	# Huong dan nhap mon tu hien o van dau va TAM DUNG game — dem nguoc chuan bi
+	# se khong chay. Danh dau da xem de test do dung may trang thai pha.
+	if gm.meta_progress: gm.meta_progress.seen_tutorial = true
 	gm.start_run(load("res://res/kings/king_iron.tres"))
 	change_scene_to_file("res://scenes/map/game_map.tscn")
 	await process_frame; await process_frame

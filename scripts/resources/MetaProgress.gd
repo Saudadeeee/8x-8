@@ -18,6 +18,11 @@ class_name MetaProgress
 # Mỗi upgrade là một Dictionary: { "id": "...", "level": 1, "max_level": 5 }
 @export var meta_upgrades: Array[Dictionary] = []
 
+## Đã xem hướng dẫn nhập môn chưa. Hiện MỘT LẦN ở ván đầu; màn Cài Đặt có nút
+## bật lại. Để ở meta (không phải per-run) vì nó là trải nghiệm lần đầu của
+## NGƯỜI CHƠI, không phải của ván.
+@export var seen_tutorial: bool = false
+
 # --- ASCENSION (bậc độ khó tăng dần) ---
 ## Bậc cao nhất đã MỞ KHOÁ (chọn được ở màn king_select). Thắng bậc N mở bậc N+1.
 ## Save cũ thiếu field này sẽ nhận default 0 → không phá tương thích.

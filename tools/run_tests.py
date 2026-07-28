@@ -32,6 +32,8 @@ TESTS = [
      "Mui ten vang chi huong dich di (so luong, huong, ton tai qua mo rong)"),
     ("8", "tests/test_8_font_safety.gd",
      "Font pixel phu moi ky tu — chan loi o vuong rong khi export"),
+    ("9", "tests/test_9_tutorial.gd",
+     "Huong dan nhap mon: tu hien van dau, day dung bat bien, khong hien lai"),
 ]
 
 # Mo rong ban do chay DFS tren ban 24x24 nen batch 4 lau hon han cac batch khac.
