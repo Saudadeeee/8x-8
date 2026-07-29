@@ -66,7 +66,7 @@ func _build_ui() -> void:
 
 	# Title
 	_title_label = Label.new()
-	_title_label.text = "Encounter"
+	_title_label.text = "Sự Kiện"
 	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(_title_label, 32, UIStyle.GOLD)
 	panel_vbox.add_child(_title_label)
@@ -82,7 +82,7 @@ func _build_ui() -> void:
 
 	# Rarity
 	_rarity_label = Label.new()
-	_rarity_label.text = "COMMON"
+	_rarity_label.text = "THƯỜNG"
 	_rarity_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(_rarity_label, 14, UIStyle.RARITY_COMMON)
 	panel_vbox.add_child(_rarity_label)
@@ -96,7 +96,7 @@ func _build_ui() -> void:
 
 	# Skip button
 	_skip_button = Button.new()
-	_skip_button.text = "✖  Skip / Close"
+	_skip_button.text = "✖  Bỏ qua"
 	_skip_button.custom_minimum_size = Vector2(180, 44)
 	_skip_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	UIStyle.apply_button(_skip_button, 16)
@@ -114,16 +114,16 @@ func show_encounter(encounter) -> void:
 	var rarity_key := "common"
 	match encounter.rarity:
 		0: # COMMON
-			_rarity_label.text = "◆ COMMON"
+			_rarity_label.text = "◆ THƯỜNG"
 			rarity_key = "common"
 		1: # UNCOMMON
-			_rarity_label.text = "◆ UNCOMMON"
+			_rarity_label.text = "◆ KHÁ HIẾM"
 			rarity_key = "rare"
 		2: # RARE
-			_rarity_label.text = "◆ RARE"
+			_rarity_label.text = "◆ HIẾM"
 			rarity_key = "epic"
 		3: # LEGENDARY
-			_rarity_label.text = "◆ LEGENDARY"
+			_rarity_label.text = "◆ HUYỀN THOẠI"
 			rarity_key = "legendary"
 	_rarity_label.add_theme_color_override("font_color", UIStyle.rarity_color(rarity_key))
 	var icon_frame := _panel.find_child("IconFrame", true, false) as PanelContainer

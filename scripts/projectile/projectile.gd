@@ -40,18 +40,48 @@ func _ready():
 
 	_build_visual()
 
-## Bolt mesh phát sáng theo màu tower (mesh + material riêng per instance).
+## Viên đạn: mũi nhọn + đuôi thon, thay cho khối hộp trơn.
+##
+## Hộp trơn đọc như một viên gạch bay và không cho biết hướng. Mũi tên có mũi
+## nhọn phía trước nên mắt bắt được hướng bay ngay cả khi nó lướt nhanh.
+## Dựng bằng ArrayMesh (8 tam giác) thay vì BoxMesh — vẫn rẻ, không cần asset.
 func _build_visual() -> void:
-	var mesh := BoxMesh.new()
-	mesh.size = Vector3(0.09, 0.09, 0.42)
+	mesh_instance.mesh = _make_bolt_mesh()
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.albedo_color = color
 	mat.emission_enabled = true
 	mat.emission = color
 	mat.emission_energy_multiplier = 2.2
-	mesh.material = mat
-	mesh_instance.mesh = mesh
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mesh_instance.material_override = mat
+
+const BOLT_LEN: float = 0.44
+const BOLT_RAD: float = 0.055
+
+## Hình thoi 4 mặt kéo dài theo trục +Z, mũi nhọn ở đầu và đuôi thu nhỏ.
+func _make_bolt_mesh() -> ArrayMesh:
+	var tip  := Vector3(0.0, 0.0, BOLT_LEN * 0.62)
+	var tail := Vector3(0.0, 0.0, -BOLT_LEN * 0.38)
+	# Bốn đỉnh giữa tạo tiết diện hình thoi — nhìn từ mọi phía đều có bề dày.
+	var ring := [
+		Vector3(BOLT_RAD, 0.0, 0.0),
+		Vector3(0.0, BOLT_RAD, 0.0),
+		Vector3(-BOLT_RAD, 0.0, 0.0),
+		Vector3(0.0, -BOLT_RAD, 0.0),
+	]
+	var verts := PackedVector3Array()
+	for i in 4:
+		var a: Vector3 = ring[i]
+		var b: Vector3 = ring[(i + 1) % 4]
+		verts.append_array([tip, a, b])      # nón mũi
+		verts.append_array([tail, b, a])     # nón đuôi
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = verts
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return mesh
 
 func _process(delta):
 	if is_instance_valid(target):

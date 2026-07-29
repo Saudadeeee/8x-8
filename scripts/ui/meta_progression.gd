@@ -41,7 +41,7 @@ func _build_ui() -> void:
 
 	# Back button
 	var back_btn = Button.new()
-	back_btn.text = "←  Back"
+	back_btn.text = "←  Quay Lại"
 	back_btn.custom_minimum_size = Vector2(130, 46)
 	back_btn.position = Vector2(20, 20)
 	UIStyle.apply_button(back_btn, 17)
@@ -51,7 +51,7 @@ func _build_ui() -> void:
 
 	# Title
 	var title = Label.new()
-	title.text = "★  META PROGRESSION"
+	title.text = "★  TIẾN TRÌNH"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 48, UIStyle.GOLD)
 	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -80,7 +80,7 @@ func _build_ui() -> void:
 		"Total Runs: %d" % _meta.total_runs,
 		"Total Wins: %d" % _meta.total_wins,
 		"Best Wave: %d" % _meta.best_wave_reached,
-		"Meta Points: %d ★" % _meta.meta_points,
+		"Điểm tích luỹ: %d ★" % _meta.meta_points,
 	]
 	for s in stat_entries:
 		var lbl = Label.new()
@@ -112,7 +112,7 @@ func _build_ui() -> void:
 	left_scroll.add_child(left_vbox)
 
 	var kings_title = Label.new()
-	kings_title.text = "♛  UNLOCKED KINGS"
+	kings_title.text = "♛  VUA ĐÃ MỞ"
 	UIStyle.title(kings_title, 24, UIStyle.GOLD)
 	left_vbox.add_child(kings_title)
 
@@ -141,7 +141,7 @@ func _build_ui() -> void:
 	right_scroll.add_child(right_vbox)
 
 	var upgrades_title = Label.new()
-	upgrades_title.text = "⚒  META UPGRADES"
+	upgrades_title.text = "⚒  NÂNG CẤP VĨNH VIỄN"
 	UIStyle.title(upgrades_title, 24, UIStyle.GOLD)
 	right_vbox.add_child(upgrades_title)
 
@@ -194,7 +194,7 @@ func _create_king_card(king: KingStats, is_unlocked: bool) -> Control:
 		hbox.add_child(cost_label)
 
 		var unlock_btn = Button.new()
-		unlock_btn.text = "Unlock"
+		unlock_btn.text = "Mở khoá"
 		unlock_btn.custom_minimum_size = Vector2(100, 38)
 		unlock_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		UIStyle.apply_button_accent(unlock_btn, UIStyle.GREEN, 14)
@@ -256,7 +256,7 @@ func _create_upgrade_row(upgrade_def: Dictionary, _parent_vbox: VBoxContainer) -
 	hbox.add_child(cost_lbl)
 
 	var upgrade_btn = Button.new()
-	upgrade_btn.text = "Upgrade"
+	upgrade_btn.text = "Nâng cấp"
 	upgrade_btn.custom_minimum_size = Vector2(108, 38)
 	upgrade_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	UIStyle.apply_button_accent(upgrade_btn, UIStyle.BLUE, 15)
@@ -312,9 +312,9 @@ func _refresh_currency_display() -> void:
 			old_pts = int(_meta_points_label.get_meta("pts"))
 		_meta_points_label.set_meta("pts", _meta.meta_points)
 		if old_pts > 0:
-			UIStyle.count_to(_meta_points_label, old_pts, _meta.meta_points, "Meta Points: %d ★")
+			UIStyle.count_to(_meta_points_label, old_pts, _meta.meta_points, "Điểm tích luỹ: %d ★")
 		else:
-			_meta_points_label.text = "Meta Points: %d ★" % _meta.meta_points
+			_meta_points_label.text = "Điểm tích luỹ: %d ★" % _meta.meta_points
 	for btn in _upgrade_buttons:
 		if not is_instance_valid(btn):
 			continue

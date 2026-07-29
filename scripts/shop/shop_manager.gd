@@ -227,7 +227,7 @@ func _populate_default_items() -> void:
 	if pawn_stats:
 		var u1 = ShopItemData.new()
 		u1.id = "pawn_training"
-		u1.display_name = "Pawn Strike Training"
+		u1.display_name = "Luyện Đòn Tốt"
 		u1.description = "+5 Damage cho tất cả Pawn trên bàn."
 		u1.cost = 8.0
 		u1.use_royal_decree = false
@@ -240,7 +240,7 @@ func _populate_default_items() -> void:
 
 		var u2 = ShopItemData.new()
 		u2.id = "pawn_quickness"
-		u2.display_name = "Pawn Field Drills"
+		u2.display_name = "Thao Trường Tốt"
 		u2.description = "-0.15s Cooldown cho tất cả Pawn trên bàn."
 		u2.cost = 8.0
 		u2.use_royal_decree = false
@@ -255,7 +255,7 @@ func _populate_default_items() -> void:
 	if knight_stats:
 		var u3 = ShopItemData.new()
 		u3.id = "knight_training"
-		u3.display_name = "Knight Rage Drills"
+		u3.display_name = "Luyện Cuồng Kỵ"
 		u3.description = "+6 Damage cho tất cả Knight trên bàn."
 		u3.cost = 12.0
 		u3.use_royal_decree = false
@@ -269,7 +269,7 @@ func _populate_default_items() -> void:
 
 		var u4 = ShopItemData.new()
 		u4.id = "knight_quickstep"
-		u4.display_name = "Knight Quickstep"
+		u4.display_name = "Kỵ Bộ Thần Tốc"
 		u4.description = "-0.18s Cooldown cho tất cả Knight trên bàn."
 		u4.cost = 11.0
 		u4.use_royal_decree = false
@@ -312,7 +312,7 @@ func _populate_default_items() -> void:
 	# --- DISMISS ITEM (Free — reward comes from tower sold) ---
 	var dismiss_item = ShopItemData.new()
 	dismiss_item.id = "dismiss_order"
-	dismiss_item.display_name = "Dismiss Order"
+	dismiss_item.display_name = "Lệnh Giải Tán"
 	dismiss_item.description = "Giải tán một tháp, hoàn trả 50% giá trị Vàng."
 	dismiss_item.cost = 0.0
 	dismiss_item.use_royal_decree = false

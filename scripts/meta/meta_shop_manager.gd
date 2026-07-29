@@ -21,7 +21,7 @@ func _populate_defaults() -> void:
 	if knight_stats:
 		var knight_item = MetaShopItemData.new()
 		knight_item.id = "meta_knight"
-		knight_item.display_name = "Knight Vanguard"
+		knight_item.display_name = "Kỵ Binh Tiên Phong"
 		knight_item.description = "Unlocks a Knight unit that excels at frontline defense."
 		knight_item.cost = 12.0
 		knight_item.tower_stats = knight_stats
@@ -30,7 +30,7 @@ func _populate_defaults() -> void:
 	if rook_stats:
 		var rook_item = MetaShopItemData.new()
 		rook_item.id = "meta_rook"
-		rook_item.display_name = "Rook Sentinel"
+		rook_item.display_name = "Xe Trấn Ải"
 		rook_item.description = "Unlocks a Rook unit with heavy bolts."
 		rook_item.cost = 15.0
 		rook_item.tower_stats = rook_stats
@@ -39,7 +39,7 @@ func _populate_defaults() -> void:
 	if bishop_stats:
 		var bishop_item = MetaShopItemData.new()
 		bishop_item.id = "meta_bishop"
-		bishop_item.display_name = "Bishop Sage"
+		bishop_item.display_name = "Tượng Hiền Triết"
 		bishop_item.description = "Unlocks a Bishop with arcane artillery."
 		bishop_item.cost = 14.0
 		bishop_item.tower_stats = bishop_stats

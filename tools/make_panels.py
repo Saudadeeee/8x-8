@@ -72,17 +72,24 @@ def corner_studs(px, rgb, margin):
 # ── Panel ────────────────────────────────────────────────────────────────────
 
 def panel_stone():
-    bg = (0x3a, 0x38, 0x34)
-    mid = (0x4a, 0x48, 0x44)
-    dark = (0x22, 0x21, 0x1f)
-    lite = (0x6a, 0x67, 0x61)
+    # Da AM TONG chu khong xam trung tinh: palette du an la nau dat / vang dong,
+    # panel xam lech han ra va trong nhu chua to mau.
+    bg = (0x2e, 0x28, 0x21)
+    mid = (0x3d, 0x35, 0x2b)
+    dark = (0x18, 0x14, 0x10)
+    lite = (0x5e, 0x51, 0x40)
     px = blank(48, 48, bg)
     rect(px, 2, 2, 45, 45, mid)
-    # Ranh da: hai net ngang trong vung bien goc (khong bi keo gian)
+    # Manh da: ranh ngang + ranh doc so le, chi nam trong bien 9-patch (8px)
+    # nen khong bi keo gian khi panel phong to.
     rect(px, 3, 6, 44, 6, bg)
     rect(px, 3, 41, 44, 41, bg)
+    for x in (14, 33):
+        rect(px, x, 3, x, 6, bg)
+    for x in (22, 40):
+        rect(px, x, 41, x, 44, bg)
     bevel(px, dark, lite)
-    corner_studs(px, lite, 8)
+    corner_studs(px, (0x8a, 0x6a, 0x1a), 8)
     return px
 
 

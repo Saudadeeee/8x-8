@@ -68,7 +68,7 @@ func _build_ui() -> void:
 	add_child(bg)
 
 	var back_btn = Button.new()
-	back_btn.text = "←  Back"
+	back_btn.text = "←  Quay Lại"
 	back_btn.custom_minimum_size = Vector2(130, 46)
 	back_btn.position = Vector2(20, 20)
 	UIStyle.apply_button(back_btn, 17)
@@ -77,7 +77,7 @@ func _build_ui() -> void:
 	UIStyle.slide_in(back_btn, Vector2(-160, 0), 0.3)
 
 	var title = Label.new()
-	title.text = "♛  CHOOSE YOUR KING"
+	title.text = "♛  CHỌN VUA"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 48, UIStyle.GOLD)
 	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -159,7 +159,7 @@ func _build_ui() -> void:
 	UIStyle.pop_in(icon_frame, 0.12)
 
 	_detail_name = Label.new()
-	_detail_name.text = "Select a King"
+	_detail_name.text = "Chọn một vị Vua"
 	_detail_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(_detail_name, 32, UIStyle.GOLD)
 	detail_vbox.add_child(_detail_name)
@@ -200,7 +200,7 @@ func _build_ui() -> void:
 	_build_ascension_row(detail_vbox)
 
 	_start_btn = Button.new()
-	_start_btn.text = "⚔  START RUN"
+	_start_btn.text = "⚔  BẮT ĐẦU"
 	_start_btn.custom_minimum_size = Vector2(260, 62)
 	_start_btn.disabled = true
 	UIStyle.apply_button_accent(_start_btn, UIStyle.GREEN, 22)
@@ -251,7 +251,7 @@ func _select_king(king: KingStats) -> void:
 		king.base_health, king.base_royal_decree, king.decree_max,
 		king.decree_regen_rate, king.starting_territory_count
 	]
-	_detail_favor.text = "Favored: %s  |  Dmg +%.0f%%  Spd +%.0f%%  Rng +%.0f%%" % [
+	_detail_favor.text = "Sủng ái: %s  |  Sát thương +%.0f%%  Tốc độ +%.0f%%  Tầm +%.0f%%" % [
 		", ".join(king.favored_unit_types) if king.favored_unit_types.size() > 0 else "None",
 		king.favor_damage_bonus * 100, king.favor_speed_bonus * 100, king.favor_range_bonus * 100
 	]
@@ -333,7 +333,7 @@ func _shift_ascension(delta: int) -> void:
 func _refresh_ascension_ui() -> void:
 	var cap := _max_ascension()
 	if is_instance_valid(_asc_value_label):
-		_asc_value_label.text = "Ascension A%d" % _ascension_level
+		_asc_value_label.text = "Thăng Cấp A%d" % _ascension_level
 	if is_instance_valid(_asc_prev_btn):
 		_asc_prev_btn.disabled = _ascension_level <= 0
 	if is_instance_valid(_asc_next_btn):

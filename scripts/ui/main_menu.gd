@@ -70,9 +70,14 @@ func _apply_ancient_button_style(btn: Button) -> void:
 
 func _build_ui() -> void:
 	# Nền tối dần từ tâm (2 lớp) → tạo cảm giác sâu thay vì màu phẳng
-	var bg = ColorRect.new()
-	bg.color = Color(0.05, 0.03, 0.02, 1)
+	# Nền: gradient dọc thay cho màu phẳng. Trước đây là hai ColorRect trơn nên
+	# menu trông như trang lỗi hơn là màn hình game.
+	var bg = TextureRect.new()
+	bg.texture = _make_menu_backdrop()
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_SCALE
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
 
 	var vignette = ColorRect.new()
@@ -117,7 +122,7 @@ func _build_ui() -> void:
 		UIStyle.breathe(title, 1.04, 3.0)
 
 	var subtitle = Label.new()
-	subtitle.text = "Chess Tower Defense Roguelike"
+	subtitle.text = "Thủ Thành Cờ · Roguelike"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(subtitle, 18, Color(0.8, 0.72, 0.5, 1))
 	root_vbox.add_child(subtitle)
@@ -145,7 +150,7 @@ func _build_ui() -> void:
 	var gm = get_node_or_null("/root/GameManagerSingleton")
 	if gm and gm.get("selected_king") != null:
 		var continue_btn = Button.new()
-		continue_btn.text = "▶  Continue"
+		continue_btn.text = "▶  Chơi Tiếp"
 		continue_btn.custom_minimum_size = Vector2(300, 60)
 		_apply_ancient_button_style(continue_btn)
 		continue_btn.pressed.connect(_go_to.bind("res://scenes/map/game_map.tscn"))
@@ -154,10 +159,10 @@ func _build_ui() -> void:
 		stagger += 0.07
 
 	var buttons = [
-		["⚔  New Game", "res://scenes/ui/king_select.tscn"],
-		["★  Meta Progression", "res://scenes/ui/meta_progression.tscn"],
-		["⚙  Settings", "res://scenes/ui/settings_screen.tscn"],
-		["✖  Quit", "quit"],
+		["⚔  Ván Mới", "res://scenes/ui/king_select.tscn"],
+		["★  Tiến Trình", "res://scenes/ui/meta_progression.tscn"],
+		["⚙  Cài Đặt", "res://scenes/ui/settings_screen.tscn"],
+		["✖  Thoát", "quit"],
 	]
 
 	for entry in buttons:
@@ -175,9 +180,26 @@ func _build_ui() -> void:
 		stagger += 0.07
 
 	var version_label = Label.new()
-	version_label.text = "v0.1 Early Access"
+	version_label.text = "v0.1 Truy Cập Sớm"
 	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(version_label, 14, Color(0.6, 0.6, 0.6, 1))
 	version_label.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	version_label.offset_top = -40
 	add_child(version_label)
+
+## Nền menu: gradient dọc từ nâu đất sang gần đen, cộng một dải sáng mờ ở giữa
+## để tiêu đề nổi lên. Sinh bằng GradientTexture2D nên không tốn asset.
+func _make_menu_backdrop() -> Texture2D:
+	var grad := Gradient.new()
+	grad.set_offset(0, 0.0)
+	grad.set_color(0, Color(0.129, 0.086, 0.055))
+	grad.set_offset(1, 1.0)
+	grad.set_color(1, Color(0.031, 0.023, 0.019))
+	grad.add_point(0.42, Color(0.180, 0.125, 0.078))
+	var tex := GradientTexture2D.new()
+	tex.gradient = grad
+	tex.width = 8
+	tex.height = 256
+	tex.fill_from = Vector2(0.0, 0.0)
+	tex.fill_to = Vector2(0.0, 1.0)
+	return tex

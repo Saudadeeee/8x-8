@@ -976,7 +976,7 @@ func _build_pause_ui() -> void:
 	root_ctrl.add_child(_pause_overlay)
 
 	var paused_lbl = Label.new()
-	paused_lbl.text = "⏸  PAUSED"
+	paused_lbl.text = "⏸  TẠM DỪNG"
 	paused_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	paused_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	paused_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1248,7 +1248,7 @@ func _apply_hud_styles() -> void:
 	# ── Next Wave button ──────────────────────────────────────────────────
 	if shop_next_wave_button:
 		UIStyle.apply_button_accent(shop_next_wave_button, C_GREEN, 15)
-		shop_next_wave_button.text = "▶  NEXT WAVE"
+		shop_next_wave_button.text = "▶  WAVE KẾ"
 
 	# ── Meta shop button ──────────────────────────────────────────────────
 	if meta_shop_button:
@@ -1501,7 +1501,7 @@ func _create_shop_item_card(item: ShopItemData) -> Control:
 
 	var cost_lbl = Label.new()
 	if item.cost <= 0.0:
-		cost_lbl.text = "FREE"
+		cost_lbl.text = "MIỄN PHÍ"
 		UIStyle.glyph(cost_lbl, 13, C_GREEN)
 	elif item.use_royal_decree:
 		cost_lbl.text = " %.1f" % item.cost
@@ -1955,7 +1955,7 @@ func _on_meta_shop_button_pressed(item_id: String) -> void:
 		meta_shop_status_label.text = "Không đủ Royal Decree hoặc đã mua"
 
 func _on_meta_item_purchased(item: MetaShopItemData) -> void:
-	meta_shop_status_label.text = "Unlocked: %s" % item.display_name
+	meta_shop_status_label.text = "Đã mở: %s" % item.display_name
 	_refresh_meta_shop_list()
 	_refresh_tower_buttons()
 
@@ -2171,7 +2171,7 @@ func _inject_shop_header(shop_vbox: VBoxContainer) -> void:
 
 	var roll_btn = Button.new()
 	roll_btn.name = "RollButton"
-	roll_btn.text = " Roll"
+	roll_btn.text = " Xáo"
 	roll_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	roll_btn.custom_minimum_size = Vector2(0, 38)
 	UIStyle.apply_button_accent(roll_btn, C_BLUE, 14)
@@ -2227,7 +2227,7 @@ func update_perk_list(names: Array) -> void:
 	if _perk_counter_label.has_meta("perk_count"):
 		old_count = int(_perk_counter_label.get_meta("perk_count"))
 	_perk_counter_label.set_meta("perk_count", names.size())
-	_perk_counter_label.text = "★ Perks: %d" % names.size()
+	_perk_counter_label.text = "★ Đặc quyền: %d" % names.size()
 	if names.size() > old_count:
 		UIStyle.pulse(_perk_counter_label, 1.25)
 	if names.is_empty():
@@ -2538,9 +2538,15 @@ var _perk_draft: HudPerkDraft = null
 var _wave_intel: HudWaveIntel = null
 
 func show_perk_draft(perks: Array, on_pick: Callable) -> void:
+	# Popup trinh sát là Window nên vẽ đè lên lớp draft — phải đóng trước.
+	hide_wave_intel_popup()
 	if _perk_draft == null or not is_instance_valid(_perk_draft):
 		_perk_draft = HudPerkDraft.attach(self)
 	_perk_draft.show_perk_draft(perks, on_pick)
+
+func hide_wave_intel_popup() -> void:
+	if _wave_intel and is_instance_valid(_wave_intel):
+		_wave_intel.hide_popup()
 
 func hide_perk_draft() -> void:
 	if _perk_draft: _perk_draft.hide_perk_draft()

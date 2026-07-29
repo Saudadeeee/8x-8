@@ -182,3 +182,9 @@ func _resize_to_content(frame: Control) -> void:
 	var screen := DisplayServer.window_get_size()
 	_intel_popup.position = Vector2i((screen.x - w) / 2, (screen.y - h) / 2)
 	UIStyle.pop_in(frame)
+
+## Đóng popup. Cần vì PopupPanel là Window nên vẽ ĐÈ lên mọi CanvasLayer —
+## để nó mở khi draft perk hiện ra thì người chơi không thấy thẻ perk nào.
+func hide_popup() -> void:
+	if is_instance_valid(_intel_popup):
+		_intel_popup.hide()

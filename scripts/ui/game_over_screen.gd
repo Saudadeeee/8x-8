@@ -84,7 +84,7 @@ func _build_ui() -> void:
 		UIStyle.pop_in(banner, 0.05)
 
 	var title = Label.new()
-	title.text = "DEFEAT"
+	title.text = "THẤT THỦ"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 68, Color(0.9, 0.1, 0.1, 1))
 	vbox.add_child(title)
@@ -92,7 +92,7 @@ func _build_ui() -> void:
 	UIStyle.breathe(title, 1.035, 3.2)
 
 	var subtitle = Label.new()
-	subtitle.text = "Your kingdom has fallen..."
+	subtitle.text = "Vương quốc đã sụp đổ..."
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(subtitle, 20, Color(0.8, 0.8, 0.8, 1))
 	vbox.add_child(subtitle)
@@ -146,7 +146,7 @@ func _build_ui() -> void:
 	UIStyle.pop_in(menu_btn, 0.30)
 
 	var play_again_btn = Button.new()
-	play_again_btn.text = "⚔  Play Again"
+	play_again_btn.text = "⚔  Chơi Lại"
 	play_again_btn.custom_minimum_size = Vector2(210, 52)
 	UIStyle.apply_button_accent(play_again_btn, UIStyle.RED, 18)
 	play_again_btn.pressed.connect(_go_to.bind("res://scenes/ui/king_select.tscn"))
