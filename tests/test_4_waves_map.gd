@@ -28,7 +28,8 @@ func _run() -> void:
 	ok(h10 / h5 > h5 / h1 - 0.001, "tang theo CAP SO NHAN (khong tuyen tinh)",
 		"%.2f vs %.2f" % [h10/h5, h5/h1])
 	ok(ws.get_speed_multiplier(10) > ws.get_speed_multiplier(1), "toc do dich tang dan")
-	ok(ws.calculate_enemies_for_wave(9) > ws.calculate_enemies_for_wave(1), "so dich tang dan (wave 10 la boss, dem rieng)")
+	ok(ws.calculate_enemies_for_wave(9) > ws.calculate_enemies_for_wave(1),
+		"so dich tang dan (wave boss dem rieng)")
 
 	print("\n--- MUA ---")
 	var seasons := {}
@@ -40,8 +41,19 @@ func _run() -> void:
 	ok(pool_empty.is_empty(), "moi wave deu co pool dich", str(pool_empty))
 
 	print("\n--- BOSS ---")
-	ok(ws.is_boss_wave(10), "wave 10 la wave boss")
+	# BA wave boss: 7 / 14 / 20 — moi lan mot Rival King khac nhau.
+	ok(ws.BOSS_WAVES.size() == 3, "co 3 wave boss", str(ws.BOSS_WAVES))
+	for bw in ws.BOSS_WAVES:
+		ok(ws.is_boss_wave(bw), "wave %d la wave boss" % bw)
 	ok(not ws.is_boss_wave(9), "wave 9 khong phai boss")
+	# Moi wave boss phai ra mot vua KHAC NHAU, khong duoc trung
+	var seen_kings := {}
+	for bw in ws.BOSS_WAVES:
+		ws._wave_number = bw
+		var st = ws._pick_boss_stats()
+		if st: seen_kings[st.id] = true
+	ok(seen_kings.size() == ws.BOSS_WAVES.size(),
+		"moi wave boss ra mot Rival King khac nhau", str(seen_kings.keys()))
 	ok(not ws.is_boss_pending(), "chua vao wave boss thi khong pending")
 	var boss_bad: Array[String] = []
 	for bid in ws.BOSS_IDS:
@@ -51,8 +63,11 @@ func _run() -> void:
 			var bs = load(path)
 			if bs == null or bs.display_name == "": boss_bad.append(bid + "(thieu ten)")
 	ok(boss_bad.is_empty(), "moi boss co .tres + ten hien thi", str(boss_bad))
-	ok(ws.get_boss_health_multiplier(10) > 1.0, "boss co he so mau rieng",
-		"x%.1f" % ws.get_boss_health_multiplier(10))
+	ok(ws.get_boss_health_multiplier(ws.BOSS_WAVES[0]) > 1.0, "boss co he so mau rieng",
+		"x%.1f" % ws.get_boss_health_multiplier(ws.BOSS_WAVES[0]))
+	ok(PhaseController.MAX_WAVES >= ws.BOSS_WAVES.back(),
+		"MAX_WAVES du dai cho wave boss cuoi",
+		"%d >= %d" % [PhaseController.MAX_WAVES, ws.BOSS_WAVES.back()])
 
 	print("\n--- ASCENSION ---")
 	var asc0: float = ws.get_ascension_multiplier()

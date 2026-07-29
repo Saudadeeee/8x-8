@@ -16,7 +16,9 @@ signal phase_message_changed(text: String)
 # --- ENUMS / CONSTANTS ---
 enum GamePhase { PREPARE, WAVE, SHOP }
 
-const MAX_WAVES:     int   = 10
+# 20 wave = ba chặng, mỗi chặng kết bằng một Rival King (wave 7, 14, 20).
+# Trước đây 10 wave / một boss — chưa tới một phần ba lời hứa trong GDD.
+const MAX_WAVES:     int   = 20
 const PREP_DURATION: float = 30.0
 
 # --- STATE ---

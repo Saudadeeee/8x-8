@@ -15,6 +15,8 @@ var map: Node3D = null
 var _active_boss: Node = null
 var _boss_last_hp: int = -1
 var _boss_phase: int = 1
+## So Rival King da ha trong van nay — thong bao va dieu kien thang dung.
+var kings_defeated: int = 0
 
 static func attach(owner_map: Node3D) -> BossController:
 	var c := BossController.new()
@@ -91,7 +93,12 @@ func _on_boss_defeated() -> void:
 	# Chiến lợi phẩm: 2 bình thuốc (đặt TRƯỚC dòng thông báo boss để message boss thắng thế).
 	for _i in map.BOSS_POTION_DROPS:
 		map._grant_random_potion("Rival King")
-	map.phase_controller.phase_message = " RIVAL KING ĐÃ GỤC NGÃ! +%d vàng" % map.BOSS_BONUS_GOLD
+	kings_defeated += 1
+	_record_king_unlock()
+	var total: int = 3
+	if map.wave_spawner and map.wave_spawner.has_method("total_rival_kings"):
+		total = map.wave_spawner.total_rival_kings()
+	map.phase_controller.phase_message = "† RIVAL KING %d/%d ĐÃ GỤC NGÃ! +%d vàng" % [kings_defeated, total, map.BOSS_BONUS_GOLD]
 	map.update_ui()
 	_offer_boss_reward()
 
@@ -187,3 +194,19 @@ func _clear_boss_ui() -> void:
 	var hud := map.get_node_or_null("HUD")
 	if hud and hud.has_method("hide_boss_bar"):
 		hud.hide_boss_bar()
+
+## Ha mot Rival King thi mo khoa quan cua han vao pool shop cho MOI van sau —
+## dung loi hua trong GDD ("ha Rival King -> mo khoa chess pieces cua ho").
+## Ghi vao meta chu khong phai per-run: day la phan thuong lau dai.
+const KING_UNLOCK_TROOPS: Array[String] = ["longbowman", "paladin", "ballista"]
+
+func _record_king_unlock() -> void:
+	var gm = map._game_manager
+	if gm == null or gm.meta_progress == null:
+		return
+	var idx: int = clampi(kings_defeated - 1, 0, KING_UNLOCK_TROOPS.size() - 1)
+	var troop: String = KING_UNLOCK_TROOPS[idx]
+	var unlocked: Array = gm.meta_progress.unlocked_soldier_ids
+	if not unlocked.has(troop):
+		unlocked.append(troop)
+		gm.meta_progress.save()

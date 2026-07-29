@@ -878,6 +878,28 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Mở rộng nội dung — 3 Rival King (2026-07-29):*
+- `BOSS_WAVES = [7, 14, 20]`, `MAX_WAVES = 20` (trước 1 boss / 10 wave).
+- `_pick_boss_stats()` chọn theo **THỨ TỰ wave boss, không random** — mục tiêu ván
+  là hạ đủ cả ba, bốc ngẫu nhiên sẽ có ván gặp trùng một vua hai lần.
+- Hạ mỗi Rival King mở khoá một quân vào `MetaProgress.unlocked_soldier_ids`
+  (longbowman → paladin → ballista), đúng lời hứa GDD.
+- **Đo bằng bot tiêu sạch vàng**: HP 20 → đáy 8 (wave 9) → hồi lên 26 (wave 16),
+  hạ 2 vua tới wave 17. Đường cong ổn: khủng hoảng giữa ván, thoải mái về cuối.
+- **Vàng dư CHỈ xuất hiện ở bản 20 wave**: 441–714 từ wave 13, vì bàn đã kín
+  (256 ô có quân) nên không còn chỗ đặt tháp. Trần xáo shop nay TĂNG THEO WAVE
+  (`REROLL_MAX_PER_WAVE`). Sink đúng bài hơn (nâng sao bằng vàng) là bước sau.
+
+*Art sinh bằng generator (2026-07-29) — `tools/make_*.py`:*
+- `make_terrain.py` (32 texture ≤3 màu) · `make_panels.py` (10 panel ≤5 màu) ·
+  `make_perk_icons.py` (25 icon 48×48 ≤6 màu) · `make_font.py` (295 glyph).
+- Khác hẳn bộ cũ: bộ cũ jitter NGẪU NHIÊN từng pixel ra 48–142 màu. Ở đây mỗi
+  pixel đặt bằng toạ độ viết tay, chạy lại cho kết quả y hệt.
+- **Hai lỗi chỉ thấy khi nhìn ảnh chụp thật, không thấy qua số đo màu**:
+  (1) ô sáng/tối quá gần tông → mất kẻ ô bàn cờ sau khi biome nhân màu;
+  (2) dùng màu nhấn (đỏ máu Hoả Diệm) cho khe nứt → cả bàn lấm tấm đỏ.
+  Màu nhấn chỉ được dùng RẤT ÍT; hoạ tiết nền phải dùng tông kề bên.
+
 *Export + hướng dẫn nhập môn (2026-07-29):*
 - `export_presets.cfg` GIỮ TRONG REPO (trước bị .gitignore nên dự án chưa export
   lần nào). 3 preset: Windows · Linux · Web. Máy này chỉ cài template **Web**;

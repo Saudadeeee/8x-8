@@ -5,12 +5,12 @@ Ngày 2026-07-29. Mọi kết luận dưới đây đo bằng máy: chạy bot c
 
 ## Kết luận ngắn
 
-**Chưa sẵn sàng phát hành. Sẵn sàng cho playtest nội bộ / bản demo bạn bè.**
+> **CẬP NHẬT 2026-07-29 — toàn bộ mục CHẶN đã xử lý.** Xem §7 ở cuối.
 
-Phần *kỹ thuật* vững: game chơi được trọn vẹn từ đầu đến thắng, không crash,
-có lưới test thật. Phần *sản phẩm* còn thiếu: chưa từng export lần nào, không
-có font đóng gói, phần lớn art nền là ảnh sinh bằng script, không có hướng dẫn
-chơi, và nội dung mới bằng khoảng 1/3 lời hứa trong GDD.
+**Sẵn sàng cho demo công khai. Chưa sẵn sàng để BÁN.**
+
+Còn thiếu để bán: âm thanh vẫn là bíp tổng hợp, chưa có hệ thống dịch đa ngôn
+ngữ, và chưa build/chạy thử bản desktop (thiếu export template ~800MB).
 
 ---
 
@@ -190,3 +190,22 @@ vào batch test 5.
 | **C — bán được** | Thêm Rival King thứ 2–3 (nội dung ×2–3) · âm thanh thật · cân lại độ khó và chỗ tiêu vàng · hệ thống dịch | 1–3 tháng |
 
 Nút thắt lớn nhất **không phải code** — mà là art, âm thanh và khối lượng nội dung.
+
+---
+
+## 7. ĐÃ XỬ LÝ (2026-07-29)
+
+| Mục | Trạng thái |
+|---|---|
+| 2.1 Chưa từng export | `export_presets.cfg` (Windows/Linux/Web) trong repo; **build Web chạy thật, 0 lỗi** |
+| 2.1 Không đóng gói font | Font pixel **295 glyph** tự vẽ, đủ tiếng Việt + 58 ký hiệu game |
+| 2.2 Không có tutorial | 5 thẻ, thẻ 2 dạy bất biến "nguyên tố đến từ Ô" |
+| 2.3 Nội dung 1/3 GDD | **3 Rival King** ở wave 7/14/20, MAX_WAVES 10→20, hạ vua mở khoá quân |
+| 3.1 Art nền sinh bằng script | 42 file vẽ lại, `check_art.py` từ 42 nghi vấn → **0** |
+| 3.3 Thiếu hình | 25 icon perk, đạn thành mũi tên, nền menu gradient |
+| 3.4 Ngôn ngữ lẫn lộn | **52 chuỗi** sang tiếng Việt |
+| 3.5 Độ khó & kinh tế | Đo lại: độ khó ổn. Vàng dư chỉ có ở bản 20 wave → trần xáo shop tăng theo wave |
+
+**Còn lại**: âm thanh thật · hệ thống dịch (`tr()` + `.po`) · build desktop.
+
+Lưới test: **212 khẳng định, 0 lỗi**.

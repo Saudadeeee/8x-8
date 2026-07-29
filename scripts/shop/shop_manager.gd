@@ -37,12 +37,17 @@ const DISMISS_ICON_PATH := "res://assets/ui/shop_icons/icon_dismiss.png"
 # ở phiên sau, nên xáo một hai lần thì rẻ, xáo lì thì đắt dần.
 const REROLL_COST: int = 10
 const REROLL_COST_STEP: int = 6
+## Trần xáo TĂNG THEO WAVE. Đo thực tế ở bản 20 wave: từ wave 13 người chơi tồn
+## 440–714 vàng vì bàn đã kín tháp (256 ô có quân) — không còn chỗ đặt thêm nên
+## vàng không có đường ra. Trần cố định 40 quá thấp để hút số đó.
 const REROLL_COST_MAX: int = 40
+const REROLL_MAX_PER_WAVE: int = 6
 
 var _rerolls_this_phase: int = 0
 
 func get_reroll_cost() -> int:
-	return mini(REROLL_COST + _rerolls_this_phase * REROLL_COST_STEP, REROLL_COST_MAX)
+	var cap: int = REROLL_COST_MAX + maxi(0, current_wave - 8) * REROLL_MAX_PER_WAVE
+	return mini(REROLL_COST + _rerolls_this_phase * REROLL_COST_STEP, cap)
 
 ## PhaseController gọi khi mở phiên shop mới — giá xáo về mức nền.
 func reset_reroll_cost() -> void:

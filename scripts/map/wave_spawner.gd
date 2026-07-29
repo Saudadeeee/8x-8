@@ -36,7 +36,9 @@ const ELITE_CHANCE: float = 0.10
 
 # --- BOSS (Rival King) ---
 ## Các wave có BOSS. Mở rộng bằng cách thêm số wave vào mảng này.
-const BOSS_WAVES: Array[int] = [10]
+# BA wave boss — GDD hứa "đánh bại TẤT CẢ Rival King", trước đây chỉ có một.
+# Khoảng cách 6-7 wave để người chơi kịp dựng lại đội hình giữa hai lần.
+const BOSS_WAVES: Array[int] = [7, 14, 20]
 ## Wave boss thay đàn quái thường bằng một nhóm hộ vệ nhỏ.
 const BOSS_WAVE_MINION_COUNT: int = 6
 ## Ba Rival King — chọn ngẫu nhiên một cho mỗi wave boss.
@@ -308,19 +310,34 @@ func _ensure_boss_scene() -> bool:
 		return false
 	return true
 
+## Chọn Rival King theo THỨ TỰ wave boss, không random — mục tiêu của ván là
+## hạ ĐỦ CẢ BA, nên bốc ngẫu nhiên sẽ có ván gặp trùng một vua hai lần.
 func _pick_boss_stats() -> EnemyStats:
-	var pool: Array = []
-	for boss_id in BOSS_IDS:
-		var stats: EnemyStats = _enemy_stats.get(boss_id)
-		if stats == null:
-			var path := BOSS_STATS_PATH % boss_id
-			if ResourceLoader.exists(path):
-				stats = load(path) as EnemyStats
-		if stats:
-			pool.append(stats)
-	if pool.is_empty():
-		return null
-	return pool[randi() % pool.size()]
+	var idx: int = BOSS_WAVES.find(_wave_number)
+	if idx < 0:
+		idx = 0
+	var boss_id: String = BOSS_IDS[idx % BOSS_IDS.size()]
+	var stats: EnemyStats = _enemy_stats.get(boss_id)
+	if stats == null:
+		var path := BOSS_STATS_PATH % boss_id
+		if ResourceLoader.exists(path):
+			stats = load(path) as EnemyStats
+	if stats == null:
+		# Vua này hỏng file → lấy bất kỳ vua nào còn nạp được, thà đánh nhầm
+		# vua còn hơn wave boss không có boss.
+		for fallback_id in BOSS_IDS:
+			var alt: EnemyStats = _enemy_stats.get(fallback_id)
+			if alt:
+				return alt
+	return stats
+
+## Đây là wave boss thứ mấy (1-based). HUD và phần thưởng dùng để hiển thị
+## "Rival King 2/3".
+func boss_index_of_wave(wave_num: int) -> int:
+	return BOSS_WAVES.find(wave_num) + 1
+
+func total_rival_kings() -> int:
+	return BOSS_WAVES.size()
 
 ## Boss triệu hồi quái giữa trận. Quái được đếm vào `enemies_alive` (phải dọn hết
 ## mới clear wave) nhưng KHÔNG cộng vào `enemies_spawned` — nếu không wave sẽ
