@@ -14,9 +14,9 @@ khách quan để tách "art thật" khỏi "programmer art".
 
 | # | Việc | Mức | Vì sao |
 |---|---|---|---|
-| 1 | Vẽ lại **32 texture địa hình** `assets/textures/terrain/` | **Cao** | 48–142 màu/ô 32×32 = nhiễu ngẫu nhiên. Đây là thứ chiếm ~80% diện tích màn hình |
-| 2 | Vẽ lại **11 panel/nút UI** `assets/ui/panels/` | **Cao** | 48–127 màu. Khung bao mọi thứ trong game |
-| 3 | Đóng gói **một font** vào `assets/fonts/` | **Cao** | Hiện KHÔNG có font nào — 35 ký hiệu đang mượn font hệ thống Windows |
+| 1 | ~~Vẽ lại 32 texture địa hình~~ **XONG** | — | 48–142 màu → **tối đa 3 màu**. `tools/make_terrain.py` |
+| 2 | ~~Vẽ lại 10 panel/nút UI~~ **XONG** | — | 48–127 màu → **tối đa 5 màu**. `tools/make_panels.py` |
+| 3 | ~~Đóng gói font~~ **XONG** | — | Font pixel 295 glyph tự vẽ, `tools/make_font.py` |
 | 4 | Vẽ **13 icon perk** `assets/ui/perks/` | Trung | Thư mục rỗng, card perk đang hiện ký hiệu ◆ |
 | 5 | ~~Xoá asset chết~~ **ĐÃ XONG** — 449 file | — | Xem §7 |
 | 6 | Vẽ lại `queen.png` cho đúng 32×32 | Thấp | Đang 32×40, lệch chuẩn |

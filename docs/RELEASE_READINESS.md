@@ -18,20 +18,32 @@ chơi, và nội dung mới bằng khoảng 1/3 lời hứa trong GDD.
 
 ### Chơi trọn ván bằng bot
 
-Bot mua tối đa 3 tháp mỗi wave rồi đặt bừa vào ô trống đầu tiên:
+Đo bằng HAI bot khác nhau, và chúng cho kết luận trái ngược:
 
+**Bot A — mua tối đa 3 tháp/wave** (tự giới hạn):
 ```
 wave  1 | HP= 45 vang= 260
-wave  4 | HP= 32 vang= 326
-wave  7 | HP= 17 vang= 807
 wave 10 | HP= 17 vang=2095   → THẮNG
 ```
 
+**Bot B — tiêu SẠCH vàng mỗi wave** (cận trên của người chơi ngây thơ):
+```
+wave  1 | HP= 20 vang= 16 thap= 25
+wave  5 | HP= 18 vang=  4 thap= 49
+wave  7 | HP= 10 vang= 11 thap= 78
+wave  9 | HP=  9 vang= 96 thap= 97
+```
+
 - **Thắng được thật**, không kẹt, không crash.
-- Máu Vua 45 → 17: có áp lực nhưng bot chơi ngẫu nhiên vẫn thắng ⇒ **độ khó
-  đang thấp**. Một người chơi biết dùng ô nguyên tố + ghép ★ sẽ thắng dễ.
-- **Vàng tồn 2095 ở wave cuối** — kinh tế không có chỗ tiêu về cuối ván. Xáo shop
-  (trần 40 vàng) không đủ hút.
+- **Độ khó ỔN.** Bot B tụt từ 20 xuống 9 máu — sát nút. Máu khởi đầu của King
+  Iron là **20**, con số 45 ở bot A là do meta-upgrade tích luỹ.
+- **Kinh tế KHÔNG dư.** Bot B chỉ còn 4–96 vàng mỗi wave. Con số "tồn 2095" của
+  bot A là **hiện vật đo lường**: bot đó tự giới hạn mua 3 tháp nên không tiêu
+  hết, chứ không phải game thiếu chỗ tiêu.
+
+> Bài học: bot đo cân bằng phải tiêu hết tài nguyên, nếu không nó đo chính giới
+> hạn của mình chứ không đo game. Kết luận "độ khó thấp + thừa vàng" ở bản đánh
+> giá đầu đã bị rút lại sau khi đo lại.
 
 ### Tự động hoá
 
@@ -126,11 +138,10 @@ UI trộn Việt và Anh, không nhất quán:
 Chuỗi hiển thị nằm rải rác trong code, **không có hệ thống dịch** (không dùng
 `tr()` hay file `.po`). Muốn phát hành đa ngôn ngữ sau này thì phải gom lại toàn bộ.
 
-### 3.5 Độ khó và kinh tế
+### 3.5 ~~Độ khó và kinh tế~~ — ĐO LẠI: KHÔNG CẦN SỬA
 
-- Bot chơi ngẫu nhiên vẫn thắng ⇒ cần tăng độ khó hoặc giảm dung sai.
-- Tồn 2095 vàng cuối ván ⇒ cần thêm chỗ tiêu (nâng cấp đắt tiền, mua ô cao cấp,
-  đặt cược trước wave…).
+Xem §1. Bot tiêu sạch vàng tụt còn 9/20 máu ở wave 9 và luôn cạn vàng — độ khó
+và kinh tế đều lành mạnh. Kết luận cũ là hiện vật của một bot đo tồi.
 
 ---
 
