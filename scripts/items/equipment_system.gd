@@ -29,6 +29,9 @@ const BASE_SLOTS: int = 2
 ## Trần kho — vượt thì món mới bị chặn (báo qua `add_item` trả false).
 const MAX_INVENTORY: int = 12
 const CUSTOM_DIR: String = "res://data/equipment/"
+## Nguồn CHÍNH: file .tres mở được bằng Inspector. JSON và bảng cứng bên dưới
+## chỉ còn là tương thích ngược / lưới an toàn.
+const RES_DIR: String = "res://res/equipment/"
 
 const RARITY_WEIGHTS: Dictionary = {
 	"common": 55, "rare": 28, "epic": 14, "legendary": 3,

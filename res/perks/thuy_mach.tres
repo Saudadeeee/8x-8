@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_aefh1"]
+
+[resource]
+script = ExtResource("1_aefh1")
+id = "thuy_mach"
+name = "Thuỷ Mạch"
+desc = "Dấu Thuỷ tự lan sang 1 địch kề bên — mồi phản ứng cho cả bầy."
+rarity = "rare"
+element = {
+"water_spread": true
+}

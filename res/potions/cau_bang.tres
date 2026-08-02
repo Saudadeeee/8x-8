@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_cb12j"]
+
+[resource]
+script = ExtResource("1_cb12j")
+id = "cau_bang"
+name = "Cầu Băng"
+desc = "60 sát thương, gắn Dấu Băng và làm chậm 50% trong 5 giây."
+target = "enemies"
+strike = {
+"damage": 60.0,
+"element": "ice",
+"slow": 0.5,
+"slow_duration": 5.0
+}

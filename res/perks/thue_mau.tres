@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_18d3c"]
+
+[resource]
+script = ExtResource("1_18d3c")
+id = "thue_mau"
+name = "Thuế Máu"
+desc = "+1 vàng mỗi khi tiêu diệt một địch."
+economy = {
+"gold_per_kill": 1
+}

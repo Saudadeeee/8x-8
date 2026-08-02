@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_e0eyb"]
+
+[resource]
+script = ExtResource("1_e0eyb")
+id = "sac_lenh_khan"
+name = "Sắc Lệnh Khẩn"
+desc = "+5 Sắc Lệnh Hoàng Gia mỗi khi wave mới bắt đầu."
+rarity = "rare"
+rd = {
+"per_wave_start": 5.0
+}

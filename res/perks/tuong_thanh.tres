@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_ps0nn"]
+
+[resource]
+script = ExtResource("1_ps0nn")
+id = "tuong_thanh"
+name = "Tường Thành"
+desc = "+5 máu ngay lập tức."
+stackable = true
+instant = {
+"hp_delta": 5
+}

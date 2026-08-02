@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_sgucc"]
+
+[resource]
+script = ExtResource("1_sgucc")
+id = "hunter_charm"
+name = "Hộ Phù Thợ Săn"
+desc = "+30% sát thương lên địch đang mang Dấu."
+rarity = "rare"
+slot = "accessory"
+cost = 105
+effect = {
+"bonus_vs_marked": 0.3
+}

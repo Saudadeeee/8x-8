@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_a16pm"]
+
+[resource]
+script = ExtResource("1_a16pm")
+id = "khi_doc"
+name = "Khí Độc"
+desc = "Vùng khí độc tồn tại 8 giây — địch đi vào dính 3 tầng Độc."
+rarity = "rare"
+target = "enemies"
+duration = 8.0
+strike = {
+"damage": 0.0,
+"element": "poison",
+"lingering": true,
+"poison_stacks": 3.0
+}

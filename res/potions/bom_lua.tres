@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_bgnap"]
+
+[resource]
+script = ExtResource("1_bgnap")
+id = "bom_lua"
+name = "Bom Lửa"
+desc = "120 sát thương trong vùng 2m và gắn Dấu Hoả."
+target = "enemies"
+radius = 2.0
+strike = {
+"damage": 120.0,
+"element": "fire"
+}

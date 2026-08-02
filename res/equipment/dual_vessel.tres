@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_f3pig"]
+
+[resource]
+script = ExtResource("1_f3pig")
+id = "dual_vessel"
+name = "Bình Chứa Kép"
+desc = "Gắn thêm Dấu của ô nguyên tố kề → tự kích phản ứng một mình."
+rarity = "legendary"
+slot = "accessory"
+cost = 190
+effect = {
+"dual_vessel": true
+}

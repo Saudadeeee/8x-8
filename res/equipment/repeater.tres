@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_hv4ci"]
+
+[resource]
+script = ExtResource("1_hv4ci")
+id = "repeater"
+name = "Nỏ Liên Thanh"
+desc = "−40% sát thương, tốc đánh gấp đôi. Cỗ máy gắn Dấu."
+rarity = "rare"
+cost = 85
+effect = {
+"damage_pct": -0.4,
+"speed_bonus": 0.5
+}

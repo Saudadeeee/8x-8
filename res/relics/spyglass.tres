@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_qp5qa"]
+
+[resource]
+script = ExtResource("1_qp5qa")
+id = "spyglass"
+name = "Ống Nhòm"
+desc = "Bán kính mọi bình thuốc tăng lên 4m."
+rarity = "rare"
+cost = 160
+effect = {
+"potion_radius": 4.0
+}

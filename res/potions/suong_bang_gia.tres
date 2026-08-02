@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_3an0q"]
+
+[resource]
+script = ExtResource("1_3an0q")
+id = "suong_bang_gia"
+name = "Sương Băng Giá"
+desc = "Tháp trong vùng gắn Dấu Băng trong 12 giây."
+rarity = "rare"
+buff = {
+"grant_element": "ice"
+}

@@ -78,5 +78,58 @@ func _run() -> void:
 		if es.weak_element == "": no_aff += es.id + " "
 	ok(no_aff == "", "moi loai dich tu khai diem yeu trong .tres", no_aff)
 
-	print("\n== BATCH 11 FAIL=%d ==" % fail)
+	print("
+--- VAT PHAM: mo duoc bang Inspector (.tres) ---")
+	# Bon thu muc .tres la NGUON CHINH. JSON va bang cung trong .gd chi con la
+	# tuong thich nguoc / luoi an toan.
+	var counts := {
+		"potions": 20, "equipment": 20, "relics": 12, "perks": 25,
+	}
+	for folder in counts:
+		var cnt := 0
+		for f in DirAccess.get_files_at("res://res/" + folder):
+			if f.trim_suffix(".remap").ends_with(".tres"): cnt += 1
+		ok(cnt >= int(counts[folder]), "res/%s co du file .tres" % folder,
+			"%d file" % cnt)
+
+	var ps := PotionSystem.new(); root.add_child(ps)
+	var es := EquipmentSystem.new(); root.add_child(es)
+	var rs := RelicSystem.new(); root.add_child(rs)
+	var pk := PerkSystem.new(); root.add_child(pk)
+	await process_frame
+	pk._initialize_perk_pool()
+	ok(ps.all_ids().size() >= 20, "he thuoc nap du", "%d" % ps.all_ids().size())
+	ok(es.all_ids().size() >= 20, "he trang bi nap du", "%d" % es.all_ids().size())
+	ok(rs.all_ids().size() >= 12, "he di vat nap du", "%d" % rs.all_ids().size())
+	ok(pk._all_perks.size() >= 25, "he perk nap du", "%d" % pk._all_perks.size())
+
+	# Moi Resource phai co to_dict() — thieu thi ContentLoader bo qua yen lang
+	for cls_path in ["res://res/potions", "res://res/equipment",
+			"res://res/relics", "res://res/perks"]:
+		var res_files := DirAccess.get_files_at(cls_path)
+		if res_files.is_empty(): continue
+		var first := load(cls_path + "/" + res_files[0].trim_suffix(".remap"))
+		ok(first != null and first.has_method("to_dict"),
+			"%s: Resource co to_dict()" % cls_path.get_file())
+
+	print("
+--- THEM MON MOI CHI BANG MOT FILE ---")
+	var nr := RelicData.new()
+	nr.id = "zz_kiem_tra"
+	nr.name = "Di Vat Kiem Tra"
+	nr.desc = "Sinh trong test."
+	nr.rarity = "rare"
+	nr.cost = 150
+	nr.effect = {"reaction_mult": 1.1}
+	var save_err := ResourceSaver.save(nr, "res://res/relics/zz_kiem_tra.tres")
+	ok(save_err == OK, "luu duoc .tres moi")
+	var rs2 := RelicSystem.new(); root.add_child(rs2)
+	await process_frame
+	ok(rs2.all_ids().has("zz_kiem_tra"),
+		"mon moi vao catalog ma KHONG dung toi code")
+	DirAccess.remove_absolute(
+		ProjectSettings.globalize_path("res://res/relics/zz_kiem_tra.tres"))
+
+	print("
+== BATCH 11 FAIL=%d ==" % fail)
 	quit()

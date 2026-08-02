@@ -9,6 +9,10 @@
     python tools/new_content.py relic  vuong_mien_vo
     python tools/new_content.py --list                # xem id da dung
 
+LUU Y: perk / thuoc / trang bi / di vat nay sinh ra file .tres MO DUOC BANG
+INSPECTOR cua Godot — click doi la xong, khong phai go JSON. File .tres nam
+trong res/<loai>/, he thong doc thu muc do TRUOC bang cung trong .gd.
+
 Vi sao co script nay: mot mon noi dung khong chi la file du lieu — no con can
 dung ten file, dung thu muc, dung kich thuoc anh. Nho mot trong ba thi mon do
 "co ma khong chay" hoac hien ra o trong. Script viet san phan khung, roi in ra
@@ -65,6 +69,22 @@ def append_json(rel, entry, note):
     if note:
         print("  " + note)
     return True
+
+
+
+def _tres(kind_dir, cid, script_path, script_uid, body):
+    """Ghi mot file .tres mo duoc bang Inspector."""
+    return write('res/%s/%s.tres' % (kind_dir, cid),
+        '[gd_resource type="Resource" script_class="%s" format=3]
+
+'
+        '[ext_resource type="Script" uid="%s" path="%s" id="1_new"]
+
+'
+        '[resource]
+script = ExtResource("1_new")
+%s'
+        % (script_path.rsplit('/', 1)[-1][:-3], script_uid, script_path, body))
 
 
 # ── Khung tung loai ──────────────────────────────────────────────────────────

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_2aumd"]
+
+[resource]
+script = ExtResource("1_2aumd")
+id = "living_vein"
+name = "Long Mạch Sống"
+desc = "Ô Lv3 lan Dấu của nó sang 4 ô kề."
+rarity = "legendary"
+cost = 310
+effect = {
+"vein_spread": true
+}

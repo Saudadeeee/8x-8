@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_3080p"]
+
+[resource]
+script = ExtResource("1_3080p")
+id = "geomancer"
+name = "Địa Chất Sư"
+desc = "Ô nguyên tố rẻ 40% — xây mạng lưới nhanh gấp đôi."
+cost = 210
+effect = {
+"tile_discount": 0.4
+}

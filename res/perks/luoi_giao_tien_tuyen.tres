@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_tj5l7"]
+
+[resource]
+script = ExtResource("1_tj5l7")
+id = "luoi_giao_tien_tuyen"
+name = "Lưỡi Giáo Tiền Tuyến"
+desc = "Thợ rèn mài lại toàn bộ khí giới: +8% sát thương cho toàn bộ tháp."
+tower = {
+"damage_bonus": 0.08
+}

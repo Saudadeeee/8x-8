@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_dccwg"]
+
+[resource]
+script = ExtResource("1_dccwg")
+id = "lightning_rod"
+name = "Cột Thu Lôi"
+desc = "Luôn bắn Dấu Lôi + kéo dài Dấu 50%."
+rarity = "rare"
+slot = "base"
+cost = 95
+effect = {
+"grant_element": "thunder",
+"mark_duration_mult": 1.5
+}

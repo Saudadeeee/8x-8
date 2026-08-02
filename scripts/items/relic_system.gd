@@ -18,6 +18,8 @@ signal relics_changed(ids: Array)
 
 const MAX_SLOTS: int = 5
 const CUSTOM_DIR: String = "res://data/relics/"
+## Nguồn CHÍNH: .tres mở được bằng Inspector.
+const RES_DIR: String = "res://res/relics/"
 const SELL_REFUND_PCT: float = 0.4
 
 const RARITY_WEIGHTS: Dictionary = {"rare": 40, "epic": 45, "legendary": 15}
@@ -119,6 +121,10 @@ func _build_catalog() -> void:
 	_catalog.clear()
 	for relic in RELICS:
 		_catalog[str(relic["id"])] = _sanitize(relic)
+	for entry in ContentLoader.load_dir(RES_DIR, "di vật"):
+		var res_clean := _sanitize(entry)
+		if not res_clean.is_empty():
+			_catalog[str(res_clean["id"])] = res_clean
 	for relic in _load_custom():
 		var clean := _sanitize(relic)
 		if not clean.is_empty():

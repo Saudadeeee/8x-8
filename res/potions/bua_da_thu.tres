@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_t6vbl"]
+
+[resource]
+script = ExtResource("1_t6vbl")
+id = "bua_da_thu"
+name = "Bùa Đa Thủ"
+desc = "Tháp trong vùng bắn thêm 1 mũi đạn mỗi đòn trong 12 giây."
+rarity = "epic"
+buff = {
+"projectile_bonus": 1.0
+}

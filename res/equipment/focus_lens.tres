@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_87igf"]
+
+[resource]
+script = ExtResource("1_87igf")
+id = "focus_lens"
+name = "Thấu Kính Tụ Quang"
+desc = "+12% chí mạng."
+slot = "accessory"
+cost = 70
+effect = {
+"crit_bonus": 0.12
+}

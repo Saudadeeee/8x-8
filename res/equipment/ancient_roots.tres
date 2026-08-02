@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_ai2n3"]
+
+[resource]
+script = ExtResource("1_ai2n3")
+id = "ancient_roots"
+name = "Rễ Cây Cổ"
+desc = "+5 sát thương vĩnh viễn mỗi wave tháp này sống sót."
+rarity = "epic"
+slot = "base"
+cost = 120
+effect = {
+"growth_per_wave": 5.0
+}

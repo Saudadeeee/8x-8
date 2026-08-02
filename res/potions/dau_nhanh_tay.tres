@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_3vwu4"]
+
+[resource]
+script = ExtResource("1_3vwu4")
+id = "dau_nhanh_tay"
+name = "Dầu Nhanh Tay"
+desc = "Tháp trong vùng giảm 0.35s hồi chiêu trong 12 giây."
+buff = {
+"speed_bonus": 0.35
+}

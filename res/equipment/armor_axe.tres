@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_26jke"]
+
+[resource]
+script = ExtResource("1_26jke")
+id = "armor_axe"
+name = "Rìu Chém Giáp"
+desc = "Bỏ qua toàn bộ giáp mục tiêu."
+cost = 65
+effect = {
+"pierce_armor": true
+}

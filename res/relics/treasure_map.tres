@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_mo4qb"]
+
+[resource]
+script = ExtResource("1_mo4qb")
+id = "treasure_map"
+name = "Bản Đồ Kho Báu"
+desc = "Địch Elite LUÔN rơi thuốc."
+rarity = "rare"
+cost = 170
+effect = {
+"elite_always_drop": true
+}

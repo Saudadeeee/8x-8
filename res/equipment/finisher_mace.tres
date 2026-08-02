@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_xmm2d"]
+
+[resource]
+script = ExtResource("1_xmm2d")
+id = "finisher_mace"
+name = "Chuỳ Kết Liễu"
+desc = "+100% sát thương lên địch dưới 25% máu."
+rarity = "rare"
+effect = {
+"bonus_vs_low": 1.0
+}

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_h0ibg"]
+
+[resource]
+script = ExtResource("1_h0ibg")
+id = "quake_hammer"
+name = "Búa Chấn Động"
+desc = "20% mỗi đòn làm choáng 0.5s."
+rarity = "rare"
+cost = 95
+effect = {
+"stun_chance": 0.2
+}

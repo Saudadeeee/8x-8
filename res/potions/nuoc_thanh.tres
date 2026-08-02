@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_04v4b"]
+
+[resource]
+script = ExtResource("1_04v4b")
+id = "nuoc_thanh"
+name = "Nước Thánh"
+desc = "Tháp trong vùng gắn Dấu Thuỷ trong 12 giây."
+rarity = "rare"
+buff = {
+"grant_element": "water"
+}

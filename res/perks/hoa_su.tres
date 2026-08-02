@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_446gw"]
+
+[resource]
+script = ExtResource("1_446gw")
+id = "hoa_su"
+name = "Hoả Sư"
+desc = "Thiêu đốt của Dấu Hoả mạnh thêm 50%. Nền của mọi lối chơi Hoả."
+rarity = "rare"
+element = {
+"element_damage": {
+"fire": 0.5
+}
+}

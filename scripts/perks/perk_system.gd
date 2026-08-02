@@ -74,6 +74,8 @@ func _rarity_weight(rarity: String) -> int:
 ## dict dùng đúng schema như PERKS built-in. Perk hợp lệ được merge vào pool
 ## chung trước mọi lần roll; perk lỗi chỉ push_warning rồi bỏ qua.
 const CUSTOM_PERK_DIR: String = "res://data/perks/"
+## Nguồn CHÍNH: .tres mở được bằng Inspector.
+const RES_PERK_DIR: String = "res://res/perks/"
 
 ## Các kênh hiệu ứng hợp lệ và subkey được engine hiểu — dùng để validate
 ## perk JSON. Perk phải có ít nhất MỘT kênh chứa ít nhất MỘT subkey hợp lệ.
@@ -430,7 +432,25 @@ func _initialize_perk_pool() -> void:
 	if not _all_perks.is_empty():
 		return
 	_all_perks = PERKS.duplicate()
+	_merge_perks(ContentLoader.load_dir(RES_PERK_DIR, "perk"))
 	_load_custom_perks()
+
+## Trộn vào pool: trùng `id` thì bản MỚI thắng.
+func _merge_perks(entries: Array) -> void:
+	for entry in entries:
+		if not (entry is Dictionary):
+			continue
+		if not _validate_custom_perk(entry, "res"):
+			continue
+		var pid := str((entry as Dictionary).get("id", ""))
+		var replaced := false
+		for i in _all_perks.size():
+			if str(_all_perks[i].get("id", "")) == pid:
+				_all_perks[i] = entry
+				replaced = true
+				break
+		if not replaced:
+			_all_perks.append(entry)
 
 func _load_custom_perks() -> void:
 	var dir := DirAccess.open(CUSTOM_PERK_DIR)

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_xubd0"]
+
+[resource]
+script = ExtResource("1_xubd0")
+id = "resonance_ring"
+name = "Nhẫn Cộng Hưởng"
+desc = "Phản ứng do tháp này kích: +50% sát thương."
+rarity = "epic"
+slot = "accessory"
+cost = 140
+effect = {
+"reaction_power_mult": 1.5
+}

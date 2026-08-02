@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_5h32e"]
+
+[resource]
+script = ExtResource("1_5h32e")
+id = "lo_set"
+name = "Lọ Sét"
+desc = "80 sát thương xuyên giáp và gắn Dấu Lôi."
+rarity = "rare"
+target = "enemies"
+strike = {
+"damage": 80.0,
+"element": "thunder"
+}

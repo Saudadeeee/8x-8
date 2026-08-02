@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_m3nr4"]
+
+[resource]
+script = ExtResource("1_m3nr4")
+id = "tho_ghep_mach"
+name = "Thợ Ghép Mạch"
+desc = "Ô nguyên tố rẻ hơn 15% và mọi Dấu Thổ gây thêm 30% sát thương."
+rarity = "rare"
+element = {
+"element_damage": {
+"earth": 0.3
+},
+"tile_discount": 0.15
+}

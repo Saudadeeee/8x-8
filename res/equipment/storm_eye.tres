@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_ajtwk"]
+
+[resource]
+script = ExtResource("1_ajtwk")
+id = "storm_eye"
+name = "Mắt Bão"
+desc = "Bán kính mọi phản ứng của tháp này +1m."
+rarity = "epic"
+slot = "accessory"
+cost = 135
+effect = {
+"reaction_radius_bonus": 1.0
+}

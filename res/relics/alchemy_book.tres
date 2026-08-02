@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_ibpg6"]
+
+[resource]
+script = ExtResource("1_ibpg6")
+id = "alchemy_book"
+name = "Sách Giả Kim"
+desc = "Mọi phản ứng nguyên tố +40% sát thương."
+cost = 220
+effect = {
+"reaction_mult": 1.4
+}

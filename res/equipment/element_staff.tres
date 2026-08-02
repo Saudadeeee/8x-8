@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_bbefe"]
+
+[resource]
+script = ExtResource("1_bbefe")
+id = "element_staff"
+name = "Trượng Nguyên Tố"
+desc = "Luôn bắn Dấu Hoả bất kể ô đang đứng."
+rarity = "epic"
+slot = "accessory"
+cost = 145
+effect = {
+"grant_element": "fire"
+}

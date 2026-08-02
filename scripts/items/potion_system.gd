@@ -38,6 +38,8 @@ const GLOBAL_RADIUS: float = 999.0
 
 ## Thư mục dữ liệu thuốc — mỗi file *.json là MỘT JSON array các potion dict.
 const CUSTOM_POTION_DIR: String = "res://data/potions/"
+## Nguồn CHÍNH: .tres mở được bằng Inspector.
+const RES_POTION_DIR: String = "res://res/potions/"
 
 const RARITY_WEIGHTS: Dictionary = {
 	"common":    60,
@@ -636,7 +638,26 @@ func _initialize_pool() -> void:
 	if not _all_potions.is_empty():
 		return
 	_all_potions = POTIONS.duplicate(true)
+	_merge_potions(ContentLoader.load_dir(RES_POTION_DIR, "thuốc"))
 	_load_json_potions()
+
+## Trộn danh sách vào pool: trùng `id` thì bản MỚI thắng (sửa một bình có sẵn =
+## sửa file .tres của nó, không phải đụng code).
+func _merge_potions(entries: Array) -> void:
+	for entry in entries:
+		if not (entry is Dictionary):
+			continue
+		var pid := str((entry as Dictionary).get("id", ""))
+		if pid.is_empty():
+			continue
+		var replaced := false
+		for i in _all_potions.size():
+			if str(_all_potions[i].get("id", "")) == pid:
+				_all_potions[i] = entry
+				replaced = true
+				break
+		if not replaced:
+			_all_potions.append(entry)
 
 func _load_json_potions() -> void:
 	var dir := DirAccess.open(CUSTOM_POTION_DIR)

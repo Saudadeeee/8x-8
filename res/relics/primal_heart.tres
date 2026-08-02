@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_snhnp"]
+
+[resource]
+script = ExtResource("1_snhnp")
+id = "primal_heart"
+name = "Trái Tim Nguyên Sơ"
+desc = "Đủ 6 nguyên tố trên bàn: mọi tháp +30% sát thương."
+rarity = "legendary"
+cost = 330
+effect = {
+"all_elements_damage_pct": 0.3
+}

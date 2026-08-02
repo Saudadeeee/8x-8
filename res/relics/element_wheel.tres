@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_3vdx1"]
+
+[resource]
+script = ExtResource("1_3vdx1")
+id = "element_wheel"
+name = "Bánh Xe Nguyên Tố"
+desc = "Địch mang được 3 Dấu cùng lúc thay vì 2."
+rarity = "legendary"
+cost = 300
+effect = {
+"max_marks": 3
+}

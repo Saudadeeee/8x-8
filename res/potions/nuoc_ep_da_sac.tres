@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_703nc"]
+
+[resource]
+script = ExtResource("1_703nc")
+id = "nuoc_ep_da_sac"
+name = "Nước Ép Đa Sắc"
+desc = "Mỗi tháp trong vùng gắn một Dấu NGẪU NHIÊN trong 12 giây, kể cả khi đứng ô thường."
+rarity = "epic"
+buff = {
+"grant_element": "random"
+}

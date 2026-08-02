@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_xogdu"]
+
+[resource]
+script = ExtResource("1_xogdu")
+id = "apothecary_hand"
+name = "Bàn Tay Dược Sư"
+desc = "Thuốc buff kéo dài thêm 20 giây."
+effect = {
+"potion_duration_bonus": 20.0
+}

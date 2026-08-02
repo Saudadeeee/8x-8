@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_3syb3"]
+
+[resource]
+script = ExtResource("1_3syb3")
+id = "vampire_blade"
+name = "Kiếm Hút Máu"
+desc = "Mỗi lần hạ địch hồi 1 HP cho Vua (tối đa 3 mỗi wave)."
+rarity = "epic"
+cost = 130
+effect = {
+"lifesteal": 1
+}

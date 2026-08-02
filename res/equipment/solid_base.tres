@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_3i4j0"]
+
+[resource]
+script = ExtResource("1_3i4j0")
+id = "solid_base"
+name = "Bệ Đá Vững"
+desc = "Miễn nhiễm đòn vô hiệu hoá tháp của boss."
+rarity = "rare"
+slot = "base"
+cost = 100
+effect = {
+"immune_disable": true
+}

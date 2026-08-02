@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_2k0d3"]
+
+[resource]
+script = ExtResource("1_2k0d3")
+id = "quan_su_hoang_trieu"
+name = "Quân Sư Hoàng Triều"
+desc = "Quân sư dâng kế sách: +12% sát thương toàn bộ tháp và +3 Sắc Lệnh Hoàng Gia mỗi khi wave mới bắt đầu."
+rarity = "epic"
+tower = {
+"damage_bonus": 0.12
+}
+rd = {
+"per_wave_start": 3.0
+}

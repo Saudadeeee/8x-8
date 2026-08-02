@@ -878,6 +878,22 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Vật phẩm + perk thành Resource mở bằng Inspector (2026-07-30):*
+- 4 lớp ở `scripts/resources/`: `PotionData` · `EquipmentData` · `RelicData` ·
+  `PerkData`. Mỗi lớp có `to_dict()` nên **phần code cũ vẫn làm việc với dict**,
+  không phải sửa nơi đọc.
+- **77 file `.tres`** xuất ra `res/{potions,equipment,relics,perks}/` từ các bảng
+  khai cứng. Trước đó 34 món (trang bị + di vật) CHỈ tồn tại trong GDScript —
+  `data/equipment/` và `data/relics/` rỗng hoàn toàn.
+- `ContentLoader.load_dir()` là điểm nạp chung. Thứ tự: `.tres` → JSON → bảng
+  cứng; trùng `id` thì bản sau thắng. Đã kiểm bằng cách sửa `alchemy_book.tres`
+  rồi nạp lại — giá trị mới thắng bảng cứng.
+- **BẪY**: `special` của thuốc là CHUỖI (`"heal_king"`), không phải dict; và
+  `target` có cả giá trị `"self"`. Khai sai kiểu trong Resource thì
+  `ResourceSaver` ném lỗi gán lúc xuất.
+- Bản export mang đuôi `.remap` — `ContentLoader` phải `trim_suffix(".remap")`
+  trước khi `load()`, nếu không bản build không thấy file nào.
+
 *Gỡ nội dung khỏi code — tạo được bằng kéo thả (2026-07-30):*
 - **Nhánh synergy mới KHÔNG còn cần sửa `enum UnitType`.** `TowerStats.synergy_tag`
   là chuỗi; `get_synergy_tag()` ưu tiên nó, rỗng thì suy từ enum (tương thích

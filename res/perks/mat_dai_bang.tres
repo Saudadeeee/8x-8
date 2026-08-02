@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_6iixa"]
+
+[resource]
+script = ExtResource("1_6iixa")
+id = "mat_dai_bang"
+name = "Mắt Đại Bàng"
+desc = "+1 tầm bắn cho toàn bộ tháp."
+rarity = "rare"
+tower = {
+"range_bonus": 1
+}

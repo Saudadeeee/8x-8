@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_utyvh"]
+
+[resource]
+script = ExtResource("1_utyvh")
+id = "god_anvil"
+name = "Đe Của Thần"
+desc = "Mỗi tháp có thêm 1 ô trang bị (2 → 3)."
+cost = 240
+effect = {
+"equip_slot_bonus": 1
+}

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_idhew"]
+
+[resource]
+script = ExtResource("1_idhew")
+id = "than_chien_tranh"
+name = "Thần Chiến Tranh"
+desc = "+30% sát thương, -0.1s hồi đòn và +1 tầm bắn cho toàn bộ tháp."
+rarity = "legendary"
+tower = {
+"damage_bonus": 0.3,
+"range_bonus": 1,
+"speed_bonus": 0.1
+}

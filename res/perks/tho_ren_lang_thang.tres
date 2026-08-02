@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_d6h8b"]
+
+[resource]
+script = ExtResource("1_d6h8b")
+id = "tho_ren_lang_thang"
+name = "Thợ Rèn Lang Thang"
+desc = "Trang bị trong shop rẻ hơn 30%."
+rarity = "rare"
+element = {
+"equip_discount": 0.3
+}

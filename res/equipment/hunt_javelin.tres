@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_b8faa"]
+
+[resource]
+script = ExtResource("1_b8faa")
+id = "hunt_javelin"
+name = "Cây Lao Săn"
+desc = "+60% sát thương lên địch còn đầy máu."
+cost = 60
+effect = {
+"bonus_vs_full": 0.6
+}

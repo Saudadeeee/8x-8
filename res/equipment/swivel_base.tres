@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/EquipmentData.gd" id="1_4spac"]
+
+[resource]
+script = ExtResource("1_4spac")
+id = "swivel_base"
+name = "Chân Đế Xoay"
+desc = "+1 ô tầm bắn."
+slot = "base"
+cost = 60
+effect = {
+"range_bonus": 1
+}

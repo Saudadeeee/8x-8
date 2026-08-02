@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_1dodt"]
+
+[resource]
+script = ExtResource("1_1dodt")
+id = "vun_da"
+name = "Vụn Đá"
+desc = "Gắn Dấu Thổ và làm chậm 40% trong 6 giây."
+target = "enemies"
+strike = {
+"damage": 0.0,
+"element": "earth",
+"slow": 0.4,
+"slow_duration": 6.0
+}

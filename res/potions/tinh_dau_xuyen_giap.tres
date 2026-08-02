@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_5l7qr"]
+
+[resource]
+script = ExtResource("1_5l7qr")
+id = "tinh_dau_xuyen_giap"
+name = "Tinh Dầu Xuyên Giáp"
+desc = "Tháp trong vùng bỏ qua hoàn toàn giáp trong 12 giây."
+rarity = "rare"
+buff = {
+"pierce_armor": true
+}

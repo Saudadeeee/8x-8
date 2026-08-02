@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_eowdb"]
+
+[resource]
+script = ExtResource("1_eowdb")
+id = "nha_gia_kim"
+name = "Nhà Giả Kim"
+desc = "Cứ 15 phản ứng nguyên tố nổ ra thì nhận 1 bình thuốc ngẫu nhiên."
+rarity = "epic"
+element = {
+"potion_per_reactions": 15.0
+}

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_tsrqh"]
+
+[resource]
+script = ExtResource("1_tsrqh")
+id = "han_bang_quyet"
+name = "Hàn Băng Quyết"
+desc = "Phản ứng Đóng Băng kéo dài 3s thay vì 2s."
+rarity = "rare"
+element = {
+"freeze_bonus": 1.0
+}

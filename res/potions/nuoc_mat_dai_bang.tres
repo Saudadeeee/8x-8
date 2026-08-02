@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PotionData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PotionData.gd" id="1_lrefm"]
+
+[resource]
+script = ExtResource("1_lrefm")
+id = "nuoc_mat_dai_bang"
+name = "Nước Mắt Đại Bàng"
+desc = "Tháp trong vùng +2 tầm bắn trong 12 giây."
+rarity = "rare"
+buff = {
+"range_bonus": 2.0
+}

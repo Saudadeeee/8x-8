@@ -4,16 +4,32 @@ Tài liệu thực dụng để thêm **Perk / Quân (Tower) / Địch (Enemy)**
 sửa code lõi. Mọi mô tả dưới đây đã được đối chiếu với code hiện tại
 (`perk_system.gd`, `shop_manager.gd`, `wave_spawner.gd`, `SynergyManager.gd`).
 
+## Cách nhanh nhất: tạo bằng Inspector, không gõ file
+
+Bốn loại vật phẩm và perk giờ là **Resource của Godot**, mở ra là một bảng ô
+nhập có kiểu — không phải JSON.
+
+1. Trong FileSystem, chuột phải thư mục `res://res/relics/` (hoặc `potions`,
+   `equipment`, `perks`) → **New Resource…**
+2. Chọn `RelicData` / `PotionData` / `EquipmentData` / `PerkData`
+3. Lưu thành `<id>.tres`, rồi điền các ô bên Inspector. Bậc hiếm là **dropdown**,
+   bán kính là **thanh trượt**, mô tả là ô nhiều dòng.
+4. Xong. Hệ thống tự quét thư mục đó — không phải khai ở đâu khác.
+
+Thứ tự ưu tiên khi nạp: `res/<loại>/*.tres` → `data/<loại>/*.json` → bảng khai
+trong `.gd`. Trùng `id` thì bản sau ghi đè, nên **sửa một món có sẵn cũng chỉ là
+sửa file `.tres` của nó**.
+
 ## Tra nhanh — thêm một thứ mất bao nhiêu file?
 
 | Muốn thêm | Sửa gì | Có phải viết code không? |
 |---|---|---|
 | **Quân cờ** (tower) | 1 file `res/towers/<id>.tres` (+ `assets/models/<id>.gltf`) | Không |
 | **Địch** | 1 file `res/enemy/<id>.tres` — nhớ điền `spawn_seasons` | Không |
-| **Perk** | 1 file JSON trong `data/perks/` | Không |
-| **Lõi buff = Trang bị** | 1 file JSON trong `data/equipment/` (+ icon 32×32) | Không |
-| **Di vật** (buff cả run) | 1 file JSON trong `data/relics/` (+ icon) | Không |
-| **Thuốc** (dùng giữa trận) | 1 file JSON trong `data/potions/` (+ icon) | Không |
+| **Perk** | 1 file `res/perks/<id>.tres` — **mở bằng Inspector** | Không |
+| **Lõi buff = Trang bị** | 1 file `res/equipment/<id>.tres` (+ icon 32×32) | Không |
+| **Di vật** (buff cả run) | 1 file `res/relics/<id>.tres` (+ icon) | Không |
+| **Thuốc** (dùng giữa trận) | 1 file `res/potions/<id>.tres` (+ icon) | Không |
 | **Nhánh synergy MỚI** | thêm giá trị vào `enum UnitType` + `res/synergies/<tag>.tres` | Có, 1 dòng |
 | **Nguyên tố / phản ứng mới** | `element_types.gd` + `reaction_table.gd` | Có |
 

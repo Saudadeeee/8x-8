@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerkData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PerkData.gd" id="1_ehs27"]
+
+[resource]
+script = ExtResource("1_ehs27")
+id = "doc_su"
+name = "Độc Sư"
+desc = "Dấu Độc cộng dồn tối đa 8 tầng thay vì 5."
+rarity = "epic"
+element = {
+"poison_max_stacks": 8.0
+}
