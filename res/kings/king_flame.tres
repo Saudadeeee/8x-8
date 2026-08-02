@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_kf")
 id = "king_flame"
-king_name = "Flame Queen"
-lore = "The Flame Queen rules through devastation. Her Queens and Bishops rain fire upon all who dare oppose her."
+king_name = "Nữ Hoàng Lửa"
+lore = "Nữ hoàng cai trị bằng sự tàn phá. Hậu và Tượng của bà trút lửa xuống bất cứ ai dám cản đường."
 base_health = 18
 base_royal_decree = 20.0
 decree_regen_rate = 1.8
@@ -19,8 +19,8 @@ favored_unit_types = ["queen", "bishop"]
 favor_damage_bonus = 0.3
 favor_speed_bonus = 0.05
 favor_range_bonus = 0.1
-ability_name = "Royal Inferno"
-ability_description = "Deals 50 damage to all enemies on the field. Queens deal double damage for 10 seconds."
+ability_name = "Hoả Ngục Hoàng Gia"
+ability_description = "Gây 50 sát thương lên toàn bộ địch. Hậu gây sát thương gấp đôi trong 10 giây."
 ability_decree_cost = 50.0
 ability_cooldown = 90.0
 ability_script = ExtResource("2_ab")

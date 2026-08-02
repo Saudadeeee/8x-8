@@ -77,6 +77,10 @@ func update_wave(wave: int) -> void:
 	current_wave = wave
 
 func _ready() -> void:
+	# Nhóm để ability của King với tới được. ShopManager là con của game_map,
+	# mà ability chỉ nhận SceneTree trong ctx — không có group thì phải đi
+	# đường vòng qua tên node, gãy ngay khi cây scene đổi.
+	add_to_group("shop_managers")
 	if shop_items.is_empty():
 		_populate_default_items()
 	refresh_shop(true)

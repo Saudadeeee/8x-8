@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_merchant"]
+
+[ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_km"]
+[ext_resource type="Script" path="res://scripts/king/abilities/golden_coffer_ability.gd" id="2_ab"]
+
+[resource]
+script = ExtResource("1_km")
+id = "king_merchant"
+king_name = "Vua Thương Hội"
+lore = "Ngài chưa bao giờ rút kiếm. Ngài mua đội quân mạnh hơn đội quân đang tiến đến — và trả bằng tiền của chính kẻ đã thuê chúng."
+base_health = 14
+base_royal_decree = 18.0
+decree_regen_rate = 1.6
+decree_max = 100.0
+starting_unit_ids = ["pawn", "alchemist"]
+starting_unit_quantities = [4, 1]
+starting_territory_count = 3
+favored_unit_types = ["pawn", "alchemist", "warlock"]
+favor_damage_bonus = 0.12
+favor_speed_bonus = 0.10
+favor_range_bonus = 0.05
+ability_name = "Kim Khố"
+ability_description = "Nhận 60 vàng + 22 mỗi wave đã qua, và trả giá xáo shop về mức đáy. Đổi Sắc Lệnh lấy quyền chọn hàng."
+ability_decree_cost = 30.0
+ability_cooldown = 55.0
+ability_script = ExtResource("2_ab")
+unlock_cost = 160
+is_starter_king = false

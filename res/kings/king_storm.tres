@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_storm"]
+
+[ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_ks"]
+[ext_resource type="Script" path="res://scripts/king/abilities/storm_call_ability.gd" id="2_ab"]
+
+[resource]
+script = ExtResource("1_ks")
+id = "king_storm"
+king_name = "Vua Bão Tố"
+lore = "Ngài không chờ kẻ địch tới gần. Cung thủ của ngài phủ sét lên chiến trường, để mặt đất tự quyết định điều gì sẽ nổ."
+base_health = 16
+base_royal_decree = 25.0
+decree_regen_rate = 2.2
+decree_max = 110.0
+starting_unit_ids = ["crossbowman", "pawn"]
+starting_unit_quantities = [2, 3]
+starting_territory_count = 4
+favored_unit_types = ["crossbowman", "longbowman", "ballista"]
+favor_damage_bonus = 0.18
+favor_speed_bonus = 0.12
+favor_range_bonus = 0.15
+ability_name = "Thiên Lôi Trận"
+ability_description = "Gây 24 sát thương và gắn Dấu Lôi lên toàn bộ địch. Dấu kéo dài thêm 3 giây — đủ để tháp kịp kích phản ứng."
+ability_decree_cost = 40.0
+ability_cooldown = 70.0
+ability_script = ExtResource("2_ab")
+unlock_cost = 200
+is_starter_king = false

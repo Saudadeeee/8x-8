@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_ki")
 id = "king_iron"
-king_name = "Iron King"
-lore = "A steadfast ruler who built his kingdom on discipline and steel. His pawns fight with unwavering loyalty, their numbers compensating for what they lack in individual power."
+king_name = "Vua Thép"
+lore = "Ngài dựng vương quốc bằng kỷ luật và thép. Tốt của ngài không mạnh, nhưng chúng không bao giờ lùi — và chúng đông."
 base_health = 20
 base_royal_decree = 15.0
 decree_regen_rate = 1.5
@@ -19,8 +19,8 @@ favored_unit_types = ["pawn", "rook"]
 favor_damage_bonus = 0.15
 favor_speed_bonus = 0.1
 favor_range_bonus = 0.0
-ability_name = "Iron Decree"
-ability_description = "Instantly restore 30 Royal Decree and grant all Pawns +50% attack speed for 8 seconds."
+ability_name = "Sắc Lệnh Thép"
+ability_description = "Hồi ngay 30 Sắc Lệnh và tăng 50% tốc đánh cho toàn bộ Tốt trong 8 giây."
 ability_decree_cost = 0.0
 ability_cooldown = 45.0
 ability_script = ExtResource("2_ab")

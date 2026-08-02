@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_frost"]
+
+[ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_kf"]
+[ext_resource type="Script" path="res://scripts/king/abilities/glacier_halt_ability.gd" id="2_ab"]
+
+[resource]
+script = ExtResource("1_kf")
+id = "king_frost"
+king_name = "Vua Băng Hà"
+lore = "Ngài chưa từng thắng nhanh trận nào. Ngài chỉ khiến kẻ địch chậm lại, chậm mãi, cho tới khi mùa đông làm nốt phần còn lại."
+base_health = 28
+base_royal_decree = 12.0
+decree_regen_rate = 1.2
+decree_max = 90.0
+starting_unit_ids = ["rook", "pawn"]
+starting_unit_quantities = [2, 2]
+starting_territory_count = 5
+favored_unit_types = ["rook", "ice_guardian", "paladin"]
+favor_damage_bonus = 0.10
+favor_speed_bonus = 0.04
+favor_range_bonus = 0.20
+ability_name = "Vĩnh Đông"
+ability_description = "Làm chậm 80% toàn bộ địch trong 6 giây và gắn Dấu Băng. Chiêu cứu wave, không phải chiêu dọn wave."
+ability_decree_cost = 35.0
+ability_cooldown = 65.0
+ability_script = ExtResource("2_ab")
+unlock_cost = 180
+is_starter_king = false

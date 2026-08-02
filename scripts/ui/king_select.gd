@@ -1,11 +1,43 @@
 # res://scripts/ui/king_select.gd
 extends Control
 
-const KING_PATHS: Array[String] = [
-	"res://res/kings/king_iron.tres",
-	"res://res/kings/king_phantom.tres",
-	"res://res/kings/king_flame.tres",
-]
+## Thư mục chứa mọi King. Thêm vua mới = thả một `.tres` vào đây, KHÔNG sửa code.
+const KING_DIR: String = "res://res/kings/"
+
+## Thứ tự hiển thị. Vua không có tên trong đây vẫn hiện, xếp sau theo tên file —
+## nên bảng này chỉ để ghim ba vua gốc lên đầu, không phải danh sách bắt buộc.
+const KING_ORDER: Array[String] = ["king_iron", "king_phantom", "king_flame"]
+
+## Quét KING_DIR và trả về mọi KingStats, ba vua gốc xếp trước.
+##
+## Quét thư mục thay vì liệt kê cứng: thêm vua chỉ cần thả file `.tres`, đúng
+## nguyên tắc "tạo nội dung bằng kéo thả". Bản export mang đuôi `.remap` nên
+## phải cắt trước khi `load()`, nếu không bản build không thấy vua nào.
+static func _load_all_kings() -> Array[KingStats]:
+	var out: Array[KingStats] = []
+	var d := DirAccess.open(KING_DIR)
+	if d == null:
+		return out
+	var names: Array[String] = []
+	for file_name in d.get_files():
+		var clean := file_name.trim_suffix(".remap")
+		if clean.ends_with(".tres"):
+			names.append(clean)
+	names.sort()
+	names.sort_custom(func(a: String, b: String) -> bool:
+		var ia := KING_ORDER.find(a.trim_suffix(".tres"))
+		var ib := KING_ORDER.find(b.trim_suffix(".tres"))
+		if ia < 0: ia = 99
+		if ib < 0: ib = 99
+		if ia != ib:
+			return ia < ib
+		return a < b)
+	for n in names:
+		var k := load(KING_DIR + n) as KingStats
+		if k:
+			out.append(k)
+	return out
+
 
 ## Trần Ascension của game — mirror GameManager.MAX_ASCENSION (đọc lại từ
 ## GameManager khi autoload có mặt, hằng này chỉ là fallback).
@@ -69,9 +101,9 @@ func _build_ui() -> void:
 
 	var back_btn = Button.new()
 	back_btn.text = "←  Quay Lại"
-	back_btn.custom_minimum_size = Vector2(130, 46)
+	back_btn.custom_minimum_size = Vector2(210, 56)
 	back_btn.position = Vector2(20, 20)
-	UIStyle.apply_button(back_btn, 17)
+	UIStyle.apply_button(back_btn, 28)
 	back_btn.pressed.connect(_go_to.bind("res://scenes/ui/main_menu.tscn"))
 	add_child(back_btn)
 	UIStyle.slide_in(back_btn, Vector2(-160, 0), 0.3)
@@ -97,19 +129,14 @@ func _build_ui() -> void:
 
 	var left_scroll = ScrollContainer.new()
 	left_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	left_scroll.size_flags_stretch_ratio = 0.4
+	left_scroll.size_flags_stretch_ratio = 0.52
 	main_hbox.add_child(left_scroll)
 
 	var king_vbox = VBoxContainer.new()
 	king_vbox.add_theme_constant_override("separation", 12)
 	left_scroll.add_child(king_vbox)
 
-	var kings_loaded: Array[KingStats] = []
-	for path in KING_PATHS:
-		if ResourceLoader.exists(path):
-			var k = load(path) as KingStats
-			if k:
-				kings_loaded.append(k)
+	var kings_loaded := _load_all_kings()
 
 	if kings_loaded.is_empty():
 		var placeholder_king = KingStats.new()
@@ -136,7 +163,7 @@ func _build_ui() -> void:
 
 	var right_panel = PanelContainer.new()
 	right_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	right_panel.size_flags_stretch_ratio = 0.6
+	right_panel.size_flags_stretch_ratio = 0.48
 	UIStyle.apply_panel(right_panel, "parchment")
 	main_hbox.add_child(right_panel)
 	UIStyle.slide_in(right_panel, Vector2(90, 0), 0.34)
@@ -161,36 +188,36 @@ func _build_ui() -> void:
 	_detail_name = Label.new()
 	_detail_name.text = "Chọn một vị Vua"
 	_detail_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UIStyle.title(_detail_name, 32, UIStyle.GOLD)
+	UIStyle.title(_detail_name, 42, UIStyle.GOLD)
 	detail_vbox.add_child(_detail_name)
 
 	detail_vbox.add_child(UIStyle.separator(UIStyle.BORDER_HI))
 
 	_detail_lore = Label.new()
 	_detail_lore.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	UIStyle.body(_detail_lore, 16, Color(0.85, 0.85, 0.85, 1))
+	UIStyle.body(_detail_lore, 28, Color(0.85, 0.85, 0.85, 1))
 	detail_vbox.add_child(_detail_lore)
 
 	_detail_stats = Label.new()
 	_detail_stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	UIStyle.body(_detail_stats, 15, Color(0.7, 0.9, 1.0, 1))
+	UIStyle.body(_detail_stats, 28, Color(0.7, 0.9, 1.0, 1))
 	detail_vbox.add_child(_detail_stats)
 
 	_detail_favor = Label.new()
 	_detail_favor.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	UIStyle.body(_detail_favor, 15, Color(0.8, 0.7, 1.0, 1))
+	UIStyle.body(_detail_favor, 28, Color(0.8, 0.7, 1.0, 1))
 	detail_vbox.add_child(_detail_favor)
 
 	detail_vbox.add_child(UIStyle.separator(UIStyle.BORDER_HI))
 
 	_detail_ability = Label.new()
 	_detail_ability.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	UIStyle.body(_detail_ability, 15, Color(0.9, 0.8, 0.4, 1))
+	UIStyle.body(_detail_ability, 28, Color(0.9, 0.8, 0.4, 1))
 	detail_vbox.add_child(_detail_ability)
 
 	_detail_locked = Label.new()
 	_detail_locked.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UIStyle.title(_detail_locked, 18, Color(0.9, 0.3, 0.3, 1))
+	UIStyle.title(_detail_locked, 28, Color(0.9, 0.3, 0.3, 1))
 	detail_vbox.add_child(_detail_locked)
 
 	var spacer = Control.new()
@@ -217,10 +244,10 @@ func _build_ui() -> void:
 ## Vẫn trả về Button để giữ nguyên API/logic cũ (pressed → _select_king).
 func _create_king_card_button(king: KingStats, is_unlocked: bool) -> Button:
 	var btn = Button.new()
-	btn.custom_minimum_size = Vector2(0, 84)
+	btn.custom_minimum_size = Vector2(0, 96)
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var rarity := "legendary" if is_unlocked else "common"
-	UIStyle.apply_button(btn, 19, UIStyle.rarity_color(rarity).lightened(0.45))
+	UIStyle.apply_button(btn, 28, UIStyle.rarity_color(rarity).lightened(0.45))
 	# Khung rarity thay cho stylebox nút thường → card có viền khối rõ ràng
 	btn.add_theme_stylebox_override("normal", UIStyle.rarity_frame(rarity))
 	var hover_box := UIStyle.rarity_frame(rarity)
@@ -315,7 +342,7 @@ func _build_ascension_row(parent: VBoxContainer) -> void:
 	_asc_desc_label = Label.new()
 	_asc_desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_asc_desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	UIStyle.body(_asc_desc_label, 13, Color(1.0, 0.72, 0.45, 1.0))
+	UIStyle.body(_asc_desc_label, 28, Color(1.0, 0.72, 0.45, 1.0))
 	parent.add_child(_asc_desc_label)
 
 	_ascension_level = clampi(_ascension_level, 0, _max_ascension())

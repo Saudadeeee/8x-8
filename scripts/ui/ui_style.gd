@@ -295,7 +295,7 @@ static func apply_button(btn: Button, font_size: int = 14, text_color: Color = T
 	btn.add_theme_color_override("font_disabled_color", Color(text_color, 0.38))
 	btn.add_theme_color_override("font_outline_color", OUTLINE)
 	btn.add_theme_constant_override("outline_size", 3)
-	btn.add_theme_font_size_override("font_size", font_size)
+	_set_font(btn, font_size)
 	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	pixel_filter(btn)
 	hover_lift(btn, 1.035)
@@ -464,11 +464,63 @@ static func rarity_from_cost(cost: float, is_premium: bool = false) -> String:
 
 # ── Typography ────────────────────────────────────────────────────────────────
 
+## Ba cỡ chữ DUY NHẤT vẽ ra được sắc nét.
+##
+## Font là bitmap: chỉ ba cỡ này có atlas thật (`pixel_8x8.png` + hai bản
+## `@2x`/`@3x` nướng sẵn trong `pixel_font.tres`). Cỡ khác thì Godot lấy cache
+## gần nhất — không nhoè, nhưng chữ ra không đúng cỡ đã yêu cầu, nên bố cục
+## tính theo cỡ đó sẽ lệch. Vì vậy mọi hàm chữ bên dưới đều nắn qua đây.
+const FONT_SMALL := 14
+const FONT_MID := 28
+const FONT_LARGE := 42
+const FONT_SIZES: Array[int] = [FONT_SMALL, FONT_MID, FONT_LARGE]
+
+## Mỗi cỡ là MỘT atlas riêng — xem `tools/rebuild_font_resource.gd`.
+const FONT_FILES := {
+	FONT_SMALL: "res://assets/fonts/pixel_font.tres",
+	FONT_MID:   "res://assets/fonts/pixel_font_2x.tres",
+	FONT_LARGE: "res://assets/fonts/pixel_font_3x.tres",
+}
+
+static var _font_cache: Dictionary = {}
+
+
+## Nắn một cỡ tuỳ ý về cỡ vẽ sẵn gần nhất.
+static func snap_font_size(size: int) -> int:
+	var best: int = FONT_SIZES[0]
+	for s in FONT_SIZES:
+		if absi(s - size) < absi(best - size):
+			best = s
+	return best
+
+
+## Font bitmap ứng với một cỡ. Trả null nếu chưa build (gọi bên gọi bỏ qua).
+static func font_for(size: int) -> Font:
+	var key := snap_font_size(size)
+	if _font_cache.has(key):
+		return _font_cache[key]
+	var path: String = FONT_FILES.get(key, "")
+	var f: Font = load(path) as Font if ResourceLoader.exists(path) else null
+	_font_cache[key] = f
+	return f
+
+
+## Đặt CẢ font lẫn cỡ. Chỉ đặt `font_size` là không đủ: font bitmap không co
+## giãn, ba cỡ là ba file atlas riêng.
+static func _set_font(label: CanvasItem, size: int) -> int:
+	var snapped := snap_font_size(size)
+	var f := font_for(snapped)
+	if f and label.has_method("add_theme_font_override"):
+		label.call("add_theme_font_override", "font", f)
+	label.call("add_theme_font_size_override", "font_size", snapped)
+	return snapped
+
+
 ## Chữ tiêu đề: to, outline dày + shadow → nổi khối trên nền 3D.
 static func title(label: Label, size: int, color: Color = GOLD) -> void:
 	if not is_instance_valid(label):
 		return
-	label.add_theme_font_size_override("font_size", size)
+	size = _set_font(label, size)
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_color_override("font_outline_color", OUTLINE)
 	label.add_theme_constant_override("outline_size", maxi(4, int(size / 7.0)))
@@ -480,7 +532,7 @@ static func title(label: Label, size: int, color: Color = GOLD) -> void:
 static func body(label: Label, size: int, color: Color = TEXT) -> void:
 	if not is_instance_valid(label):
 		return
-	label.add_theme_font_size_override("font_size", size)
+	size = _set_font(label, size)
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_color_override("font_outline_color", OUTLINE)
 	label.add_theme_constant_override("outline_size", 3)
@@ -489,7 +541,7 @@ static func body(label: Label, size: int, color: Color = TEXT) -> void:
 static func glyph(label: Label, size: int, color: Color) -> void:
 	if not is_instance_valid(label):
 		return
-	label.add_theme_font_size_override("font_size", size)
+	size = _set_font(label, size)
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_color_override("font_outline_color", OUTLINE)
 	label.add_theme_constant_override("outline_size", 5)

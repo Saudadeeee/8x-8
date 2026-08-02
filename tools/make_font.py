@@ -344,6 +344,31 @@ def write_png(path, width, height, pixels):
         f.write(png)
 
 
+def _scaled_path(path, k):
+    base, ext = os.path.splitext(path)
+    return '%s@%dx%s' % (base, k, ext)
+
+
+def _write_fnt(fnt_path, png_path, entries, atlas_w, atlas_h, k):
+    """Ghi .fnt cho ban phong k lan — moi so do deu nhan k."""
+    lines = [
+        'info face="8x8 Pixel" size=%d bold=0 italic=0 charset="" unicode=1 '
+        'stretchH=100 smooth=0 aa=1 padding=0,0,0,0 spacing=1,1' % (CELL_H * k),
+        'common lineHeight=%d base=%d scaleW=%d scaleH=%d pages=1 packed=0'
+        % (CELL_H * k, BASELINE * k, atlas_w, atlas_h),
+        'page id=0 file="%s"' % os.path.basename(png_path),
+        'chars count=%d' % len(entries),
+    ]
+    for cp, cx, cy, advance, x_off in entries:
+        lines.append(
+            'char id=%d x=%d y=%d width=%d height=%d xoffset=%d yoffset=0 '
+            'xadvance=%d page=0 chnl=15'
+            % (cp, cx * k, cy * k, CELL_W * k, CELL_H * k, x_off * k, advance * k))
+    with io.open(fnt_path, 'w', encoding='utf-8', newline=chr(10)) as f:
+
+        f.write(chr(10).join(lines) + chr(10))
+
+
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     glyphs = build_glyphs()
@@ -371,6 +396,22 @@ def main():
         entries.append((cp, cx, cy, advance, x_off))
 
     write_png(PNG_PATH, atlas_w, atlas_h, pixels)
+
+    # ── Ban PHONG TO nguyen ban ──────────────────────────────────────────────
+    # Vi sao can: Godot noi suy khi phong font bitmap len — do duoc 11 mau khac
+    # nhau o co 28 thay vi 1. Voi game pixel art thi do la chu nhoe. Nuong san
+    # atlas 2x/3x bang cach NHAN toa do (moi pixel thanh khoi k x k) nen khong
+    # co mot buoc noi suy nao. rebuild_font_resource.gd nap ca ba vao MOT
+    # FontFile lam ba co cache 14 / 28 / 42.
+    for k in (2, 3):
+        big = set()
+        for px, py in pixels:
+            for dy in range(k):
+                for dx in range(k):
+                    big.add((px * k + dx, py * k + dy))
+        write_png(_scaled_path(PNG_PATH, k), atlas_w * k, atlas_h * k, big)
+        _write_fnt(_scaled_path(FNT_PATH, k), _scaled_path(PNG_PATH, k),
+                   entries, atlas_w * k, atlas_h * k, k)
 
     lines = [
         'info face="8x8 Pixel" size=%d bold=0 italic=0 charset="" unicode=1 '

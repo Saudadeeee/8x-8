@@ -28,10 +28,39 @@ func _run() -> void:
 		await process_frame
 
 	print("\n--- KING ---")
-	var kings := ["king_iron", "king_phantom", "king_flame"]
+	var kings := ["king_iron", "king_phantom", "king_flame",
+		"king_storm", "king_frost", "king_merchant"]
 	for k in kings:
 		var p := "res://res/kings/%s.tres" % k
 		ok(ResourceLoader.exists(p), "co %s.tres" % k)
+
+	# Man chon vua QUET thu muc, khong doc danh sach cung — them vua chi can tha
+	# mot .tres vao res/kings/. Khang dinh nay chan viec ai do quay lai liet ke
+	# cung: them file moi ma man hinh khong thay thi vua do coi nhu khong ton tai.
+	var scanned: Array = load("res://scripts/ui/king_select.gd").call("_load_all_kings")
+	var scanned_ids := {}
+	for k in scanned:
+		scanned_ids[k.id] = k
+	var scan_missing := ""
+	for k in kings:
+		if not scanned_ids.has(k):
+			scan_missing += k + " "
+	ok(scan_missing == "", "man chon vua quet du %d vua tu thu muc" % kings.size(),
+		scan_missing)
+
+	# Moi vua phai co ability_script CHAY DUOC. Thieu script thi executor roi ve
+	# nhanh hardcoded theo king_id — vua moi khong co nhanh do nen chieu se im
+	# lang khong lam gi, va khong ai thay vi game van chay binh thuong.
+	var ab_bad := ""
+	for kid in scanned_ids:
+		var ks: KingStats = scanned_ids[kid]
+		if ks.ability_script == null:
+			ab_bad += "%s thieu script " % kid
+			continue
+		var inst: Object = ks.ability_script.new()
+		if inst == null or not inst.has_method("execute"):
+			ab_bad += "%s script khong co execute() " % kid
+	ok(ab_bad == "", "moi vua co ability_script dung duoc", ab_bad)
 	gm.start_run(load("res://res/kings/king_iron.tres"))
 	change_scene_to_file("res://scenes/map/game_map.tscn")
 	await process_frame; await process_frame

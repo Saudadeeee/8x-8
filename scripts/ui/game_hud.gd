@@ -1210,9 +1210,12 @@ func _apply_hud_styles() -> void:
 	if _stats_holder:
 		UIStyle.apply_panel(_stats_holder, "wood")   # cùng chất liệu với cột King và shop
 	# Số HP/Gold/RD là "huy hiệu" → glyph outline dày; dòng phụ dùng body
-	if label_health: UIStyle.glyph(label_health, 17, C_RED)
-	if label_gold:   UIStyle.glyph(label_gold, 17, C_GOLD)
-	if label_decree: UIStyle.glyph(label_decree, 15, C_BLUE)
+	# Cỡ 28 = bản atlas @2x nướng sẵn, sắc nét tuyệt đối (xem UIStyle.FONT_SIZES).
+	# Ba con số này là thứ người chơi liếc nhiều nhất trong trận — để cỡ thân bài
+	# thì phải nhìn kỹ mới đọc được lúc đang bị dồn quái.
+	if label_health: UIStyle.glyph(label_health, 28, C_RED)
+	if label_gold:   UIStyle.glyph(label_gold, 28, C_GOLD)
+	if label_decree: UIStyle.glyph(label_decree, 28, C_BLUE)
 	if label_favor:  UIStyle.body(label_favor, 12, Color(0.80, 0.70, 1.00, 1.0))
 	if label_territory: UIStyle.body(label_territory, 12, C_GREEN)
 	if label_phase:  UIStyle.body(label_phase, 12, C_DIM)
@@ -2249,7 +2252,7 @@ func update_perk_list(names: Array) -> void:
 # liếc là thấy, không phải đọc cả câu.
 
 const CHIP_BG := Color(0.09, 0.08, 0.07, 0.80)
-const RESOURCE_PANEL_WIDTH: int = 430
+const RESOURCE_PANEL_WIDTH: int = 560
 
 var _chip_row: HFlowContainer = null
 
@@ -2273,7 +2276,7 @@ func _build_resource_row() -> void:
 	# min width riêng) nuốt hết chỗ và hai cột kia bị đẩy ra ngoài panel.
 	var hp_col := VBoxContainer.new()
 	hp_col.add_theme_constant_override("separation", 2)
-	hp_col.custom_minimum_size = Vector2(168, 0)
+	hp_col.custom_minimum_size = Vector2(224, 0)
 	hp_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(hp_col)
 	_move_into(label_health, hp_col)
@@ -2293,7 +2296,7 @@ func _build_resource_row() -> void:
 
 	var rd_col := VBoxContainer.new()
 	rd_col.add_theme_constant_override("separation", 2)
-	rd_col.custom_minimum_size = Vector2(118, 0)
+	rd_col.custom_minimum_size = Vector2(158, 0)
 	rd_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(rd_col)
 
@@ -2304,6 +2307,37 @@ func _build_resource_row() -> void:
 			lbl.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_move_into(label_decree, rd_col)
 	if _rd_bar: _move_into(_rd_bar, rd_col)
+	_fit_resource_panel.call_deferred()
+
+
+## Kẹp bề rộng panel tài nguyên rồi neo dải wave vào mép phải THẬT của nó.
+##
+## Hai thứ đã đo được, không phải suy đoán:
+##   • Panel không nằm trong container nên nở theo nội dung rộng nhất — dải chip
+##     trạng thái kéo nó ra 869px trong khi hàng số chỉ cần 520.
+##   • Dải wave trước đây neo theo hằng `RESOURCE_PANEL_WIDTH`, nên khi panel nở
+##     quá hằng đó thì banner nằm ĐÈ lên số Sắc Lệnh. Nhìn ra như "chữ bị cắt",
+##     thực ra là bị che.
+## Vì vậy: kẹp trần bề rộng (chữ dài thì xuống dòng), rồi lấy `size.x` thực tế.
+const RESOURCE_PANEL_MAX_WIDTH: int = 640
+
+func _fit_resource_panel() -> void:
+	if _stats_holder == null or not is_instance_valid(_stats_holder):
+		return
+	_stats_holder.custom_minimum_size.x = float(RESOURCE_PANEL_WIDTH)
+	_stats_holder.size.x = float(RESOURCE_PANEL_WIDTH)
+	for lbl in [label_phase, label_favor, label_territory]:
+		if lbl != null and is_instance_valid(lbl):
+			lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			lbl.custom_minimum_size.x = 0.0
+	await get_tree().process_frame
+	if not is_instance_valid(_stats_holder):
+		return
+	var w := clampf(_stats_holder.size.x, float(RESOURCE_PANEL_WIDTH),
+		float(RESOURCE_PANEL_MAX_WIDTH))
+	_stats_holder.size.x = w
+	if _intel_panel and is_instance_valid(_intel_panel):
+		_intel_panel.offset_left = 14.0 + w + 26.0
 
 func _move_into(node: Control, parent: Control) -> void:
 	if node == null or not is_instance_valid(node):
@@ -2359,6 +2393,9 @@ func _refresh_status_chips(favor: String, territory: String) -> void:
 	# mảng xám to đùng che góc màn hình.
 	if _stats_holder != null and is_instance_valid(_stats_holder):
 		_stats_holder.reset_size.call_deferred()
+		# Panel vừa co/nở ⇒ mép phải của nó đổi ⇒ dải wave phải dời theo, nếu
+		# không banner đè lên số Sắc Lệnh (nhìn ra như chữ bị cắt cụt).
+		_fit_resource_panel.call_deferred()
 
 func _split_summary(text: String) -> Array[String]:
 	var out: Array[String] = []
