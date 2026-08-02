@@ -27,12 +27,12 @@ const LEVEL_STATS: Array[Dictionary] = [
 
 ## Tên mốc ×6 — hiệu ứng đổi luật, mỗi nguyên tố một kiểu.
 const CAPSTONE: Dictionary = {
-	ElementTypes.FIRE:    {"name": "Biển Lửa",      "desc": "Dấu Hoả lan sang địch trong 1.5m mỗi nhịp cháy"},
-	ElementTypes.ICE:     {"name": "Băng Vĩnh Cửu", "desc": "Đóng Băng bỏ cooldown ẩn"},
-	ElementTypes.THUNDER: {"name": "Bão Sét",       "desc": "Dẫn Điện lan tối đa 8 mục tiêu"},
-	ElementTypes.POISON:  {"name": "Đại Dịch",      "desc": "Dấu Độc cộng dồn tới 10 tầng"},
-	ElementTypes.WATER:   {"name": "Thuỷ Triều",    "desc": "Địch mới ra sân tự mang Dấu Thuỷ"},
-	ElementTypes.EARTH:   {"name": "Địa Chấn",      "desc": "Kết Tinh cho 40 vàng thay vì 15"},
+	ElementTypes.FIRE:    {"name": "Phần Thiên Hỏa Hải",   "desc": "Hỏa Ấn bùng phát, mỗi nhịp thiêu đốt lan truyền sang kẻ địch trong phạm vi 1.5m."},
+	ElementTypes.ICE:     {"name": "Vạn Niên Hàn Băng",    "desc": "Hàn khí thấu xương, trạng thái Đóng Băng gỡ bỏ hoàn toàn thời gian cooldown ẩn."},
+	ElementTypes.THUNDER: {"name": "Cuồng Lôi Chấn Thiên", "desc": "Sấm sét liên hoàn, trạng thái Dẫn Điện lan tỏa lên tối đa 8 mục tiêu."},
+	ElementTypes.POISON:  {"name": "Thiên Phạt Cổ Độc",    "desc": "Kịch độc thâm nhập, Độc Ấn có thể ngưng tụ cộng dồn tối đa 10 tầng."},
+	ElementTypes.WATER:   {"name": "Phiên Thiên Nộ Triều", "desc": "Sóng dữ bao trùm, kẻ địch vừa xuất chiến lập tức bị gán Thủy Ấn."},
+	ElementTypes.EARTH:   {"name": "Băng Sơn Liệt Địa",    "desc": "Đại địa sinh kim, trạng thái Kết Tinh ngưng tụ 40 vàng thay vì 15."},
 }
 
 ## Bảng Địa Chấn: 40/15 ≈ 2.67. Viết thành hằng để chỉnh một chỗ.

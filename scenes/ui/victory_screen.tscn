@@ -1,8 +1,10 @@
-[gd_scene format=3 uid="uid://c3fpn4m8kl2v9"]
+[gd_scene format=3 uid="uid://c6g20pcorv8cs"]
 
-[ext_resource type="Script" path="res://scripts/ui/victory_screen.gd" id="1_vs"]
+[ext_resource type="Script" uid="uid://cipjpje7wmb60" path="res://scripts/ui/victory_screen.gd" id="1_vs"]
 
-[node name="VictoryScreen" type="Control"]
+[node name="VictoryScreen" type="Control" unique_id=1983151018]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_vs")

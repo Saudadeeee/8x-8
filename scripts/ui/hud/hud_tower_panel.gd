@@ -179,6 +179,7 @@ func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node
 
 	# Nguyên tố đang bắn + ô trang bị (chỉ khi mở từ một tháp thật trên bàn)
 	if tower_node and is_instance_valid(tower_node):
+		_build_star_row(vbox, tower_node)
 		_build_element_row(vbox, tower_node)
 		_build_equipment_section(vbox, tower_node)
 
@@ -611,3 +612,37 @@ func _add_info_row(vbox: VBoxContainer, key: String, val: String) -> void:
 	v.text = val
 	UIStyle.body(v, 12, UIStyle.TEXT)
 	row.add_child(v)
+
+## Hàng sao + nút nâng sao bằng vàng. Ghép sao bằng quân trùng vẫn giữ nguyên;
+## đây là đường THỨ HAI, dùng cho lúc bàn đã kín và vàng không còn chỗ tiêu.
+func _build_star_row(parent: VBoxContainer, tower_node: Node3D) -> void:
+	var map = hud._find_game_map()
+	if map == null or not map.has_method("star_up_cost"):
+		return
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	parent.add_child(row)
+
+	var stars := Label.new()
+	var cur: int = int(tower_node.star) if "star" in tower_node else 1
+	stars.text = "★".repeat(cur) + "·".repeat(maxi(0, 3 - cur))
+	UIStyle.title(stars, 16, UIStyle.GOLD)
+	row.add_child(stars)
+
+	var cost: int = map.star_up_cost(tower_node)
+	var btn := Button.new()
+	if cost < 0:
+		btn.text = "Sao tối đa"
+		btn.disabled = true
+	else:
+		btn.text = "Nâng sao — %d vàng" % cost
+		btn.disabled = map.current_gold < cost
+		btn.pressed.connect(func():
+			if map.try_star_up_with_gold(tower_node):
+				# Dựng lại panel để cập nhật sao, giá và chỉ số mới.
+				show_tower_info(tower_node.stats, "", tower_node))
+	btn.custom_minimum_size = Vector2(0, 30)
+	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UIStyle.apply_button(btn)
+	HudText.style_button_text(btn, 12, UIStyle.GOLD if not btn.disabled else UIStyle.TEXT_DIM)
+	row.add_child(btn)

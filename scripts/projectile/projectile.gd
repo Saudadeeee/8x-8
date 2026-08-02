@@ -7,7 +7,10 @@ const HIT_DISTANCE: float = 0.2
 const AIM_HEIGHT: float = 0.3
 
 var target: Enemy = null
-var speed: float = 18.75   # 300 px/s cũ ÷ 16 px/m
+# 9.5 ô/giây. Trước là 18.75 — đạn bay hết tầm 5 ô trong 0.27s nên mắt không
+# kịp thấy đường bay, giao tranh chỉ còn là số nhảy. Chậm lại một nửa thì đọc
+# được "tháp nào đang bắn con nào", đúng tinh thần tiết tấu chậm.
+var speed: float = 9.5
 var damage: int = 10
 var texture_data: Texture2D = null   # giữ cho tương thích cũ, không còn dùng
 var color: Color = Color(1.0, 0.9, 0.5)

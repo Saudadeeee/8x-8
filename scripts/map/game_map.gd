@@ -1131,3 +1131,40 @@ func _on_tutorial_finished() -> void:
 	if hud and hud.has_method("show_wave_intel_popup") and wave_spawner:
 		hud.show_wave_intel_popup(
 			wave_spawner.build_wave_intel_data(phase_controller.wave_number))
+
+# ── Nâng sao bằng VÀNG (sink kinh tế cuối ván) ───────────────────────────────
+# Ghép sao bằng cách mua trùng quân chỉ chạy được khi shop ra đúng quân đó, và
+# khi bàn đã kín thì vàng không còn đường ra — đo thực tế: tồn 1741 vàng ở
+# wave 10 sau khi giãn nhịp. Nâng sao trả bằng vàng là sink đúng bài của thể
+# loại này (Bloons TD xây toàn bộ kinh tế quanh nhánh nâng cấp).
+
+## Giá gốc cho mỗi bậc sao. ★1→★2 rẻ, ★2→★3 đắt hẳn — bậc cuối là phần thưởng
+## cho việc dồn tiền, không phải thứ mua tiện tay.
+const STAR_UP_BASE_COST: Array[int] = [140, 380]
+## Cộng thêm theo wave: về cuối ván vàng nhiều nên giá phải trôi theo.
+const STAR_UP_COST_PER_WAVE: int = 22
+
+## Giá nâng sao cho một tháp. Trả -1 nếu không nâng được (đã ★3 hoặc tháp hỏng).
+func star_up_cost(tower: Node3D) -> int:
+	if tower == null or not is_instance_valid(tower):
+		return -1
+	if not tower.has_method("can_star_up") or not tower.can_star_up():
+		return -1
+	var idx: int = clampi(int(tower.star) - 1, 0, STAR_UP_BASE_COST.size() - 1)
+	var wave: int = phase_controller.wave_number if phase_controller else 1
+	return STAR_UP_BASE_COST[idx] + maxi(0, wave - 1) * STAR_UP_COST_PER_WAVE
+
+## Trả vàng để nâng một sao. Trả về true nếu thành công.
+func try_star_up_with_gold(tower: Node3D) -> bool:
+	var cost := star_up_cost(tower)
+	if cost < 0 or current_gold < cost:
+		return false
+	current_gold -= cost
+	tower.set_star(int(tower.star) + 1)
+	var am = get_node_or_null("/root/AudioManagerSingleton")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx("perk_pick", -3.0)
+	FX.damage_number(self, tower.global_position + Vector3(0.0, 1.4, 0.0),
+		"★ %d" % int(tower.star), Color(1.0, 0.84, 0.2), 22)
+	update_ui()
+	return true

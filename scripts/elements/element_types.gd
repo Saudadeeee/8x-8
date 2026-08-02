@@ -59,8 +59,6 @@ const SPEC: Dictionary = {
 	},
 }
 
-## Số Dấu tối đa một địch mang cùng lúc. Dấu thứ 3 đẩy Dấu CŨ NHẤT ra.
-## Nâng lên 3 chỉ bằng Di Vật "Bánh Xe Nguyên Tố" (futureplan §3.3).
 const DEFAULT_MAX_MARKS: int = 2
 
 static func spec(element: String) -> Dictionary:

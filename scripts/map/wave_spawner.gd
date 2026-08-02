@@ -14,21 +14,27 @@ signal boss_spawned(boss: Node)
 signal boss_escaped
 
 # --- CONSTANTS ---
-const ENEMIES_PER_WAVE: int = 10
-const ENEMIES_PER_WAVE_INCREMENT: int = 2
+# Wave DONG HON de bu cho viec dich di cham (do thuc te: giam toc do 45% lam
+# HP nguoi choi LEO tu 19 len 34 giua van vi thap co nhieu thoi gian ban hon).
+# Game TD nhip cham bu bang SO LUONG chu khong bang toc do — Bloons cung vay.
+const ENEMIES_PER_WAVE: int = 14
+const ENEMIES_PER_WAVE_INCREMENT: int = 3
 ## Máu địch tăng theo CẤP SỐ NHÂN, không phải cộng tuyến tính.
 ## Lý do: sức mạnh người chơi vốn nhân dồn (★ ×3.2 · synergy +30% · perk · cấp ô
 ## · trang bị), nên +12% tuyến tính mỗi wave bị bỏ xa — đo thực tế cho thấy máu
 ## Vua đứng yên từ wave 6 trở đi, hết hoàn toàn áp lực.
 ## 1.15^(w-1): wave 5 ×1.75 · wave 10 ×3.52 · wave 12 ×4.65.
-const ENEMY_HEALTH_GROWTH: float = 1.15
+const ENEMY_HEALTH_GROWTH: float = 1.18
 ## Giữ lại hằng cũ cho tương thích (không còn dùng trong công thức máu).
 const ENEMY_HEALTH_SCALE_PER_WAVE: float = 0.12
 const ENEMY_SPEED_SCALE_PER_WAVE: float = 0.03
 const SHOP_EXTRA_ENEMY_COUNT: int = 3
 const SHOP_EXTRA_HEALTH_MULTIPLIER: float = 0.25
 const SHOP_EXTRA_SPEED_MULTIPLIER: float = 0.08
-const SPAWN_INTERVAL: float = 0.8
+# Nhip spawn GIAN RA cho hop tiet tau cham (tham chieu Bloons TD: dich phai
+# den thanh DONG DOC DUOC, khong phai mot cuc do vao mot luc). 0.8s khien ca
+# wave don lai thanh mot dam; 1.5s cho nguoi choi kip nhin tung con.
+const SPAWN_INTERVAL: float = 1.5
 
 # Elite: từ wave 3, mỗi enemy spawn có 10% cơ hội thành elite (HP ×3, vàng ×2.5)
 const ELITE_MIN_WAVE: int = 3

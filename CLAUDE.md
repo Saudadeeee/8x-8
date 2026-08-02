@@ -16,31 +16,31 @@ Dùng cho mọi thao tác vẽ, sprite, animation. **KHÔNG dùng Godot tools đ
 **97 tools (tất cả đã có trong allow list):**
 ```
 Canvas/File:  create_canvas · get_sprite_info · resize_sprite · crop_sprite · expand_canvas
-              scale_sprite · trim_sprite · smart_resize_preserve_pixels · rotate_image
-              flip_horizontal · flip_vertical · convert_color_mode · backup_sprite
-              restore_sprite · optimize_file_size · compare_sprites
-              batch_convert · batch_process_sprites
+			  scale_sprite · trim_sprite · smart_resize_preserve_pixels · rotate_image
+			  flip_horizontal · flip_vertical · convert_color_mode · backup_sprite
+			  restore_sprite · optimize_file_size · compare_sprites
+			  batch_convert · batch_process_sprites
 
 Drawing:      draw_pixels · draw_line (có thickness) · draw_rectangle · draw_circle
-              draw_polygon · draw_bezier_curve · draw_gradient · draw_pattern
-              draw_text · fill_area · erase_area
+			  draw_polygon · draw_bezier_curve · draw_gradient · draw_pattern
+			  draw_text · fill_area · erase_area
 
 Layer:        add_layer · create_layer_group · move_layer_to_group · rename_layer
-              set_layer_opacity · set_layer_blend_mode · toggle_layer_visibility
-              copy_layer · merge_layers
+			  set_layer_opacity · set_layer_blend_mode · toggle_layer_visibility
+			  copy_layer · merge_layers
 
 Frame/Cel:    add_frame · clear_cel · copy_cel · move_cel · link_cel · set_cel_opacity
 
 Palette:      create_palette · get_palette_colors · add_color_to_palette · replace_color
-              load_palette_from_file · extract_color_palette_smart · invert_colors
+			  load_palette_from_file · extract_color_palette_smart · invert_colors
 
 Selection:    select_rectangle · select_all · deselect · invert_selection · delete_selection
 
 Effects:      apply_blur · adjust_hue_saturation · adjust_brightness_contrast
-              posterize · pixelate · outline · drop_shadow
+			  posterize · pixelate · outline · drop_shadow
 
 Export:       export_sprite · export_sprite_sheet · export_sprite_sheet_with_json
-              export_frames_separately · export_layers_separately · export_slices · export_tileset
+			  export_frames_separately · export_layers_separately · export_slices · export_tileset
 
 Tileset:      create_tileset · create_tilemap_layer · import_tileset_from_image · get_tile · set_tile
 
@@ -49,12 +49,12 @@ Slices:       create_slice · create_nine_patch_slice · list_slices · export_s
 Clipboard:    copy_to_clipboard · paste_from_clipboard · paste_as_new_layer · cut_to_clipboard
 
 Brush:        create_custom_brush · apply_brush_stroke · list_brushes
-              set_brush_size · set_brush_angle · set_brush_pattern
+			  set_brush_size · set_brush_angle · set_brush_pattern
 
 Grid:         set_grid · toggle_grid · snap_to_grid
 
 AI:           auto_color_sprite · auto_outline_sprite · upscale_sprite_ai
-              generate_sprite_variations · auto_cleanup_lineart · suggest_improvements
+			  generate_sprite_variations · auto_cleanup_lineart · suggest_improvements
 ```
 
 ---
@@ -68,68 +68,68 @@ Engine: **Godot 4.6.1 stable**, GDScript
 **119 tools (tất cả đã có trong allow list):**
 ```
 Node:         create_node · delete_node · update_node_property
-              get_node_properties · list_nodes
+			  get_node_properties · list_nodes
 
 Scene:        create_scene · save_scene · open_scene · get_current_scene
-              get_project_info · create_resource
+			  get_project_info · create_resource
 
 Script:       create_script · edit_script · get_script · create_script_template
 
 Editor:       execute_editor_script
 
 Playback:     play_main_scene · play_current_scene · play_custom_scene
-              stop_playing_scene · get_play_status
+			  stop_playing_scene · get_play_status
 
 Config:       set_project_setting · get_project_setting · list_project_settings
-              add_input_action · add_input_event · remove_input_action · list_input_actions
-              add_audio_bus · set_bus_volume · add_bus_effect · list_audio_buses
-              set_physics_layer_name
+			  add_input_action · add_input_event · remove_input_action · list_input_actions
+			  add_audio_bus · set_bus_volume · add_bus_effect · list_audio_buses
+			  set_physics_layer_name
 
 TileMap:      set_tile_cell · erase_tile_cell · paint_tile_area · get_tile_data
-              get_used_tiles · clear_tilemap_layer
-              set_gridmap_cell · erase_gridmap_cell · get_gridmap_used_cells
+			  get_used_tiles · clear_tilemap_layer
+			  set_gridmap_cell · erase_gridmap_cell · get_gridmap_used_cells
 
 Animation:    create_animation · delete_animation · list_animations
-              add_animation_track · remove_animation_track
-              insert_animation_key · remove_animation_key
-              get_animation_data · play_animation · stop_animation
+			  add_animation_track · remove_animation_track
+			  insert_animation_key · remove_animation_key
+			  get_animation_data · play_animation · stop_animation
 
 AnimTree:     configure_animation_tree · add_animation_tree_node
-              connect_animation_tree_nodes
-              set_animation_tree_parameter · get_animation_tree_parameter
-              add_state_machine_transition · get_animation_tree_info
+			  connect_animation_tree_nodes
+			  set_animation_tree_parameter · get_animation_tree_parameter
+			  add_state_machine_transition · get_animation_tree_info
 
 Material:     create_material · set_material_property · get_material_properties
-              set_shader_code · set_shader_parameter
+			  set_shader_code · set_shader_parameter
 
 Import:       scan_filesystem · reimport_file · get_import_settings
-              set_import_setting · list_filesystem_files
+			  set_import_setting · list_filesystem_files
 
 Navigation:   bake_navigation_mesh · get_navigation_path · set_navigation_target
-              get_navigation_agent_info · configure_navigation_region
-              set_navigation_mesh_property
+			  get_navigation_agent_info · configure_navigation_region
+			  set_navigation_mesh_property
 
 Particles:    configure_particles · set_particle_material
-              set_particle_emission_shape · restart_particles · get_particle_info
+			  set_particle_emission_shape · restart_particles · get_particle_info
 
 Environment:  set_light_property · configure_environment · set_sky · set_fog
-              configure_camera · get_environment_info
+			  configure_camera · get_environment_info
 
 Skeleton:     get_skeleton_info · set_bone_pose_rotation · set_bone_pose_position
-              set_bone_pose_scale · get_bone_pose · configure_skeleton_ik
-              start_skeleton_ik · reset_bone_poses
+			  set_bone_pose_scale · get_bone_pose · configure_skeleton_ik
+			  start_skeleton_ik · reset_bone_poses
 
 Theme:        create_theme · set_theme_color · set_theme_font · set_theme_font_size
-              set_theme_constant · set_theme_stylebox · assign_theme_to_node · get_theme_items
+			  set_theme_constant · set_theme_stylebox · assign_theme_to_node · get_theme_items
 
 Tween:        animate_node_property · create_tween_script · create_animation_from_tween
 
 Path:         add_path_point · remove_path_point · set_path_point · get_path_info
-              clear_path · configure_path_follow · set_curve_baked_resolution
+			  clear_path · configure_path_follow · set_curve_baked_resolution
 
 Mesh:         create_primitive_mesh · create_array_mesh · get_mesh_info
-              set_mesh_surface_material · generate_mesh_normals
-              create_mesh_from_height_map · save_mesh_to_file
+			  set_mesh_surface_material · generate_mesh_normals
+			  create_mesh_from_height_map · save_mesh_to_file
 ```
 
 ---
@@ -149,7 +149,7 @@ Mesh:         create_primitive_mesh · create_array_mesh · get_mesh_info
 **Workflow chuẩn cho asset mới:**
 ```
 [Aseprite] create_canvas → vẽ → export PNG vào assets/
-                                        ↓
+										↓
 [Godot]    load_sprite → add_node (Sprite2D / AnimatedSprite2D) → edit_node
 ```
 
@@ -244,7 +244,7 @@ PHASE 1:
 - Loại: item sprite, nhìn nghiêng 45 độ
 - Style: SNES RPG style, outline đen
 - Màu: outline #111111, blade #c0c0c0, highlight #ffffff,
-        guard #c8a000, grip #7b3f00, shadow #888888
+		guard #c8a000, grip #7b3f00, shadow #888888
 
 PHASE 2:
 - Canvas: 32x32
@@ -388,36 +388,36 @@ var _attack_timer: float = 0.0
 
 # ── Lifecycle ─────────────────────────────────────────
 func _ready() -> void:
-    _current_health = max_health
-    _setup_signals()
+	_current_health = max_health
+	_setup_signals()
 
 func _process(delta: float) -> void:
-    _attack_timer += delta
-    if _attack_timer >= 1.0 / attack_speed:
-        _attack_timer = 0.0
-        _try_attack()
+	_attack_timer += delta
+	if _attack_timer >= 1.0 / attack_speed:
+		_attack_timer = 0.0
+		_try_attack()
 
 # ── Public Methods ────────────────────────────────────
 func take_damage(amount: int) -> void:
-    if _is_dead:
-        return
-    _current_health = clampi(_current_health - amount, 0, max_health)
-    health_changed.emit(_current_health)
-    if _current_health == 0:
-        _die()
+	if _is_dead:
+		return
+	_current_health = clampi(_current_health - amount, 0, max_health)
+	health_changed.emit(_current_health)
+	if _current_health == 0:
+		_die()
 
 # ── Private Methods ───────────────────────────────────
 func _setup_signals() -> void:
-    pass
+	pass
 
 func _try_attack() -> void:
-    pass
+	pass
 
 func _die() -> void:
-    _is_dead = true
-    unit_died.emit()
-    GameManager.on_unit_died(self)
-    queue_free()
+	_is_dead = true
+	unit_died.emit()
+	GameManager.on_unit_died(self)
+	queue_free()
 ```
 
 **Script chuẩn cho UI:**
@@ -430,14 +430,14 @@ extends Control
 @onready var label: Label = $Label
 
 func _ready() -> void:
-    GameManager.gold_updated.connect(_on_gold_updated)
-    SeasonManager.season_changed.connect(_on_season_changed)
+	GameManager.gold_updated.connect(_on_gold_updated)
+	SeasonManager.season_changed.connect(_on_season_changed)
 
 func _on_gold_updated(new_gold: int) -> void:
-    label.text = str(new_gold)
+	label.text = str(new_gold)
 
 func _on_season_changed(season: SeasonManager.Season) -> void:
-    pass
+	pass
 ```
 
 ### Flow liên kết giữa các hệ thống
@@ -445,17 +445,17 @@ func _on_season_changed(season: SeasonManager.Season) -> void:
 Khi tạo feature mới, luôn trace đủ flow:
 ```
 Player action (đặt unit, mua shop,...)
-    ↓
+	↓
 Entity/UI Script (xử lý logic cục bộ)
-    ↓
+	↓
 Signal emit (unit_died, gold_updated,...)
-    ↓
+	↓
 GameManager / SeasonManager nhận (cập nhật state)
-    ↓
+	↓
 GameManager emit signal ra ngoài
-    ↓
+	↓
 UI Script cập nhật hiển thị
-    ↓
+	↓
 AudioManager play sound tương ứng
 ```
 
@@ -521,7 +521,7 @@ res://
 │   ├── towers/       # pawn, knight, rook, bishop, queen, commander, crossbowman, catapult, warlock, dark_mage, water
 │   └── enemy/        # orc, goblin, skeleton, dark_knight, demon_imp
 └── assets/
-    ├── background/, board/, enemy/, generated/, projectile/, tiles/, towers/, ui/
+	├── background/, board/, enemy/, generated/, projectile/, tiles/, towers/, ui/
 ```
 
 ---
@@ -877,6 +877,26 @@ res://
   mùa mà cũng không khai `spawn_seasons` (không bao giờ spawn)**, thiếu icon/model.
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
+
+*Âm thanh thật + tiết tấu chậm (2026-07-30):*
+- **18 SFX sinh bằng rfxgen** (`gamedev-toolkit-mcp`, `D:\Appsfxgen`) qua
+  `design_sound`, 44.1 kHz mono, thay bộ bíp Python 22 kHz cũ.
+  **BẪY**: `starting_point` GHI ĐÈ `wave_type` — muốn sóng cụ thể thì đừng
+  truyền `starting_point`, khai tham số tường minh.
+- Sau khi sinh phải **chuẩn hoá đỉnh về 0.85**: 5 tiếng chạm trần 1.00 nghe rè.
+- Nhạc nền `tools/make_music.py` — soạn NỐT thật (Rê Dorian, 66 BPM, 8 ô nhạc,
+  29 s, 3 lớp drone/arpeggio/giai điệu). rfxgen chỉ làm SFX một nhát, không
+  ghép được vòng lặp liền mạch. Biên đầu/cuối = 0 nên không có tiếng "cộp".
+- **Tiết tấu chậm lại kiểu Bloons TD**: tốc độ địch ×0.55 (dơi 6.88 → 3.78 ô/s),
+  `SPAWN_INTERVAL` 0.8 → 1.5 s, đạn 18.75 → 9.5 ô/s (trước bay hết tầm 5 ô
+  trong 0.27 s nên mắt không kịp thấy).
+- **Chậm lại làm game DỄ HƠN** — đo được: HP bot leo từ 19 lên 34 giữa ván vì
+  tháp có nhiều thời gian bắn hơn. Bù bằng SỐ LƯỢNG chứ không phải tốc độ:
+  `ENEMIES_PER_WAVE` 10 → 14, tăng 2 → 3/wave, `ENEMY_HEALTH_GROWTH` 1.15 → 1.18.
+- **Sink kinh tế mới — nâng sao bằng VÀNG** (`game_map.try_star_up_with_gold`).
+  Wave đông ⇒ nhiều vàng hơn; đo được tồn 1741 vàng ở wave 10 vì bàn đã kín.
+  Ghép sao bằng quân trùng vẫn giữ; đây là đường THỨ HAI, giá 140/380 + 22 mỗi
+  wave. Nút nằm trong panel tháp.
 
 *Mở rộng nội dung — 3 Rival King (2026-07-29):*
 - `BOSS_WAVES = [7, 14, 20]`, `MAX_WAVES = 20` (trước 1 boss / 10 wave).

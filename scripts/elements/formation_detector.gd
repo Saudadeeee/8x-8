@@ -26,10 +26,10 @@ const ALL_IDS: Array[String] = [DRAGON_LINE, FOUR_PILLAR, DUAL_POLE, RING]
 ## Tên hiển thị + mô tả ngắn cho HUD. Key = hằng ID ở trên (viết literal để dict hằng
 ## chắc chắn parse được ở mọi phiên bản GDScript).
 const INFO: Dictionary = {
-	"dragon_line": {"name": "Hàng Long", "desc": "3 ô cùng loại thẳng hàng — tháp trên đó +1 tầm"},
-	"four_pillar": {"name": "Tứ Trụ",    "desc": "Khối 2×2 cùng loại — phản ứng từ khối +40%"},
-	"dual_pole":   {"name": "Song Cực",  "desc": "2 ô khác loại có phản ứng kề nhau — tự kích mỗi 4s"},
-	"ring":        {"name": "Trận Vòng", "desc": "4 ô cùng loại bao quanh 1 ô thường — ô giữa nhận cả 4 Dấu"},
+	"dragon_line": {"name": "Hàng Long Trận",       "desc": "Long khí bộc phát, 3 ô cùng hệ xếp thẳng hàng — tháp ngự phía trên được tăng cường 1 tầm đánh."},
+	"four_pillar": {"name": "Tứ Trụ Kình Thiên",    "desc": "Trấn giữ tứ phương, ngưng tụ thành khối 2×2 cùng hệ — uy lực phản ứng từ trận đồ bùng nổ thêm 40%."},
+	"dual_pole":   {"name": "Lưỡng Nghi Song Cực",  "desc": "Khí trường giao thoa, 2 ô mang nguyên tố sinh phản ứng xếp liền kề — tự động kích hoạt bùng phát mỗi 4 giây."},
+	"ring":        {"name": "Tứ Tinh Củng Nguyệt",  "desc": "Vạn pháp quy tông, 4 ô cùng hệ bao bọc 1 ô thường (trận nhãn) — ô trung tâm hội tụ trọn vẹn 4 tầng Ấn ký."},
 }
 
 ## Phần thưởng — DỮ LIỆU THUẦN, bên tiêu thụ tự áp.
@@ -37,11 +37,6 @@ const BONUS: Dictionary = {
 	"dragon_line": {"range_bonus": 1},
 	"four_pillar": {"reaction_mult": 1.40},
 	"dual_pole":   {"auto_reaction_interval": 4.0},
-	# Trận Vòng: 4 ô bao quanh đều CÙNG một nguyên tố, nên "nhận 4 Dấu luân phiên"
-	# vô nghĩa — 4 Dấu giống nhau chỉ là 1 Dấu. Hiệu lực thật: tháp ở ô giữa (vốn
-	# là ô THƯỜNG) mượn nguyên tố của vòng vây; territory_manager cấp qua khoá
-	# `ring_element`, tower đọc trong `current_element()`.
-	# KHÔNG khai khoá ở đây nữa: bảng BONUS chỉ chứa thứ có nơi tiêu thụ.
 	"ring":        {},
 }
 

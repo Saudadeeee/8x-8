@@ -34,6 +34,8 @@ TESTS = [
      "Font pixel phu moi ky tu — chan loi o vuong rong khi export"),
     ("9", "tests/test_9_tutorial.gd",
      "Huong dan nhap mon: tu hien van dau, day dung bat bien, khong hien lai"),
+    ("10", "tests/test_10_pacing_economy.gd",
+     "Nang sao bang vang (sink) + nhip cham: toc do dich, spawn, dan"),
 ]
 
 # Mo rong ban do chay DFS tren ban 24x24 nen batch 4 lau hon han cac batch khac.
