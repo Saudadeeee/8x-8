@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_phantom"]
+[gd_resource type="Resource" script_class="KingStats" load_steps=4 format=3 uid="uid://king_phantom"]
 
 [ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_kp"]
 [ext_resource type="Script" path="res://scripts/king/abilities/phantom_veil_ability.gd" id="2_ab"]
+[ext_resource type="Texture2D" path="res://assets/ui/kings/king_phantom.png" id="3_pt"]
 
 [resource]
 script = ExtResource("1_kp")
 id = "king_phantom"
 king_name = "Vua Bóng Ma"
 lore = "Một quân vương không ai thấy mặt. Tượng và Mã của ngài đánh ra từ bóng tối, nhằm đúng kẻ vừa tin rằng mình đã an toàn."
+portrait = ExtResource("3_pt")
 base_health = 15
 base_royal_decree = 25.0
 decree_regen_rate = 2.0

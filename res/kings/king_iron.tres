@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_iron"]
+[gd_resource type="Resource" script_class="KingStats" load_steps=4 format=3 uid="uid://king_iron"]
 
 [ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_ki"]
 [ext_resource type="Script" path="res://scripts/king/abilities/iron_decree_ability.gd" id="2_ab"]
+[ext_resource type="Texture2D" path="res://assets/ui/kings/king_iron.png" id="3_pt"]
 
 [resource]
 script = ExtResource("1_ki")
 id = "king_iron"
 king_name = "Vua Thép"
 lore = "Ngài dựng vương quốc bằng kỷ luật và thép. Tốt của ngài không mạnh, nhưng chúng không bao giờ lùi — và chúng đông."
+portrait = ExtResource("3_pt")
 base_health = 20
 base_royal_decree = 15.0
 decree_regen_rate = 1.5

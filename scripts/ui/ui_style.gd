@@ -66,6 +66,23 @@ const RARITY_NAMES_VI := {
 	"common": "Thường", "rare": "Hiếm", "epic": "Sử Thi", "legendary": "Huyền Thoại",
 }
 
+## Tên tiếng Việt của 15 quân cờ. Một chỗ duy nhất — trước đây mọi nơi in thẳng
+## `id` nên màn chọn vua hiện "Sủng ái: Pawn, rook" lẫn hoa thường giữa một
+## giao diện đã Việt hoá.
+const UNIT_NAMES_VI := {
+	"pawn": "Tốt", "knight": "Mã", "bishop": "Tượng", "rook": "Xe",
+	"queen": "Hậu", "commander": "Chủ Soái", "crossbowman": "Nỏ Thủ",
+	"catapult": "Máy Bắn Đá", "warlock": "Pháp Sư Hắc Ám", "dark_mage": "Ma Đạo Sĩ",
+	"longbowman": "Cung Trường", "paladin": "Thánh Kỵ", "alchemist": "Luyện Kim Sư",
+	"ice_guardian": "Vệ Binh Băng", "ballista": "Nỏ Công Thành",
+}
+
+
+## Tên hiển thị của một quân cờ; chưa có trong bảng thì trả lại chính `id`.
+static func unit_name_vi(unit_id: String) -> String:
+	return str(UNIT_NAMES_VI.get(unit_id, unit_id))
+
+
 # ── Đường dẫn texture 9-patch (có thể CHƯA tồn tại → fallback) ────────────────
 const PANEL_DIR := "res://assets/ui/panels/"
 

@@ -248,6 +248,12 @@ func _create_king_card_button(king: KingStats, is_unlocked: bool) -> Button:
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var rarity := "legendary" if is_unlocked else "common"
 	UIStyle.apply_button(btn, 28, UIStyle.rarity_color(rarity).lightened(0.45))
+	# Chân dung nhỏ ngay trên nút: nhận ra vua trước khi kịp đọc tên.
+	if king.portrait:
+		btn.icon = king.portrait
+		btn.expand_icon = false
+		btn.add_theme_constant_override("h_separation", 12)
+		UIStyle.pixel_filter(btn)
 	# Khung rarity thay cho stylebox nút thường → card có viền khối rõ ràng
 	btn.add_theme_stylebox_override("normal", UIStyle.rarity_frame(rarity))
 	var hover_box := UIStyle.rarity_frame(rarity)
@@ -269,20 +275,38 @@ func _create_king_card_button(king: KingStats, is_unlocked: bool) -> Button:
 	btn.pressed.connect(_select_king.bind(king))
 	return btn
 
+## Danh sách quân được sủng ái, đã Việt hoá.
+static func _favored_names(ids: Array[String]) -> String:
+	if ids.is_empty():
+		return "Không có"
+	var out := PackedStringArray()
+	for uid in ids:
+		out.append(UIStyle.unit_name_vi(uid))
+	return ", ".join(out)
+
+
 func _select_king(king: KingStats) -> void:
 	_selected_king = king
 	var is_unlocked = king.is_starter_king or king.id in _meta.unlocked_king_ids
+	# Chân dung riêng của từng vua. Trước đây cả 6 vua render CÙNG một model
+	# `king.gltf` nên nhìn không phân biệt được ai với ai — thêm vua mới cũng vô
+	# nghĩa về mặt hình ảnh. Vua chưa vẽ chân dung thì vẫn rơi về model 3D.
+	if _detail_icon and is_instance_valid(_detail_icon):
+		if king.portrait:
+			_detail_icon.setup("", king.portrait)
+		else:
+			_detail_icon.setup(KING_MODEL_PATH)
 	_detail_name.text = king.king_name
 	_detail_lore.text = king.lore
-	_detail_stats.text = "HP: %d  |  Decree: %.0f/%.0f  |  Regen: %.1f/s  |  Territories: %d" % [
+	_detail_stats.text = "Máu: %d  |  Sắc Lệnh: %.0f/%.0f  |  Hồi: %.1f/giây  |  Ô đất: %d" % [
 		king.base_health, king.base_royal_decree, king.decree_max,
 		king.decree_regen_rate, king.starting_territory_count
 	]
 	_detail_favor.text = "Sủng ái: %s  |  Sát thương +%.0f%%  Tốc độ +%.0f%%  Tầm +%.0f%%" % [
-		", ".join(king.favored_unit_types) if king.favored_unit_types.size() > 0 else "None",
+		_favored_names(king.favored_unit_types),
 		king.favor_damage_bonus * 100, king.favor_speed_bonus * 100, king.favor_range_bonus * 100
 	]
-	_detail_ability.text = "[%s]\n%s\n(Cooldown: %.0fs | Cost: %.0f Decree)" % [
+	_detail_ability.text = "[%s]\n%s\n(Hồi chiêu %.0f giây  |  Tốn %.0f Sắc Lệnh)" % [
 		king.ability_name, king.ability_description,
 		king.ability_cooldown, king.ability_decree_cost
 	]

@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="KingStats" load_steps=3 format=3 uid="uid://king_flame"]
+[gd_resource type="Resource" script_class="KingStats" load_steps=4 format=3 uid="uid://king_flame"]
 
 [ext_resource type="Script" path="res://scripts/resources/KingStats.gd" id="1_kf"]
 [ext_resource type="Script" path="res://scripts/king/abilities/flame_inferno_ability.gd" id="2_ab"]
+[ext_resource type="Texture2D" path="res://assets/ui/kings/king_flame.png" id="3_pt"]
 
 [resource]
 script = ExtResource("1_kf")
 id = "king_flame"
 king_name = "Nữ Hoàng Lửa"
 lore = "Nữ hoàng cai trị bằng sự tàn phá. Hậu và Tượng của bà trút lửa xuống bất cứ ai dám cản đường."
+portrait = ExtResource("3_pt")
 base_health = 18
 base_royal_decree = 20.0
 decree_regen_rate = 1.8

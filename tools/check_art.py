@@ -152,7 +152,11 @@ def check_unused():
         for f in files:
             # .gltf PHAI co trong danh sach: model tham chieu texture cua no
             # (`<id>_0.png`…) tu ben trong file gltf, khong phai tu code.
-            if not f.endswith(('.gd', '.tscn', '.tres', '.godot', '.json', '.gltf')):
+            # .fnt cung vay: atlas font (`pixel_8x8@2x.png`) chi duoc nhac ben
+            # trong file .fnt. Thieu duoi nay thi cong cu bao ba atlas font la
+            # "khong ai tham chieu" — dung lop bay da tung lam chet 45 model.
+            if not f.endswith(('.gd', '.tscn', '.tres', '.godot', '.json',
+                               '.gltf', '.fnt')):
                 continue
             try:
                 refs += open(os.path.join(root, f), encoding='utf-8',

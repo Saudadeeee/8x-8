@@ -61,6 +61,22 @@ func _run() -> void:
 		if inst == null or not inst.has_method("execute"):
 			ab_bad += "%s script khong co execute() " % kid
 	ok(ab_bad == "", "moi vua co ability_script dung duoc", ab_bad)
+
+	# Chan dung RIENG cho tung vua. Truoc day ca 6 vua render cung mot model
+	# king.gltf nen nhin khong phan biet duoc ai voi ai — them vua moi cung vo
+	# nghia ve mat hinh anh. Trung anh giua hai vua cung tinh la loi.
+	var por_bad := ""
+	var seen_por := {}
+	for kid in scanned_ids:
+		var ks2: KingStats = scanned_ids[kid]
+		if ks2.portrait == null:
+			por_bad += "%s thieu chan dung " % kid
+			continue
+		var rp := ks2.portrait.resource_path
+		if seen_por.has(rp):
+			por_bad += "%s dung chung anh voi %s " % [kid, seen_por[rp]]
+		seen_por[rp] = kid
+	ok(por_bad == "", "moi vua co chan dung rieng", por_bad)
 	gm.start_run(load("res://res/kings/king_iron.tres"))
 	change_scene_to_file("res://scenes/map/game_map.tscn")
 	await process_frame; await process_frame

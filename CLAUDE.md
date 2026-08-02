@@ -989,6 +989,47 @@ fxgen`) qua
   Phải đo thêm advance. Batch test 8 kiểm cả hai cách.
 - Bitmap font phải tắt antialias + subpixel, nếu không pixel bị nhoè.
 
+*Chữ ba cỡ + 6 Rival King (2026-08-02):*
+- **`font_size` từng bị BỎ QUA hoàn toàn.** Đo được: cỡ 10 và cỡ 42 render ra y
+  hệt 112 pixel. Font bitmap không khai `fixed_size` thì Godot lờ `font_size` —
+  cả game một cỡ chữ, phân cấp tiêu đề/thân bài mất sạch từ lúc đổi sang font
+  pixel tự vẽ. Không ai thấy vì chữ vẫn hiện bình thường.
+- Hai cách sửa **đã thử và bỏ**: (1) `fixed_size` + để Godot tự phóng → chữ nhoè,
+  đo được 11 màu ở cỡ 28 thay vì 1; (2) nhồi cache 28/42 vào cùng một FontFile
+  bằng `set_glyph_*` → vẽ ra sắc nét thật nhưng `get_string_size()` trả rác,
+  **mọi ký tự đều báo advance 18, kể cả `a`** ⇒ mọi bố cục tính theo bề rộng chữ
+  đều lệch mà không báo lỗi.
+- **Cách đang dùng**: `make_font.py` sinh thêm atlas `@2x`/`@3x` bằng cách NHÂN
+  toạ độ (không nội suy); mỗi bản nạp qua `load_bitmap_font` thành một FontFile
+  riêng → `pixel_font{,_2x,_3x}.tres`. `UIStyle.font_for(size)` chọn FONT theo
+  cỡ, `snap_font_size()` nắn về **14 / 28 / 42**. Chỉ đặt `font_size` là KHÔNG
+  đủ — phải đặt cả `font`.
+- Đo lại sau khi sửa: 1 màu ở cả ba cỡ, advance 6/12/18, cao 14/28/42.
+  `check_art.py` giờ quét cả `.fnt` — nếu không nó báo ba atlas font là "không
+  ai tham chiếu", đúng lớp bẫy từng làm chết 45 model.
+- **Cỡ trung gian tự nắn xuống**: 15..19 đều thành 14. Nghĩa là mọi chỗ trước
+  đây viết `body(lbl, 17)` để "hơi to hơn" nay bằng hệt `body(lbl, 14)` — muốn
+  to thật thì phải viết 28.
+- **Dải wave đè lên số Sắc Lệnh**: panel tài nguyên không nằm trong container
+  nên nở theo nội dung rộng nhất (dải chip kéo ra 869px), trong khi dải wave neo
+  theo hằng `RESOURCE_PANEL_WIDTH`. Nhìn ra như "chữ bị cắt", thực ra bị che.
+  Nay kẹp `RESOURCE_PANEL_MAX_WIDTH` rồi neo theo `size.x` THẬT, gọi lại mỗi lần
+  dải chip đổi.
+- **6 King** (thêm `king_storm` · `king_frost` · `king_merchant`). Ba vua gốc đều
+  quy Sắc Lệnh thành sát thương nên Sắc Lệnh chỉ có một công dụng; ba vua mới mở
+  trục nguyên tố (gắn Dấu Lôi toàn bàn), trục phòng thủ (chậm 80% + Dấu Băng) và
+  trục kinh tế (vàng theo wave + reset giá xáo).
+- Màn chọn vua **QUÉT `res/kings/`** thay cho mảng cứng → thêm vua = thả một
+  `.tres`. `ShopPanelManager` vào group `"shop_managers"` để ability với tới được
+  (ctx chỉ đưa SceneTree, đi đường vòng qua tên node là gãy khi cây scene đổi).
+- **Chân dung 6 vua vẽ bằng Aseprite** (`assets/ui/kings/<id>.png`, 64×64, 8–12
+  màu). Trước đó cả 6 vua render CÙNG model `king.gltf` — thêm vua mới vô nghĩa
+  về mặt hình ảnh. Test có assert **mỗi vua một ảnh riêng, trùng nhau là lỗi**.
+- Bài học vẽ ở 64px (phải vẽ lại storm/frost hai lần): các đoạn zigzag vẽ bằng
+  `rect` CHỒNG nhau thì gộp thành một cục — tia sét phải để từng đoạn rời hẳn.
+  Và **đọc ra hay không là do CHÊNH SÁNG TỐI**, không phải do thêm chi tiết: mặt
+  và râu Vua Băng Hà cùng tông nhạt thì cả chân dung chỉ là một khối trắng.
+
 *Save meta chống hỏng (2026-07-29) — lỗi CHẶN PHÁT HÀNH đã sửa:*
 - `MetaProgress.load_or_create()` từng là `return load(SAVE_PATH) as MetaProgress`.
   File hỏng → `load()` null → cast null → `GameManager.meta_progress` đứng NULL
