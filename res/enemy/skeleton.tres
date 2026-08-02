@@ -1,15 +1,20 @@
-[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://skeleton_stats_001"]
+[gd_resource type="Resource" script_class="EnemyStats" format=3]
 
-[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_skeleton"]
-[ext_resource type="Texture2D" uid="uid://b67ge5b3fgpxn" path="res://assets/enemy/skeleton.png" id="2_skeleton"]
+[ext_resource type="Script" path="res://scripts/enemy/EnemyStats.gd" id="1_skeleton"]
+[ext_resource type="Texture2D" path="res://assets/enemy/skeleton.png" id="2_skeleton"]
 
 [resource]
 script = ExtResource("1_skeleton")
 id = "skeleton"
+display_name = "Xương Cốt"
+ability_note = "Kháng chậm, Undead"
+spawn_seasons = Array[int]([1, 2, 3])
+spawn_weight = 2
 texture = ExtResource("2_skeleton")
-scale = Vector2(1, 1)
 max_hp = 130
 speed = 18.2
 damage_to_base = 2
 gold_reward = 16
+weak_element = "earth"
+resist_element = "poison"
 metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

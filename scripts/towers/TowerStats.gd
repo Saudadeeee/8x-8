@@ -23,6 +23,13 @@ enum Element { FIRE, WATER, WOOD, EARTH, METAL, DARK, LIGHT }
 @export var attack_style: AttackType = AttackType.SINGLE_TARGET
 @export_group("Synergies")
 @export var type: UnitType = UnitType.PAWN
+## Nhánh synergy dạng CHUỖI. Để rỗng thì suy từ `type` ở trên (tương thích
+## ngược — mọi .tres cũ không phải sửa gì).
+##
+## Điền chuỗi vào đây thì thêm một nhánh synergy HOÀN TOÀN MỚI không cần đụng
+## code: đặt tag ở đây + thả một file res/synergies/<tag>.tres. Trước đây phải
+## sửa `enum UnitType` trong GDScript, tức không thể làm bằng kéo thả.
+@export var synergy_tag: String = ""
 @export var element: Element = Element.FIRE
 @export var faction: String = "iron"   # "iron" | "wild" | "hell" | "magic"
 
@@ -33,3 +40,11 @@ enum Element { FIRE, WATER, WOOD, EARTH, METAL, DARK, LIGHT }
 @export var burn_dps: int = 0             # damage-per-second DoT
 @export var burn_duration: float = 0.0   # seconds
 @export var projectile_count: int = 1    # >1 = multishot
+
+## Tag synergy thực dùng: ưu tiên chuỗi `synergy_tag`, không có thì lấy tên
+## hằng của `type` viết thường. Mọi nơi đếm synergy phải gọi hàm này, KHÔNG
+## đọc thẳng `type` — nếu không thì nhánh mới khai bằng chuỗi sẽ bị bỏ qua.
+func get_synergy_tag() -> String:
+	if not synergy_tag.is_empty():
+		return synergy_tag
+	return UnitType.keys()[type].to_lower()

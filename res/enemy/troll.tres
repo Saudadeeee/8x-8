@@ -1,16 +1,21 @@
-[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://troll_stats_001"]
+[gd_resource type="Resource" script_class="EnemyStats" format=3]
 
-[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_troll"]
-[ext_resource type="Texture2D" uid="uid://rr2vgdu1ae3f" path="res://assets/enemy/orc.png" id="2_troll"]
+[ext_resource type="Script" path="res://scripts/enemy/EnemyStats.gd" id="1_troll"]
+[ext_resource type="Texture2D" path="res://assets/enemy/orc.png" id="2_troll"]
 
 [resource]
 script = ExtResource("1_troll")
 id = "troll"
+display_name = "Troll"
+ability_note = "Hồi 8 HP/giây — dồn hỏa lực"
+spawn_seasons = Array[int]([1, 3])
 texture = ExtResource("2_troll")
-scale = Vector2(1, 1)
 max_hp = 250
 speed = 16.5
 damage_to_base = 3
 gold_reward = 34
 regen_per_sec = 8.0
+weak_element = "poison"
+weak_element_2 = "ice"
+resist_element = "earth"
 metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

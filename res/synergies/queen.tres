@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SynergyDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/SynergyDefinition.gd" id="1_ekevq"]
+
+[resource]
+script = ExtResource("1_ekevq")
+tag = "queen"
+display_name = "Queen's Reign"
+thresholds = Array[int]([1, 2])
+bonuses = Array[Dictionary]([{
+"damage_bonus": 0.2,
+"range_bonus": 0.0,
+"speed_bonus": 0.1
+}, {
+"damage_bonus": 0.4,
+"range_bonus": 0.0,
+"speed_bonus": 0.2
+}])

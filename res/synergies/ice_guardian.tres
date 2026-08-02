@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="SynergyDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/SynergyDefinition.gd" id="1_afdox"]
+
+[resource]
+script = ExtResource("1_afdox")
+tag = "ice_guardian"
+display_name = "Vệ Binh Băng"
+bonuses = Array[Dictionary]([{
+"damage_bonus": 0.08,
+"range_bonus": 0.0,
+"speed_bonus": 0.0
+}, {
+"damage_bonus": 0.16,
+"range_bonus": 0.0,
+"speed_bonus": 0.0
+}, {
+"damage_bonus": 0.28,
+"range_bonus": 0.0,
+"speed_bonus": 0.0
+}])

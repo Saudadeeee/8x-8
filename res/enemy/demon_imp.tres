@@ -1,15 +1,20 @@
-[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://demon_imp_stats_001"]
+[gd_resource type="Resource" script_class="EnemyStats" format=3]
 
-[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_imp"]
-[ext_resource type="Texture2D" uid="uid://b8e3k07wrmhn0" path="res://assets/enemy/demon_imp.png" id="2_imp"]
+[ext_resource type="Script" path="res://scripts/enemy/EnemyStats.gd" id="1_imp"]
+[ext_resource type="Texture2D" path="res://assets/enemy/demon_imp.png" id="2_imp"]
 
 [resource]
 script = ExtResource("1_imp")
 id = "demon_imp"
+display_name = "Quỷ Con"
+ability_note = "Tốc độ cao, thiêu đốt"
+spawn_seasons = Array[int]([2, 3])
+spawn_weight = 2
 texture = ExtResource("2_imp")
-scale = Vector2(1, 1)
 max_hp = 75
 speed = 39.6
 damage_to_base = 2
 gold_reward = 12
+weak_element = "water"
+resist_element = "fire"
 metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

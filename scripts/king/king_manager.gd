@@ -204,7 +204,9 @@ func apply_favor_to_tower(tower: Node) -> void:
 	var stats: TowerStats = tower.stats
 	if not stats:
 		return
-	var unit_type_name = TowerStats.UnitType.keys()[stats.type].to_lower()
+	# Dùng chung một nguồn tag với SynergyManager — nếu không, tháp khai
+	# `synergy_tag` bằng chuỗi sẽ không khớp bảng sủng ái của Vua.
+	var unit_type_name: String = stats.get_synergy_tag()
 	var is_favored = false
 	for fav_tag in current_king.king_favor_targets:
 		if fav_tag.to_lower() in stats.name.to_lower() or fav_tag.to_lower() == unit_type_name:

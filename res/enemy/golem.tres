@@ -1,16 +1,22 @@
-[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://golem_stats_001"]
+[gd_resource type="Resource" script_class="EnemyStats" format=3]
 
-[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_golem"]
-[ext_resource type="Texture2D" uid="uid://bjw5npqqu5hyj" path="res://assets/enemy/dark_knight.png" id="2_golem"]
+[ext_resource type="Script" path="res://scripts/enemy/EnemyStats.gd" id="1_golem"]
+[ext_resource type="Texture2D" path="res://assets/enemy/dark_knight.png" id="2_golem"]
 
 [resource]
 script = ExtResource("1_golem")
 id = "golem"
+display_name = "Golem Đá"
+ability_note = "Giáp 6: đòn nhẹ gần như vô dụng"
+spawn_seasons = Array[int]([2, 3])
+spawn_weight = 2
 texture = ExtResource("2_golem")
-scale = Vector2(1, 1)
 max_hp = 180
 speed = 13.8
 damage_to_base = 3
 gold_reward = 26
 armor = 6
+weak_element = "thunder"
+weak_element_2 = "earth"
+resist_element = "fire"
 metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

@@ -36,6 +36,8 @@ TESTS = [
      "Huong dan nhap mon: tu hien van dau, day dung bat bien, khong hien lai"),
     ("10", "tests/test_10_pacing_economy.gd",
      "Nang sao bang vang (sink) + nhip cham: toc do dich, spawn, dan"),
+    ("11", "tests/test_11_data_driven.gd",
+     "Noi dung tao duoc bang keo tha: synergy/.tres, tag chuoi, lich mua"),
 ]
 
 # Mo rong ban do chay DFS tren ban 24x24 nen batch 4 lau hon han cac batch khac.

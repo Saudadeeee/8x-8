@@ -1,15 +1,19 @@
-[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://goblin_stats_001"]
+[gd_resource type="Resource" script_class="EnemyStats" format=3]
 
-[ext_resource type="Script" uid="uid://bi0pqpxwqmdy5" path="res://scripts/enemy/EnemyStats.gd" id="1_goblin"]
-[ext_resource type="Texture2D" uid="uid://cw2gk7vphckvh" path="res://assets/enemy/goblin.png" id="2_goblin"]
+[ext_resource type="Script" path="res://scripts/enemy/EnemyStats.gd" id="1_goblin"]
+[ext_resource type="Texture2D" path="res://assets/enemy/goblin.png" id="2_goblin"]
 
 [resource]
 script = ExtResource("1_goblin")
 id = "goblin"
+display_name = "Goblin"
+ability_note = "Di chuyển rất nhanh"
+spawn_seasons = Array[int]([0, 1])
+spawn_weight = 3
 texture = ExtResource("2_goblin")
-scale = Vector2(1, 1)
 max_hp = 50
 speed = 34.1
-damage_to_base = 1
 gold_reward = 7
+weak_element = "fire"
+resist_element = "poison"
 metadata/_custom_type_script = "uid://bi0pqpxwqmdy5"

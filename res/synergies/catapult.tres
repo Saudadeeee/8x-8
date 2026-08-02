@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SynergyDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/SynergyDefinition.gd" id="1_14lvs"]
+
+[resource]
+script = ExtResource("1_14lvs")
+tag = "catapult"
+display_name = "Iron Barrage"
+thresholds = Array[int]([2, 3])
+bonuses = Array[Dictionary]([{
+"damage_bonus": 0.25,
+"range_bonus": 0.0,
+"speed_bonus": 0.0
+}, {
+"damage_bonus": 0.5,
+"range_bonus": 0.0,
+"speed_bonus": 0.0
+}])

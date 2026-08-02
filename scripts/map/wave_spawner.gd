@@ -407,36 +407,22 @@ func _check_wave_cleared() -> void:
 func _get_enemy(id: String) -> EnemyStats:
 	return _enemy_stats.get(id, _enemy_stats.get("orc"))
 
+## Pool địch của một mùa. HOÀN TOÀN đọc từ dữ liệu: mỗi `.tres` tự khai
+## `spawn_seasons` + `spawn_weight` của nó.
+##
+## Trước đây đây là một bảng CỨNG 23 dòng `_get_enemy("goblin")` — thêm một loài
+## địch phải sửa GDScript. Nay thả file .tres là xong, không đụng code.
+## `tools/migrate_enemy_data.py` đã ghi lịch cũ vào chính các file đó nên tần
+## suất giữ nguyên y hệt bảng cứng.
 func _get_season_enemy_pool(wave_num: int) -> Array:
 	var pool: Array = []
-	match get_season(wave_num):
-		Season.SPRING:
-			for i in 3: pool.append(_get_enemy("goblin"))
-			for i in 2: pool.append(_get_enemy("orc"))
-			for i in 4: pool.append(_get_enemy("bat"))       # swarm filler rẻ tiền
-		Season.SUMMER:
-			for i in 2: pool.append(_get_enemy("orc"))
-			for i in 2: pool.append(_get_enemy("goblin"))
-			pool.append(_get_enemy("skeleton"))
-			pool.append(_get_enemy("troll"))                  # tank hồi máu đầu tiên
-			for i in 3: pool.append(_get_enemy("bat"))
-		Season.AUTUMN:
-			for i in 2: pool.append(_get_enemy("skeleton"))
-			pool.append(_get_enemy("dark_knight"))
-			pool.append(_get_enemy("demon_imp"))
-			pool.append(_get_enemy("orc"))
-			pool.append(_get_enemy("shaman"))                 # healer hỗ trợ
-			for i in 2: pool.append(_get_enemy("wraith"))     # rush máu giấy
-			pool.append(_get_enemy("golem"))                  # tank bọc giáp
-		Season.WINTER:
-			for i in 2: pool.append(_get_enemy("dark_knight"))
-			for i in 2: pool.append(_get_enemy("demon_imp"))
-			pool.append(_get_enemy("skeleton"))
-			for i in 2: pool.append(_get_enemy("golem"))
-			for i in 2: pool.append(_get_enemy("wraith"))
-			pool.append(_get_enemy("shaman"))
-			pool.append(_get_enemy("troll"))
 	_append_data_driven_enemies(pool, get_season(wave_num))
+	if pool.is_empty():
+		# Không loài nào khai mùa này — thà cho orc ra còn hơn wave rỗng.
+		var fallback: EnemyStats = _get_enemy("orc")
+		if fallback:
+			for i in 4:
+				pool.append(fallback)
 	return pool
 
 ## Chèn các loài KHAI BÁO LỊCH SPAWN TRONG .tres của chính nó. Nhờ đây thêm một

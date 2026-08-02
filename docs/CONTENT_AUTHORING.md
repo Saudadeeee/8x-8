@@ -147,7 +147,23 @@ Lưu ý JSON: **không trailing comma**, số thập phân dùng dấu chấm. F
 ~18–29 units). **Không có model cũng chạy được** — game tự fallback billboard
 Sprite3D từ field `texture`.
 
-### Synergy
+### Synergy — nhánh mới KHÔNG cần code
+
+Mỗi quân thuộc một **nhánh synergy**. Trước đây nhánh phải là một giá trị trong
+`enum UnitType` (sửa GDScript). Nay có hai đường:
+
+- **Dùng nhánh có sẵn**: để `synergy_tag` rỗng, chọn `type` trong danh sách enum.
+- **Nhánh hoàn toàn mới**: điền `synergy_tag = "ten_nhanh"` trong `.tres` của quân,
+  rồi thả một file `res/synergies/ten_nhanh.tres` (copy từ `pawn.tres` rồi sửa
+  `tag`, `display_name`, `thresholds`, `bonuses`).
+
+`TowerStats.get_synergy_tag()` là nguồn DUY NHẤT của tag — mọi nơi đếm synergy
+đều gọi nó, nên khai bằng chuỗi là đủ.
+
+15 định nghĩa cũ đã được xuất ra `res/synergies/*.tres`; bảng cứng trong
+`SynergyManager.gd` giờ chỉ là lưới an toàn khi thư mục đó rỗng.
+
+### Synergy (ghi chú cũ)
 
 `SynergyManager.gd` map tower → synergy bằng tag =
 `UnitType.keys()[stats.type].to_lower()` (vd type 11 → tag `"paladin"`).

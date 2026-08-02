@@ -878,8 +878,26 @@ res://
   Boss được loại trừ vì chúng spawn qua `BOSS_IDS`. Chạy sau mỗi lần thêm nội dung.
 - Bảng "thêm một thứ mất bao nhiêu file" nằm ở đầu `docs/CONTENT_AUTHORING.md`.
 
+*Gỡ nội dung khỏi code — tạo được bằng kéo thả (2026-07-30):*
+- **Nhánh synergy mới KHÔNG còn cần sửa `enum UnitType`.** `TowerStats.synergy_tag`
+  là chuỗi; `get_synergy_tag()` ưu tiên nó, rỗng thì suy từ enum (tương thích
+  ngược, .tres cũ không phải sửa). Mọi nơi đếm synergy PHẢI gọi hàm này —
+  `SynergyManager.on_tower_placed` và `king_manager` đã đổi; đọc thẳng `type`
+  thì nhánh khai bằng chuỗi bị bỏ qua.
+- 15 định nghĩa synergy xuất ra `res/synergies/*.tres`. Bảng cứng trong
+  `SynergyManager.gd` giờ chỉ chạy khi thư mục đó RỖNG.
+- **Bảng mùa cứng 23 dòng `_get_enemy("...")` đã bị GỠ.** `_get_season_enemy_pool`
+  nay chỉ gọi `_append_data_driven_enemies` — mỗi `.tres` tự khai `spawn_seasons`
+  + `spawn_weight`. Đã di cư lịch cũ vào 10 file nên tần suất giữ nguyên y hệt
+  (kiểm bằng cách in pool từng mùa và so).
+- `DEFAULT_AFFINITY` / `ABILITY_NOTES` cũng đã ghi vào từng `.tres`; hai bảng
+  trong code chỉ còn là mặc định dự phòng.
+- Batch test 11 chốt việc này: đếm số `_get_enemy(` còn lại, và bắt mọi loài
+  địch phải TỰ khai `spawn_seasons` + `weak_element` trong `.tres` của nó.
+
 *Âm thanh thật + tiết tấu chậm (2026-07-30):*
-- **18 SFX sinh bằng rfxgen** (`gamedev-toolkit-mcp`, `D:\Appsfxgen`) qua
+- **18 SFX sinh bằng rfxgen** (`gamedev-toolkit-mcp`, `D:\Apps
+fxgen`) qua
   `design_sound`, 44.1 kHz mono, thay bộ bíp Python 22 kHz cũ.
   **BẪY**: `starting_point` GHI ĐÈ `wave_type` — muốn sóng cụ thể thì đừng
   truyền `starting_point`, khai tham số tường minh.

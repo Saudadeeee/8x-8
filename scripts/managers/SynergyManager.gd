@@ -109,7 +109,9 @@ func _load_definitions_from_directory() -> void:
 
 # --- Đăng ký khi đặt tháp (nhận TowerStats) ---
 func on_tower_placed(tower: Node, stats: TowerStats) -> void:
-	var tag = TowerStats.UnitType.keys()[stats.type].to_lower()
+	# Qua get_synergy_tag() chứ không đọc thẳng `type`: tháp khai `synergy_tag`
+	# bằng chuỗi (nhánh mới, không có trong enum) phải được đếm đúng nhánh.
+	var tag: String = stats.get_synergy_tag()
 	soldier_synergy_map[tower] = [tag]
 	if not active_synergies.has(tag):
 		active_synergies[tag] = {"count": 0, "active_level": 0}

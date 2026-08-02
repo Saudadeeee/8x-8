@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="SynergyDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/SynergyDefinition.gd" id="1_yeqm2"]
+
+[resource]
+script = ExtResource("1_yeqm2")
+tag = "longbowman"
+display_name = "Hàng Cung Dài"
+bonuses = Array[Dictionary]([{
+"damage_bonus": 0.12,
+"range_bonus": 0.0,
+"speed_bonus": 0.0
+}, {
+"damage_bonus": 0.22,
+"range_bonus": 0.0,
+"speed_bonus": 0.0
+}, {
+"damage_bonus": 0.35,
+"range_bonus": 0.0,
+"speed_bonus": 0.0
+}])
