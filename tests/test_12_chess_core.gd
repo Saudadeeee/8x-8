@@ -204,6 +204,45 @@ func _run() -> void:
 	ok(dead_rules == "", "moi luat Rival King deu co tac dung that", dead_rules)
 	kr.clear()
 
+	print("
+--- UI PHAI DOC DUOC CONG THUC ---")
+	# Cong thuc chi co gia tri khi NHIN THAY duoc. Balatro song nho viec hien tung
+	# la cong bao nhieu Chip, tung Joker nhan bao nhieu — thieu lop hien thi thi
+	# "Nen x Boi" chi la mot con so vo nghia.
+	var hud = map.get_node_or_null("HUD")
+	ok(hud != null, "co HUD")
+	for m in ["update_board_score", "show_cell_tooltip", "hide_cell_tooltip",
+			"toggle_deck_panel", "show_king_rule", "set_start_wave_button_visible"]:
+		ok(hud.has_method(m), "HUD co %s()" % m)
+
+	# Tooltip phai tra ve DU ca hai nua: tung nguon NEN va tung nguon BOI.
+	var tip_cell := Vector2i(-1, -1)
+	for c in gc.current_path_grid:
+		if bs.cell_base(c) > 0.01:
+			tip_cell = c
+			break
+	if tip_cell.x >= 0:
+		var info: Dictionary = map.cell_score_info(tip_cell)
+		ok(info.has("base") and info.has("mult") and info.has("score"),
+			"tooltip co du Nen / Boi / Diem")
+		ok((info.get("base_rows", []) as Array).size() > 0,
+			"tooltip liet ke duoc tung quan gop vao NEN")
+		ok(bool(info.get("on_path", false)), "o duong duoc danh dau la o duong")
+
+	ok(map.get("chess_formation_overlay") != null, "co overlay to sang the co")
+
+	# Tutorial phai day GAME HIEN TAI, khong phai game da bo.
+	var tut_src := FileAccess.get_file_as_string("res://scripts/ui/tutorial_overlay.gd")
+	var tut_missing := ""
+	# So khong phan biet hoa thuong: the tutorial viet "nuoc di thật" o giua cau.
+	var tut_low := tut_src.to_lower()
+	for kw in ["nước đi", "thế cờ", "bộ quân", "bắt đầu wave"]:
+		if not tut_low.contains(kw):
+			tut_missing += kw + " "
+	ok(tut_missing == "", "tutorial nhac du cac tru moi", tut_missing)
+	ok(not tut_src.contains("mở rộng thêm một hướng"),
+		"tutorial khong con day mo rong ban do (da bo)")
+
 	print("\n--- HE DA CAT ---")
 	ok(not FeatureFlags.SEASONS_ENABLED, "mua da tat")
 	ok(not FeatureFlags.BIOME_CLIMATE_ENABLED, "khi hau biome da tat")

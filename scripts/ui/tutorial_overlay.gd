@@ -19,45 +19,85 @@ const DIM_ALPHA: float = 0.72
 const CARD_W: int = 560
 
 ## Nội dung từng thẻ: tiêu đề, thân, và dòng nhấn mạnh (có thể rỗng).
+## Nội dung từng thẻ: tiêu đề, thân, và dòng nhấn mạnh (có thể rỗng).
+##
+## Thứ tự có chủ đích, dạy theo đúng thứ tự người chơi CẦN biết:
+##   1. mục tiêu (số phải vượt)  2. công cụ (nước đi)  3. nhân số (thế cờ)
+##   4. build dài hạn (bộ quân)  5. nhịp ván
+## Không dạy nguyên tố ở đây: nó là lớp NÂNG CAO, học sau khi đã hiểu Nền × Bội.
 const PAGES: Array[Dictionary] = [
 	{
-		"title": "Bàn cờ 8×8",
-		"body": "Địch đi theo con đường có mũi tên vàng, từ mép bàn tới chỗ Vua.\n"
-			+ "Vua mất hết máu là thua.\n\n"
-			+ "Bạn đặt quân lên các ô TRỐNG hai bên đường. Quân là tháp cố định —\n"
-			+ "đặt xuống là tự bắn, không di chuyển được.",
-		"accent": "Chuột giữa xoay góc nhìn · lăn chuột phóng to · WASD di chuyển",
+		"title": "Một con số phải vượt",
+		"body": "Đáy màn hình có hai con số: SÁT THƯƠNG đội hình bạn gây ra trong wave,
+"
+			+ "và TỔNG MÁU của wave đó.
+
+"
+			+ "Xanh = đủ sức. Đỏ = biết trước sẽ thủng, hãy sửa bố cục rồi hãy bấm.
+"
+			+ "Không có đồng hồ đếm ngược — bạn có bao nhiêu thời gian tuỳ ý.",
+		"accent": "Rê chuột lên một ô để xem Nền × Bội của ô đó đến từ đâu",
 	},
 	{
-		"title": "Nguyên tố đến từ Ô, KHÔNG từ quân",
-		"body": "Đây là điều quan trọng nhất của game.\n\n"
-			+ "Mua ô nguyên tố trong shop rồi đặt xuống bàn. Quân nào đứng trên ô đó\n"
-			+ "sẽ mang nguyên tố của ô — cùng một con Pawn đứng trên Mạch Hoả và trên\n"
-			+ "Mạch Băng là hai thứ hoàn toàn khác nhau.",
-		"accent": "Vòng sáng dưới chân tháp cho biết nó đang mang nguyên tố nào",
+		"title": "Quân đánh theo nước đi thật",
+		"body": "Xe bắn dọc hàng và cột. Tượng bắn hai đường chéo. Mã nhảy chữ L.
+"
+			+ "Tốt đánh bốn ô chéo kề. Bạn đã biết những luật này rồi.
+
+"
+			+ "Quân CỦA BẠN chắn đường trượt của Xe và Tượng — đứng sai chỗ là tự
+"
+			+ "bịt đường bắn của mình. Ô sáng vàng lúc đặt là ô ĐƯỜNG ĐI bạn phủ được;
+"
+			+ "chỉ ô đường mới sinh sát thương.",
+		"accent": "Bàn khoá 8×8 cả ván và có trần số quân — chọn chỗ đứng là quyết định lớn nhất",
 	},
 	{
-		"title": "Ghép Dấu để nổ phản ứng",
-		"body": "Mỗi phát bắn để lại một Dấu nguyên tố trên địch. Mỗi con mang tối đa\n"
-			+ "2 Dấu. Khi hai Dấu hợp thành cặp thì NỔ và tiêu thụ cả hai.\n\n"
-			+ "Hoả + Băng = Tan Chảy · Hoả + Thuỷ = Bốc Hơi · Lôi + Thuỷ = Dẫn Điện\n"
-			+ "Trộn nhiều nguyên tố sát thương cao hơn hẳn dồn một loại.",
-		"accent": "Nhấn F1 bất cứ lúc nào để mở Sách Nguyên Tố — đủ 10 phản ứng",
+		"title": "Thế cờ nhân sát thương",
+		"body": "Xếp quân thành thế có tên để nhân BỘI cho cả vùng:
+
+"
+			+ "Trận Pháo — hai Xe cùng hàng hoặc cùng cột (×2.0)
+"
+			+ "Giao Hoả — một ô bị cả Xe lẫn Tượng phủ (×2.2)
+"
+			+ "Tường Tốt — ba Tốt liền nhau một hàng (×2.2)
+"
+			+ "Nước Chĩa — một Mã phủ từ 3 ô đường trở lên (×3.0)
+
+"
+			+ "Thế chồng lên nhau thì BỘI nhân với nhau. Đó là đường phá vỡ ván đấu.
+
+"
+			+ "Nguồn BỘI thứ hai là Ô NGUYÊN TỐ mua trong shop: quân đứng trên ô nào
+"
+			+ "thì mang nguyên tố của ô đó, và ô lên cấp thì Bội tăng theo.",
+		"accent": "Ô thuộc một thế được tô màu · vòng sáng dưới chân là nguyên tố của ô",
 	},
 	{
-		"title": "Ghép sao và xếp hình thế",
-		"body": "Đặt quân CÙNG LOẠI lên quân đã có để ghép sao: ★★ mạnh gấp 1.8 lần,\n"
-			+ "★★★ gấp 3.2 lần. Ô nguyên tố cũng ghép được để lên cấp.\n\n"
-			+ "Xếp 3 ô cùng nguyên tố thành hàng ngang/dọc sẽ tạo hình thế Hàng Long,\n"
-			+ "cho thêm thưởng cho cả vùng.",
-		"accent": "Ba ô cùng loại thành hàng = Hàng Long · bốn ô vuông = Tứ Trụ",
+		"title": "Bộ quân là build của bạn",
+		"body": "Bạn khởi đầu với một bộ cờ thật. Shop RÚT quân từ bộ đó — muốn thấy Xe
+"
+			+ "thường xuyên hơn thì phải LOẠI bớt Tốt khỏi bộ.
+
+"
+			+ "Shop cũng bán: nâng sao vĩnh viễn cho một loại quân, và phong Hậu cho
+"
+			+ "toàn bộ Tốt. Bộ mỏng và nặng ký thắng bộ dày và loãng.",
+		"accent": "Bấm B để xem bộ quân và tỉ lệ rút từng loại",
 	},
 	{
 		"title": "Nhịp một ván",
-		"body": "Chuẩn bị → Wave → Shop → chọn 1 trong 3 Perk → lặp lại.\n\n"
-			+ "Cứ 3 wave bản đồ mở rộng thêm một hướng. Wave 10 là boss.\n"
-			+ "Vàng không tiêu là vàng lãng phí — cuối mỗi wave có lãi, nhưng có trần.",
-		"accent": "Bấm Z / X / C để ném thuốc ngay giữa trận",
+		"body": "Chuẩn bị → bấm BẮT ĐẦU WAVE → Shop → chọn 1 trong 3 Perk → lặp lại.
+
+"
+			+ "12 wave. Rival King ở wave 5, 9 và 12 — mỗi vua ĐỔI MỘT LUẬT của bàn cờ
+"
+			+ "(khoá Tượng, chỉ tính nửa bàn, cấm thế cờ cộng dồn…). Đọc luật rồi xếp lại.
+
+"
+			+ "Sao chỉ lên bằng cách đặt quân CÙNG LOẠI chồng lên nhau.",
+		"accent": "F1 mở Sách tra cứu · Z/X/C ném thuốc giữa trận",
 	},
 ]
 

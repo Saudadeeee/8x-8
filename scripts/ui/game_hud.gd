@@ -261,6 +261,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			toggle_codex()
 			get_viewport().set_input_as_handled()
 			return
+		# B = xem BỘ QUÂN. KHÔNG dùng D: `camera_controller` poll thẳng
+		# `Input.is_key_pressed(KEY_D)` để pan, nên `set_input_as_handled()`
+		# không chặn được — bấm D sẽ vừa mở panel vừa xoay camera.
+		if event.keycode == KEY_B:
+			toggle_deck_panel()
+			get_viewport().set_input_as_handled()
+			return
+		if event.keycode == KEY_ESCAPE and is_deck_panel_open():
+			toggle_deck_panel()
+			get_viewport().set_input_as_handled()
+			return
 		# ESC đóng codex trước khi tính tới menu tạm dừng.
 		if event.keycode == KEY_ESCAPE and is_codex_open():
 			toggle_codex()
@@ -1597,6 +1608,17 @@ func _create_tower_card(stats: TowerStats, stock_count: int = 0) -> void:
 	name_lbl.clip_text = true
 	vbox.add_child(name_lbl)
 
+	# NƯỚC ĐI ngay trên card — chỉ số quan trọng nhất khi quyết định mua. Bản cũ
+	# chỉ hiện giá và sát thương, mà với mô hình nước đi thì "Xe hay Mã" quyết
+	# định nhiều hơn mọi con số cộng lại.
+	var pat_lbl = Label.new()
+	pat_lbl.text = "%s %s" % [
+		ChessPattern.glyph(int(stats.attack_pattern)),
+		ChessPattern.label(int(stats.attack_pattern))]
+	UIStyle.body(pat_lbl, 14, Color(0.70, 0.90, 1.00))
+	pat_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(pat_lbl)
+
 	var stats_row = HBoxContainer.new()
 	vbox.add_child(stats_row)
 
@@ -2546,6 +2568,261 @@ func show_boss_intro(name: String, title: String) -> void:
 func set_prep_countdown_visible(state: bool) -> void:
 	if is_instance_valid(_countdown_label):
 		_countdown_label.visible = state
+
+# ── PANEL BỘ QUÂN (phím D) ───────────────────────────────────────────────────
+# "Build" của người chơi CHÍNH LÀ bộ quân. Không xem được bộ thì không ai biết
+# mình đang đi hướng nào, và thao tác "loại quân khỏi bộ" — nước đi chiến thuật
+# sâu nhất của mô hình này — trở thành nút bấm mù.
+# Hiện TỈ LỆ RÚT chứ không chỉ số lượng: đó mới là thứ quyết định có nên loại.
+
+var _deck_panel: Control = null
+
+func toggle_deck_panel() -> void:
+	_build_deck_panel()
+	if is_instance_valid(_deck_panel):
+		_deck_panel.visible = not _deck_panel.visible
+		if _deck_panel.visible:
+			refresh_deck_panel()
+
+func is_deck_panel_open() -> bool:
+	return is_instance_valid(_deck_panel) and _deck_panel.visible
+
+func _build_deck_panel() -> void:
+	if is_instance_valid(_deck_panel):
+		return
+	var root_ctrl := get_node_or_null("Control") as Control
+	if root_ctrl == null:
+		return
+	_deck_panel = Control.new()
+	_deck_panel.name = "DeckPanel"
+	_deck_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_deck_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_deck_panel.process_mode = Node.PROCESS_MODE_ALWAYS
+	_deck_panel.visible = false
+	root_ctrl.add_child(_deck_panel)
+
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.78)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_deck_panel.add_child(dim)
+
+	var box := PanelContainer.new()
+	box.name = "Box"
+	UIStyle.apply_panel(box, "wood")
+	box.set_anchors_preset(Control.PRESET_CENTER)
+	box.offset_left = -300; box.offset_right = 300
+	box.offset_top = -260; box.offset_bottom = 300
+	_deck_panel.add_child(box)
+
+	var vb := VBoxContainer.new()
+	vb.name = "List"
+	vb.add_theme_constant_override("separation", 6)
+	box.add_child(vb)
+
+func refresh_deck_panel() -> void:
+	if not is_instance_valid(_deck_panel):
+		return
+	var vb := _deck_panel.get_node_or_null("Box/List") as VBoxContainer
+	if vb == null:
+		return
+	for c in vb.get_children():
+		vb.remove_child(c); c.queue_free()
+
+	var map := _find_game_map()
+	var deck = map.get("army_deck") if map else null
+	var title := Label.new()
+	title.text = "◆  BỘ QUÂN"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UIStyle.title(title, 42, C_GOLD)
+	vb.add_child(title)
+
+	if deck == null or not is_instance_valid(deck):
+		var none := Label.new()
+		none.text = "Chưa có bộ quân."
+		UIStyle.body(none, 14, UIStyle.TEXT_DIM)
+		vb.add_child(none)
+		return
+
+	var sub := Label.new()
+	sub.text = "%d quân trong bộ. Loại bớt quân yếu → tỉ lệ rút quân mạnh tăng lên." 		% int(deck.size())
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	UIStyle.body(sub, 14, UIStyle.TEXT_DIM)
+	vb.add_child(sub)
+	vb.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
+
+	var counts: Dictionary = deck.counts()
+	var ids: Array = counts.keys()
+	ids.sort_custom(func(a, b): return int(counts[a]) > int(counts[b]))
+	for id in ids:
+		var sid := str(id)
+		var st: TowerStats = deck.stats_for(sid)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 10)
+		vb.add_child(row)
+
+		var nm := Label.new()
+		nm.text = "%s ×%d" % [UIStyle.unit_name_vi(sid), int(counts[id])]
+		nm.custom_minimum_size = Vector2(230, 0)
+		UIStyle.body(nm, 14, UIStyle.TEXT)
+		row.add_child(nm)
+
+		if st != null:
+			var pat := Label.new()
+			pat.text = "%s %s" % [ChessPattern.glyph(int(st.attack_pattern)),
+				ChessPattern.label(int(st.attack_pattern))]
+			pat.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			UIStyle.body(pat, 14, Color(0.70, 0.90, 1.00))
+			row.add_child(pat)
+
+		var star := int(deck.star_of(sid))
+		if star > 1:
+			var stl := Label.new()
+			stl.text = "★".repeat(star)
+			UIStyle.body(stl, 14, C_GOLD)
+			row.add_child(stl)
+
+		var pct := Label.new()
+		pct.text = "%.0f%%" % (float(deck.draw_chance(sid)) * 100.0)
+		pct.custom_minimum_size = Vector2(70, 0)
+		pct.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		UIStyle.body(pct, 14, C_GREEN)
+		row.add_child(pct)
+
+	vb.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
+	var hint := Label.new()
+	hint.text = "Shop bán thao tác lên bộ: loại quân · nâng sao vĩnh viễn · phong Hậu.
+D hoặc ESC để đóng."
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UIStyle.body(hint, 14, UIStyle.TEXT_DIM)
+	vb.add_child(hint)
+
+
+# ── BĂNG LUẬT RIVAL KING ─────────────────────────────────────────────────────
+# Boss Blind của Balatro luôn nói TRƯỚC luật của nó. Không báo thì người chơi
+# chỉ thấy đội hình bỗng yếu đi mà không hiểu vì sao — đúng thứ cả thiết kế này
+# sinh ra để tránh.
+
+func show_king_rule(rule_name: String, rule_desc: String) -> void:
+	if rule_name == "":
+		return
+	var root_ctrl := get_node_or_null("Control") as Control
+	if root_ctrl == null:
+		return
+	var banner := PanelContainer.new()
+	banner.name = "KingRuleBanner"
+	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	UIStyle.apply_panel(banner, "dark")
+	banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	banner.offset_left = -380; banner.offset_right = 380
+	banner.offset_top = 150; banner.offset_bottom = 260
+	root_ctrl.add_child(banner)
+
+	var vb := VBoxContainer.new()
+	vb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner.add_child(vb)
+	var t := Label.new()
+	t.text = "☠  %s" % rule_name
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UIStyle.title(t, 42, C_RED)
+	vb.add_child(t)
+	var d := Label.new()
+	d.text = rule_desc
+	d.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	UIStyle.body(d, 28, UIStyle.TEXT)
+	vb.add_child(d)
+
+	UIStyle.pop_in(banner, 0.15)
+	get_tree().create_timer(6.0).timeout.connect(func():
+		if is_instance_valid(banner):
+			banner.queue_free())
+
+
+# ── Tooltip NỀN × BỘI theo ô ─────────────────────────────────────────────────
+# Bản dịch của bảng chấm điểm Balatro: từng lá cộng bao nhiêu Chip, từng Joker
+# nhân bao nhiêu. Không có bảng này thì người chơi biết mình yếu mà không biết
+# sửa chỗ nào — và cả thiết kế "Nền × Bội" thành một con số vô nghĩa.
+
+var _cell_tip: PanelContainer = null
+var _cell_tip_box: VBoxContainer = null
+
+func _ensure_cell_tip() -> void:
+	if is_instance_valid(_cell_tip):
+		return
+	var root_ctrl := get_node_or_null("Control") as Control
+	if root_ctrl == null:
+		return
+	_cell_tip = PanelContainer.new()
+	_cell_tip.name = "CellScoreTip"
+	_cell_tip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	UIStyle.apply_panel(_cell_tip, "dark")
+	_cell_tip.visible = false
+	root_ctrl.add_child(_cell_tip)
+	_cell_tip_box = VBoxContainer.new()
+	_cell_tip_box.add_theme_constant_override("separation", 1)
+	_cell_tip_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cell_tip.add_child(_cell_tip_box)
+
+
+func hide_cell_tooltip() -> void:
+	if is_instance_valid(_cell_tip):
+		_cell_tip.visible = false
+
+
+func show_cell_tooltip(_cell: Vector2i, info: Dictionary, at: Vector2) -> void:
+	_ensure_cell_tip()
+	if not is_instance_valid(_cell_tip):
+		return
+	var base := float(info.get("base", 0.0))
+	# Ô không có quân nào phủ thì không có gì để nói — ẩn hẳn cho đỡ nhiễu.
+	if info.is_empty() or base <= 0.01:
+		_cell_tip.visible = false
+		return
+
+	for c in _cell_tip_box.get_children():
+		_cell_tip_box.remove_child(c)
+		c.queue_free()
+
+	var mult := float(info.get("mult", 1.0))
+	var head := Label.new()
+	head.text = "%s  ×  %.2f  =  %s" % [
+		UIStyle.short_number(base), mult, UIStyle.short_number(base * mult)]
+	UIStyle.title(head, 28, C_GOLD if bool(info.get("on_path", false)) else UIStyle.TEXT_DIM)
+	_cell_tip_box.add_child(head)
+
+	var sub := Label.new()
+	sub.text = "Nền × Bội" if bool(info.get("on_path", false)) 		else "Ô này KHÔNG nằm trên đường — không sinh sát thương"
+	UIStyle.body(sub, 14, UIStyle.TEXT_DIM if bool(info.get("on_path", false)) else UIStyle.RED)
+	_cell_tip_box.add_child(sub)
+
+	for r in info.get("base_rows", []):
+		if not (r is Dictionary): continue
+		var d: Dictionary = r
+		var l := Label.new()
+		var hc = d.get("cell", Vector2i.ZERO)
+		l.text = "+ %.0f  %s (%d,%d)" % [float(d.get("dps", 0.0)),
+			str(d.get("name", "?")), hc.x, hc.y]
+		UIStyle.body(l, 14, Color(0.65, 0.90, 1.00))
+		_cell_tip_box.add_child(l)
+
+	for r in info.get("mult_rows", []):
+		if not (r is Dictionary): continue
+		var d2: Dictionary = r
+		var l2 := Label.new()
+		l2.text = "× %.2f  %s" % [float(d2.get("mult", 1.0)), str(d2.get("name", "?"))]
+		UIStyle.body(l2, 14, Color(1.00, 0.80, 0.35))
+		_cell_tip_box.add_child(l2)
+
+	_cell_tip.visible = true
+	_cell_tip.reset_size()
+	# Bám con trỏ nhưng KHÔNG tràn mép màn — tooltip bị cắt là mất đúng phần số.
+	var vp := get_viewport().get_visible_rect().size
+	var sz := _cell_tip.size
+	_cell_tip.position = Vector2(
+		clampf(at.x + 22.0, 8.0, maxf(8.0, vp.x - sz.x - 8.0)),
+		clampf(at.y - sz.y - 12.0, 8.0, maxf(8.0, vp.y - sz.y - 8.0)))
+
 
 # ── Bảng NỀN × BỘI ───────────────────────────────────────────────────────────
 # Con số quan trọng nhất màn hình. Balatro luôn cho bạn thấy "cần bao nhiêu điểm"

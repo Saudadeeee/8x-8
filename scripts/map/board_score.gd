@@ -203,7 +203,32 @@ func wave_total_hp(wave: int) -> float:
 	var real: int = int(ws.calculate_enemies_for_wave(wave)) if ws.has_method("calculate_enemies_for_wave") else listed
 	if listed > 0 and real > listed:
 		total *= float(real) / float(listed)
+	# MÁU BOSS phải nằm trong ngưỡng. Bỏ sót thì đúng ở wave quan trọng nhất
+	# con số lại nói dối — người chơi thấy "đủ" rồi thua ngay.
+	if ws.has_method("is_boss_wave") and ws.is_boss_wave(wave):
+		total += _boss_hp(ws, wave)
 	return total
+
+
+## Máu Rival King của wave boss (0 nếu không phải wave boss).
+func _boss_hp(ws: Node, wave: int) -> float:
+	if not ws.has_method("get_boss_health_multiplier"):
+		return 0.0
+	var ids = ws.get("BOSS_IDS")
+	var order = ws.get("BOSS_WAVES")
+	if not (ids is Array) or not (order is Array):
+		return 0.0
+	var idx: int = (order as Array).find(wave)
+	if idx < 0 or (ids as Array).is_empty():
+		return 0.0
+	var bid: String = str((ids as Array)[idx % (ids as Array).size()])
+	var path := "res://res/enemy/%s.tres" % bid
+	if not ResourceLoader.exists(path):
+		return 0.0
+	var bs := load(path) as EnemyStats
+	if bs == null:
+		return 0.0
+	return float(bs.max_hp) * float(ws.get_boss_health_multiplier(wave))
 
 
 ## Tốc độ con địch NHANH NHẤT wave — nó ở trong tầm ít nhất nên khó giết nhất.
@@ -225,7 +250,33 @@ func wave_duration(wave: int) -> float:
 		return 20.0
 	var n: int = int(ws.calculate_enemies_for_wave(wave))
 	var iv: float = float(ws.get("SPAWN_INTERVAL")) if ws.get("SPAWN_INTERVAL") != null else 1.5
-	return maxf(5.0, float(n) * iv)
+	var dur: float = maxf(5.0, float(n) * iv)
+	# WAVE BOSS: `calculate_enemies_for_wave` chỉ trả 6 lính hộ vệ nên thời lượng
+	# tính ra ~9 giây, trong khi Rival King đi trọn đường mất ~30 giây. Thiếu chỗ
+	# này thì ngưỡng wave boss nói dối nặng nhất — đúng wave quan trọng nhất.
+	if ws.has_method("is_boss_wave") and ws.is_boss_wave(wave):
+		dur = maxf(dur, _boss_walk_time(ws, wave))
+	return dur
+
+
+## Thời gian Rival King đi hết đường (giây).
+func _boss_walk_time(ws: Node, wave: int) -> float:
+	var ids = ws.get("BOSS_IDS")
+	var order = ws.get("BOSS_WAVES")
+	if not (ids is Array) or not (order is Array):
+		return 0.0
+	var idx: int = (order as Array).find(wave)
+	if idx < 0 or (ids as Array).is_empty():
+		return 0.0
+	var path := "res://res/enemy/%s.tres" % str((ids as Array)[idx % (ids as Array).size()])
+	if not ResourceLoader.exists(path):
+		return 0.0
+	var bs := load(path) as EnemyStats
+	if bs == null:
+		return 0.0
+	# .tres giữ tốc độ theo px; 16 px = 1 ô.
+	var v: float = maxf(0.05, float(bs.speed) / 16.0)
+	return float(_path_cells().size()) / v
 
 
 ## Tóm tắt cho HUD — MỘT con số so với MỘT con số, đúng kiểu ngưỡng Blind.

@@ -82,16 +82,76 @@ func _build_codex() -> void:
 	col.add_child(title)
 
 	var hint := Label.new()
-	hint.text = "F1 hoặc ESC để đóng · Nguyên tố đến từ Ô, không từ loại tháp"
+	hint.text = "F1 hoặc ESC để đóng · B để xem bộ quân"
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(hint, 11, UIStyle.TEXT_DIM)
 	col.add_child(hint)
 
+	# Thứ tự có chủ đích: công thức TRƯỚC, rồi công cụ, rồi lớp nâng cao.
+	_codex_formula(col)
+	_codex_patterns(col)
+	_codex_chess_formations(col)
+	_codex_king_rules(col)
 	_codex_elements(col)
 	_codex_reactions(col)
 	_codex_formations(col)
 	_codex_tile_levels(col)
 	_codex_affinity(col)
+
+## Công thức — mục ĐẦU TIÊN vì mọi thứ khác chỉ là cách sửa hai con số này.
+func _codex_formula(parent: VBoxContainer) -> void:
+	_codex_heading(parent, "◆ CÔNG THỨC — mọi thứ trong game chỉ sửa một trong hai số")
+	_codex_row(parent, "NỀN của một ô", Color(0.65, 0.90, 1.00),
+		"Tổng sát-thương-mỗi-giây của MỌI quân đang phủ ô đó. "
+		+ "Quân không phủ ô nào trên ĐƯỜNG ĐI thì không đóng góp gì.")
+	_codex_row(parent, "BỘI của một ô", Color(1.00, 0.80, 0.35),
+		"Thế cờ × cấp ô nguyên tố × di vật × luật Rival King. Các nguồn NHÂN "
+		+ "với nhau, nên chồng được nhiều nguồn là con đường phá vỡ ván đấu.")
+	_codex_row(parent, "Điểm ô", UIStyle.GOLD, "NỀN × BỘI. Rê chuột lên ô để xem từng dòng góp vào.")
+	_codex_row(parent, "Ngưỡng phải vượt", UIStyle.RED,
+		"Tổng máu cả wave. Thanh dưới đáy màn xanh là đủ, đỏ là biết trước sẽ thủng.")
+
+
+## Nước đi — bảng tra "quân này với tới đâu".
+func _codex_patterns(parent: VBoxContainer) -> void:
+	_codex_heading(parent, "＋ NƯỚC ĐI — quân đánh theo luật cờ, không theo bán kính")
+	for kind in [ChessPattern.Kind.ROOK, ChessPattern.Kind.BISHOP,
+			ChessPattern.Kind.QUEEN, ChessPattern.Kind.KNIGHT,
+			ChessPattern.Kind.PAWN, ChessPattern.Kind.KING,
+			ChessPattern.Kind.SIEGE]:
+		var names := PackedStringArray()
+		var d := DirAccess.open("res://res/towers/")
+		if d:
+			for f in d.get_files():
+				var cn := f.trim_suffix(".remap")
+				if not cn.ends_with(".tres"): continue
+				var st := load("res://res/towers/" + cn) as TowerStats
+				if st and int(st.attack_pattern) == kind:
+					names.append(UIStyle.unit_name_vi(str(st.id)))
+		_codex_row(parent, "%s %s" % [ChessPattern.glyph(kind), ChessPattern.label(kind)],
+			Color(0.70, 0.90, 1.00), ", ".join(names) if names.size() > 0 else "—")
+	_codex_row(parent, "⚠ Bị chặn", UIStyle.RED,
+		"Xe, Tượng và Hậu TRƯỢT — quân CỦA BẠN đứng chắn sẽ cắt đường bắn. "
+		+ "Mã nhảy qua được, không ai chặn nổi.")
+
+
+## Thế cờ — bảng "xếp thế nào được nhân bao nhiêu".
+func _codex_chess_formations(parent: VBoxContainer) -> void:
+	_codex_heading(parent, "⬢ THẾ CỜ — nguồn BỘI lớn nhất, xếp chồng được")
+	for id in ChessFormations.ORDER:
+		_codex_row(parent, "%s  ×%.1f" % [ChessFormations.display_name(id),
+			ChessFormations.mult_of(id)],
+			Color(1.00, 0.80, 0.35), ChessFormations.describe(id))
+
+
+## Luật Rival King — người chơi phải tra được TRƯỚC khi tới wave boss.
+func _codex_king_rules(parent: VBoxContainer) -> void:
+	_codex_heading(parent, "☠ RIVAL KING — mỗi vua đổi MỘT luật của bàn cờ")
+	for id in KingRules.ORDER:
+		var spec: Dictionary = KingRules.RULES.get(id, {})
+		_codex_row(parent, str(spec.get("name", id)), UIStyle.RED,
+			str(spec.get("desc", "")))
+
 
 ## Bảng khắc/kháng — đây là chỗ người chơi tra "wave này nên dùng hệ gì".
 func _codex_affinity(parent: VBoxContainer) -> void:

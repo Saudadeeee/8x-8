@@ -43,13 +43,24 @@ func _run() -> void:
 			if str(pg.get("title", "")).is_empty() or str(pg.get("body", "")).is_empty():
 				bad += str(pg.get("title", "?")) + " "
 		ok(bad == "", "moi the co tieu de va noi dung", bad)
-		# The nao do phai noi ro bat bien "nguyen to den tu O"
-		var teaches := false
+		# Tutorial phai day DU BON bat bien cua thiet ke hien tai. Thieu mot cai
+		# la nguoi choi mo game ra khong hieu minh dang toi uu cai gi.
+		var all_text := ""
 		for pg in tut.PAGES:
-			var txt: String = str(pg.get("title", "")) + str(pg.get("body", ""))
-			if txt.contains("Ô") and txt.to_lower().contains("nguyên tố"):
-				teaches = true
-		ok(teaches, "co the day bat bien 'nguyen to den tu O'")
+			all_text += str(pg.get("title", "")) + str(pg.get("body", "")) 				+ str(pg.get("accent", ""))
+		var low := all_text.to_lower()
+		var missing := ""
+		if not (low.contains("sát thương") and low.contains("tổng máu")):
+			missing += "nguong-bang-so "
+		if not (low.contains("xe") and low.contains("tượng") and low.contains("mã")):
+			missing += "nuoc-di-quan-co "
+		if not low.contains("thế"):
+			missing += "the-co "
+		if not low.contains("bộ"):
+			missing += "bo-quan "
+		if not (low.contains("ô") and low.contains("nguyên tố")):
+			missing += "o-nguyen-to "
+		ok(missing == "", "tutorial day du moi bat bien cot loi", missing)
 
 		for i in range(tut.PAGES.size()):
 			tut._next()

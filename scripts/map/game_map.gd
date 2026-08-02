@@ -21,6 +21,8 @@ var chess_formations: ChessFormations = null
 var king_rules: KingRules = null
 ## Bộ quân của người chơi — shop rút quân từ đây (xem army_deck.gd).
 var army_deck: ArmyDeck = null
+## Tô sáng thế cờ đang thành hình trên bàn.
+var chess_formation_overlay: ChessFormationOverlay = null
 
 # Các class dưới đây có class_name riêng, không cần preload thủ công.
 
@@ -227,6 +229,7 @@ func _ready() -> void:
 	chess_formations = ChessFormations.attach(self)
 	chess_formations.formations_changed.connect(_on_chess_formations_changed)
 	king_rules = KingRules.attach(self)
+	chess_formation_overlay = ChessFormationOverlay.attach(self, chess_formations)
 
 	formation_overlay = FormationOverlay.new()
 	formation_overlay.name = "FormationOverlay"
@@ -389,6 +392,55 @@ func _process(delta: float) -> void:
 			# thì ô sáng và ô nhận click lệch nhau đúng một ô.
 			var cell := PickUtil.mouse_to_cell(camera, mouse_pos)
 			territory_manager.update_preview(cell, grid_controller.grid_data)
+	_update_cell_tooltip(mouse_pos)
+
+
+## Tooltip Nền × Bội theo ô đang rê chuột.
+##
+## Đây là thứ khiến công thức ĐỌC ĐƯỢC. Balatro cho thấy từng lá cộng bao nhiêu
+## Chip và từng Joker nhân bao nhiêu — hiệu ứng hiển thị đó CHÍNH LÀ game, không
+## phải phần trang trí. Chỉ hiện con số tổng thì người chơi biết mình yếu mà
+## không biết sửa chỗ nào.
+var _tooltip_cell: Vector2i = Vector2i(-9999, -9999)
+
+func _update_cell_tooltip(mouse_pos: Vector2) -> void:
+	var hud := get_node_or_null("HUD")
+	if hud == null or not hud.has_method("show_cell_tooltip"):
+		return
+	if board_score == null or not is_instance_valid(board_score):
+		return
+	var camera := get_viewport().get_camera_3d()
+	if camera == null:
+		return
+	var cell := PickUtil.mouse_to_cell(camera, mouse_pos)
+	if not grid_controller.is_in_bounds(cell):
+		if _tooltip_cell.x > -9000:
+			_tooltip_cell = Vector2i(-9999, -9999)
+			hud.hide_cell_tooltip()
+		return
+	# Chỉ dựng lại khi ĐỔI ô: tooltip gọi cell_base/cell_mult vốn quét mọi tháp,
+	# dựng mỗi frame là phí vô ích.
+	if cell == _tooltip_cell:
+		return
+	_tooltip_cell = cell
+	hud.show_cell_tooltip(cell, cell_score_info(cell), mouse_pos)
+
+
+## Toàn bộ dữ liệu Nền × Bội của một ô — HUD chỉ việc bày ra.
+func cell_score_info(cell: Vector2i) -> Dictionary:
+	if board_score == null or not is_instance_valid(board_score):
+		return {}
+	var base: float = board_score.cell_base(cell)
+	var mult: float = board_score.cell_mult(cell)
+	return {
+		"cell": cell,
+		"base": base,
+		"mult": mult,
+		"score": base * mult,
+		"on_path": grid_controller.is_path_cell(cell),
+		"base_rows": board_score.base_breakdown(cell),
+		"mult_rows": board_score.mult_breakdown(cell),
+	}
 
 # ==========================================================================
 # INPUT
@@ -603,8 +655,18 @@ func update_ui() -> void:
 	var territory_summary: String = king_manager.get_territory_summary() if king_manager else "None"
 	var synergy_summary: String = synergy_manager.get_active_synergy_summary() if synergy_manager else ""
 
-	if synergy_summary != "" and synergy_summary != "None":
+	# Synergy loại quân đã TẮT bằng cờ — không in dòng chết lên HUD.
+	if FeatureFlags.UNIT_SYNERGY_ENABLED 			and synergy_summary != "" and synergy_summary != "None":
 		territory_summary = territory_summary + " | Synergy: " + synergy_summary
+
+	# Thế cờ là nguồn BỘI lớn nhất — phải hiện cùng chỗ với các chip khác.
+	if chess_formations and is_instance_valid(chess_formations):
+		var fc: Dictionary = chess_formations.counts()
+		if not fc.is_empty():
+			var parts := PackedStringArray()
+			for fid in fc:
+				parts.append("%s×%d" % [ChessFormations.display_name(str(fid)), int(fc[fid])])
+			territory_summary += " | ⬢ " + ", ".join(parts)
 
 	# Trục synergy thứ hai (nguyên tố) đi cùng dòng — người chơi cần thấy CẢ HAI
 	# để quyết định đặt tháp tiếp theo ở đâu.
@@ -822,6 +884,10 @@ func _on_phase_changed(phase: PhaseController.GamePhase) -> void:
 		var w: int = phase_controller.wave_number
 		if wave_spawner and wave_spawner.is_boss_wave(w):
 			king_rules.activate_for_boss(WaveSpawner.BOSS_WAVES.find(w))
+			# Báo luật TRƯỚC khi đánh — Boss Blind của Balatro luôn nói trước.
+			var hud_r := get_node_or_null("HUD")
+			if hud_r and hud_r.has_method("show_king_rule"):
+				hud_r.show_king_rule(king_rules.rule_name(), king_rules.rule_desc())
 		else:
 			king_rules.clear()
 	# Ngưỡng đổi theo wave → bảng Nền × Bội phải tính lại ở mỗi lần đổi pha.

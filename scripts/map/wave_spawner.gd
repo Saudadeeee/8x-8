@@ -55,6 +55,14 @@ const BOSS_WAVES: Array[int] = [5, 9, 12]
 const BOSS_WAVE_MINION_COUNT: int = 6
 ## Ba Rival King — chọn ngẫu nhiên một cho mỗi wave boss.
 const BOSS_IDS: Array[String] = ["boss_wild", "boss_hell", "boss_frost"]
+
+## Độ dài ván — mirror `PhaseController.MAX_WAVES`. Spawner không giữ tham chiếu
+## tới phase controller nên đọc hằng ở đây; đổi một chỗ phải đổi cả hai.
+const MAX_WAVES_HINT: int = 12
+
+## Tỉ lệ địch mùa TRƯỚC còn sót lại trong pool mùa hiện tại — làm mềm bậc thang
+## ở mỗi lần chuyển mùa. 0 = chuyển đột ngột như bản cũ.
+const SEASON_BLEND: float = 0.55
 const BOSS_STATS_PATH: String = "res://res/enemy/%s.tres"
 const BOSS_SCENE_PATH: String = "res://scenes/enemy/boss.tscn"
 ## Mỗi cấp Ascension (nếu GameManager có) cộng thêm % máu cho boss.
@@ -70,10 +78,12 @@ const _ENEMY_DISPLAY_NAMES := {
 }
 
 const SEASON_BUFFS := {
-	0: {"name": "Mùa Xuân", "damage_mult": 1.0,  "speed_penalty": 0.0,  "desc": "Yên bình. Không ảnh hưởng chỉ số."},
-	1: {"name": "Mùa Hè",   "damage_mult": 1.15, "speed_penalty": 0.0,  "desc": "+15% sát thương toàn bộ tháp."},
-	2: {"name": "Mùa Thu",  "damage_mult": 1.0,  "speed_penalty": 0.15, "desc": "Không khí u ám: +0.15s cooldown tháp."},
-	3: {"name": "Mùa Đông", "damage_mult": 0.9,  "speed_penalty": 0.2,  "desc": "Giá lạnh: -10% sát, +0.2s cooldown tháp."},
+	# `desc` chỉ còn mô tả LOÀI ĐỊCH của mùa, không hứa buff chỉ số nữa —
+	# `get_season_buff` trả rỗng khi FeatureFlags.SEASONS_ENABLED = false.
+	0: {"name": "Mùa Xuân", "damage_mult": 1.0,  "speed_penalty": 0.0,  "desc": "Địch nhẹ, nhanh: Dơi Quỷ và Goblin."},
+	1: {"name": "Mùa Hè",   "damage_mult": 1.15, "speed_penalty": 0.0,  "desc": "Orc và Skeleton — đông và đều."},
+	2: {"name": "Mùa Thu",  "damage_mult": 1.0,  "speed_penalty": 0.15, "desc": "Dark Knight và Demon Imp — dày máu hơn."},
+	3: {"name": "Mùa Đông", "damage_mult": 0.9,  "speed_penalty": 0.2,  "desc": "Loài cứng nhất: Troll, Golem, Dark Knight."},
 }
 
 enum Season { SPRING, SUMMER, AUTUMN, WINTER }
@@ -144,11 +154,18 @@ func get_enemies_to_spawn() -> int:
 	return _enemies_to_spawn
 
 # --- SEASON ---
+## Mốc mùa chia theo TỈ LỆ độ dài ván, không phải số wave cứng.
+##
+## Bảng cũ (≤2 / ≤5 / ≤8 / còn lại) được viết cho ván 20 wave. Với ván 12 wave
+## thì Mùa Thu ập tới ngay wave 6 và ngưỡng nhảy 1507 → 4454 trong một bước —
+## đo được, và nó cao hơn cả wave boss ngay trước đó.
 func get_season(wave_num: int) -> Season:
-	if wave_num <= 2:   return Season.SPRING
-	elif wave_num <= 5: return Season.SUMMER
-	elif wave_num <= 8: return Season.AUTUMN
-	else:               return Season.WINTER
+	var total: float = float(maxi(4, MAX_WAVES_HINT))
+	var t: float = float(maxi(1, wave_num)) / total
+	if t <= 0.25:   return Season.SPRING
+	elif t <= 0.50: return Season.SUMMER
+	elif t <= 0.78: return Season.AUTUMN
+	else:           return Season.WINTER
 
 func get_season_name(wave_num: int) -> String:
 	match get_season(wave_num):
@@ -428,7 +445,18 @@ func _get_enemy(id: String) -> EnemyStats:
 ## suất giữ nguyên y hệt bảng cứng.
 func _get_season_enemy_pool(wave_num: int) -> Array:
 	var pool: Array = []
-	_append_data_driven_enemies(pool, get_season(wave_num))
+	var season := get_season(wave_num)
+	_append_data_driven_enemies(pool, season)
+	# TRỘN VỚI MÙA TRƯỚC. Đổi pool đột ngột làm tổng máu wave nhảy bậc thang —
+	# đo được 657 → 1507 chỉ trong một wave, tức người chơi đang thắng bỗng thua
+	# mà không làm gì sai. Giữ một phần mùa cũ thì dốc thoải và người chơi có một
+	# wave để kịp phản ứng.
+	if int(season) > 0:
+		var prev: Array = []
+		_append_data_driven_enemies(prev, season - 1)
+		var keep: int = int(round(float(prev.size()) * SEASON_BLEND))
+		for i in keep:
+			pool.append(prev[i % prev.size()])
 	if pool.is_empty():
 		# Không loài nào khai mùa này — thà cho orc ra còn hơn wave rỗng.
 		var fallback: EnemyStats = _get_enemy("orc")

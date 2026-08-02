@@ -1012,9 +1012,9 @@ Không vào được thì tắt cờ ở `scripts/managers/feature_flags.gd`.
   `NỀN(ô)` = Σ DPS quân phủ ô đó · `BỘI(ô)` = thế cờ × cấp ô nguyên tố × di vật
   × luật Vua. HUD hiện **một số so với một số**: sát thương cả wave / tổng máu wave.
   **Ba lần tính sai đã sửa** — ghi lại để khỏi lặp:
-    (1) `Σ điểm ô / tốc độ × số địch` bỏ qua tranh chấp mục tiêu → dư ~4×;
-    (2) `DPS × thời lượng wave` giả định quân luôn có mục tiêu → dư ~3×;
-    (3) đúng: `DPS × BỘI_tb × min(thời_lượng, n × k / v)` với k = số ô ĐƯỜNG phủ.
+	(1) `Σ điểm ô / tốc độ × số địch` bỏ qua tranh chấp mục tiêu → dư ~4×;
+	(2) `DPS × thời lượng wave` giả định quân luôn có mục tiêu → dư ~3×;
+	(3) đúng: `DPS × BỘI_tb × min(thời_lượng, n × k / v)` với k = số ô ĐƯỜNG phủ.
   Còn `EFFICIENCY = 0.55` là **hằng số thực nghiệm** (đạn bay, sát thương thừa,
   đầu/cuối wave vắng địch). Hiệu chỉnh sao cho **tỉ lệ 1.0 trùng ranh giới
   sống/chết** — đo lại sau mỗi lần đổi nhịp wave hoặc chỉ số quân.
@@ -1048,6 +1048,37 @@ Không vào được thì tắt cờ ở `scripts/managers/feature_flags.gd`.
   THIẾT KẾ chứ không phải chi tiết: mọi quân phải khai nước đi (không còn RADIAL),
   bàn phải 8×8, trần quân phải được THI HÀNH, quân không phủ ô đường phải gây 0,
   và **mọi luật Rival King phải có tác dụng thật**.
+
+*Hoàn thiện lớp hiển thị + cân bằng lại (2026-08-03, tiếp):*
+- **Tooltip Nền × Bội theo ô** (`game_map.cell_score_info` → `hud.show_cell_tooltip`).
+  Đây KHÔNG phải trang trí: Balatro sống nhờ việc hiện từng lá cộng bao nhiêu
+  Chip, từng Joker nhân bao nhiêu. Chỉ hiện số tổng thì người chơi biết mình yếu
+  mà không biết sửa chỗ nào. Chỉ dựng lại khi ĐỔI ô (nó quét mọi tháp).
+- **Card shop hiện NƯỚC ĐI** — với mô hình này "Xe hay Mã" quyết định nhiều hơn
+  mọi con số cộng lại.
+- `ChessFormationOverlay` tô sáng thế cờ + nhãn nổi. Cao độ quad y=0.13 (trên
+  overlay hình thế nguyên tố 0.12), nhãn y=2.0 (trên nhãn kia 1.7) — hai lớp
+  cùng hiện nên phải tách cả z lẫn cao độ nhãn.
+- **Panel bộ quân phím B**, hiện TỈ LỆ RÚT chứ không chỉ số lượng — đó mới là thứ
+  quyết định có nên loại quân. **KHÔNG dùng phím D**: `camera_controller` poll
+  thẳng `Input.is_key_pressed(KEY_D)` để pan nên `set_input_as_handled()` vô hiệu.
+- **Băng luật Rival King** hiện 6 giây khi vào wave boss. Boss Blind của Balatro
+  luôn nói TRƯỚC luật của nó.
+- Tutorial + codex viết lại theo trục mới. Codex thêm 4 mục: công thức · nước đi ·
+  thế cờ · luật Rival King. Ô nguyên tố nay dạy như **nguồn Bội thứ hai**.
+- **Ba lỗi cân bằng chỉ lộ ra khi chơi trọn ván bằng bot:**
+  (1) `wave_total_hp` KHÔNG tính máu boss → ngưỡng nói dối ở đúng wave quan
+      trọng nhất, người chơi thấy "đủ" rồi thua ngay;
+  (2) `wave_duration` ở wave boss dùng 6 lính = 9 giây, trong khi Rival King đi
+      trọn đường mất ~30 giây → công suất bị đánh giá thấp 3×;
+  (3) mốc mùa vẫn là hằng cứng (≤2/≤5/≤8) viết cho ván 20 wave → với ván 12 wave
+      thì Mùa Thu ập tới ngay wave 6 và ngưỡng nhảy 1507 → 4454 trong MỘT bước.
+      Nay mốc chia theo TỈ LỆ độ dài ván + `SEASON_BLEND = 0.55` giữ lại một phần
+      địch mùa trước để dốc thoải.
+- Máu boss 1200–1600 → **420–560**: bảng cũ cân cho bàn 24×24 với 100+ tháp.
+- Đo lại (bot đặt tối ưu, hai lần chạy): HP 20 giữ tới wave 4, sứt nhẹ ở wave 5
+  (boss đầu), **thua ở wave 9** (boss thứ hai). Người chơi thật biết xáo shop,
+  loại quân khỏi bộ và mua ô nguyên tố sẽ đi xa hơn.
 
 *Bảy sửa theo phản hồi chơi thử (2026-08-02):*
 - **Pha chuẩn bị KHÔNG còn đếm ngược.** `PhaseController.request_start_wave()` là
