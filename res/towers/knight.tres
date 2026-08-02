@@ -8,7 +8,7 @@
 script = ExtResource("2_ddgsg")
 id = "knight"
 name = "Knight"
-description = "Aggressive cavalry unit. High damage with medium range. Iron faction."
+description = "Cận chiến, tầm rất ngắn nhưng sát thương một đòn cao. Đặt sát đường."
 cost = 20
 decree_cost = 1.5
 texture = ExtResource("3_i37n6")

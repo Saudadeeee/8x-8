@@ -367,6 +367,14 @@ func recalculate_stats() -> void:
 	for v in _dmg_bonus.values(): total_dmg += v
 	for v in _spd_bonus.values(): total_spd += v
 	for v in _rng_bonus.values(): total_rng += v
+	# Meta upgrade ("Rèn vũ khí" / "Luyện tay") — cộng cho MỌI tháp, mọi ván.
+	# Cộng ở đây chứ không qua BuffLayer: nó không bao giờ bị gỡ giữa ván nên
+	# không cần một lớp riêng, và đi qua lớp nào cũng có nguy cơ bị hàm clear_*
+	# của nguồn khác xoá nhầm.
+	var gm_meta := get_node_or_null("/root/GameManagerSingleton")
+	if gm_meta != null:
+		total_dmg += stats.base_damage * maxf(0.0, float(gm_meta.meta_tower_damage_pct))
+		total_spd += stats.attack_speed * maxf(0.0, float(gm_meta.meta_tower_speed_pct))
 	# star_damage_mult là hệ số NHÂN (giống season) — luôn dẫn xuất từ `star` nên
 	# không thể nhân chồng dù recalculate_stats() được gọi bao nhiêu lần.
 	current_damage       = int(total_dmg * season_damage_mult * star_damage_mult)

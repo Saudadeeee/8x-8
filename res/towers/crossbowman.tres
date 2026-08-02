@@ -7,7 +7,7 @@
 script = ExtResource("1_script")
 id = "crossbowman"
 name = "Crossbowman"
-description = "Fires 3 bolts at 3 different targets. Wild faction — synergy with other Crossbowmen grants attack speed."
+description = "Bắn nhanh, tầm khá. Ăn theo mọi buff tốc đánh."
 cost = 26
 decree_cost = 2.0
 base_damage = 7

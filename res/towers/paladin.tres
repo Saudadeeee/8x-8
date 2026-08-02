@@ -8,7 +8,7 @@
 script = ExtResource("1_script")
 id = "paladin"
 name = "Paladin"
-description = "Cận chiến AoE: quét sát thương diện rộng quanh mục tiêu, làm chậm nhẹ. Iron faction."
+description = "Bền, có hào quang hỗ trợ. Neo giữ tuyến đầu."
 texture = ExtResource("2_icon")
 cost = 55
 decree_cost = 2.0

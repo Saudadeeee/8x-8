@@ -8,7 +8,7 @@
 script = ExtResource("1_g0tk0")
 id = "commander"
 name = "Commander"
-description = "Veteran commander. Deals damage and boosts nearby allies' attack speed. Iron faction."
+description = "Tăng sức cho quân quanh mình. Đặt giữa cụm, không đặt rìa bàn."
 cost = 45
 decree_cost = 3.0
 texture = ExtResource("3_fsoq7")

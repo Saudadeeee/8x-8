@@ -6,19 +6,39 @@ var _meta: MetaProgress = null
 var _meta_points_label: Label = null
 var _upgrade_buttons: Array[Button] = []
 
-# Meta upgrade definitions
+# ── Nâng cấp meta ────────────────────────────────────────────────────────────
+# Chia theo TRỤC BUILD chứ không phải một danh sách chỉ số chung. Bản cũ chỉ có
+# ba mục (vàng / máu / Sắc Lệnh) nên mọi ván meta đều đi cùng một đường; các hệ
+# nguyên tố, hình thế và ghép sao — vốn là phần sâu nhất của game — không có
+# nhánh tiến trình nào chạm tới.
+#
+# `group` chỉ để xếp nhóm khi hiển thị. `id` phải khớp nhánh match trong
+# GameManager.start_run() — thêm id mới mà quên nhánh đó thì nâng cấp mua được
+# nhưng không làm gì (đúng lớp lỗi "tính năng chết âm thầm" hay gặp ở dự án này).
 const META_UPGRADES = [
-	{"id": "starting_gold", "name": "Starting Gold (+50)", "cost": 50, "max_level": 5},
-	{"id": "health_bonus", "name": "Health Bonus (+5)", "cost": 30, "max_level": 5},
-	{"id": "decree_bonus", "name": "Decree Bonus (+10)", "cost": 40, "max_level": 5},
+	# Kinh tế
+	{"id": "starting_gold",   "group": "Kinh tế",    "name": "Hầu bao dày (+30 vàng đầu ván)", "cost": 45, "max_level": 5},
+	{"id": "interest_cap",    "group": "Kinh tế",    "name": "Ngân khố sâu (+2 trần lãi)",     "cost": 55, "max_level": 4},
+	{"id": "gold_per_kill",   "group": "Kinh tế",    "name": "Thuế máu (+1 vàng mỗi kill)",    "cost": 70, "max_level": 3},
+	# Sinh tồn
+	{"id": "health_bonus",    "group": "Sinh tồn",   "name": "Thành luỹ (+4 máu Vua)",         "cost": 35, "max_level": 5},
+	{"id": "start_territory", "group": "Sinh tồn",   "name": "Đất phong (+1 ô lãnh thổ đầu ván)", "cost": 60, "max_level": 3},
+	# Sắc Lệnh
+	{"id": "decree_bonus",    "group": "Sắc Lệnh",   "name": "Ấn tín lớn (+10 trần Sắc Lệnh)", "cost": 40, "max_level": 5},
+	{"id": "decree_start",    "group": "Sắc Lệnh",   "name": "Chiếu chỉ sẵn (+8 Sắc Lệnh đầu ván)", "cost": 45, "max_level": 4},
+	{"id": "decree_per_wave", "group": "Sắc Lệnh",   "name": "Sắc lệnh khẩn (+1 Sắc Lệnh mỗi wave)", "cost": 65, "max_level": 3},
+	# Nguyên tố
+	{"id": "reaction_power",  "group": "Nguyên tố",  "name": "Cộng hưởng (+6% sát thương phản ứng)", "cost": 75, "max_level": 4},
+	{"id": "mark_slots",      "group": "Nguyên tố",  "name": "Khắc sâu (+1 Dấu giữ được)",     "cost": 110, "max_level": 1},
+	{"id": "tile_discount",   "group": "Nguyên tố",  "name": "Địa chủ (ô nguyên tố rẻ 8%)",    "cost": 60, "max_level": 3},
+	# Đội hình
+	{"id": "tower_damage",    "group": "Đội hình",   "name": "Rèn vũ khí (+4% sát thương mọi quân)", "cost": 80, "max_level": 4},
+	{"id": "tower_speed",     "group": "Đội hình",   "name": "Luyện tay (+3% tốc đánh mọi quân)",   "cost": 80, "max_level": 4},
+	{"id": "equip_discount",  "group": "Đội hình",   "name": "Thợ rèn quen (trang bị rẻ 10%)", "cost": 55, "max_level": 3},
 ]
 
-# All known kings for display
-const KING_PATHS = [
-	"res://res/kings/king_iron.tres",
-	"res://res/kings/king_phantom.tres",
-	"res://res/kings/king_flame.tres",
-]
+## Thư mục vua — quét thay vì liệt kê cứng (giống màn chọn vua).
+const KING_DIR := "res://res/kings/"
 
 func _go_to(path: String) -> void:
 	var sm = get_node_or_null("/root/SceneManagerSingleton")
@@ -119,7 +139,19 @@ func _build_ui() -> void:
 	left_vbox.add_child(UIStyle.separator(UIStyle.BORDER_DIM))
 
 	var king_index := 0
-	for king_path in KING_PATHS:
+	# Quét thư mục: thêm vua = thả một .tres, không phải sửa mảng ở đây.
+	var king_paths: Array[String] = []
+	var kd := DirAccess.open(KING_DIR)
+	if kd != null:
+		var names: Array[String] = []
+		for f in kd.get_files():
+			var cn := f.trim_suffix(".remap")
+			if cn.ends_with(".tres"):
+				names.append(cn)
+		names.sort()
+		for n in names:
+			king_paths.append(KING_DIR + n)
+	for king_path in king_paths:
 		if not ResourceLoader.exists(king_path):
 			continue
 		var king = load(king_path) as KingStats

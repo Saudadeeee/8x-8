@@ -243,5 +243,50 @@ func _run() -> void:
 	ok(ResourceLoader.exists(MP.SAVE_PATH), "ghi lai duoc save sach sau khi hong")
 
 
+
+	# ── META UPGRADE: moi id phai co TAC DUNG THAT ────────────────────────
+	# Lop loi hay gap nhat o du an nay khong phai crash ma la "tinh nang chet
+	# am tham": them id vao META_UPGRADES ma quen nhanh match trong
+	# GameManager.start_run() thi nang cap van mua duoc, van hien cap, nhung
+	# khong lam gi ca. Kiem bang cach mua het cap 1 roi so tung field truoc/sau.
+	var dead_upgrades := ""
+	var defs: Array = load("res://scripts/ui/meta_progression.gd").get("META_UPGRADES")
+	ok(defs.size() >= 12, "co it nhat 12 nang cap meta", "%d" % defs.size())
+
+	var groups := {}
+	for d in defs:
+		groups[str((d as Dictionary).get("group", ""))] = true
+	ok(groups.size() >= 4, "nang cap trai it nhat 4 truc build",
+		", ".join(PackedStringArray(groups.keys())))
+
+	var watched := ["current_gold", "current_health", "current_decree",
+		"current_decree_max", "perk_interest_cap", "perk_gold_per_kill",
+		"perk_rd_per_wave_start", "global_reaction_mult", "relic_max_marks",
+		"perk_tile_discount", "meta_tower_damage_pct", "meta_tower_speed_pct",
+		"meta_bonus_territories", "perk_equip_discount"]
+	var saved_upgrades: Array[Dictionary] = gm.meta_progress.meta_upgrades.duplicate(true)
+	var empty_ups: Array[Dictionary] = []
+	gm.meta_progress.meta_upgrades = empty_ups
+	gm.start_run(load("res://res/kings/king_iron.tres"))
+	var base_vals := {}
+	for k in watched: base_vals[k] = str(gm.get(k))
+
+	for d in defs:
+		var uid := str((d as Dictionary).get("id", ""))
+		var one: Array[Dictionary] = [{"id": uid, "level": 1}]
+		gm.meta_progress.meta_upgrades = one
+		gm.start_run(load("res://res/kings/king_iron.tres"))
+		var moved := false
+		for k in watched:
+			if str(gm.get(k)) != base_vals[k]:
+				moved = true
+				break
+		if not moved:
+			dead_upgrades += uid + " "
+	gm.meta_progress.meta_upgrades = saved_upgrades
+	ok(dead_upgrades == "",
+		"moi nang cap meta doi it nhat mot chi so (khong co cai nao chet)",
+		dead_upgrades)
+
 	print("\n== BATCH 5 FAIL=%d ==" % fail)
 	quit()

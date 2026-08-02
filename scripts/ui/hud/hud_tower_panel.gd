@@ -123,7 +123,8 @@ func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node
 	UIStyle.pop_in(icon_frame)
 
 	var name_lbl = Label.new()
-	name_lbl.text = stats.name
+	# Tên tiếng Việt qua bảng dùng chung; .tres chưa có trong bảng thì giữ tên gốc.
+	name_lbl.text = UIStyle.unit_name_vi(str(stats.id)) if str(stats.id) != "" else stats.name
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(name_lbl, 17, UIStyle.GOLD)
 	name_lbl.clip_text = true
@@ -181,7 +182,9 @@ func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node
 	if tower_node and is_instance_valid(tower_node):
 		_build_star_row(vbox, tower_node)
 		_build_element_row(vbox, tower_node)
+		_build_buff_source_section(vbox, tower_node)
 		_build_equipment_section(vbox, tower_node)
+		_build_performance_section(vbox, tower_node)
 
 	# Description
 	if stats.description != "":
@@ -221,6 +224,85 @@ func _resize_tower_panel() -> void:
 		top = maxf(12.0, screen_h - 120.0 - want)
 	_tower_info_panel.offset_top = top
 	_tower_info_panel.offset_bottom = top + want
+
+# ── "Đang hưởng": liệt kê TỪNG nguồn buff đang tác động lên tháp này ────────
+# Vì sao cần: sát thương cuối cùng là tổng của 13 lớp buff cộng lại rồi nhân hệ
+# sao. Chỉ hiện con số cuối thì người chơi thấy "Sát thương 31" mà không biết
+# 19 điểm chênh đến từ đâu — không đọc được thì không tối ưu được đội hình.
+# Đọc THẲNG `_dmg_bonus`/`_spd_bonus`/`_rng_bonus` của tháp: đó là trạng thái
+# thật, không phải bảng chép tay nên không bao giờ lệch với chỉ số hiển thị.
+
+const BUFF_LAYER_NAMES := {
+	0: "Nâng cấp", 1: "Vùng đất", 2: "Sủng ái Vua", 3: "Ân Vương Miện",
+	4: "Hào quang", 5: "Đồng đội cùng loại", 6: "Perk", 7: "Ô Phước/Nguyền",
+	8: "Khí hậu vùng", 9: "Trang bị", 10: "Thuốc", 11: "Ô nguyên tố",
+	12: "Đồng đội cùng hệ",
+}
+
+func _build_buff_source_section(parent: VBoxContainer, tower_node: Node3D) -> void:
+	var dmg: Dictionary = tower_node.get("_dmg_bonus")
+	var spd: Dictionary = tower_node.get("_spd_bonus")
+	var rng: Dictionary = tower_node.get("_rng_bonus")
+	if not (dmg is Dictionary and spd is Dictionary and rng is Dictionary):
+		return
+
+	var layers := {}
+	for d in [dmg, spd, rng]:
+		for k in (d as Dictionary):
+			layers[k] = true
+	var lines: Array[String] = []
+	for layer in layers:
+		var parts := PackedStringArray()
+		var dv := float((dmg as Dictionary).get(layer, 0.0))
+		var sv := float((spd as Dictionary).get(layer, 0.0))
+		var rv := int((rng as Dictionary).get(layer, 0))
+		if not is_zero_approx(dv): parts.append("%+.0f sát thương" % dv)
+		# spd là số GIÂY TRỪ vào hồi chiêu ⇒ dương = bắn nhanh hơn.
+		if not is_zero_approx(sv): parts.append("%s%.2fs hồi chiêu" % ["-" if sv > 0.0 else "+", absf(sv)])
+		if rv != 0: parts.append("%+d tầm" % rv)
+		if parts.is_empty():
+			continue
+		lines.append("• %s: %s" % [str(BUFF_LAYER_NAMES.get(layer, "Lớp %s" % layer)),
+			", ".join(parts)])
+
+	var star: int = int(tower_node.star) if "star" in tower_node else 1
+	if star > 1:
+		var mult: float = float(tower_node.star_damage_mult)
+		lines.append("• Sao ★%d: ×%.2f sát thương (phép NHÂN, áp sau cùng)" % [star, mult])
+
+	if lines.is_empty():
+		return
+	parent.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
+	var head := Label.new()
+	head.text = "✦ Đang hưởng"
+	UIStyle.body(head, 14, UIStyle.GOLD)
+	parent.add_child(head)
+	for line in lines:
+		var l := Label.new()
+		l.text = line
+		UIStyle.body(l, 14, UIStyle.TEXT)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		parent.add_child(l)
+
+
+## DPS thực tế + tổng sát thương đã gây. Con số duy nhất trả lời được câu
+## "quân này có đáng giữ ô không" — GameManager đã ghi sẵn từ tower._fire_projectile.
+func _build_performance_section(parent: VBoxContainer, tower_node: Node3D) -> void:
+	var dmg: float = float(tower_node.current_damage)
+	var cd: float = maxf(0.01, float(tower_node.current_attack_speed))
+	var shots: int = 1
+	if tower_node.stats and int(tower_node.stats.projectile_count) > 1:
+		shots = int(tower_node.stats.projectile_count)
+	parent.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
+	_add_info_row(parent, " DPS (ước tính)", "%.1f" % (dmg * float(shots) / cd))
+
+	var gm := tower_node.get_node_or_null("/root/GameManagerSingleton")
+	if gm != null and tower_node.stats:
+		var table: Variant = gm.get("run_tower_damage")
+		if table is Dictionary:
+			var total: float = float((table as Dictionary).get(str(tower_node.stats.id), 0.0))
+			_add_info_row(parent, "⚔ Tổng đã gây (cả loại)", "%d" % int(total))
+
 
 # ── Nguyên tố + Trang bị trong panel tháp (futureplan §2, §3.2) ────────────
 
@@ -365,10 +447,31 @@ func _build_tile_element_section(parent: VBoxContainer, biome_key: String, pos: 
 	var bonus: Dictionary = tm.call("get_element_bonus", pos)
 	var mark_bonus := float(bonus.get("mark_duration_bonus", 0.0))
 	var reaction_mult := float(bonus.get("reaction_mult", 1.0))
-	if mark_bonus > 0.0:
-		_add_info_row(parent, "⏱ Dấu kéo dài", "+%.0fs" % mark_bonus)
-	if reaction_mult > 1.001:
-		_add_info_row(parent, "✷ Phản ứng", "×%.2f" % reaction_mult)
+	var dmg_pct := float(bonus.get("tower_damage_pct", 0.0))
+	# LUÔN in cả ba dòng, kể cả khi bằng 0. Trước đây chỉ in khi > ngưỡng, nên ô
+	# Lv1 trông y hệt ô thường và người chơi kết luận "chồng ô chẳng được gì" —
+	# trong khi Lv3 thật sự cho +15% sát thương (dòng này trước KHÔNG hề hiển thị).
+	_add_info_row(parent, "⏱ Dấu kéo dài", "+%.0fs" % mark_bonus)
+	_add_info_row(parent, "✷ Phản ứng", "×%.2f" % reaction_mult)
+	_add_info_row(parent, "⚔ Tháp trên ô", "+%.0f%%" % (dmg_pct * 100.0))
+
+	# Xem trước CẤP KẾ TIẾP: không có dòng này thì người chơi không có lý do nào
+	# để chồng ô, vì phần thưởng chỉ hiện ra SAU khi đã tiêu tài nguyên.
+	var max_lv: int = int(tm.get("MAX_TILE_LEVEL"))
+	var next_box := Label.new()
+	if level >= max_lv:
+		next_box.text = "◈ Ô đã đạt cấp tối đa."
+		UIStyle.body(next_box, 14, UIStyle.TEXT_DIM)
+	else:
+		var nb: Dictionary = tm.LEVEL_BONUS[level]   # LEVEL_BONUS[i] = cấp i+1
+		next_box.text = "◈ Đặt thêm 1 ô %s lên đây → Lv%d: Dấu +%.0fs · Phản ứng ×%.2f · Tháp +%.0f%%" % [
+			ElementTypes.display_name(element), level + 1,
+			float(nb.get("mark_duration_bonus", 0.0)),
+			float(nb.get("reaction_mult", 1.0)),
+			float(nb.get("tower_damage_pct", 0.0)) * 100.0]
+		UIStyle.body(next_box, 14, Color(0.70, 0.95, 0.65))
+	next_box.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	parent.add_child(next_box)
 
 	var formations: Array = tm.call("get_formations_at", pos)
 	if not formations.is_empty():
@@ -558,6 +661,61 @@ func show_territory_info(biome_key: String, biome_data: Dictionary,
 
 	_slide_tower_info(true)
 
+## Panel cho một ô KHÔNG có tháp và KHÔNG phải ô lãnh thổ (ô trống, đường đi,
+## ô Phước/Nguyền sinh lúc tạo bản đồ). Dữ liệu do `game_map._describe_cell`
+## dựng sẵn nên HUD không cần biết gì về luật ô.
+##
+## Vì sao cần: ô Phước/Nguyền có rune riêng trên bàn nên trông y như ô bấm được,
+## nhưng trước đây click vào chúng không hiện gì cả.
+func show_cell_info(_pos: Vector2i, info: Dictionary) -> void:
+	if not _tower_info_panel:
+		return
+	_free_tower_info_icon()
+	for child in _tower_info_panel.get_children():
+		_tower_info_panel.remove_child(child)
+		child.queue_free()
+
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_tower_info_panel.add_child(scroll)
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(vbox)
+
+	var name_lbl := Label.new()
+	name_lbl.text = str(info.get("title", "Ô"))
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UIStyle.title(name_lbl, 28, UIStyle.GOLD)
+	vbox.add_child(name_lbl)
+
+	var type_lbl := Label.new()
+	type_lbl.text = str(info.get("subtitle", ""))
+	type_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UIStyle.body(type_lbl, 14, UIStyle.TEXT_DIM)
+	vbox.add_child(type_lbl)
+
+	var rows: Array = info.get("rows", [])
+	if not rows.is_empty():
+		vbox.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
+		for r in rows:
+			if r is Array and (r as Array).size() >= 2:
+				_add_info_row(vbox, str(r[0]), str(r[1]))
+
+	var hint_text := str(info.get("hint", ""))
+	if not hint_text.is_empty():
+		vbox.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
+		var hint := Label.new()
+		hint.text = hint_text
+		UIStyle.body(hint, 14, UIStyle.TEXT_DIM)
+		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		vbox.add_child(hint)
+
+	_tower_info_node = null
+	_slide_tower_info(true)
+	_resize_tower_panel.call_deferred()
+
 func hide_tower_info() -> void:
 	_tower_info_node = null
 	if _tower_info_visible:
@@ -613,36 +771,28 @@ func _add_info_row(vbox: VBoxContainer, key: String, val: String) -> void:
 	UIStyle.body(v, 12, UIStyle.TEXT)
 	row.add_child(v)
 
-## Hàng sao + nút nâng sao bằng vàng. Ghép sao bằng quân trùng vẫn giữ nguyên;
-## đây là đường THỨ HAI, dùng cho lúc bàn đã kín và vàng không còn chỗ tiêu.
+## Hàng sao. Sao CHỈ lên bằng cách ghép quân trùng — đặt một quân cùng loại lên
+## ô đã có quân đó. Từng có nút "nâng sao bằng vàng" ở đây, đã gỡ.
 func _build_star_row(parent: VBoxContainer, tower_node: Node3D) -> void:
-	var map = hud._find_game_map()
-	if map == null or not map.has_method("star_up_cost"):
-		return
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
+	row.add_theme_constant_override("separation", 10)
 	parent.add_child(row)
 
-	var stars := Label.new()
 	var cur: int = int(tower_node.star) if "star" in tower_node else 1
+	var stars := Label.new()
 	stars.text = "★".repeat(cur) + "·".repeat(maxi(0, 3 - cur))
-	UIStyle.title(stars, 16, UIStyle.GOLD)
+	UIStyle.title(stars, 28, UIStyle.GOLD)
 	row.add_child(stars)
 
-	var cost: int = map.star_up_cost(tower_node)
-	var btn := Button.new()
-	if cost < 0:
-		btn.text = "Sao tối đa"
-		btn.disabled = true
+	var hint := Label.new()
+	if cur >= 3:
+		hint.text = "Sao tối đa"
+		UIStyle.body(hint, 14, UIStyle.TEXT_DIM)
 	else:
-		btn.text = "Nâng sao — %d vàng" % cost
-		btn.disabled = map.current_gold < cost
-		btn.pressed.connect(func():
-			if map.try_star_up_with_gold(tower_node):
-				# Dựng lại panel để cập nhật sao, giá và chỉ số mới.
-				show_tower_info(tower_node.stats, "", tower_node))
-	btn.custom_minimum_size = Vector2(0, 30)
-	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	UIStyle.apply_button(btn)
-	HudText.style_button_text(btn, 12, UIStyle.GOLD if not btn.disabled else UIStyle.TEXT_DIM)
-	row.add_child(btn)
+		hint.text = "Đặt thêm 1 %s lên ô này để lên ★%d" % [
+			UIStyle.unit_name_vi(str(tower_node.stats.id)) if tower_node.stats else "quân cùng loại",
+			cur + 1]
+		UIStyle.body(hint, 14, UIStyle.TEXT_DIM)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(hint)

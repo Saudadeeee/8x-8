@@ -7,6 +7,9 @@ class_name PhaseController
 # --- SIGNALS ---
 signal phase_changed(phase: GamePhase)
 signal prep_countdown_updated(seconds: int)
+## Nút "BẮT ĐẦU WAVE" nên sáng hay không. Phát khi vào pha chuẩn bị (false) và
+## khi người chơi xác nhận xong trinh sát (true).
+signal prep_ready_changed(ready: bool)
 signal wave_started(wave_number: int, enemy_count: int)
 signal shop_phase_entered(wave_number: int, interest_gold: int)
 signal season_buffs_apply_requested(wave_number: int)
@@ -19,7 +22,9 @@ enum GamePhase { PREPARE, WAVE, SHOP }
 # 20 wave = ba chặng, mỗi chặng kết bằng một Rival King (wave 7, 14, 20).
 # Trước đây 10 wave / một boss — chưa tới một phần ba lời hứa trong GDD.
 const MAX_WAVES:     int   = 20
-const PREP_DURATION: float = 30.0
+## Giữ lại làm hằng tương thích: pha chuẩn bị không còn đếm ngược nữa
+## (xem `request_start_wave`). 0 nghĩa là "không giới hạn thời gian".
+const PREP_DURATION: float = 0.0
 
 # --- STATE ---
 var current_phase:          GamePhase = GamePhase.PREPARE
@@ -57,9 +62,10 @@ func _process(delta: float) -> void:
 
 func start_prep_phase() -> void:
 	current_phase   = GamePhase.PREPARE
-	prep_countdown  = PREP_DURATION
+	prep_countdown  = 0.0
 	_wave_confirmed = false
 	phase_changed.emit(current_phase)
+	prep_ready_changed.emit(false)
 	_set_phase_message("Đọc thông tin wave rồi xác nhận để bắt đầu chuẩn bị...")
 
 	if wave_spawner:
@@ -69,10 +75,29 @@ func confirm_wave_ready() -> void:
 	if current_phase != GamePhase.PREPARE or _wave_confirmed:
 		return
 	_wave_confirmed = true
-	_set_phase_message("Chuẩn bị %ds | %s" % [
-		int(ceil(prep_countdown)),
-		wave_spawner.get_wave_intel_text(wave_number) if wave_spawner else "",
-	])
+	_set_phase_message("Bố trí xong thì bấm BẮT ĐẦU WAVE | %s"
+		% (wave_spawner.get_wave_intel_text(wave_number) if wave_spawner else ""))
+	prep_ready_changed.emit(true)
+
+
+## Người chơi bấm nút bắt đầu wave. Trả false nếu chưa tới lúc (chưa xác nhận
+## trinh sát, hoặc đang ở pha khác) — nơi gọi dùng để bật/tắt nút.
+##
+## Vì sao KHÔNG còn đếm ngược: pha chuẩn bị trước đây tự hết giờ sau 30 giây và
+## tự vào wave. Đặt tháp đúng lúc đồng hồ về 0 sinh lỗi tranh chấp trạng thái, và
+## quan trọng hơn — nó biến quyết định bố trí thành cuộc đua bấm nhanh. Bỏ đồng
+## hồ thì người chơi có bao nhiêu thời gian tuỳ ý để tính bố cục, đúng kiểu
+## tower defense cổ điển (Bloons TD: xây thoải mái rồi bấm play).
+func request_start_wave() -> bool:
+	if current_phase != GamePhase.PREPARE or not _wave_confirmed:
+		return false
+	_start_wave_phase()
+	return true
+
+
+## Đang ở pha chuẩn bị và đã xác nhận trinh sát ⇒ nút bắt đầu wave phải sáng.
+func can_start_wave() -> bool:
+	return current_phase == GamePhase.PREPARE and _wave_confirmed
 
 ## Wave cuối chỉ được tính là thắng khi Rival King đã rời sân (bị hạ hoặc lọt
 ## qua King). Spawner cũ không có khái niệm boss → giữ nguyên hành vi cũ.
@@ -143,19 +168,14 @@ func request_next_wave() -> void:
 
 # --- INTERNAL PHASE TICKS ---
 
-func _tick_prepare(delta: float) -> void:
-	if not _wave_confirmed:
-		return
-	if prep_countdown > 0.0:
-		prep_countdown = max(prep_countdown - delta, 0.0)
-		var extra      := " (Reinforced)" if upcoming_shop_boost else ""
-		_set_phase_message("Chuẩn bị %ds%s" % [int(ceil(prep_countdown)), extra])
-		prep_countdown_updated.emit(int(ceil(prep_countdown)))
-	if prep_countdown <= 0.0:
-		prep_countdown_updated.emit(0)
-		_start_wave_phase()
+## Pha chuẩn bị KHÔNG còn tự hết giờ — wave chỉ bắt đầu khi người chơi bấm nút.
+## Giữ hàm để máy trạng thái vẫn có đủ ba nhánh và để hiển thị nhắc nhở.
+func _tick_prepare(_delta: float) -> void:
+	pass
 
 func _start_wave_phase() -> void:
+	# Tắt nút bắt đầu wave ở MỌI đường vào pha wave, không chỉ đường bấm nút.
+	prep_ready_changed.emit(false)
 	current_phase       = GamePhase.WAVE
 	active_shop_boost   = upcoming_shop_boost
 	upcoming_shop_boost = false

@@ -244,6 +244,7 @@ func _ready() -> void:
 	phase_controller.phase_changed.connect(_on_phase_changed)
 	phase_controller.wave_started.connect(_on_wave_started_grant_perk_rd)
 	phase_controller.prep_countdown_updated.connect(_on_prep_countdown_updated)
+	phase_controller.prep_ready_changed.connect(_on_prep_ready_changed)
 	phase_controller.shop_phase_entered.connect(_on_shop_phase_entered)
 	phase_controller.season_buffs_apply_requested.connect(_on_season_buffs_apply_requested)
 	phase_controller.shop_panel_show_requested.connect(_on_shop_panel_show_requested)
@@ -311,6 +312,9 @@ func _ready() -> void:
 	var territory_count := 4
 	if _game_manager and _game_manager.selected_king:
 		territory_count = _game_manager.selected_king.starting_territory_count
+	# Meta "Đất phong" cộng thêm ô lãnh thổ đầu ván.
+	if _game_manager:
+		territory_count += maxi(0, int(_game_manager.meta_bonus_territories))
 	territory_manager.initialize(territory_count, grid_controller.grid_data, king_manager, int(grid_controller.grid_height / 2.0))
 
 	_maybe_show_tutorial()
@@ -408,7 +412,13 @@ func _unhandled_input(event: InputEvent) -> void:
 				var bk: String = territory_manager.get_biome_at(grid_pos)
 				hud.show_territory_info(bk, TerritoryManager.BIOME_STATS.get(bk, {}), grid_pos)
 		else:
-			if hud and hud.has_method("hide_tower_info"):
+			# MỌI ô phải xem được chỉ số. Trước đây chỉ ô có tháp và ô lãnh thổ
+			# mới mở panel; ô Phước/Nguyền sinh lúc tạo map (grid_controller.
+			# special_tiles) rơi vào nhánh này nên click vào không hiện gì —
+			# chúng có rune riêng trên bàn nên trông y như ô đặc biệt bấm được.
+			if hud and hud.has_method("show_cell_info"):
+				hud.show_cell_info(grid_pos, _describe_cell(grid_pos))
+			elif hud and hud.has_method("hide_tower_info"):
 				hud.hide_tower_info()
 			# Click magic — vòng ma thuật nhỏ khi click đất trống, phản hồi cho mọi click
 			var ground := GridUtil.mouse_to_ground(camera, get_viewport().get_mouse_position())
@@ -460,6 +470,13 @@ func _try_overcharge_at_mouse() -> bool:
 
 func confirm_wave_ready() -> void:
 	phase_controller.confirm_wave_ready()
+
+## HUD gọi khi người chơi bấm "BẮT ĐẦU WAVE". Pha chuẩn bị không còn đếm ngược
+## nên đây là ĐƯỜNG DUY NHẤT vào wave — bố trí bao lâu tuỳ người chơi.
+func request_start_wave() -> bool:
+	if _game_over_triggered:
+		return false
+	return phase_controller.request_start_wave()
 
 func request_next_wave_phase() -> void:
 	if _game_over_triggered:
@@ -781,6 +798,11 @@ func _on_prep_countdown_updated(seconds: int) -> void:
 	if hud and hud.has_method("update_prep_countdown"):
 		hud.update_prep_countdown(seconds)
 
+func _on_prep_ready_changed(ready: bool) -> void:
+	var hud := get_node_or_null("HUD")
+	if hud and hud.has_method("set_start_wave_button_visible"):
+		hud.set_start_wave_button_visible(ready)
+
 func _on_shop_phase_entered(_wave: int, interest: int) -> void:
 	# Giá xáo tăng dần TRONG một phiên shop → phải hạ về mức nền ở phiên mới.
 	if shop_manager and shop_manager.has_method("reset_reroll_cost"):
@@ -938,6 +960,40 @@ func _on_tower_placed_apply_tile_buff(grid_pos: Vector2i, tower: Node3D) -> void
 			tower.apply_tile_buff(GridController.CURSED_DMG_PCT)
 			FX.spawn_burst(self, GridUtil.cell_to_world(grid_pos) + Vector3(0.0, 0.3, 0.0),
 				Color(0.6, 0.25, 0.85), 10, 0.7)
+
+## Mô tả một ô KHÔNG có tháp và KHÔNG phải ô lãnh thổ — để HUD dựng panel.
+## Trả `{title, subtitle, rows: [[khoá, giá trị]], hint}`.
+func _describe_cell(cell: Vector2i) -> Dictionary:
+	var gc := grid_controller
+	var rows: Array = []
+	var special: String = gc.get_special_tile(cell)
+	var title := "Ô trống"
+	var subtitle := "[Đất thường]"
+	var hint := "Đặt quân lên đây, hoặc mua ô nguyên tố để biến nó thành ô có hệ."
+
+	if gc.is_path_cell(cell):
+		title = "Đường đi"
+		subtitle = "[Lối quái]"
+		hint = "Không đặt được quân trên đường. Địch đi theo mũi tên vàng."
+	elif special == "blessed":
+		title = "Ô Phước"
+		subtitle = "[Ô đặc biệt]"
+		rows.append(["⚔ Tháp trên ô", "+%.0f%%" % (GridController.BLESSED_DMG_PCT * 100.0)])
+		hint = "Đặt quân mạnh nhất lên đây. Ô này sinh sẵn khi tạo bản đồ."
+	elif special == "cursed":
+		title = "Ô Nguyền"
+		subtitle = "[Ô đặc biệt]"
+		rows.append(["⚔ Tháp trên ô", "%.0f%%" % (GridController.CURSED_DMG_PCT * 100.0)])
+		rows.append([" Địch chết tại đây", "+%d vàng" % Enemy.CURSED_KILL_BONUS_GOLD])
+		hint = "Tránh đặt quân đắt lên đây — hoặc dùng nó làm ô kiếm vàng."
+
+	# Vùng biome luôn có, kể cả ô thường: nó quyết định chỉ số địch và tháp.
+	var biome_id: String = gc.get_cell_biome(cell) if gc.has_method("get_cell_biome") else ""
+	if biome_id != "":
+		rows.append(["◈ Vùng", str(BiomeLibrary.get_spec(biome_id).get("name", biome_id))])
+	rows.append(["◎ Toạ độ", "(%d, %d)" % [cell.x, cell.y]])
+	return {"title": title, "subtitle": subtitle, "rows": rows, "hint": hint}
+
 
 ## Perk "Sắc Lệnh Khẩn": +RD mỗi khi wave mới bắt đầu.
 func _on_wave_started_grant_perk_rd(_wave_number: int, _enemy_count: int) -> void:
@@ -1132,39 +1188,8 @@ func _on_tutorial_finished() -> void:
 		hud.show_wave_intel_popup(
 			wave_spawner.build_wave_intel_data(phase_controller.wave_number))
 
-# ── Nâng sao bằng VÀNG (sink kinh tế cuối ván) ───────────────────────────────
-# Ghép sao bằng cách mua trùng quân chỉ chạy được khi shop ra đúng quân đó, và
-# khi bàn đã kín thì vàng không còn đường ra — đo thực tế: tồn 1741 vàng ở
-# wave 10 sau khi giãn nhịp. Nâng sao trả bằng vàng là sink đúng bài của thể
-# loại này (Bloons TD xây toàn bộ kinh tế quanh nhánh nâng cấp).
-
-## Giá gốc cho mỗi bậc sao. ★1→★2 rẻ, ★2→★3 đắt hẳn — bậc cuối là phần thưởng
-## cho việc dồn tiền, không phải thứ mua tiện tay.
-const STAR_UP_BASE_COST: Array[int] = [140, 380]
-## Cộng thêm theo wave: về cuối ván vàng nhiều nên giá phải trôi theo.
-const STAR_UP_COST_PER_WAVE: int = 22
-
-## Giá nâng sao cho một tháp. Trả -1 nếu không nâng được (đã ★3 hoặc tháp hỏng).
-func star_up_cost(tower: Node3D) -> int:
-	if tower == null or not is_instance_valid(tower):
-		return -1
-	if not tower.has_method("can_star_up") or not tower.can_star_up():
-		return -1
-	var idx: int = clampi(int(tower.star) - 1, 0, STAR_UP_BASE_COST.size() - 1)
-	var wave: int = phase_controller.wave_number if phase_controller else 1
-	return STAR_UP_BASE_COST[idx] + maxi(0, wave - 1) * STAR_UP_COST_PER_WAVE
-
-## Trả vàng để nâng một sao. Trả về true nếu thành công.
-func try_star_up_with_gold(tower: Node3D) -> bool:
-	var cost := star_up_cost(tower)
-	if cost < 0 or current_gold < cost:
-		return false
-	current_gold -= cost
-	tower.set_star(int(tower.star) + 1)
-	var am = get_node_or_null("/root/AudioManagerSingleton")
-	if am and am.has_method("play_sfx"):
-		am.play_sfx("perk_pick", -3.0)
-	FX.damage_number(self, tower.global_position + Vector3(0.0, 1.4, 0.0),
-		"★ %d" % int(tower.star), Color(1.0, 0.84, 0.2), 22)
-	update_ui()
-	return true
+# ── Nâng sao: CHỈ bằng ghép quân trùng ───────────────────────────────────────
+# Từng có đường thứ hai "nâng sao bằng vàng" làm sink kinh tế. Đã gỡ: nó biến
+# mọi quyết định bố cục thành bài toán tiền và làm mất ý nghĩa của việc săn quân
+# trùng trong shop — vốn là trục chiến thuật chính của thể loại auto-battler.
+# Sink kinh tế nay nằm ở giá xáo shop tăng dần và ở ô nguyên tố.

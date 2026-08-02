@@ -8,7 +8,7 @@
 script = ExtResource("2_03bnr")
 id = "rook"
 name = "Rook"
-description = "Long-range sniper. High damage, covers 10 tiles. Iron faction."
+description = "Chịu đòn tốt, tầm trung. Trụ giữ một ngã rẽ."
 cost = 34
 decree_cost = 2.0
 texture = ExtResource("3_lunhv")

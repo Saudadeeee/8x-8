@@ -8,7 +8,7 @@
 script = ExtResource("1_l05tt")
 id = "bishop"
 name = "Bishop"
-description = "Chains attacks to nearby enemies. Good range and damage. Wild faction."
+description = "Bắn xuyên hàng, hợp với đoạn đường thẳng dài."
 cost = 30
 decree_cost = 1.5
 texture = ExtResource("3_pqus7")

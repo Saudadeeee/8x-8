@@ -1590,7 +1590,9 @@ func _create_tower_card(stats: TowerStats, stock_count: int = 0) -> void:
 	hbox.add_child(vbox)
 
 	var name_lbl = Label.new()
-	name_lbl.text = stats.name
+	# Tên tiếng Việt qua bảng dùng chung (UIStyle.UNIT_NAMES_VI); .tres nào chưa
+	# có trong bảng thì rơi về tên gốc.
+	name_lbl.text = UIStyle.unit_name_vi(str(stats.id)) if str(stats.id) != "" else stats.name
 	UIStyle.body(name_lbl, 13, UIStyle.rarity_color(rarity).lightened(0.45))
 	name_lbl.clip_text = true
 	vbox.add_child(name_lbl)
@@ -2545,6 +2547,51 @@ func set_prep_countdown_visible(state: bool) -> void:
 	if is_instance_valid(_countdown_label):
 		_countdown_label.visible = state
 
+# ── Nút BẮT ĐẦU WAVE ─────────────────────────────────────────────────────────
+# Pha chuẩn bị không còn đếm ngược (xem PhaseController.request_start_wave):
+# wave chỉ chạy khi người chơi bấm nút này. Đặt giữa đáy màn, to và rõ — nó là
+# hành động quan trọng nhất của pha chuẩn bị.
+
+const START_WAVE_BOTTOM_MARGIN: int = 108
+
+var _start_wave_btn: Button = null
+
+func _ensure_start_wave_button() -> void:
+	if is_instance_valid(_start_wave_btn):
+		return
+	var root_ctrl := get_node_or_null("Control") as Control
+	if root_ctrl == null:
+		return
+	_start_wave_btn = Button.new()
+	_start_wave_btn.name = "StartWaveButton"
+	_start_wave_btn.text = "⚔  BẮT ĐẦU WAVE"
+	_start_wave_btn.custom_minimum_size = Vector2(360, 68)
+	UIStyle.apply_button_accent(_start_wave_btn, C_GREEN, 28)
+	UIStyle.make_click_target(_start_wave_btn)
+	_start_wave_btn.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_start_wave_btn.offset_left = -180
+	_start_wave_btn.offset_right = 180
+	_start_wave_btn.offset_top = -START_WAVE_BOTTOM_MARGIN
+	_start_wave_btn.offset_bottom = -START_WAVE_BOTTOM_MARGIN + 68
+	_start_wave_btn.visible = false
+	root_ctrl.add_child(_start_wave_btn)
+	_start_wave_btn.pressed.connect(_on_start_wave_pressed)
+	_wire_button_sfx(_start_wave_btn)
+
+func set_start_wave_button_visible(state: bool) -> void:
+	_ensure_start_wave_button()
+	if not is_instance_valid(_start_wave_btn):
+		return
+	_start_wave_btn.visible = state
+	if state:
+		UIStyle.pop_in(_start_wave_btn, 0.10)
+
+func _on_start_wave_pressed() -> void:
+	var map := get_parent()
+	if map and map.has_method("request_start_wave"):
+		if map.request_start_wave():
+			set_start_wave_button_visible(false)
+
 # ── Túi thuốc + thanh di vật (uỷ quyền) ───────────────────────────────────────
 # Thân ở scripts/ui/hud/hud_potion_bag.gd và hud_relic_bar.gd. Phím tắt vẫn bắt
 # ở _unhandled_input của HUD, hai signal potion_aim_* vẫn phát TỪ HUD — game_map
@@ -2600,6 +2647,9 @@ func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node
 
 func show_territory_info(biome_key: String, biome_data: Dictionary, pos: Vector2i = Vector2i(-1, -1)) -> void:
 	if _tower_panel: _tower_panel.show_territory_info(biome_key, biome_data, pos)
+
+func show_cell_info(pos: Vector2i, info: Dictionary) -> void:
+	if _tower_panel: _tower_panel.show_cell_info(pos, info)
 
 func hide_tower_info() -> void:
 	if _tower_panel: _tower_panel.hide_tower_info()

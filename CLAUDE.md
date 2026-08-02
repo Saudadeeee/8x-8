@@ -989,6 +989,49 @@ fxgen`) qua
   Phải đo thêm advance. Batch test 8 kiểm cả hai cách.
 - Bitmap font phải tắt antialias + subpixel, nếu không pixel bị nhoè.
 
+*Bảy sửa theo phản hồi chơi thử (2026-08-02):*
+- **Pha chuẩn bị KHÔNG còn đếm ngược.** `PhaseController.request_start_wave()` là
+  đường DUY NHẤT vào wave; `_tick_prepare` nay rỗng. Đồng hồ 30 giây cũ vừa sinh
+  lỗi tranh chấp lúc đặt tháp đúng lúc hết giờ, vừa biến quyết định bố trí thành
+  cuộc đua bấm nhanh. Nút "⚔ BẮT ĐẦU WAVE" ở đáy màn, bật/tắt qua signal
+  `prep_ready_changed`. `_start_wave_phase()` phát `false` ở MỌI đường vào wave.
+- **Nâng sao bằng vàng đã GỠ** (`star_up_cost` / `try_star_up_with_gold` không
+  còn tồn tại). Sao chỉ lên bằng ghép quân trùng. Test kiểm NGƯỢC: hai API đó
+  phải không còn `has_method`, còn đường ghép quân vẫn phải lên ★2 → ★3.
+- **Kinh tế siết theo SỐ ĐO, không phải cảm giác.** Bot tiêu sạch vàng qua 15
+  wave: bản cũ tồn **5894 vàng** ở wave 15 và HP đứng yên 20 suốt 14 wave rồi
+  rơi thẳng. Nay đỉnh **790**, HP bắt đầu tụt từ wave 10.
+  Ba đòn bẩy: `STARTING_GOLD` 100→60 · `gold_reward` ×0.40 toàn bảng (boss giữ
+  nguyên — đó là thưởng mốc, không phải thu nhập đều) · `DEFAULT_INTEREST_CAP`
+  15→6. Quân khởi đầu: Vua Thép 8 Tốt → 4, mọi vua ≤ 5 quân.
+  **Lãi cuối wave trả tiền cho việc KHÔNG tiêu** — nó chính là nguồn dồn vàng.
+- **Ô nguyên tố Lv2/Lv3 vốn CÓ tác dụng** (đo được: sát thương 16→18, Dấu +4s,
+  phản ứng ×1.0→×1.6). Lỗi là ở HIỂN THỊ: `tower_damage_pct` chưa từng được in
+  ra, và ba dòng thưởng chỉ hiện khi > ngưỡng nên ô Lv1 trông y hệt ô thường.
+  Nay LUÔN in cả ba, kèm dòng **xem trước cấp kế tiếp** — không có nó thì phần
+  thưởng chỉ lộ ra SAU khi đã tiêu tài nguyên, nên không ai có lý do chồng ô.
+- **Mọi ô đều click xem được.** Ô Phước/Nguyền sinh lúc tạo map nằm ở
+  `grid_controller.special_tiles`, KHÔNG phải `territory_manager.biome_tiles`,
+  nên trước đây rơi vào nhánh `else` và click không hiện gì — trong khi chúng có
+  rune riêng trên bàn nên trông y như ô bấm được. `game_map._describe_cell()`
+  dựng dữ liệu, `hud.show_cell_info()` dựng panel (ô trống · đường đi · Phước ·
+  Nguyền, luôn kèm vùng biome + toạ độ).
+- **Panel quân thêm mục "Đang hưởng"**: đọc THẲNG `_dmg_bonus`/`_spd_bonus`/
+  `_rng_bonus` của tháp rồi liệt kê từng lớp buff bằng tên tiếng Việt, cộng dòng
+  sao (phép NHÂN, áp sau cùng), DPS ước tính và tổng sát thương đã gây. Đọc
+  trạng thái thật nên không bao giờ lệch với chỉ số hiển thị.
+- **14 nâng cấp meta** thay cho 3, chia 5 trục: Kinh tế · Sinh tồn · Sắc Lệnh ·
+  Nguyên tố · Đội hình. **Mỗi `id` trong `META_UPGRADES` PHẢI có nhánh trong
+  `GameManager.start_run()`** — thiếu nhánh thì nâng cấp vẫn mua được, vẫn hiện
+  cấp, nhưng không làm gì. Test batch 5 mua từng cái một rồi so 14 field
+  trước/sau, cái nào không làm đổi field nào là LỖI.
+  Ba field mới `meta_tower_damage_pct` / `meta_tower_speed_pct` /
+  `meta_bonus_territories` phải reset về 0 TRƯỚC khi cộng lại, nếu không ván thứ
+  hai trong cùng phiên cộng dồn gấp đôi.
+- Màn Tiến Trình cũng QUÉT `res/kings/` thay cho mảng cứng.
+- Tên quân tiếng Việt qua `UIStyle.UNIT_NAMES_VI` ở CẢ ba chỗ (panel thông tin,
+  kho triển khai, thẻ shop) — trước đây ba chỗ gọi tên khác nhau.
+
 *Chữ ba cỡ + 6 Rival King (2026-08-02):*
 - **`font_size` từng bị BỎ QUA hoàn toàn.** Đo được: cỡ 10 và cỡ 42 render ra y
   hệt 112 pixel. Font bitmap không khai `fixed_size` thì Godot lờ `font_size` —

@@ -29,7 +29,7 @@ class_name EnemyStats
 @export var max_hp: int = 100
 @export var speed: float = 40.0
 @export var damage_to_base: int = 1
-@export var gold_reward: int = 10
+@export var gold_reward: int = 4
 
 @export_group("Abilities")
 ## Giáp phẳng: mỗi đòn đánh bị trừ đi [armor] sát thương (tối thiểu còn 1).

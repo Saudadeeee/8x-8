@@ -212,7 +212,9 @@ func _populate_default_items() -> void:
 				if stats:
 					var item = ShopItemData.new()
 					item.id = stats.id + "_buy"
-					item.display_name = stats.name
+					# Tên tiếng Việt qua bảng dùng chung, khớp với panel thông tin
+					# quân và kho triển khai — ba chỗ trước đây gọi tên khác nhau.
+					item.display_name = UIStyle.unit_name_vi(str(stats.id))
 					item.description = stats.description
 					item.cost = float(stats.cost)
 					item.use_royal_decree = false

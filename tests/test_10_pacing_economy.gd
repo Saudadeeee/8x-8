@@ -27,34 +27,64 @@ func _run() -> void:
 	var t = gc.grid_data.get(c)
 	ok(t != null, "dat duoc thap")
 	if t == null: quit(); return
-	var c1: int = map.star_up_cost(t)
-	ok(c1 > 0, "co gia nang sao ★1→★2", "%d vang" % c1)
-	var g0: int = map.current_gold
+	# Nang sao bang VANG da bi go — sao chi len bang ghep quan trung.
+	# Kiem NGUOC: duong vang phai bien mat han, khong con ton tai duoi dang nao.
+	ok(not map.has_method("star_up_cost"),
+		"khong con API nang sao bang vang (star_up_cost)")
+	ok(not map.has_method("try_star_up_with_gold"),
+		"khong con API nang sao bang vang (try_star_up_with_gold)")
+
+	# ...nhung GHEP QUAN TRUNG van phai len sao binh thuong
 	var d0: int = t.current_damage
-	ok(map.try_star_up_with_gold(t), "nang sao thanh cong")
-	ok(t.star == 2, "sao len 2", "star=%d" % t.star)
-	ok(map.current_gold == g0 - c1, "tru dung so vang", "%d -> %d" % [g0, map.current_gold])
-	ok(t.current_damage > d0, "sat thuong tang", "%d -> %d" % [d0, t.current_damage])
-	var c2: int = map.star_up_cost(t)
-	ok(c2 > c1, "bac ★2→★3 dat hon", "%d > %d" % [c2, c1])
-	map.try_star_up_with_gold(t)
-	ok(t.star == 3, "sao len 3")
-	ok(map.star_up_cost(t) < 0, "★3 khong nang duoc nua")
-	# Khong du vang thi khong nang
-	map.current_gold = 0
-	var t2 = null
-	var c3 := Vector2i(-1,-1)
-	for y in range(gc.grid_height):
-		for x in range(gc.grid_width):
-			var cc := Vector2i(x,y)
-			if not gc.is_path_cell(cc) and not gc.grid_data.has(cc): c3 = cc; break
-		if c3.x >= 0: break
 	map.shop_manager.register_troop_purchase(st)
-	map.tower_placer.start_build(st); map.tower_placer.place(c3); map.tower_placer.cancel_build()
-	t2 = gc.grid_data.get(c3)
-	if t2:
-		ok(not map.try_star_up_with_gold(t2), "khong du vang thi khong nang duoc")
-		ok(t2.star == 1, "sao giu nguyen")
+	map.tower_placer.start_build(st); map.tower_placer.place(c); map.tower_placer.cancel_build()
+	var merged = gc.grid_data.get(c)
+	ok(merged != null and int(merged.star) == 2, "dat quan trung len o -> ★2",
+		"star=%d" % (int(merged.star) if merged else -1))
+	ok(merged != null and merged.current_damage > d0, "★2 manh hon ★1",
+		"%d -> %d" % [d0, merged.current_damage if merged else -1])
+	# (khong kiem vang o day: vang tra luc MUA trong shop, dat tu kho la mien phi)
+
+	map.shop_manager.register_troop_purchase(st)
+	map.tower_placer.start_build(st); map.tower_placer.place(c); map.tower_placer.cancel_build()
+	ok(int(gc.grid_data.get(c).star) == 3, "ghep lan nua -> ★3")
+
+	print("
+--- KINH TE SIET LAI ---")
+	# Do bang bot tieu sach vang qua 15 wave. Ban cu: vang khoi dau 100, Vua Thep
+	# 8 Tot, tran lai 15 -> ton kho leo toi 5894 vang o wave 15 va HP dung yen 20
+	# suot 14 wave roi roi thang. Ban nay: dinh 790, HP bat dau tut tu wave 10.
+	var gm_script: GDScript = load("res://scripts/managers/GameManager.gd")
+	var start_gold: int = int(gm_script.get("STARTING_GOLD"))
+	var int_cap: int = int(gm_script.get("DEFAULT_INTEREST_CAP"))
+	ok(start_gold <= 70, "vang khoi dau <= 70", "%d" % start_gold)
+	ok(int_cap <= 8, "tran lai <= 8 (lai tra tien cho viec KHONG tieu)", "%d" % int_cap)
+
+	var d := DirAccess.open("res://res/kings/")
+	var army_bad := ""
+	for f in d.get_files():
+		var cn := f.trim_suffix(".remap")
+		if not cn.ends_with(".tres"): continue
+		var k := load("res://res/kings/" + cn) as KingStats
+		if k == null: continue
+		var total := 0
+		for q in k.starting_unit_quantities: total += int(q)
+		if total > 5:
+			army_bad += "%s co %d quan " % [k.id, total]
+	ok(army_bad == "", "khong vua nao khoi dau qua 5 quan", army_bad)
+
+	var gold_bad := ""
+	var de := DirAccess.open("res://res/enemy/")
+	for f in de.get_files():
+		var cn2 := f.trim_suffix(".remap")
+		if not cn2.ends_with(".tres"): continue
+		var es := load("res://res/enemy/" + cn2) as EnemyStats
+		if es == null: continue
+		if es.gold_reward >= 100: continue        # boss: thuong moc, khong phai thu nhap deu
+		if es.gold_reward > 20:
+			gold_bad += "%s=%d " % [es.id, es.gold_reward]
+	ok(gold_bad == "", "khong dich thuong nao cho qua 20 vang", gold_bad)
+
 	print("
 --- NHIP CHAM ---")
 	var ws = map.wave_spawner

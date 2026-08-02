@@ -8,7 +8,7 @@
 script = ExtResource("1_2jgmk")
 id = "queen"
 name = "Queen"
-description = "Elite unit with massive range and high damage. Most powerful ranged tower. Iron faction."
+description = "Tầm xa, sát thương lớn. Đắt — chỉ đáng khi có ô tốt để đứng."
 cost = 70
 decree_cost = 4.0
 texture = ExtResource("3_ctre6")

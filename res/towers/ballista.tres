@@ -8,7 +8,7 @@
 script = ExtResource("1_script")
 id = "ballista"
 name = "Ballista"
-description = "Nỏ công thành hạng nặng: một phát một mạng, bắn rất chậm. Iron faction."
+description = "Một phát cực nặng, hồi chiêu rất chậm. Trị mục tiêu máu dày."
 texture = ExtResource("2_icon")
 cost = 80
 decree_cost = 3.0

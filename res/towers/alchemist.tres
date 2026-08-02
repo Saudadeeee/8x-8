@@ -8,7 +8,7 @@
 script = ExtResource("1_script")
 id = "alchemist"
 name = "Alchemist"
-description = "Ném độc dược: sát thương trực tiếp thấp nhưng gây độc 12 DPS trong 4s. Magic faction."
+description = "Yếu về sát thương thuần nhưng khuếch đại phản ứng nguyên tố."
 texture = ExtResource("2_icon")
 cost = 48
 decree_cost = 2.0

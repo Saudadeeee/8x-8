@@ -37,7 +37,10 @@ var meta_progress: MetaProgress = null
 
 # Chỉ số hiện tại
 var current_health: int = 20
-var current_gold: int = 100
+## Vàng khởi đầu mỗi ván. Meta "starting_gold" cộng thêm lên trên số này.
+const STARTING_GOLD: int = 60
+
+var current_gold: int = STARTING_GOLD
 var current_decree: float = 10.0
 var current_decree_max: float = 100.0
 var current_wave: int = 0
@@ -71,7 +74,10 @@ const MAX_ASCENSION: int = 5
 var ascension_level: int = 0
 
 # --- PERK STATE (per-run, được PerkSystem ghi — reset trong start_run) ---
-const DEFAULT_INTEREST_CAP: int = 15
+## Lãi cuối wave TRẢ TIỀN CHO VIỆC KHÔNG TIÊU — chính là thứ làm vàng dồn lại.
+## Giữ lại vì nó là mốc quyết định quen thuộc của thể loại, nhưng trần phải nhỏ:
+## đo bằng bot tiêu sạch vàng, trần 15 khiến tồn kho leo tới 5894 ở wave 15.
+const DEFAULT_INTEREST_CAP: int = 6
 const DEFAULT_INTEREST_RATE: float = 0.10
 
 var active_perks: Array[String] = []          # mirror id perk đã chọn (nguồn: PerkSystem.owned)
@@ -91,6 +97,13 @@ var perk_water_spread: bool = false           # "Thuỷ Mạch" — Dấu Thuỷ
 var perk_poison_max_stacks: int = 0           # "Độc Sư" — trần tầng Độc mới (0 = mặc định)
 var perk_potion_per_reactions: int = 0        # "Nhà Giả Kim" — mỗi N phản ứng tặng 1 thuốc
 var perk_no_element_damage: float = 0.0       # "Thuần Vật Lý" — tháp KHÔNG đứng ô nguyên tố
+
+# ── Meta upgrade (mua ở màn Tiến Trình, áp cho MỌI ván sau) ──────────────────
+# Để riêng khỏi perk_*: perk reset mỗi ván, ba biến này nạp lại từ MetaProgress
+# ở đầu mỗi ván nên phải nằm ngoài reset_perk_state().
+var meta_tower_damage_pct: float = 0.0   # +% sát thương cho mọi tháp
+var meta_tower_speed_pct: float = 0.0    # +% tốc đánh cho mọi tháp
+var meta_bonus_territories: int = 0      # ô lãnh thổ cộng thêm đầu ván
 
 # --- BIOME STATE (per-run — BiomeEffects ghi, reset trong start_run) ---
 # Nguồn sự thật cho hiệu ứng khí hậu toàn bản đồ. enemy.gd đọc 2 hệ số dưới
@@ -155,7 +168,9 @@ func _process(delta: float) -> void:
 func start_run(king: KingStats) -> void:
 	selected_king = king
 	current_health = king.base_health
-	current_gold = 100
+	# 60 chứ không 100: đo bằng bot tiêu sạch vàng, bản 100 cho phép mua trọn
+	# quầy ngay wave 1 nên không có quyết định nào phải cân nhắc.
+	current_gold = STARTING_GOLD
 	current_decree = king.base_royal_decree
 	current_decree_max = king.decree_max
 	current_wave = 0
@@ -185,6 +200,11 @@ func start_run(king: KingStats) -> void:
 	reset_perk_state()
 	reset_combat_modifiers()
 	reset_biome_state()
+	# Ba biến meta phải về 0 TRƯỚC khi cộng lại, nếu không chơi ván thứ hai
+	# trong cùng phiên sẽ cộng dồn gấp đôi.
+	meta_tower_damage_pct = 0.0
+	meta_tower_speed_pct = 0.0
+	meta_bonus_territories = 0
 	# Áp dụng Meta Upgrades đã mua
 	if meta_progress:
 		for upgrade in meta_progress.meta_upgrades:
@@ -192,13 +212,43 @@ func start_run(king: KingStats) -> void:
 			var level: int = upgrade.get("level", 0)
 			if level <= 0:
 				continue
+			# MỖI id trong META_UPGRADES phải có nhánh ở đây. Thiếu nhánh thì
+			# nâng cấp vẫn mua được, vẫn hiện cấp, nhưng KHÔNG làm gì — game
+			# chạy bình thường nên không ai phát hiện. Test batch 5 chốt việc này.
 			match uid:
+				# ── Kinh tế ──
 				"starting_gold":
-					current_gold += level * 50
+					current_gold += level * 30
+				"interest_cap":
+					perk_interest_cap += level * 2
+				"gold_per_kill":
+					perk_gold_per_kill += level
+				# ── Sinh tồn ──
 				"health_bonus":
-					current_health += level * 5
+					current_health += level * 4
+				"start_territory":
+					meta_bonus_territories = level
+				# ── Sắc Lệnh ──
 				"decree_bonus":
 					current_decree_max += level * 10
+				"decree_start":
+					current_decree += level * 8
+				"decree_per_wave":
+					perk_rd_per_wave_start += float(level)
+				# ── Nguyên tố ──
+				"reaction_power":
+					global_reaction_mult *= 1.0 + 0.06 * float(level)
+				"mark_slots":
+					relic_max_marks += level
+				"tile_discount":
+					perk_tile_discount += 0.08 * float(level)
+				# ── Đội hình ──
+				"tower_damage":
+					meta_tower_damage_pct += 0.04 * float(level)
+				"tower_speed":
+					meta_tower_speed_pct += 0.03 * float(level)
+				"equip_discount":
+					perk_equip_discount += 0.10 * float(level)
 	# Ascension trừ vàng khởi đầu — áp SAU meta upgrade, không cho âm
 	current_gold = maxi(0, current_gold + asc_start_gold_delta())
 	change_state(GameState.PREPARING)

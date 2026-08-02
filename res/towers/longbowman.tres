@@ -8,7 +8,7 @@
 script = ExtResource("1_script")
 id = "longbowman"
 name = "Longbowman"
-description = "Xạ thủ bắn tỉa: sát thương lớn, tầm rất xa, bắn chậm. Wild faction."
+description = "Bắn tỉa tầm xa nhất nhì bàn. Đặt sau, phủ nhiều khúc đường."
 texture = ExtResource("2_icon")
 cost = 62
 decree_cost = 2.0

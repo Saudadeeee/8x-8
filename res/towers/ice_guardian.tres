@@ -8,7 +8,7 @@
 script = ExtResource("1_script")
 id = "ice_guardian"
 name = "Ice Guardian"
-description = "Vệ binh băng giá: làm chậm 55% trong 2.5s, lan sang mục tiêu gần. Magic faction."
+description = "Làm chậm địch trong tầm. Ghì đàn quái lại cho quân khác dọn."
 texture = ExtResource("2_icon")
 cost = 45
 decree_cost = 2.0

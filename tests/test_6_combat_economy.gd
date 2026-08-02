@@ -134,13 +134,21 @@ func _run() -> void:
 	if pc:
 		ok(pc.current_phase == PhaseController.GamePhase.PREPARE, "bat dau o pha CHUAN BI",
 			str(PhaseController.GamePhase.keys()[pc.current_phase]))
-		# confirm_wave_ready() chi BAT co; wave chi bat dau khi dem nguoc chuan bi
-		# ve 0 (xem PhaseController._tick_prepare). Rut ngan dem nguoc de test nhanh.
+		# Pha chuan bi KHONG con dem nguoc — wave chi chay khi nguoi choi bam nut.
+		# Bam khi chua xac nhan trinh sat phai bi tu choi.
+		ok(not pc.request_start_wave(), "chua xac nhan trinh sat thi khong bat dau duoc")
 		map.confirm_wave_ready()
-		pc.prep_countdown = 0.0
 		await process_frame
+		ok(pc.can_start_wave(), "sau xac nhan thi nut bat dau sang")
+		# Cho vai frame: pha KHONG duoc tu chuyen (bang chung la dem nguoc da bo)
+		for _i in 30:
+			await process_frame
+		ok(pc.current_phase == PhaseController.GamePhase.PREPARE,
+			"khong bam thi pha CHUAN BI khong tu het gio",
+			str(PhaseController.GamePhase.keys()[pc.current_phase]))
+		ok(pc.request_start_wave(), "bam nut -> vao wave")
 		await process_frame
-		ok(pc.current_phase == PhaseController.GamePhase.WAVE, "dem nguoc het -> pha WAVE",
+		ok(pc.current_phase == PhaseController.GamePhase.WAVE, "bam nut -> pha WAVE",
 			str(PhaseController.GamePhase.keys()[pc.current_phase]))
 		ok(pc.wave_number >= 1, "so wave >= 1", "%d" % pc.wave_number)
 

@@ -7,7 +7,7 @@
 script = ExtResource("1_script")
 id = "catapult"
 name = "Catapult"
-description = "Massive AoE splash (3-tile radius). Slow fire rate, devastating damage. Iron faction."
+description = "Đạn nổ theo vùng. Mạnh nhất khi địch đi thành đàn."
 cost = 55
 decree_cost = 3.0
 base_damage = 40
