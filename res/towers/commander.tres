@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_g0tk0")
 id = "commander"
+attack_pattern = 5
 name = "Commander"
 description = "Tăng sức cho quân quanh mình. Đặt giữa cụm, không đặt rìa bàn."
 cost = 45

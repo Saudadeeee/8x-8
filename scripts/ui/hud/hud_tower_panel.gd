@@ -180,6 +180,7 @@ func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node
 
 	# Nguyên tố đang bắn + ô trang bị (chỉ khi mở từ một tháp thật trên bàn)
 	if tower_node and is_instance_valid(tower_node):
+		_build_pattern_row(vbox, tower_node)
 		_build_star_row(vbox, tower_node)
 		_build_element_row(vbox, tower_node)
 		_build_buff_source_section(vbox, tower_node)
@@ -225,6 +226,37 @@ func _resize_tower_panel() -> void:
 	_tower_info_panel.offset_top = top
 	_tower_info_panel.offset_bottom = top + want
 
+## Nước đi + số ô đang phủ. Đây là dòng QUAN TRỌNG NHẤT của panel trong thiết
+## kế mới: sức mạnh của một quân không nằm ở chỉ số mà ở chỗ nó đứng.
+func _build_pattern_row(parent: VBoxContainer, tower_node: Node3D) -> void:
+	if not tower_node.has_method("pattern_kind"):
+		return
+	var kind: int = int(tower_node.pattern_kind())
+	parent.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
+	_add_info_row(parent, "%s Nước đi" % ChessPattern.glyph(kind),
+		ChessPattern.label(kind))
+
+	var covered: Array = tower_node.get("covered_cells")
+	if not (covered is Array):
+		return
+	var map := tower_node.get_node_or_null("/root/GameMap")
+	var on_path := 0
+	if map != null:
+		var gc = map.get("grid_controller")
+		if gc != null:
+			for c in covered:
+				if gc.is_path_cell(c):
+					on_path += 1
+	_add_info_row(parent, "◎ Ô đang phủ", "%d ô (%d trên đường)"
+		% [(covered as Array).size(), on_path])
+	if on_path == 0:
+		var warn := Label.new()
+		warn.text = "⚠ Quân này không phủ ô đường nào — nó không gây sát thương."
+		UIStyle.body(warn, 14, UIStyle.RED)
+		warn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		parent.add_child(warn)
+
+
 # ── "Đang hưởng": liệt kê TỪNG nguồn buff đang tác động lên tháp này ────────
 # Vì sao cần: sát thương cuối cùng là tổng của 13 lớp buff cộng lại rồi nhân hệ
 # sao. Chỉ hiện con số cuối thì người chơi thấy "Sát thương 31" mà không biết
@@ -257,7 +289,7 @@ func _build_buff_source_section(parent: VBoxContainer, tower_node: Node3D) -> vo
 		var sv := float((spd as Dictionary).get(layer, 0.0))
 		var rv := int((rng as Dictionary).get(layer, 0))
 		if not is_zero_approx(dv): parts.append("%+.0f sát thương" % dv)
-		# spd là số GIÂY TRỪ vào hồi chiêu ⇒ dương = bắn nhanh hơn.
+		# spd là số GIÂY TRỪ vào hồi chiêu → dương = bắn nhanh hơn.
 		if not is_zero_approx(sv): parts.append("%s%.2fs hồi chiêu" % ["-" if sv > 0.0 else "+", absf(sv)])
 		if rv != 0: parts.append("%+d tầm" % rv)
 		if parts.is_empty():

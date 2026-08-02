@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_script")
 id = "ballista"
+attack_pattern = 0
 name = "Ballista"
 description = "Một phát cực nặng, hồi chiêu rất chậm. Trị mục tiêu máu dày."
 texture = ExtResource("2_icon")

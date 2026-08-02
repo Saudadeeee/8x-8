@@ -98,11 +98,36 @@ func _build_build_highlights(gc: GridController, tp: TowerPlacer) -> void:
 			if gc.grid_data.get(pos) is Node3D: continue
 			_add_quad(GridUtil.cell_to_world(pos), COLOR_BUILD_HIGHLIGHT)
 
-	# Range preview: đĩa phẳng tại ô đang hover
+	# Xem trước TẦM PHỦ theo NƯỚC ĐI, không phải đĩa tròn.
+	#
+	# Đĩa tròn nói dối: Xe đặt ở đây phủ trọn cột chứ không phủ hình tròn, và
+	# đường trượt của nó bị quân khác CHẶN. Vẽ đúng ô sẽ phủ là thứ biến việc đặt
+	# quân thành bài toán nhìn-là-thấy — đây là phản hồi quan trọng nhất của cả
+	# thiết kế mới, thiếu nó thì người chơi đặt mò.
 	var hover := _hovered_cell()
 	if gc.is_in_bounds(hover):
-		var radius: float = tp.current_building_stats.attack_range * TILE_SIZE + (TILE_SIZE / 2.0)
-		_add_disc(GridUtil.cell_to_world(hover), radius, COLOR_RANGE_DISC)
+		var st: TowerStats = tp.current_building_stats
+		var kind: int = int(st.attack_pattern)
+		if kind == ChessPattern.Kind.RADIAL:
+			var radius: float = st.attack_range * TILE_SIZE + (TILE_SIZE / 2.0)
+			_add_disc(GridUtil.cell_to_world(hover), radius, COLOR_RANGE_DISC)
+		else:
+			var blocked := {}
+			for t in get_tree().get_nodes_in_group("towers"):
+				if is_instance_valid(t) and t.has_method("home_cell"):
+					blocked[t.home_cell()] = true
+			blocked.erase(hover)
+			for c in ChessPattern.cells(kind, hover, st.attack_range, blocked):
+				if gc.is_in_bounds(c):
+					# Ô ĐƯỜNG ĐI tô đậm hơn: chỉ ô đường mới thật sự sinh sát
+					# thương, phủ ô trống là phủ hụt.
+					_add_quad(GridUtil.cell_to_world(c),
+						COLOR_COVER_PATH if gc.is_path_cell(c) else COLOR_COVER)
+
+## Màu tầm phủ theo nước đi. Ô đường đi đậm hơn hẳn ô thường.
+const COLOR_COVER      := Color(0.35, 0.75, 1.00, 0.22)
+const COLOR_COVER_PATH := Color(1.00, 0.80, 0.20, 0.55)
+
 
 func _build_territory_placement(gc: GridController) -> void:
 	if not territory_manager or not territory_manager.is_placing():

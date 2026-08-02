@@ -2377,7 +2377,7 @@ func _refresh_status_chips(favor: String, territory: String) -> void:
 	if _chip_row == null:
 		return
 	# remove_child TRƯỚC queue_free: `queue_free` chỉ xoá ở CUỐI frame, mà
-	# update_ui() được gọi nhiều lần trong một frame ⇒ chip cũ và chip mới cùng
+	# update_ui() được gọi nhiều lần trong một frame → chip cũ và chip mới cùng
 	# tồn tại, minimum size của panel phình lên và không bao giờ co lại
 	# (StatsHolder không nằm trong container nên không ai ép nó nhỏ lại).
 	for child in _chip_row.get_children():
@@ -2391,11 +2391,11 @@ func _refresh_status_chips(favor: String, territory: String) -> void:
 
 	# StatsHolder KHÔNG nằm trong container nào (con trực tiếp của Control), nên
 	# Godot không bao giờ tự thu nhỏ nó — nó giữ mãi kích thước lớn nhất từng có.
-	# Số chip đổi mỗi wave ⇒ phải ép co lại, nếu không panel phình ra thành một
+	# Số chip đổi mỗi wave → phải ép co lại, nếu không panel phình ra thành một
 	# mảng xám to đùng che góc màn hình.
 	if _stats_holder != null and is_instance_valid(_stats_holder):
 		_stats_holder.reset_size.call_deferred()
-		# Panel vừa co/nở ⇒ mép phải của nó đổi ⇒ dải wave phải dời theo, nếu
+		# Panel vừa co/nở → mép phải của nó đổi → dải wave phải dời theo, nếu
 		# không banner đè lên số Sắc Lệnh (nhìn ra như chữ bị cắt cụt).
 		_fit_resource_panel.call_deferred()
 
@@ -2435,7 +2435,7 @@ func _add_chip(text: String, color: Color) -> void:
 
 # ── Cột King bên phải ─────────────────────────────────────────────────────
 # .tscn neo panel này CAO HẾT MÀN HÌNH (anchor_bottom = 1) trong khi nội dung
-# chỉ vài dòng ⇒ một dải gỗ rỗng chạy suốt từ trên xuống dưới. Tệ hơn, bề rộng
+# chỉ vài dòng → một dải gỗ rỗng chạy suốt từ trên xuống dưới. Tệ hơn, bề rộng
 # 160px làm "Iron Decree" bị cắt cụt thành "Iron Decre".
 # Sửa: bám mép TRÊN, cao theo nội dung, rộng 210px, và cho chữ tự xuống dòng.
 const RIGHT_PANEL_WIDTH := UIStyle.HUD_RIGHT_PANEL_WIDTH
@@ -2546,6 +2546,80 @@ func show_boss_intro(name: String, title: String) -> void:
 func set_prep_countdown_visible(state: bool) -> void:
 	if is_instance_valid(_countdown_label):
 		_countdown_label.visible = state
+
+# ── Bảng NỀN × BỘI ───────────────────────────────────────────────────────────
+# Con số quan trọng nhất màn hình. Balatro luôn cho bạn thấy "cần bao nhiêu điểm"
+# và "ván bài này ăn bao nhiêu" — người chơi KHÔNG BAO GIỜ phải hy vọng, chỉ phải
+# tính. Đây là bản dịch của thanh Blind: đội hình hiện tại gây bao nhiêu sát
+# thương lên một con địch đi trọn đường, so với máu con dày nhất của wave.
+#
+# Đỏ = biết trước sẽ thủng → quay lại sửa bố cục. Đó là toàn bộ vòng lặp.
+
+const SCORE_PANEL_BOTTOM: int = 186
+
+var _score_panel: PanelContainer = null
+var _score_main: Label = null
+var _score_sub: Label = null
+var _score_bar: ProgressBar = null
+
+func _ensure_score_panel() -> void:
+	if is_instance_valid(_score_panel):
+		return
+	var root_ctrl := get_node_or_null("Control") as Control
+	if root_ctrl == null:
+		return
+	_score_panel = PanelContainer.new()
+	_score_panel.name = "BoardScorePanel"
+	_score_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	UIStyle.apply_panel(_score_panel, "wood")
+	_score_panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_score_panel.offset_left = -260
+	_score_panel.offset_right = 260
+	_score_panel.offset_top = -SCORE_PANEL_BOTTOM
+	_score_panel.offset_bottom = -SCORE_PANEL_BOTTOM + 92
+	root_ctrl.add_child(_score_panel)
+
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 2)
+	vb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_score_panel.add_child(vb)
+
+	_score_main = Label.new()
+	_score_main.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UIStyle.title(_score_main, 28, C_GOLD)
+	vb.add_child(_score_main)
+
+	_score_bar = UIStyle.make_bar(C_GREEN, 8)
+	_score_bar.max_value = 100.0
+	vb.add_child(_score_bar)
+
+	_score_sub = Label.new()
+	_score_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UIStyle.body(_score_sub, 14, UIStyle.TEXT_DIM)
+	vb.add_child(_score_sub)
+
+
+## game_map gọi mỗi khi bố cục bàn đổi hoặc sang wave mới.
+func update_board_score(info: Dictionary) -> void:
+	_ensure_score_panel()
+	if not is_instance_valid(_score_panel):
+		return
+	if info.is_empty():
+		_score_panel.visible = false
+		return
+	_score_panel.visible = true
+	var dmg := float(info.get("damage", 0.0))
+	var thr := float(info.get("threshold", 0.0))
+	var ratio := float(info.get("ratio", 0.0))
+	var ok := bool(info.get("ok", false))
+
+	_score_main.text = "%s  /  %s" % [
+		UIStyle.short_number(dmg), UIStyle.short_number(thr)]
+	_score_main.add_theme_color_override("font_color", C_GREEN if ok else C_RED)
+	_score_bar.value = clampf(ratio * 100.0, 0.0, 100.0)
+	UIStyle.tint_bar(_score_bar, C_GREEN if ok else C_RED)
+	_score_sub.text = "Sát thương cả wave / Tổng máu wave" if ok 		else "THIẾU %s — sửa bố cục trước khi bắt đầu" % UIStyle.short_number(thr - dmg)
+
 
 # ── Nút BẮT ĐẦU WAVE ─────────────────────────────────────────────────────────
 # Pha chuẩn bị không còn đếm ngược (xem PhaseController.request_start_wave):

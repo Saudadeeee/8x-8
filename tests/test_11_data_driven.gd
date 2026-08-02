@@ -40,10 +40,13 @@ func _run() -> void:
 	var st2 := TowerStats.new()
 	st2.type = TowerStats.UnitType.ROOK
 	ok(st2.get_synergy_tag() == "rook", "de rong van suy tu enum (tuong thich nguoc)")
+	# Synergy theo LOAI QUAN da TAT bang co — ChessFormations thay the.
+	# Van kiem `get_synergy_tag()` o tren: co the bat lai bat cu luc nao.
 	var probe := Node.new(); root.add_child(probe)
 	sm.on_tower_placed(probe, st)
-	ok(sm.active_synergies.has("nhanh_moi_hoan_toan"),
-		"dem duoc nhanh khai bang chuoi", str(sm.active_synergies.keys()))
+	ok(not FeatureFlags.UNIT_SYNERGY_ENABLED, "synergy loai quan da tat")
+	ok(sm.active_synergies.is_empty(),
+		"da tat thi khong dem synergy nao", str(sm.active_synergies.keys()))
 
 	print("\n--- DICH: lich mua nam trong .tres, khong con bang cung ---")
 	var src := _read("res://scripts/map/wave_spawner.gd")

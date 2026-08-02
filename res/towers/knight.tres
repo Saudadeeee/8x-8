@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("2_ddgsg")
 id = "knight"
+attack_pattern = 3
 name = "Knight"
 description = "Cận chiến, tầm rất ngắn nhưng sát thương một đòn cao. Đặt sát đường."
 cost = 20

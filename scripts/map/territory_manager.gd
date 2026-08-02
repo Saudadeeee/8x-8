@@ -77,7 +77,7 @@ const LEVEL_BONUS: Array[Dictionary] = [
 	{"mark_duration_bonus": 2.0, "reaction_mult": 1.25, "tower_damage_pct": 0.00},
 	{"mark_duration_bonus": 4.0, "reaction_mult": 1.60, "tower_damage_pct": 0.15},
 ]
-## Độ dày mesh theo cấp. Mesh nở ĐỀU hai phía quanh tâm y = TILE_Y = 0.052 ⇒ đáy của
+## Độ dày mesh theo cấp. Mesh nở ĐỀU hai phía quanh tâm y = TILE_Y = 0.052 → đáy của
 ## cấp dày nhất vẫn ở 0.052 − 0.10/2 = 0.002 > 0, không bao giờ đâm xuyên mặt tile (y = 0).
 const LEVEL_THICKNESS: Array[float] = [TILE_HEIGHT, 0.07, 0.10]
 ## Cường độ phát sáng theo cấp — Lv1 hoàn toàn không glow (giữ nguyên hình ảnh cũ).
@@ -693,7 +693,7 @@ func _create_tile_visual(pos: Vector2i, biome: String, level: int = MIN_TILE_LEV
 	if lv >= 2:
 		_attach_rim(tile, biome, lv)
 
-## Vành sáng màu nguyên tố quanh ô cấp ≥ 2. Là node CON của mesh ô ⇒ tự dịch theo
+## Vành sáng màu nguyên tố quanh ô cấp ≥ 2. Là node CON của mesh ô → tự dịch theo
 ## khi rebase và tự bị free khi ô bị gỡ/nâng cấp.
 func _attach_rim(tile: MeshInstance3D, biome: String, level: int) -> void:
 	if _rim_boxes.size() < level:

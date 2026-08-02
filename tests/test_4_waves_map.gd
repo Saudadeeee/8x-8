@@ -28,8 +28,15 @@ func _run() -> void:
 	ok(h10 / h5 > h5 / h1 - 0.001, "tang theo CAP SO NHAN (khong tuyen tinh)",
 		"%.2f vs %.2f" % [h10/h5, h5/h1])
 	ok(ws.get_speed_multiplier(10) > ws.get_speed_multiplier(1), "toc do dich tang dan")
-	ok(ws.calculate_enemies_for_wave(9) > ws.calculate_enemies_for_wave(1),
-		"so dich tang dan (wave boss dem rieng)")
+	# Chon hai wave THUONG de so — wave boss dem rieng (BOSS_WAVE_MINION_COUNT).
+	var w_a := 2
+	var w_b := 8
+	while ws.is_boss_wave(w_a): w_a += 1
+	while ws.is_boss_wave(w_b) or w_b <= w_a: w_b += 1
+	ok(ws.calculate_enemies_for_wave(w_b) > ws.calculate_enemies_for_wave(w_a),
+		"so dich tang dan (wave boss dem rieng)",
+		"w%d=%d < w%d=%d" % [w_a, ws.calculate_enemies_for_wave(w_a),
+			w_b, ws.calculate_enemies_for_wave(w_b)])
 
 	print("\n--- MUA ---")
 	var seasons := {}
@@ -45,7 +52,11 @@ func _run() -> void:
 	ok(ws.BOSS_WAVES.size() == 3, "co 3 wave boss", str(ws.BOSS_WAVES))
 	for bw in ws.BOSS_WAVES:
 		ok(ws.is_boss_wave(bw), "wave %d la wave boss" % bw)
-	ok(not ws.is_boss_wave(9), "wave 9 khong phai boss")
+	# Wave khong nam trong BOSS_WAVES thi khong duoc la boss — tim mot wave nhu vay
+	# thay vi ghim so 9, vi BOSS_WAVES doi theo do dai van.
+	var non_boss := 1
+	while ws.is_boss_wave(non_boss): non_boss += 1
+	ok(not ws.is_boss_wave(non_boss), "wave %d khong phai boss" % non_boss)
 	# Moi wave boss phai ra mot vua KHAC NHAU, khong duoc trung
 	var seen_kings := {}
 	for bw in ws.BOSS_WAVES:

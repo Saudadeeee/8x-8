@@ -102,7 +102,10 @@ func _run() -> void:
 			fastest_id = st2.id
 	ok(fastest <= 4.0, "dich nhanh nhat <= 4 o/giay", "%s %.2f o/s" % [fastest_id, fastest])
 	ok(ws.SPAWN_INTERVAL >= 1.2, "nhip spawn gian ra", "%.1fs" % ws.SPAWN_INTERVAL)
-	ok(ws.ENEMIES_PER_WAVE >= 12, "wave dong hon de bu toc do cham", "%d con" % ws.ENEMIES_PER_WAVE)
+	# Quy mo wave ha theo BAN 8x8 + TRAN QUAN: 8-20 quan tren 64 o khong the
+	# xu ly 14 dich/wave nhu ban ban no toi 24x24.
+	ok(ws.ENEMIES_PER_WAVE >= 6 and ws.ENEMIES_PER_WAVE <= 12,
+		"so dich moi wave vua voi ban 8x8", "%d con" % ws.ENEMIES_PER_WAVE)
 	var bullet = load("res://scenes/projectile/projectile.tscn").instantiate()
 	ok(bullet.speed <= 12.0, "dan bay du cham de nhin thay", "%.1f o/s" % bullet.speed)
 	bullet.queue_free()

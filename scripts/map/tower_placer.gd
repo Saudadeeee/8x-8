@@ -5,6 +5,8 @@ extends Node
 class_name TowerPlacer
 
 # --- SIGNALS ---
+## Đặt bị từ chối kèm lý do — HUD hiện ra thay vì im lặng không làm gì.
+signal place_rejected(reason: String)
 signal tower_placed(grid_pos: Vector2i, tower: Node3D)
 signal tower_dismissed(grid_pos: Vector2i, refund_gold: int)
 signal dismiss_stock_changed(new_stock: int)
@@ -203,6 +205,16 @@ func place(grid_pos: Vector2i) -> void:
 	# Ô đã có tháp nhưng không hợp nhất được (khác loại hoặc đã ★ tối đa) → giữ
 	# hành vi cũ: không đặt được, không trừ tài nguyên.
 	if not merging and occupant is Node3D and is_instance_valid(occupant):
+		return
+
+	# TRẦN SỐ QUÂN. Ghép sao KHÔNG tính (số quân trên bàn không đổi) — nếu chặn
+	# cả ghép thì lúc chạm trần người chơi mất luôn đường lớn mạnh duy nhất.
+	var owner_map := get_parent()
+	if not merging and owner_map != null \
+			and owner_map.has_method("can_place_more_units") \
+			and not owner_map.can_place_more_units():
+		place_rejected.emit("Đã đủ %d quân trên bàn — bán bớt hoặc ghép sao."
+			% int(owner_map.max_units()))
 		return
 
 	if not _pay_for_unit(current_building_stats):

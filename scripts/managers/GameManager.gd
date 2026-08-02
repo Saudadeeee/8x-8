@@ -404,7 +404,11 @@ func get_combo_mult() -> float:
 	return 1.0
 
 ## Ghi nhận 1 kill vào chuỗi combo — reset cửa sổ, trả về hệ số vàng hiện tại.
+## Combo hạ gục — đã TẮT (FeatureFlags.KILL_COMBO_ENABLED). Thưởng cho tốc độ
+## giết chứ không cho bố cục, mà bố cục mới là thứ game này đo.
 func register_kill() -> float:
+	if not FeatureFlags.KILL_COMBO_ENABLED:
+		return 1.0
 	var old_mult := get_combo_mult()
 	combo_count += 1
 	run_best_combo = maxi(run_best_combo, combo_count)

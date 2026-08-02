@@ -381,6 +381,29 @@ static func bar_styles(fill_color: Color = RED) -> Dictionary:
 	return {"bg": bg_box, "fill": fill_box}
 
 ## Tạo ProgressBar đã style sẵn (không hiện %).
+## Đổi màu phần đã lấp của một thanh đã dựng (dùng khi trạng thái đảo đỏ/xanh).
+static func tint_bar(bar: ProgressBar, fill_color: Color) -> void:
+	if not is_instance_valid(bar):
+		return
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = fill_color
+	fill.set_corner_radius_all(2)
+	bar.add_theme_stylebox_override("fill", fill)
+
+
+## Số gọn cho HUD: 1234 → "1.2K", 1250000 → "1.3M". Bảng Nền × Bội leo rất
+## nhanh khi người chơi chồng Bội (đúng chủ đích), 6 chữ số thì tràn panel.
+static func short_number(v: float) -> String:
+	var a := absf(v)
+	if a >= 1_000_000.0:
+		return "%.1fM" % (v / 1_000_000.0)
+	if a >= 10_000.0:
+		return "%.0fK" % (v / 1000.0)
+	if a >= 1_000.0:
+		return "%.1fK" % (v / 1000.0)
+	return str(int(round(v)))
+
+
 static func make_bar(fill_color: Color, height: int = 8) -> ProgressBar:
 	var bar := ProgressBar.new()
 	bar.show_percentage = false

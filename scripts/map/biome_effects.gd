@@ -102,7 +102,11 @@ func apply_biome(biome_id: String) -> void:
 	var resolved_id: String = biome_id if biome_id != "" else DEFAULT_BIOME_ID
 	_spec    = fetch_spec(resolved_id)
 	_biome_id = resolved_id
-	_mod     = _normalize_mod(_spec.get("mod", {}))
+	# Khí hậu biome đã TẮT (FeatureFlags.BIOME_CLIMATE_ENABLED): giữ HÌNH ẢNH
+	# (ánh sáng, sương, màu nền vẫn đổi theo vùng) nhưng bỏ phần sửa chỉ số ngầm
+	# — nó không xuất hiện ở đâu trong bảng Nền × Bội nên người chơi chỉ thấy số
+	# nhảy mà không biết vì sao.
+	_mod = _normalize_mod(_spec.get("mod", {})) if FeatureFlags.BIOME_CLIMATE_ENABLED 		else _normalize_mod({})
 	_apply_tower_channel()
 	_push_to_game_manager()
 	biome_applied.emit(_biome_id, _mod.duplicate(true))

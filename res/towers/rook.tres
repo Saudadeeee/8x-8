@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("2_03bnr")
 id = "rook"
+attack_pattern = 0
 name = "Rook"
 description = "Chịu đòn tốt, tầm trung. Trụ giữ một ngã rẽ."
 cost = 34

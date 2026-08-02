@@ -153,7 +153,7 @@ static func _scan_dragon_line(cell: Vector2i, element: String, map: Dictionary,
 			_tag(tagged, p, DRAGON_LINE)
 		groups.append({"id": DRAGON_LINE, "element": element, "cells": line})
 
-## Tứ Trụ: khối 2×2 cùng loại. Nhận diện từ góc TRÊN-TRÁI ⇒ mỗi khối đúng một lần.
+## Tứ Trụ: khối 2×2 cùng loại. Nhận diện từ góc TRÊN-TRÁI → mỗi khối đúng một lần.
 static func _scan_four_pillar(cell: Vector2i, element: String, map: Dictionary,
 		w: int, h: int, tagged: Dictionary, groups: Array) -> void:
 	var right: Vector2i = cell + Vector2i(1, 0)
@@ -171,7 +171,7 @@ static func _scan_four_pillar(cell: Vector2i, element: String, map: Dictionary,
 	groups.append({"id": FOUR_PILLAR, "element": element, "cells": block})
 
 ## Song Cực: 2 ô KHÁC loại kề nhau mà cặp đó có phản ứng. Chỉ xét hướng phải/xuống
-## ⇒ mỗi cặp đúng một lần (cặp trái/lên sẽ do ô kia phát hiện).
+## → mỗi cặp đúng một lần (cặp trái/lên sẽ do ô kia phát hiện).
 static func _scan_dual_pole(cell: Vector2i, element: String, map: Dictionary,
 		w: int, h: int, tagged: Dictionary, groups: Array) -> void:
 	for step in _STEPS_RD:
@@ -192,7 +192,7 @@ static func _scan_dual_pole(cell: Vector2i, element: String, map: Dictionary,
 		})
 
 ## Trận Vòng: 4 ô cùng loại bao quanh 1 ô THƯỜNG (trên/dưới/trái/phải).
-## Nhận diện từ ô PHÍA TRÊN của vòng (center = cell + (0,1)) ⇒ mỗi vòng đúng một lần.
+## Nhận diện từ ô PHÍA TRÊN của vòng (center = cell + (0,1)) → mỗi vòng đúng một lần.
 ## Chỉ ô GIỮA được gắn thẻ — phần thưởng ("nhận cả 4 Dấu luân phiên") thuộc về tháp
 ## đứng ở đó, không phải 4 ô tạo vòng.
 static func _scan_ring(cell: Vector2i, element: String, map: Dictionary,

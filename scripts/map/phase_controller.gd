@@ -21,7 +21,8 @@ enum GamePhase { PREPARE, WAVE, SHOP }
 
 # 20 wave = ba chặng, mỗi chặng kết bằng một Rival King (wave 7, 14, 20).
 # Trước đây 10 wave / một boss — chưa tới một phần ba lời hứa trong GDD.
-const MAX_WAVES:     int   = 20
+## Ván ~15 phút. Roguelike cần THUA NHANH để học nhanh.
+const MAX_WAVES:     int   = 12
 ## Giữ lại làm hằng tương thích: pha chuẩn bị không còn đếm ngược nữa
 ## (xem `request_start_wave`). 0 nghĩa là "không giới hạn thời gian".
 const PREP_DURATION: float = 0.0
@@ -95,7 +96,7 @@ func request_start_wave() -> bool:
 	return true
 
 
-## Đang ở pha chuẩn bị và đã xác nhận trinh sát ⇒ nút bắt đầu wave phải sáng.
+## Đang ở pha chuẩn bị và đã xác nhận trinh sát → nút bắt đầu wave phải sáng.
 func can_start_wave() -> bool:
 	return current_phase == GamePhase.PREPARE and _wave_confirmed
 

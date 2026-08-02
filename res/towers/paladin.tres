@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_script")
 id = "paladin"
+attack_pattern = 5
 name = "Paladin"
 description = "Bền, có hào quang hỗ trợ. Neo giữ tuyến đầu."
 texture = ExtResource("2_icon")

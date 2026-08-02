@@ -13,6 +13,15 @@ extends Node3D
 @onready var king_manager:  KingManager     = $KingManager
 @onready var shop_manager:  ShopPanelManager = $ShopManager
 
+## Nền × Bội — công thức chấm điểm của game (xem board_score.gd).
+var board_score: BoardScore = null
+## Thế cờ theo hình học quân (Trận Pháo, Giao Hoả, Song Mã…).
+var chess_formations: ChessFormations = null
+## Luật riêng của Rival King đang đối đầu.
+var king_rules: KingRules = null
+## Bộ quân của người chơi — shop rút quân từ đây (xem army_deck.gd).
+var army_deck: ArmyDeck = null
+
 # Các class dưới đây có class_name riêng, không cần preload thủ công.
 
 # ── Component Instances ──────────────────────────────────────────────────────
@@ -57,7 +66,24 @@ const OVERCHARGE_COST: int = 30   # vàng cho 1 lần Overcharge tháp (right-cl
 const BOSS_BONUS_GOLD: int = 100
 ## Bản đồ chỉ mở rộng mỗi N wave (không phải mỗi wave).
 ## Với N = 3 → mở rộng trước wave 4, 7, 10.
-const EXPAND_EVERY_N_WAVES: int = 3
+## BÀN CỜ KHOÁ Ở 8×8 CẢ VÁN — 0 nghĩa là không bao giờ mở rộng.
+##
+## Đây là thay đổi thiết kế QUAN TRỌNG NHẤT của bản này. Bàn cũ nở mỗi 3 wave
+## lên tới 24×24 = 576 ô; đo được bot rải 106 tháp mà CHƯA LẦN NÀO hết chỗ.
+## Khi chỗ đặt không khan hiếm thì "đặt quân nào ở đâu" không còn là quyết định
+## — và đó chính là quyết định mà cả hệ nước đi, thế cờ, ô nguyên tố được xây
+## để phục vụ. Bloons giữ bản đồ cố định, TFT giữ trần 8-10 quân; cả hai đều ép
+## khan hiếm lên tài nguyên VỊ TRÍ. Bản này làm như vậy.
+##
+## Mã mở rộng (map_generator.generate_extension_to_region, rebase, 4 hướng) vẫn
+## còn nguyên và vẫn được test — chỉ là không được gọi. Bật lại = đặt lại 3.
+const EXPAND_EVERY_N_WAVES: int = 0
+
+## Trần số quân trên bàn. Tăng theo wave nên vẫn có cảm giác lớn mạnh, nhưng
+## không bao giờ đủ để lấp kín 64 ô — luôn phải chọn.
+const MAX_UNITS_BASE: int = 10
+const MAX_UNITS_PER_WAVE: float = 0.9
+const MAX_UNITS_CAP: int = 20
 
 ## Script hiệu ứng gameplay của biome (do hệ khác cung cấp). API kỳ vọng:
 ## setup(map) -> void, apply_biome(biome_id: String) -> void.
@@ -188,6 +214,19 @@ func _ready() -> void:
 	element_synergy.element_synergy_changed.connect(_on_element_synergy_changed)
 	# setup() sau khi territory_manager đã tồn tại — nó là nguồn đếm Bát Quái.
 	element_synergy.setup(territory_manager)
+
+	# Nền × Bội + thế cờ theo hình học quân. Hai hệ này là trục chính của thiết
+	# kế mới; hệ ô nguyên tố bên dưới trở thành nguồn NỀN và một phần BỘI.
+	army_deck = ArmyDeck.new()
+	army_deck.name = "ArmyDeck"
+	add_child(army_deck)
+	if shop_manager:
+		shop_manager.army_deck = army_deck
+
+	board_score = BoardScore.attach(self)
+	chess_formations = ChessFormations.attach(self)
+	chess_formations.formations_changed.connect(_on_chess_formations_changed)
+	king_rules = KingRules.attach(self)
 
 	formation_overlay = FormationOverlay.new()
 	formation_overlay.name = "FormationOverlay"
@@ -484,8 +523,9 @@ func request_next_wave_phase() -> void:
 	# request_next_wave() tăng wave_number TRƯỚC → wave dưới đây là wave sắp tới.
 	phase_controller.request_next_wave()
 	var wave: int = phase_controller.wave_number
-	if wave > 1 and (wave - 1) % EXPAND_EVERY_N_WAVES == 0:
+	if EXPAND_EVERY_N_WAVES > 0 and wave > 1 			and (wave - 1) % EXPAND_EVERY_N_WAVES == 0:
 		grid_controller.expand()
+	_restock_deck()
 	phase_controller.start_prep_phase()
 	update_ui()
 
@@ -498,6 +538,13 @@ func attempt_shop_purchase(item_id: String) -> void:
 		return
 	var item: ShopItemData = shop_manager.get_item_by_id(item_id)
 	if not item:
+		# Thao tác lên bộ quân được sinh động mỗi lượt roll nên không nằm trong
+		# catalog tĩnh — tìm trong danh sách đang bày rồi xử lý riêng.
+		if item_id.begins_with("deck_"):
+			_buy_deck_action(item_id)
+		return
+	if item_id.begins_with("deck_"):
+		_buy_deck_action(item_id)
 		return
 	if item.use_royal_decree:
 		if not king_manager:
@@ -769,6 +816,16 @@ func _center_camera_on_board() -> void:
 	cam.center_on_board(focus, span)
 
 func _on_phase_changed(phase: PhaseController.GamePhase) -> void:
+	# Luật Rival King chỉ sống trong wave boss của hắn, KHÔNG kéo sang wave
+	# thường — nếu không thì "Tượng bị câm" biến thành nerf vĩnh viễn.
+	if king_rules and is_instance_valid(king_rules):
+		var w: int = phase_controller.wave_number
+		if wave_spawner and wave_spawner.is_boss_wave(w):
+			king_rules.activate_for_boss(WaveSpawner.BOSS_WAVES.find(w))
+		else:
+			king_rules.clear()
+	# Ngưỡng đổi theo wave → bảng Nền × Bội phải tính lại ở mỗi lần đổi pha.
+	_refresh_board_score()
 	var hud := get_node_or_null("HUD")
 	if hud:
 		match phase:
@@ -797,6 +854,62 @@ func _on_prep_countdown_updated(seconds: int) -> void:
 	var hud := get_node_or_null("HUD")
 	if hud and hud.has_method("update_prep_countdown"):
 		hud.update_prep_countdown(seconds)
+
+## Trả quân đã rút về bộ. Bộ mỏng dần trong một wave rồi đầy lại — đúng nhịp
+## "tay bài" của Balatro: mỗi vòng bạn thấy một lát cắt khác của cùng một bộ.
+func _restock_deck() -> void:
+	if army_deck and is_instance_valid(army_deck):
+		army_deck.restock()
+
+
+## Mua một thao tác lên bộ: trừ vàng rồi áp. Không đủ tiền hoặc thao tác bất
+## hợp lệ (bộ chạm sàn, quân đã ★3) thì KHÔNG trừ tiền.
+func _buy_deck_action(action_id: String) -> void:
+	var offer: ShopItemData = null
+	for it in shop_manager.get_active_offers():
+		if it != null and str(it.id) == action_id:
+			offer = it
+			break
+	if offer == null:
+		return
+	var price: int = int(round(offer.cost))
+	if current_gold < price:
+		phase_controller.phase_message = "⚠ Không đủ vàng."
+		update_ui()
+		return
+	if not apply_deck_action(action_id):
+		phase_controller.phase_message = "⚠ Không thực hiện được thao tác này."
+		update_ui()
+		return
+	current_gold -= price
+	if _game_manager:
+		_game_manager.current_gold = current_gold
+	shop_manager.remove_from_active_offers(action_id)
+	var am = get_node_or_null("/root/AudioManagerSingleton")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx("shop_buy", -4.0)
+	update_ui()
+
+
+## Bốn thao tác lên bộ, bán trong shop. Đây là chỗ "build" thành hình:
+## xoá Tốt để bộ mỏng, phong Hậu cho Tốt, nâng sao vĩnh viễn một loại.
+func apply_deck_action(action_id: String) -> bool:
+	if army_deck == null or not is_instance_valid(army_deck):
+		return false
+	var parts := action_id.split(":")
+	if parts.size() < 2:
+		return false
+	match parts[0]:
+		"deck_thin":
+			return army_deck.remove_unit(parts[1], 1)
+		"deck_star":
+			return army_deck.upgrade_star(parts[1])
+		"deck_add":
+			return army_deck.add_unit(parts[1], 1)
+		"deck_morph":
+			return parts.size() >= 3 and army_deck.transmute(parts[1], parts[2])
+	return false
+
 
 func _on_prep_ready_changed(ready: bool) -> void:
 	var hud := get_node_or_null("HUD")
@@ -1055,12 +1168,61 @@ func _dominant_element() -> String:
 
 ## Đếm lại synergy nguyên tố. Hoãn một frame: `tower_placed` phát TRƯỚC khi tháp
 ## đọc xong nguyên tố ô dưới chân, đếm ngay sẽ hụt mất tháp vừa đặt.
+func _on_chess_formations_changed(_counts: Dictionary) -> void:
+	update_ui()
+
+## Trần số quân ở wave hiện tại.
+func max_units() -> int:
+	var wave: int = phase_controller.wave_number if phase_controller else 1
+	var extra := 0
+	if king_rules and is_instance_valid(king_rules):
+		extra = king_rules.extra_places()
+	return mini(MAX_UNITS_CAP,
+		MAX_UNITS_BASE + int(floor(float(maxi(0, wave - 1)) * MAX_UNITS_PER_WAVE)) + extra)
+
+
+## Số quân đang đứng trên bàn.
+func unit_count() -> int:
+	return get_tree().get_nodes_in_group("towers").size()
+
+
+## Còn chỗ đặt quân không. tower_placer hỏi trước khi cho đặt.
+func can_place_more_units() -> bool:
+	return unit_count() < max_units()
+
+
+## Tóm tắt Nền × Bội cho HUD. Trả rỗng nếu hệ chưa dựng xong.
+func board_summary() -> Dictionary:
+	if board_score == null or not is_instance_valid(board_score):
+		return {}
+	return board_score.summary(phase_controller.wave_number if phase_controller else 1)
+
+func _refresh_board_score() -> void:
+	if chess_formations and is_instance_valid(chess_formations):
+		chess_formations.recount()
+	var hud := get_node_or_null("HUD")
+	if hud and hud.has_method("update_board_score"):
+		hud.update_board_score(board_summary())
+	update_ui()
+
 func _recount_element_synergy() -> void:
+	# Bố cục bàn đổi → đường trượt của Xe/Tượng/Hậu đổi theo (quân mới có thể
+	# chắn ngang). Dựng lại bảng ô-có-quân TRƯỚC khi bất cứ ai đọc tầm phủ.
+	Tower.bump_layout(get_tree())
+	_refresh_all_coverage()
+	_refresh_board_score()
 	if element_synergy == null:
 		return
 	await get_tree().process_frame
 	if is_instance_valid(element_synergy):
 		element_synergy.recount()
+
+## Bắt mọi quân dựng lại tập ô phủ ngay (không đợi frame kế) — panel và overlay
+## đọc `covered_cells` ngay sau khi đặt quân.
+func _refresh_all_coverage() -> void:
+	for t in get_tree().get_nodes_in_group("towers"):
+		if is_instance_valid(t) and t.has_method("refresh_coverage"):
+			t.refresh_coverage()
 
 func _on_element_synergy_changed(_levels: Dictionary) -> void:
 	update_ui()   # dòng tóm tắt synergy nguyên tố nằm trong update_ui

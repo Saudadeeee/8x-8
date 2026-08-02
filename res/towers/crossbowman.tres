@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_script")
 id = "crossbowman"
+attack_pattern = 0
 name = "Crossbowman"
 description = "Bắn nhanh, tầm khá. Ăn theo mọi buff tốc đánh."
 cost = 26

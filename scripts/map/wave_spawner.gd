@@ -17,14 +17,18 @@ signal boss_escaped
 # Wave DONG HON de bu cho viec dich di cham (do thuc te: giam toc do 45% lam
 # HP nguoi choi LEO tu 19 len 34 giua van vi thap co nhieu thoi gian ban hon).
 # Game TD nhip cham bu bang SO LUONG chu khong bang toc do — Bloons cung vay.
-const ENEMIES_PER_WAVE: int = 14
-const ENEMIES_PER_WAVE_INCREMENT: int = 3
+## Quy mô wave đã hạ theo BÀN 8×8 + TRẦN QUÂN. Bảng cũ (14 +3/wave, 20 wave,
+## 850 địch) được cân cho bàn nở tới 24×24 và số tháp không giới hạn — đo được
+## 106 tháp ở wave 14. Với 8-20 quân trên 64 ô thì cùng số địch đó là bất khả.
+const ENEMIES_PER_WAVE: int = 8
+const ENEMIES_PER_WAVE_INCREMENT: int = 2
 ## Máu địch tăng theo CẤP SỐ NHÂN, không phải cộng tuyến tính.
 ## Lý do: sức mạnh người chơi vốn nhân dồn (★ ×3.2 · synergy +30% · perk · cấp ô
 ## · trang bị), nên +12% tuyến tính mỗi wave bị bỏ xa — đo thực tế cho thấy máu
 ## Vua đứng yên từ wave 6 trở đi, hết hoàn toàn áp lực.
 ## 1.15^(w-1): wave 5 ×1.75 · wave 10 ×3.52 · wave 12 ×4.65.
-const ENEMY_HEALTH_GROWTH: float = 1.18
+## 1.13 chứ không 1.18: ván chỉ còn 12 wave, mà 1.18^11 = ×6.2 là vách đá.
+const ENEMY_HEALTH_GROWTH: float = 1.13
 ## Giữ lại hằng cũ cho tương thích (không còn dùng trong công thức máu).
 const ENEMY_HEALTH_SCALE_PER_WAVE: float = 0.12
 const ENEMY_SPEED_SCALE_PER_WAVE: float = 0.03
@@ -44,7 +48,9 @@ const ELITE_CHANCE: float = 0.10
 ## Các wave có BOSS. Mở rộng bằng cách thêm số wave vào mảng này.
 # BA wave boss — GDD hứa "đánh bại TẤT CẢ Rival King", trước đây chỉ có một.
 # Khoảng cách 6-7 wave để người chơi kịp dựng lại đội hình giữa hai lần.
-const BOSS_WAVES: Array[int] = [7, 14, 20]
+## Ván ngắn lại còn 12 wave (~15 phút). Roguelike cần THUA NHANH để học nhanh;
+## 20 wave × 850 địch là 40 phút mới biết ván hỏng.
+const BOSS_WAVES: Array[int] = [5, 9, 12]
 ## Wave boss thay đàn quái thường bằng một nhóm hộ vệ nhỏ.
 const BOSS_WAVE_MINION_COUNT: int = 6
 ## Ba Rival King — chọn ngẫu nhiên một cho mỗi wave boss.
@@ -153,6 +159,12 @@ func get_season_name(wave_num: int) -> String:
 	return ""
 
 func get_season_buff(wave_num: int) -> Dictionary:
+	# Mùa đã TẮT (FeatureFlags.SEASONS_ENABLED): nó sửa chỉ số tháp bằng một hệ
+	# số VÔ HÌNH không xuất hiện trong bảng Nền × Bội. Tên mùa GIỮ LẠI làm nhãn
+	# tiến trình (Xuân/Hạ/Thu/Đông) và vẫn quyết định loài địch nào spawn — đó là
+	# phần đọc được; chỉ phần buff ngầm bị tắt.
+	if not FeatureFlags.SEASONS_ENABLED:
+		return {"desc": "Không ảnh hưởng chỉ số."}
 	return SEASON_BUFFS.get(int(get_season(wave_num)), {})
 
 # --- TÍNH SỐ ENEMY ---
@@ -473,6 +485,25 @@ func get_wave_intel_text(wave_num: int) -> String:
 			wave_num, get_season_name(wave_num), total, ", ".join(parts), season_effect,
 		]
 	return "Wave %d (%s) — %d địch: %s  |  %s" % [wave_num, get_season_name(wave_num), total, ", ".join(parts), season_effect]
+
+## Danh sách địch của một wave, tốc độ quy về Ô/GIÂY (dữ liệu .tres giữ px).
+## BoardScore dùng để tính ngưỡng — nó cần cùng đơn vị với bàn cờ.
+func get_wave_enemy_preview(wave_num: int) -> Array:
+	var data := build_wave_intel_data(wave_num)
+	var rows: Array = []
+	for e in data.get("enemies", []):
+		if not (e is Dictionary):
+			continue
+		var d: Dictionary = e
+		rows.append({
+			"id": d.get("id", ""),
+			"display": d.get("display", ""),
+			"count": int(d.get("count", 0)),
+			"hp": int(d.get("hp", 0)),
+			"speed": float(d.get("speed", 16)) / 16.0,
+		})
+	return rows
+
 
 func build_wave_intel_data(wave_num: int) -> Dictionary:
 	var pool = _get_season_enemy_pool(wave_num)

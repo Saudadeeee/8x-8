@@ -989,6 +989,66 @@ fxgen`) qua
   Phải đo thêm advance. Batch test 8 kiểm cả hai cách.
 - Bitmap font phải tắt antialias + subpixel, nếu không pixel bị nhoè.
 
+*TÁI THIẾT KẾ THEO BALATRO (2026-08-03) — ĐỌC TRƯỚC MỌI THỨ KHÁC:*
+
+Game chuyển từ "TD nhiều hệ thống" sang "roguelike một công thức" kiểu Balatro.
+Bài kiểm duy nhất cho mọi cơ chế từ nay: **nó có vào được `Nền × Bội` không?**
+Không vào được thì tắt cờ ở `scripts/managers/feature_flags.gd`.
+
+- **Quân cờ đánh theo NƯỚC ĐI, không theo bán kính.** `scripts/towers/chess_pattern.gd`
+  (`ChessPattern`, toàn static) là nguồn sự thật. Xe trượt dọc hàng/cột, Tượng
+  chéo, Mã nhảy chữ L không bị chặn, Tốt 4 ô chéo kề, Công thành có tầm TỐI
+  THIỂU. **Quân của mình CHẶN đường trượt** — đó là ràng buộc tạo ra câu đố xếp
+  hình. Địch KHÔNG chặn (nó là mục tiêu).
+  Khai bằng `TowerStats.attack_pattern` (`@export_enum`) nên thêm quân vẫn kéo thả.
+- **Ngân sách dạy về 0**: không ai cần học Xe đi thế nào. Đây là lý do duy nhất
+  chọn chủ đề cờ vua — bản cũ có tên quân cờ mà không có luật cờ nào.
+- **Bàn KHOÁ 8×8 cả ván** (`EXPAND_EVERY_N_WAVES = 0`) + **trần số quân**
+  (`MAX_UNITS_BASE 10`, `+0.9/wave`, trần 20). Bản cũ nở tới 24×24 = 576 ô và đo
+  được bot rải 106 tháp mà CHƯA LẦN NÀO hết chỗ — khi vị trí không khan hiếm thì
+  mọi hệ xếp hình chạy không tải. Mã mở rộng vẫn còn và vẫn được test, chỉ không
+  được gọi.
+- **`Nền × Bội`** (`scripts/map/board_score.gd`):
+  `NỀN(ô)` = Σ DPS quân phủ ô đó · `BỘI(ô)` = thế cờ × cấp ô nguyên tố × di vật
+  × luật Vua. HUD hiện **một số so với một số**: sát thương cả wave / tổng máu wave.
+  **Ba lần tính sai đã sửa** — ghi lại để khỏi lặp:
+    (1) `Σ điểm ô / tốc độ × số địch` bỏ qua tranh chấp mục tiêu → dư ~4×;
+    (2) `DPS × thời lượng wave` giả định quân luôn có mục tiêu → dư ~3×;
+    (3) đúng: `DPS × BỘI_tb × min(thời_lượng, n × k / v)` với k = số ô ĐƯỜNG phủ.
+  Còn `EFFICIENCY = 0.55` là **hằng số thực nghiệm** (đạn bay, sát thương thừa,
+  đầu/cuối wave vắng địch). Hiệu chỉnh sao cho **tỉ lệ 1.0 trùng ranh giới
+  sống/chết** — đo lại sau mỗi lần đổi nhịp wave hoặc chỉ số quân.
+- **BẪY ĐÃ DÍNH — lọc mục tiêu lúc `area_entered`**: địch chạm mép hình cầu lọc
+  thô khi CHƯA đứng trên ô được phủ thì bị loại VĨNH VIỄN (`area_entered` chỉ bắn
+  một lần). Phải giữ danh sách thô `_in_area` rồi lọc theo nước đi MỖI FRAME.
+- **BẪY ĐÃ DÍNH — `Array.filter()` trả `Array` không có kiểu**, gán vào
+  `Array[Enemy]` ném lỗi runtime mỗi frame; game không sập, chỉ là mọi tháp không
+  bao giờ có mục tiêu. Phải append từng phần tử.
+- **Thế cờ** (`scripts/towers/chess_formations.gd`) — bản dịch của "ván bài":
+  Trận Pháo (2 Xe cùng hàng/cột) · Giao Hoả · Song Mã · Tường Tốt · Cấm Vệ ·
+  Thê Đội · Nước Chĩa. Dò theo HÌNH HỌC QUÂN, khác `FormationDetector` cũ (dò
+  theo ô nguyên tố). Hai hệ chạy song song: ô cho Nền, quân cho Bội.
+- **Bộ quân** (`scripts/shop/army_deck.gd`) — bản dịch của bộ bài. Khởi đầu là bộ
+  cờ thật (6 Tốt, 3 Xe, 2 Mã, 2 Tượng, 1 Hậu). Shop **rút quân TỪ BỘ** và bán
+  **thao tác lên bộ**: loại quân (bộ mỏng → tỉ lệ rút quân tốt tăng), nâng sao
+  vĩnh viễn, phong Hậu. Không nối `shop_manager.army_deck` thì bộ chỉ là bảng số.
+- **Rival King ĐỔI LUẬT** (`scripts/map/king_rules.gd`), không phải nhiều máu hơn:
+  Vua Câm (Tượng ngừng bắn) · Vua Nghẽn (Xe) · Vua Nghiêng (chỉ nửa bàn tính Bội)
+  · Vua Gương (thế cờ không cộng dồn) · Vua Vội · Vua Thuế. Luật CHỈ sống trong
+  wave boss, `_on_phase_changed` gọi `clear()` ở wave thường.
+- **Đã TẮT bằng cờ** (không xoá): 4 mùa · khí hậu biome · synergy loại quân · ô
+  Phước/Nguyền · chí mạng · combo hạ gục · mở rộng bản đồ. Lý do từng cái ghi
+  trong `feature_flags.gd`. **Chí mạng tắt vì bảng ngưỡng hứa một con số chính
+  xác** — ngẫu nhiên lúc chấm điểm phá đúng lời hứa đó.
+- **Quy mô ván**: 12 wave (~15 phút), boss ở 5/9/12, 8 địch +2/wave,
+  `ENEMY_HEALTH_GROWTH 1.13`. Bản cũ 20 wave × 850 địch được cân cho bàn 24×24.
+- Đo bằng bot đặt tối ưu: tỉ lệ 1.39 · 1.57 · 0.78 · 1.00 → sống; **0.45 ở wave
+  boss → chết**. Ranh giới 1.0 khớp thực tế.
+- Test batch 12 (`tests/test_12_chess_core.gd`, 43 khẳng định) bảo vệ Ý ĐỊNH
+  THIẾT KẾ chứ không phải chi tiết: mọi quân phải khai nước đi (không còn RADIAL),
+  bàn phải 8×8, trần quân phải được THI HÀNH, quân không phủ ô đường phải gây 0,
+  và **mọi luật Rival King phải có tác dụng thật**.
+
 *Bảy sửa theo phản hồi chơi thử (2026-08-02):*
 - **Pha chuẩn bị KHÔNG còn đếm ngược.** `PhaseController.request_start_wave()` là
   đường DUY NHẤT vào wave; `_tick_prepare` nay rỗng. Đồng hồ 30 giây cũ vừa sinh

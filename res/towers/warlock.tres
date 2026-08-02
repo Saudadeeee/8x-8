@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_script")
 id = "warlock"
+attack_pattern = 1
 name = "Warlock"
 description = "Gây sát thương theo thời gian. Hợp ô Độc và ô Hoả."
 cost = 38

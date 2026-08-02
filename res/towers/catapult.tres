@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_script")
 id = "catapult"
+attack_pattern = 6
 name = "Catapult"
 description = "Đạn nổ theo vùng. Mạnh nhất khi địch đi thành đàn."
 cost = 55

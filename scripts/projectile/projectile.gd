@@ -222,7 +222,9 @@ func hit_target():
 		var bonus: Variant = element_source.get("equip_crit_bonus")
 		if bonus is int or bonus is float:
 			crit_chance += maxf(0.0, float(bonus))
-	var is_crit := randf() < crit_chance
+	# Chí mạng đã TẮT (FeatureFlags.CRIT_ENABLED): bảng ngưỡng Nền × Bội hứa với
+	# người chơi một con số chính xác, ngẫu nhiên lúc chấm điểm phá đúng lời hứa đó.
+	var is_crit := FeatureFlags.CRIT_ENABLED and randf() < crit_chance
 	var final_damage := int(damage * crit_mult) if is_crit else damage
 	final_damage = int(round(final_damage * _conditional_mult(target)))
 

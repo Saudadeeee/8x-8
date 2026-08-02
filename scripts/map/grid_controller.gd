@@ -17,11 +17,11 @@
 #
 # MỞ RỘNG 4 HƯỚNG (NORTH/SOUTH/WEST/EAST):
 #   - Toạ độ ô LUÔN nằm trong [0, grid_width) × [0, grid_height) — không bao giờ âm.
-#   - Mở về WEST/NORTH ⇒ REBASE: dịch mọi state keyed theo cell đi delta (+8 trên trục
+#   - Mở về WEST/NORTH → REBASE: dịch mọi state keyed theo cell đi delta (+8 trên trục
 #     tương ứng) rồi mới tăng kích thước. Nhờ vậy tower_placer / map_overlay_drawer /
 #     territory_manager (đang duyệt 0..width/height) không cần biết gì về việc rebase.
 #   - Hướng được CHẤM ĐIỂM theo khoảng cách ô King tới biên, thử từ tốt nhất; chỉ commit
-#     khi đoạn path mới đã sinh xong ⇒ thất bại là no-op sạch.
+#     khi đoạn path mới đã sinh xong → thất bại là no-op sạch.
 # Được game_map.gd khởi tạo và làm con node.
 extends Node
 class_name GridController
@@ -287,8 +287,8 @@ func _ranked_expand_dirs(king_cell: Vector2i) -> Array[int]:
 
 	# score * 100 + jitter[0..99]: hướng điểm khác nhau giữ đúng thứ tự, hướng điểm
 	# bằng nhau được xáo ngẫu nhiên.
-	# Phạt hướng vừa dùng: đích DFS luôn là biên NGOÀI của vùng mới ⇒ King nằm sẵn trên
-	# biên đó ⇒ hướng cũ luôn có điểm 0 và sẽ được chọn mãi. Phạt để bản đồ mở đa hướng thật.
+	# Phạt hướng vừa dùng: đích DFS luôn là biên NGOÀI của vùng mới → King nằm sẵn trên
+	# biên đó → hướng cũ luôn có điểm 0 và sẽ được chọn mãi. Phạt để bản đồ mở đa hướng thật.
 	for entry in scored:
 		var penalty: int = REPEAT_DIR_PENALTY if int(entry["dir"]) == _last_expand_dir else 0
 		entry["rank"] = (int(entry["score"]) + penalty) * 100 + (randi() % 100)
@@ -611,7 +611,7 @@ func get_element_at(cell: Vector2i) -> String:
 		# Chỉ chạy khi ô này TRỐNG nên ô nguyên tố thật không bao giờ bị ghi đè.
 		if resolved and _vein_spread_enabled():
 			element = _vein_from_neighbour(cell)
-	# Chưa có nguồn dữ liệu nào ⇒ KHÔNG cache (tránh ghim NONE vĩnh viễn khi
+	# Chưa có nguồn dữ liệu nào → KHÔNG cache (tránh ghim NONE vĩnh viễn khi
 	# TerritoryManager chưa kịp khởi tạo).
 	if resolved:
 		_element_cache[cell] = element
@@ -793,6 +793,10 @@ func restore_props_at(cell: Vector2i) -> void:
 ## path, chưa có tower, chưa đặc biệt. Vùng được truyền vào dạng Rect2i vì map mở rộng
 ## được cả 4 hướng (không còn là "dải hàng" như bản chỉ mở theo +y).
 func _roll_special_tiles_in_rect(region: Rect2i) -> void:
+	# Ô Phước/Nguyền đã TẮT (FeatureFlags.SPECIAL_TILES_ENABLED): ±20% phẳng,
+	# không tương tác với nước đi cũng không với thế cờ — nó chỉ là số cộng thêm.
+	if not FeatureFlags.SPECIAL_TILES_ENABLED:
+		return
 	var candidates: Array[Vector2i] = []
 	for x in range(region.position.x, region.position.x + region.size.x):
 		for y in range(region.position.y, region.position.y + region.size.y):

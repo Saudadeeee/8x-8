@@ -109,6 +109,11 @@ func _load_definitions_from_directory() -> void:
 
 # --- Đăng ký khi đặt tháp (nhận TowerStats) ---
 func on_tower_placed(tower: Node, stats: TowerStats) -> void:
+	# Synergy theo LOẠI QUÂN đã TẮT (FeatureFlags.UNIT_SYNERGY_ENABLED):
+	# ChessFormations đã là trục "xếp quân cho đúng" và nó NHÌN LÀ THẤY.
+	# Hai trục cùng thưởng cho việc xếp quân thì cả hai đều mờ.
+	if not FeatureFlags.UNIT_SYNERGY_ENABLED:
+		return
 	# Qua get_synergy_tag() chứ không đọc thẳng `type`: tháp khai `synergy_tag`
 	# bằng chuỗi (nhánh mới, không có trong enum) phải được đếm đúng nhánh.
 	var tag: String = stats.get_synergy_tag()

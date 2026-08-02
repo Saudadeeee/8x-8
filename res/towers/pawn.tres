@@ -8,13 +8,14 @@
 [resource]
 script = ExtResource("1_3lx0h")
 id = "pawn"
+attack_pattern = 4
 name = "Pawn"
 description = "Lính bắn cơ bản. Bắn đều, rẻ, dễ ghép sao. Nền của mọi đội hình."
 texture = ExtResource("2_fch0j")
 projectile_texture = ExtResource("3_bold")
 cost = 12
 decree_cost = 1.0
-base_damage = 12
+base_damage = 22
 attack_speed = 1.3
 attack_range = 3
 metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

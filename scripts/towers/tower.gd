@@ -1,4 +1,5 @@
 # res://scripts/towers/tower.gd
+class_name Tower
 extends Node3D
 
 @export var stats: TowerStats
@@ -96,6 +97,8 @@ var _star_label: Label3D    = null
 var boon_burn_override: bool = false
 
 # ── Combat state ──────────────────────────────────────────────────────────
+## Địch nằm trong hình cầu LỌC THÔ (Area3D). Lọc tinh theo nước đi ở _process.
+var _in_area: Array[Enemy] = []
 var targets_in_range: Array[Enemy] = []
 var current_target:   Enemy        = null
 var can_shoot:        bool         = true
@@ -147,7 +150,7 @@ func _ready() -> void:
 
 # ── Vùng click (picking) ──────────────────────────────────────────────────
 # VẤN ĐỀ: chọn ô bằng ray cắt mặt phẳng y = 0. Camera nghiêng −50°, model tháp
-# cao ~1.2 m ⇒ THÂN tháp trên màn hình nằm lệch khỏi ô của nó khoảng
+# cao ~1.2 m → THÂN tháp trên màn hình nằm lệch khỏi ô của nó khoảng
 # 1.2 / tan(50°) ≈ 1.0 m = trọn một ô. Người chơi click vào thân tháp thì trúng
 # ô PHÍA SAU nó, phải rê xuống đúng chân tháp mới chọn được.
 #
@@ -184,12 +187,28 @@ func _build_pick_area() -> void:
 	add_child(_pick_area)
 
 func _process(delta) -> void:
-	targets_in_range = targets_in_range.filter(func(e): return is_instance_valid(e))
-	if not is_instance_valid(current_target):
+	# Area3D chỉ là lọc THÔ (hình cầu bao trọn mọi ô nước đi có thể vươn tới).
+	# Lọc TINH theo nước đi nằm ở đây: quân chỉ bắn được ô mà luật cờ cho phép.
+	# Lọc lại TỪ DANH SÁCH THÔ mỗi frame: địch di chuyển nên ô nó đứng đổi liên
+	# tục, quân phải nhặt được nó ngay khi nó bước vào ô mình phủ.
+	# Gán tường minh từng phần tử: `Array.filter()` trả về `Array` KHÔNG có kiểu,
+	# gán thẳng vào `Array[Enemy]` ném lỗi runtime MỖI FRAME — và lỗi đó không
+	# làm game sập, chỉ khiến mọi tháp không bao giờ có mục tiêu. Đã dính.
+	var alive: Array[Enemy] = []
+	var valid: Array[Enemy] = []
+	for e in _in_area:
+		if not is_instance_valid(e):
+			continue
+		alive.append(e)
+		if _is_valid_target(e):
+			valid.append(e)
+	_in_area = alive
+	targets_in_range = valid
+	if not is_instance_valid(current_target) or not _is_valid_target(current_target):
 		update_target()
 	_face_target(delta)
 	_tick_auto_reaction(delta)
-	if current_target and can_shoot:
+	if current_target and can_shoot and not _silenced_by_king():
 		shoot()
 
 ## Xoay model (yaw) hướng về target hiện tại — mượt, không xoay root để giữ range area.
@@ -381,7 +400,7 @@ func recalculate_stats() -> void:
 	# SÀN hồi chiêu theo TỈ LỆ base, không phải hằng 0.1s. Giảm hồi chiêu là số
 	# giây CỘNG PHẲNG từ nhiều nguồn (ô, perk, thuốc, trang bị); với sàn cứng 0.1
 	# một tháp base 1.0s có thể chạm 10 phát/giây = ×10 DPS, phá mọi cân bằng.
-	# MIN_COOLDOWN_RATIO = 0.4 ⇒ trần tăng tốc là ×2.5 so với chính nó.
+	# MIN_COOLDOWN_RATIO = 0.4 → trần tăng tốc là ×2.5 so với chính nó.
 	current_attack_speed = maxf(stats.attack_speed * MIN_COOLDOWN_RATIO,
 		stats.attack_speed - total_spd + season_speed_penalty)
 	# TRẦN tầm bắn: bàn khởi đầu chỉ 8×8 (chéo ~11 ô). Không chặn thì ô Băng +1,
@@ -875,7 +894,10 @@ func update_range_visual() -> void:
 		return
 	if not (collision_shape.shape is SphereShape3D):
 		collision_shape.shape = SphereShape3D.new()
-	var range_to_use = current_range if current_range > 0 else stats.attack_range
+	# Area3D chỉ là LỌC THÔ: bán kính phải bao trọn mọi ô nước đi có thể vươn
+	# tới, lọc tinh theo luật cờ nằm ở `_is_valid_target`. Mã nhảy tới ô cách
+	# 2 ô theo Chebyshev nên sàn là 3.
+	var range_to_use: int = maxi(3, effective_range())
 	collision_shape.shape.radius = range_to_use * TILE_SIZE + (TILE_SIZE / 2.0)
 
 # ==========================================================================
@@ -930,8 +952,107 @@ func _set_overcharge_visual(active: bool) -> void:
 # COMBAT
 # ==========================================================================
 
+## Ô mà quân này đang phủ (toạ độ lưới). Dùng cho vẽ tầm, cho hệ thế cờ và cho
+## bảng Nền × Bội.
+##
+## HIỆU NĂNG: đây là bảng TRA, không phải phép kiểm. Kiểm `ChessPattern.covers`
+## cho từng địch mỗi frame là O(tháp × địch) — 100 tháp × 50 địch = 5000 lượt
+## quét mỗi frame. Dựng sẵn tập ô rồi tra Dictionary là O(1).
+var covered_cells: Array[Vector2i] = []
+var _covered_lookup: Dictionary = {}
+var _home_cell: Vector2i = Vector2i(-9999, -9999)
+
+## Bảng ô có quân, DÙNG CHUNG cho mọi tháp. Chỉ dựng lại khi bố cục bàn đổi
+## (đặt/gỡ/ghép quân) — `bump_layout()` là điểm vào duy nhất.
+static var _blocked_shared: Dictionary = {}
+static var _layout_version: int = 0
+var _coverage_version: int = -1
+
+
+## game_map gọi sau mỗi lần bàn cờ đổi bố cục. Mọi tháp sẽ tự dựng lại tầm phủ
+## ở frame kế — đường trượt của Xe/Tượng/Hậu phụ thuộc quân đứng chắn nên
+## thêm một quân là đổi tầm của cả hàng.
+static func bump_layout(tree: SceneTree) -> void:
+	_blocked_shared = {}
+	if tree == null:
+		return
+	for t in tree.get_nodes_in_group("towers"):
+		if is_instance_valid(t) and t.has_method("home_cell"):
+			_blocked_shared[t.home_cell()] = true
+	_layout_version += 1
+
+
+## Ô của chính tháp này (cache — `world_to_cell` bị gọi rất nhiều).
+func home_cell() -> Vector2i:
+	if _home_cell.x < -9000:
+		_home_cell = GridUtil.world_to_cell(global_position)
+	return _home_cell
+
+
+## Kiểu nước đi của quân (đọc từ .tres, mặc định toả tròn cho quân chưa khai).
+func pattern_kind() -> int:
+	if stats == null:
+		return ChessPattern.Kind.RADIAL
+	return int(stats.attack_pattern)
+
+
+func effective_range() -> int:
+	if current_range > 0:
+		return current_range
+	return stats.attack_range if stats else 1
+
+
+## Dựng lại tập ô phủ. Rẻ, nhưng chỉ chạy khi `_layout_version` đổi.
+func refresh_coverage() -> void:
+	_home_cell = Vector2i(-9999, -9999)
+	var blocked := _blocked_shared.duplicate()
+	blocked.erase(home_cell())        # ô của chính mình không tự chặn mình
+	covered_cells = ChessPattern.cells(pattern_kind(), home_cell(),
+		effective_range(), blocked)
+	_covered_lookup = {}
+	for c in covered_cells:
+		_covered_lookup[c] = true
+	_coverage_version = _layout_version
+	update_range_visual()
+
+
+## Rival King "Vua Câm"/"Vua Nghẽn" khoá hẳn một kiểu nước đi trong wave của hắn.
+## Kiểm ở đây chứ không xoá mục tiêu: tháp vẫn ngắm, vẫn xoay, chỉ không nhả đạn
+## — người chơi thấy ngay quân nào đang bị khoá thay vì tưởng game hỏng.
+func _silenced_by_king() -> bool:
+	var kr := get_node_or_null("/root/GameMap/KingRules")
+	if kr == null:
+		return false
+	return bool(kr.call("silences", pattern_kind()))
+
+
+## Quân này có phủ ô `cell` không. Điểm vào cho BoardScore và overlay tầm.
+func covers_cell(cell: Vector2i) -> bool:
+	if pattern_kind() == ChessPattern.Kind.RADIAL:
+		var d := cell - home_cell()
+		return maxi(absi(d.x), absi(d.y)) <= effective_range()
+	if _coverage_version != _layout_version:
+		refresh_coverage()
+	return _covered_lookup.has(cell)
+
+
+## Địch còn sống VÀ đứng trên ô quân này phủ.
+func _is_valid_target(e) -> bool:
+	if not is_instance_valid(e):
+		return false
+	if pattern_kind() == ChessPattern.Kind.RADIAL:
+		return true          # quân chưa khai nước đi → giữ hành vi bán kính cũ
+	if _coverage_version != _layout_version:
+		refresh_coverage()
+	return _covered_lookup.has(GridUtil.world_to_cell(e.global_position))
+
+
 func update_target() -> void:
-	targets_in_range = targets_in_range.filter(func(e): return is_instance_valid(e))
+	var valid: Array[Enemy] = []
+	for e in _in_area:
+		if _is_valid_target(e):
+			valid.append(e)
+	targets_in_range = valid
 	if targets_in_range.is_empty():
 		current_target = null
 		return
@@ -1074,13 +1195,16 @@ func _on_cooldown_timeout() -> void:
 # ==========================================================================
 
 func _on_area_entered(area) -> void:
-	if area is Enemy:
-		targets_in_range.append(area)
-		if current_target == null:
-			current_target = area
+	# KHÔNG lọc theo nước đi ở đây. Địch chạm mép hình cầu lọc thô khi CHƯA đứng
+	# trên ô được phủ — lọc lúc này thì nó bị loại vĩnh viễn, vì `area_entered`
+	# chỉ bắn MỘT lần và địch không bao giờ "vào lại" nữa.
+	# Đây là lỗi thật đã đo được: công thức báo dư 4× mà quái vẫn lọt.
+	if area is Enemy and not _in_area.has(area):
+		_in_area.append(area)
 
 func _on_area_exited(area) -> void:
 	if area is Enemy:
+		_in_area.erase(area)
 		targets_in_range.erase(area)
 		if current_target == area:
 			current_target = null

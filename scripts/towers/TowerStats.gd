@@ -30,6 +30,14 @@ enum Element { FIRE, WATER, WOOD, EARTH, METAL, DARK, LIGHT }
 ## code: đặt tag ở đây + thả một file res/synergies/<tag>.tres. Trước đây phải
 ## sửa `enum UnitType` trong GDScript, tức không thể làm bằng kéo thả.
 @export var synergy_tag: String = ""
+## Nước đi của quân — quyết định nó với tới ô nào. Xem `ChessPattern.Kind`.
+## Đây là chỉ số QUAN TRỌNG NHẤT của một quân: nó biến vị trí đặt thành câu đố
+## thay vì "đặt đâu cũng như nhau" của mô hình bán kính cũ.
+##   0 Xe · 1 Tượng · 2 Hậu · 3 Mã · 4 Tốt · 5 Vua · 6 Công thành · 7 Toả tròn
+@export_enum("Xe (dọc+ngang)", "Tượng (chéo)", "Hậu (8 hướng)", "Mã (chữ L)",
+	"Tốt (4 chéo kề)", "Vua (8 ô kề)", "Công thành (vành khuyên)",
+	"Toả tròn (mọi hướng)") var attack_pattern: int = 7
+
 @export var element: Element = Element.FIRE
 @export var faction: String = "iron"   # "iron" | "wild" | "hell" | "magic"
 

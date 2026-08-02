@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_script")
 id = "dark_mage"
+attack_pattern = 2
 name = "Dark Mage"
 description = "Sát thương phép diện rộng, hồi chiêu chậm."
 cost = 42

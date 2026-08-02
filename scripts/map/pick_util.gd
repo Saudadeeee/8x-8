@@ -3,7 +3,7 @@
 #
 # VÌ SAO TỒN TẠI
 # `GridUtil.mouse_to_cell` cắt ray với mặt phẳng y = 0. Camera diorama nghiêng
-# −50°, model tháp cao ~1.2 m ⇒ trên màn hình thân tháp nằm lệch khỏi ô của nó
+# −50°, model tháp cao ~1.2 m → trên màn hình thân tháp nằm lệch khỏi ô của nó
 # chừng 1.2 / tan(50°) ≈ 1.0 m, tức TRỌN MỘT Ô. Hệ quả: click vào thân tháp lại
 # trúng ô phía sau; muốn chọn tháp phải rê chuột xuống đúng chân nó.
 #

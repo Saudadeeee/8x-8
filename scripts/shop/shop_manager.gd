@@ -66,6 +66,12 @@ var unit_stats_registry: Dictionary = {}
 var limited_units: Dictionary = {}
 var current_wave: int = 1
 
+## Danh sách món đang bày. Món sinh động (thao tác lên bộ, ô pity, trang bị)
+## KHÔNG nằm trong catalog tĩnh nên phải hỏi qua đây.
+func get_active_offers() -> Array[ShopItemData]:
+	return active_shop_offers
+
+
 func remove_from_active_offers(item_id: String) -> void:
 	for i in range(active_shop_offers.size() - 1, -1, -1):
 		if active_shop_offers[i] and active_shop_offers[i].id == item_id:
@@ -385,7 +391,90 @@ func _make_pity_tile_offer() -> ShopItemData:
 ## Lay mot the TROOP ngau nhien trong danh sach ung vien (da loc theo min_wave).
 ## Tra null neu khong con quan nao hop le — luc do quay danh chiu, nhung it nhat
 ## khong phai do cac loai hang khac chen cho.
+## Tham chiếu tới bộ quân. game_map gán sau khi cả hai đã vào cây.
+var army_deck: Node = null
+
+
+## Quân bày ra quầy được RÚT TỪ BỘ, không bốc từ danh sách tĩnh.
+##
+## Đây là điểm khiến bộ quân có ý nghĩa: xoá Tốt khỏi bộ thì lượt sau xác suất
+## thấy Xe tăng lên thật. Không nối vào đây thì bộ quân chỉ là một bảng số đẹp
+## mà không ảnh hưởng gì tới lượt chơi.
+func _draw_troop_offer() -> ShopItemData:
+	if army_deck == null or not is_instance_valid(army_deck):
+		return null
+	var tid: String = str(army_deck.call("draw"))
+	if tid == "":
+		return null
+	var stats: TowerStats = army_deck.call("stats_for", tid)
+	if stats == null:
+		return null
+	var item := _find_item(tid + "_buy")
+	if item != null:
+		return item
+	# Quân có trong bộ mà chưa có mục trong catalog (nội dung thêm sau) —
+	# dựng tại chỗ để không bao giờ rơi ra quầy rỗng.
+	var made := ShopItemData.new()
+	made.id = tid + "_buy"
+	made.display_name = UIStyle.unit_name_vi(tid)
+	made.description = stats.description
+	made.cost = float(stats.cost)
+	made.item_type = ShopItemData.ItemType.TROOP
+	made.tower_stats = stats
+	made.icon = stats.texture if stats.texture else HudIcons.tower(tid)
+	return made
+
+
+## Giá thao tác lên bộ — tăng theo wave để không thành nước đi hiển nhiên.
+const DECK_ACTION_BASE_COST := {
+	"deck_thin": 35, "deck_star": 90, "deck_morph": 120,
+}
+
+
+## Một thao tác lên bộ quân, bốc ngẫu nhiên theo tình trạng bộ hiện tại.
+func _make_deck_offer() -> ShopItemData:
+	if army_deck == null or not is_instance_valid(army_deck):
+		return null
+	var counts: Dictionary = army_deck.call("counts")
+	if counts.is_empty():
+		return null
+	var ids: Array = counts.keys()
+	ids.shuffle()
+
+	var kinds: Array[String] = ["deck_thin", "deck_star"]
+	if counts.has("pawn") and int(counts["pawn"]) >= 2:
+		kinds.append("deck_morph")     # Tốt phong Hậu — nước đi có trong luật cờ
+	kinds.shuffle()
+	var kind: String = kinds[0]
+	var target: String = str(ids[0])
+
+	var item := ShopItemData.new()
+	item.item_type = ShopItemData.ItemType.UPGRADE
+	item.use_royal_decree = false
+	item.cost = float(DECK_ACTION_BASE_COST.get(kind, 50)) 		+ float(maxi(0, current_wave - 1)) * 6.0
+	var vn := UIStyle.unit_name_vi(target)
+	match kind:
+		"deck_thin":
+			item.id = "deck_thin:%s" % target
+			item.display_name = "Loại %s khỏi bộ" % vn
+			item.description = "Bộ mỏng đi → lượt sau dễ rút trúng quân mạnh hơn."
+		"deck_star":
+			item.id = "deck_star:%s" % target
+			item.display_name = "%s lên sao vĩnh viễn" % vn
+			item.description = "Mọi %s rút ra từ nay đều mang thêm một sao." % vn
+		"deck_morph":
+			item.id = "deck_morph:pawn:queen"
+			item.display_name = "Phong Hậu toàn bộ Tốt"
+			item.description = "Mọi Tốt trong bộ hoá thành Hậu. Bộ ít quân nhưng nặng ký."
+			item.cost += 60.0
+	return item
+
+
 func _pick_guaranteed_troop(candidates: Array) -> ShopItemData:
+	# Có bộ quân → rút từ bộ. Không có (test cũ, hoặc bộ rỗng) → giữ đường cũ.
+	var drawn := _draw_troop_offer()
+	if drawn != null:
+		return drawn
 	var troops: Array[ShopItemData] = []
 	for item in candidates:
 		if item != null and item.item_type == ShopItemData.ItemType.TROOP:
@@ -464,6 +553,12 @@ func _roll_shop_offers() -> void:
 	if troop_offer != null:
 		active_shop_offers.append(troop_offer)
 		unit_candidates.erase(troop_offer)
+
+	# Một thao tác lên BỘ QUÂN mỗi lượt roll. Đây là chỗ build thành hình —
+	# không bày ra thì người chơi không bao giờ biết bộ quân sửa được.
+	var deck_offer := _make_deck_offer()
+	if deck_offer != null:
+		active_shop_offers.append(deck_offer)
 
 	# Pity ĐẦU TIÊN: đây là ô được bảo đảm, mọi thứ khác chỉ lấp chỗ còn lại.
 	var pity_offer := _make_pity_tile_offer()

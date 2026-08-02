@@ -155,15 +155,16 @@ func _run() -> void:
 	print("\n--- KINH TE ---")
 	ok(gm.get_interest_rate() > 0.0, "co lai suat cuoi wave", "%.2f" % gm.get_interest_rate())
 	ok(gm.get_interest_cap() > 0, "lai co tran", "%d" % gm.get_interest_cap())
-	ok(gm.crit_chance > 0.0 and gm.crit_mult > 1.0, "chi mang co xac suat va he so",
-		"%.2f x%.2f" % [gm.crit_chance, gm.crit_mult])
-	# Combo: giet lien tiep tang he so vang
+	# Chi mang va combo da TAT bang co (FeatureFlags). Kiem NGUOC: chung phai
+	# thuc su im lang, khong duoc con ro ri vao sat thuong hay vao vang — bang
+	# nguong Nen x Boi hua mot con so chinh xac, ngau nhien lam hong loi hua do.
+	ok(not FeatureFlags.CRIT_ENABLED, "chi mang da tat")
+	ok(not FeatureFlags.KILL_COMBO_ENABLED, "combo ha guc da tat")
 	var m0: float = gm.get_combo_mult()
 	for i in range(12): gm.register_kill()
-	var m1: float = gm.get_combo_mult()
-	ok(m1 > m0, "combo tang he so vang", "%.2f -> %.2f" % [m0, m1])
-	ok(gm.combo_count == 12, "dem dung so kill trong chuoi", "%d" % gm.combo_count)
-	ok(gm.run_best_combo >= 12, "ghi nhan chuoi dai nhat", "%d" % gm.run_best_combo)
+	ok(is_equal_approx(gm.get_combo_mult(), m0),
+		"combo da tat thi he so vang KHONG doi", "%.2f" % gm.get_combo_mult())
+	ok(gm.combo_count == 0, "combo da tat thi khong dem kill", "%d" % gm.combo_count)
 
 	print("\n--- THUA ---")
 	var ended: Array = []
