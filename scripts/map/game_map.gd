@@ -23,6 +23,8 @@ var king_rules: KingRules = null
 var army_deck: ArmyDeck = null
 ## Tô sáng thế cờ đang thành hình trên bàn.
 var chess_formation_overlay: ChessFormationOverlay = null
+## Tô sáng tầm phủ của quân đang được chọn.
+var coverage_overlay: CoverageOverlay = null
 
 # Các class dưới đây có class_name riêng, không cần preload thủ công.
 
@@ -234,6 +236,7 @@ func _ready() -> void:
 	chess_formations.formations_changed.connect(_on_chess_formations_changed)
 	king_rules = KingRules.attach(self)
 	chess_formation_overlay = ChessFormationOverlay.attach(self, chess_formations)
+	coverage_overlay = CoverageOverlay.attach(self)
 
 	formation_overlay = FormationOverlay.new()
 	formation_overlay.name = "FormationOverlay"
@@ -504,11 +507,19 @@ func _unhandled_input(event: InputEvent) -> void:
 			if hud and hud.has_method("show_tower_info"):
 				var biome: String = territory_manager.get_biome_at(grid_pos) if territory_manager else ""
 				hud.show_tower_info(entry.stats, biome, entry)
+			# Tô đúng ô quân này với tới. "Tầm bắn 5" không nói lên gì với mô
+			# hình nước đi — Xe, Mã và Tốt cùng tầm 5 phủ ba hình khác hẳn nhau.
+			if coverage_overlay:
+				coverage_overlay.show_for(entry)
 		elif territory_manager and territory_manager.has_biome_at(grid_pos):
+			if coverage_overlay:
+				coverage_overlay.hide_all()
 			if hud and hud.has_method("show_territory_info"):
 				var bk: String = territory_manager.get_biome_at(grid_pos)
 				hud.show_territory_info(bk, TerritoryManager.BIOME_STATS.get(bk, {}), grid_pos)
 		else:
+			if coverage_overlay:
+				coverage_overlay.hide_all()
 			# MỌI ô phải xem được chỉ số. Trước đây chỉ ô có tháp và ô lãnh thổ
 			# mới mở panel; ô Phước/Nguyền sinh lúc tạo map (grid_controller.
 			# special_tiles) rơi vào nhánh này nên click vào không hiện gì —
@@ -1328,6 +1339,9 @@ func _refresh_all_coverage() -> void:
 	for t in get_tree().get_nodes_in_group("towers"):
 		if is_instance_valid(t) and t.has_method("refresh_coverage"):
 			t.refresh_coverage()
+	# Tầm của quân TRƯỢT đổi theo bố cục, nên lớp tô sáng phải vẽ lại.
+	if coverage_overlay and is_instance_valid(coverage_overlay):
+		coverage_overlay.refresh()
 
 func _on_element_synergy_changed(_levels: Dictionary) -> void:
 	update_ui()   # dòng tóm tắt synergy nguyên tố nằm trong update_ui

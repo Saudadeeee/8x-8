@@ -1184,6 +1184,34 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
 - **Trần tầm 7 của `check_content.py` áp sai cho nước đi một hướng.** Hương Xa
   tầm 8 chỉ phủ 8 ô, ít hơn Xe tầm 5 (20 ô). Luật giờ biết đọc `attack_pattern`.
 
+*Bốn lỗi từ phản hồi "chồng ô không thấy gì, +1 tầm không thấy gì" (2026-08-04):*
+- **Panel ô nguyên tố CHẾT CÂM.** `hud_tower_panel._find_territory_manager()`
+  dùng `get_parent()` — nhưng component HUD gắn bằng `X.attach(hud)` nên cha nó
+  là HUD (CanvasLayer), KHÔNG phải game_map. Hàm luôn trả null ⇒ **cả mục nguyên
+  tố** (cấp ô · Dấu kéo dài · phản ứng · thưởng tháp · xem trước cấp kế) **và nút
+  bán ô** đều không render. Xếp chồng ô lên Lv3 vẫn chạy đúng ở tầng logic
+  (đo được cấp 1→2→3, thưởng đổi thật) nhưng người chơi không thấy gì.
+  Panel từ 5 dòng lên 16 sau khi sửa. Ba hàm cùng lỗi này → gom vào `_map()`.
+- **`+1 tầm bắn` là SỐ CHẾT với 6/13 nước đi.** Nước NHẢY là tập ô cố định nên
+  `max_range` không ảnh hưởng — đo được Mã/Tốt/Vua/Kim Tướng/Tượng Điền phủ y hệt
+  ở tầm 3, 4 và 6. Mọi nguồn +tầm (perk, trang bị, ô Băng, ★3, Hàng Long) vô
+  nghĩa với chúng.
+  Sửa: **TẦM = SỐ VÒNG**. Vòng k = bước gốc × k. Đọc được bằng một câu, và mọi
+  +1 đều đổi. Bậc phải là **1**, không phải 2-3 — bậc thưa thì phân nửa số lần
+  nhặt +1 vẫn không đổi gì (đã thử bậc 2/3 rồi bỏ).
+  Tầm gốc hạ theo: Mã 4→2, Tốt 3→2, Tượng Điền giữ 2 (Xe tầm 5 = 20 ô làm mốc).
+- **`cells()` và `covers()` lệch nhau** — hai điểm vào của cùng một luật:
+  (1) `_clear_line` duyệt HỞ hai đầu nên `covers()` chấp nhận chính ô CÓ QUÂN
+      đứng, còn `cells()` loại nó ra;
+  (2) Kim Tướng so `d.y == FORWARD.y` thay vì so DẤU — ở vòng 2 thì d.y = 2 nên
+      mọi ô chéo trước vòng ≥2 bị loại.
+  Test giờ quét TOÀN BỘ nước đi × tầm × ô và bắt mọi chỗ lệch.
+- **`CoverageOverlay`** — click vào quân thì tô đúng ô nó với tới (ô ĐƯỜNG vàng
+  đậm, ô thường xanh nhạt, ô của chính nó xanh lá). Với mô hình nước đi, "tầm
+  bắn 5" không nói lên gì: Xe/Mã/Tốt cùng tầm 5 phủ ba hình khác hẳn nhau.
+  Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
+  Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
+
 *Bảy sửa theo phản hồi chơi thử (2026-08-02):*
 - **Pha chuẩn bị KHÔNG còn đếm ngược.** `PhaseController.request_start_wave()` là
   đường DUY NHẤT vào wave; `_tick_prepare` nay rỗng. Đồng hồ 30 giây cũ vừa sinh

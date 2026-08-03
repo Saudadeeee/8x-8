@@ -17,5 +17,5 @@ cost = 12
 decree_cost = 1.0
 base_damage = 22
 attack_speed = 1.3
-attack_range = 3
+attack_range = 2
 metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

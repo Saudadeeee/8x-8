@@ -16,6 +16,6 @@ texture = ExtResource("3_i37n6")
 projectile_texture = ExtResource("1_og52t")
 base_damage = 20
 attack_speed = 1.2
-attack_range = 4
+attack_range = 2
 type = 2
 metadata/_custom_type_script = "uid://b7lp8i4x25fsm"

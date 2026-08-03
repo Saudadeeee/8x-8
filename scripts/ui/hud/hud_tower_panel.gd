@@ -247,8 +247,19 @@ func _build_pattern_row(parent: VBoxContainer, tower_node: Node3D) -> void:
 			for c in covered:
 				if gc.is_path_cell(c):
 					on_path += 1
+	# Tầm HIỆU DỤNG (đã cộng mọi nguồn) chứ không phải tầm gốc trong .tres —
+	# người chơi nhặt "+1 tầm" phải thấy con số này nhúc nhích.
+	var base_r: int = int(tower_node.stats.attack_range) if tower_node.stats else 0
+	var eff_r: int = int(tower_node.effective_range()) if tower_node.has_method("effective_range") else base_r
+	_add_info_row(parent, "◎ Tầm hiệu dụng",
+		"%d%s" % [eff_r, "  (gốc %d)" % base_r if eff_r != base_r else ""])
 	_add_info_row(parent, "◎ Ô đang phủ", "%d ô (%d trên đường)"
 		% [(covered as Array).size(), on_path])
+	var hint2 := Label.new()
+	hint2.text = "Ô vàng trên bàn = ô đường quân này với tới. Chỉ ô đó sinh sát thương."
+	UIStyle.body(hint2, 14, UIStyle.TEXT_DIM)
+	hint2.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	parent.add_child(hint2)
 	if on_path == 0:
 		var warn := Label.new()
 		warn.text = "⚠ Quân này không phủ ô đường nào — nó không gây sát thương."
@@ -524,15 +535,30 @@ func _build_tile_element_section(parent: VBoxContainer, biome_key: String, pos: 
 	sell.pressed.connect(_on_sell_tile_pressed.bind(pos))
 	parent.add_child(sell)
 
+## game_map, KHÔNG phải `get_parent()`.
+##
+## Component HUD được gắn bằng `X.attach(hud)` nên cha nó là HUD (CanvasLayer),
+## không phải game_map. Ba hàm ở đây từng dùng `get_parent().get("...")` và luôn
+## trả null ⇒ CẢ MỤC nguyên tố trong panel ô (cấp ô, Dấu kéo dài, phản ứng,
+## thưởng tháp, xem trước cấp kế) VÀ nút bán ô đều chết câm. Người chơi xếp
+## chồng ô lên cấp 3 mà panel không hiện gì khác — đúng lỗi vừa báo.
+func _map() -> Node:
+	if hud != null and hud.has_method("_find_game_map"):
+		var m = hud.call("_find_game_map")
+		if m != null and is_instance_valid(m):
+			return m
+	return get_parent()
+
+
 func _find_territory_manager() -> Node:
-	var map := get_parent()
+	var map := _map()
 	if map == null:
 		return null
 	var found: Variant = map.get("territory_manager")
 	return found as Node if (found is Node and is_instance_valid(found)) else null
 
 func _on_sell_tile_pressed(pos: Vector2i) -> void:
-	var map := get_parent()
+	var map := _map()
 	var tm := _find_territory_manager()
 	if tm == null:
 		return
@@ -543,7 +569,7 @@ func _on_sell_tile_pressed(pos: Vector2i) -> void:
 		map.call("update_ui")
 
 func _find_equipment_system() -> Node:
-	var map := get_parent()
+	var map := _map()
 	if map == null:
 		return null
 	var found: Variant = map.get("equipment_system")

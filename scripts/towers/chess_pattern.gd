@@ -59,6 +59,16 @@ const KNIGHT_FAR: Array[Vector2i] = [
 	Vector2i(1, -3), Vector2i(3, -1), Vector2i(-1, -3), Vector2i(-3, -1),
 ]
 
+## TẦM = SỐ VÒNG cho mọi nước nhảy. Bậc 1 chứ không phải 2-3.
+##
+## Bậc thưa (2 hoặc 3) làm phần lớn nguồn "+1 tầm" trở thành số chết — đo được
+## Mã tầm 4 và tầm 5 phủ y hệt 16 ô, Tốt tầm 3 và 4 y hệt 8 ô. Người chơi nhặt
+## được mà không thấy gì đổi, đúng thứ vừa báo lỗi.
+## Bậc 1 thì luật đọc được bằng một câu — "tầm N = N vòng" — và MỌI +1 đều đổi.
+const JUMP_RING_STEP: int = 1
+const KNIGHT_RING_STEP: int = 1
+const XIANG_RING_STEP: int = 1
+
 ## Tầm tối thiểu của SIEGE — máy bắn đá không hạ nòng được.
 const SIEGE_MIN_RANGE: int = 2
 
@@ -134,12 +144,13 @@ static func cells(kind: int, from: Vector2i, max_range: int,
 			_slide(out, from, ORTHO, r, blocked, pierce)
 			_slide(out, from, DIAG, r, blocked, pierce)
 		Kind.KNIGHT:
-			_jump(out, from, KNIGHT_STEPS, blocked)
+			# Mã đắt vòng hơn: bước dài sẵn nên mỗi vòng thêm rất nhiều ô.
+			_jump(out, from, KNIGHT_STEPS, blocked, rings_for(r, KNIGHT_RING_STEP))
 		Kind.PAWN:
-			_jump(out, from, DIAG, blocked)
+			_jump(out, from, DIAG, blocked, rings_for(r, JUMP_RING_STEP))
 		Kind.KING:
-			_jump(out, from, ORTHO, blocked)
-			_jump(out, from, DIAG, blocked)
+			_jump(out, from, ORTHO, blocked, rings_for(r, JUMP_RING_STEP))
+			_jump(out, from, DIAG, blocked, rings_for(r, JUMP_RING_STEP))
 		Kind.SIEGE:
 			_ring(out, from, SIEGE_MIN_RANGE, r, blocked)
 		Kind.CANNON:
@@ -147,10 +158,12 @@ static func cells(kind: int, from: Vector2i, max_range: int,
 		Kind.LANCE:
 			_lance(out, from, r, blocked)
 		Kind.GOLD:
-			_jump(out, from, ORTHO, blocked)
-			_jump(out, from, [FORWARD + Vector2i(1, 0), FORWARD + Vector2i(-1, 0)], blocked)
+			var gr := rings_for(r, JUMP_RING_STEP)
+			_jump(out, from, ORTHO, blocked, gr)
+			_jump(out, from, [FORWARD + Vector2i(1, 0), FORWARD + Vector2i(-1, 0)],
+				blocked, gr)
 		Kind.XIANG:
-			_xiang(out, from, blocked)
+			_xiang(out, from, blocked, rings_for(r, XIANG_RING_STEP))
 		Kind.DICE:
 			_ring(out, from, 1, r, blocked)
 		_:
@@ -163,29 +176,53 @@ static func covers(kind: int, from: Vector2i, to: Vector2i, max_range: int,
 		blocked: Dictionary = {}, pierce: int = 0) -> bool:
 	if from == to:
 		return false
+	# Ô ĐÍCH có quân của mình đứng thì không phải mục tiêu — địch không đứng đó
+	# được. `_slide`/`_jump` đã loại ô này khỏi `cells()`, nhưng `_clear_line`
+	# duyệt HỞ ở đầu cuối nên `covers()` lại trả true. Hai điểm vào phải khớp
+	# nhau tuyệt đối, nếu không tầm phủ vẽ ra một đằng và bắn một nẻo.
+	if blocked.has(to):
+		return false
 	var d := to - from
 	var r: int = maxi(1, max_range)
 	match kind:
 		Kind.KNIGHT:
-			return absi(d.x * d.y) == 2
+			# Vòng k: bước chữ L nhân k. |dx·dy| = 2k².
+			var kn_rings := rings_for(r, KNIGHT_RING_STEP)
+			for k in range(1, kn_rings + 1):
+				if absi(d.x) == k and absi(d.y) == 2 * k: return true
+				if absi(d.x) == 2 * k and absi(d.y) == k: return true
+			return false
 		Kind.PAWN:
-			return absi(d.x) == 1 and absi(d.y) == 1
+			var pw_rings := rings_for(r, JUMP_RING_STEP)
+			return absi(d.x) == absi(d.y) and absi(d.x) >= 1 and absi(d.x) <= pw_rings
 		Kind.KING:
-			return maxi(absi(d.x), absi(d.y)) == 1
+			var kg_rings := rings_for(r, JUMP_RING_STEP)
+			var cheb_k: int = maxi(absi(d.x), absi(d.y))
+			# Vòng k gồm ô có |dx| và |dy| đều thuộc {0, k} (chữ thập + chéo).
+			for k in range(1, kg_rings + 1):
+				if (absi(d.x) == k or d.x == 0) and (absi(d.y) == k or d.y == 0) 						and cheb_k == k:
+					return true
+			return false
 		Kind.SIEGE:
 			var cheb_s: int = maxi(absi(d.x), absi(d.y))
 			return cheb_s >= SIEGE_MIN_RANGE and cheb_s <= r
 		Kind.RADIAL, Kind.DICE:
 			return maxi(absi(d.x), absi(d.y)) <= r
 		Kind.GOLD:
-			if maxi(absi(d.x), absi(d.y)) != 1:
+			var gd_rings := rings_for(r, JUMP_RING_STEP)
+			var cheb_g: int = maxi(absi(d.x), absi(d.y))
+			if cheb_g < 1 or cheb_g > gd_rings:
 				return false
+			if absi(d.x) != 0 and absi(d.x) != cheb_g: return false
+			if absi(d.y) != 0 and absi(d.y) != cheb_g: return false
 			# 4 hướng thẳng + 2 chéo TRƯỚC; hai chéo sau thì không.
 			if d.x == 0 or d.y == 0:
 				return true
-			return d.y == FORWARD.y
+			# So DẤU, không so giá trị: ở vòng 2 thì d.y = 2 chứ không phải 1.
+			return signi(d.y) == FORWARD.y
 		Kind.XIANG:
-			if absi(d.x) != 2 or absi(d.y) != 2:
+			var xg_rings := rings_for(r, XIANG_RING_STEP)
+			if absi(d.x) != absi(d.y) or absi(d.x) % 2 != 0 					or absi(d.x) / 2 < 1 or absi(d.x) / 2 > xg_rings:
 				return false
 			# Cản tâm: ô chéo kề bị chiếm thì không đi hướng đó được.
 			return not blocked.has(from + Vector2i(signi(d.x), signi(d.y)))
@@ -248,12 +285,28 @@ static func _slide(out: Array[Vector2i], from: Vector2i, dirs: Array[Vector2i],
 			out.append(cur)
 
 
+## Nước NHẢY có nhiều VÒNG theo tầm bắn.
+##
+## Vì sao phải có: nước nhảy vốn là một tập ô CỐ ĐỊNH, nên `max_range` không ảnh
+## hưởng gì — đo được Mã/Tốt/Vua/Kim Tướng/Tượng Điền phủ y hệt nhau ở tầm 3, 4
+## và 6. Nghĩa là mọi nguồn "+1 tầm bắn" (perk, trang bị, ô Băng, ★3, Hàng Long)
+## là SỐ CHẾT với sáu trên mười ba nước đi. Người chơi nhặt được mà không thấy
+## khác biệt gì — đúng lớp lỗi "tính năng chết" nặng nhất.
+##
+## Cách sửa: mỗi bậc tầm mở thêm một VÒNG cùng hình dạng (bước × k). Mã tầm cao
+## nhảy được cả vòng chữ L xa; Tốt tầm cao đánh chéo hai ô. Luật vẫn đọc được
+## bằng một câu, và mọi nước đi đều phản ứng với tầm.
+static func rings_for(max_range: int, step_size: int) -> int:
+	return 1 + maxi(0, int(floor(float(maxi(1, max_range) - 1) / float(maxi(1, step_size)))))
+
+
 static func _jump(out: Array[Vector2i], from: Vector2i, steps: Array[Vector2i],
-		blocked: Dictionary) -> void:
-	for s in steps:
-		var c := from + s
-		if not blocked.has(c):
-			out.append(c)
+		blocked: Dictionary, rings: int = 1) -> void:
+	for k in range(1, maxi(1, rings) + 1):
+		for s in steps:
+			var c := from + s * k
+			if not blocked.has(c) and not out.has(c):
+				out.append(c)
 
 
 ## PHÁO (cờ tướng) — đi thẳng như Xe, nhưng CHỈ ăn được khi có ĐÚNG MỘT quân
@@ -302,13 +355,15 @@ static func _lance(out: Array[Vector2i], from: Vector2i, max_range: int,
 
 ## TƯỢNG cờ tướng — chéo ĐÚNG hai ô, và bị "cản tâm": ô chéo kề bị chiếm thì
 ## không đi được hướng đó. Khác hẳn Tượng cờ vua (trượt vô hạn).
-static func _xiang(out: Array[Vector2i], from: Vector2i, blocked: Dictionary) -> void:
+static func _xiang(out: Array[Vector2i], from: Vector2i, blocked: Dictionary,
+		rings: int = 1) -> void:
 	for dir in DIAG:
 		if blocked.has(from + dir):
 			continue                 # cản tâm
-		var c := from + dir * 2
-		if not blocked.has(c):
-			out.append(c)
+		for k in range(1, maxi(1, rings) + 1):
+			var c := from + dir * (2 * k)
+			if not blocked.has(c) and not out.has(c):
+				out.append(c)
 
 
 static func _ring(out: Array[Vector2i], from: Vector2i, min_r: int, max_r: int,

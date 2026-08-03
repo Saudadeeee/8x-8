@@ -40,11 +40,14 @@ func _run() -> void:
 	ok(ChessPattern.covers(K.BISHOP, o, Vector2i(6, 6), 5), "Tuong voi cheo")
 	ok(not ChessPattern.covers(K.BISHOP, o, Vector2i(4, 6), 5), "Tuong KHONG voi doc")
 	# Ma: dung 8 o chu L, va KHONG bi chan
-	ok(ChessPattern.covers(K.KNIGHT, o, Vector2i(6, 5), 5), "Ma nhay chu L")
-	ok(not ChessPattern.covers(K.KNIGHT, o, Vector2i(5, 5), 5), "Ma KHONG danh o ke")
-	ok(ChessPattern.cells(K.KNIGHT, o, 5).size() == 8, "Ma phu dung 8 o")
+	ok(ChessPattern.covers(K.KNIGHT, o, Vector2i(6, 5), 1), "Ma nhay chu L")
+	ok(not ChessPattern.covers(K.KNIGHT, o, Vector2i(5, 5), 1), "Ma KHONG danh o ke")
+	# TAM = SO VONG: tam 1 la mot vong (8 o chu L), tam 2 la hai vong (16 o).
+	ok(ChessPattern.cells(K.KNIGHT, o, 1).size() == 8, "Ma tam 1 phu dung 8 o")
+	ok(ChessPattern.cells(K.KNIGHT, o, 2).size() == 16, "Ma tam 2 phu 16 o (hai vong)")
 	# Tot: 4 o cheo ke
-	ok(ChessPattern.cells(K.PAWN, o, 5).size() == 4, "Tot phu dung 4 o")
+	ok(ChessPattern.cells(K.PAWN, o, 1).size() == 4, "Tot tam 1 phu dung 4 o")
+	ok(ChessPattern.cells(K.PAWN, o, 3).size() == 12, "Tot tam 3 phu 12 o (ba vong)")
 	# Cong thanh: co tam TOI THIEU
 	ok(not ChessPattern.covers(K.SIEGE, o, Vector2i(5, 4), 5),
 		"Cong thanh KHONG danh duoc sat minh")
@@ -54,7 +57,7 @@ func _run() -> void:
 	var blocked := {Vector2i(4, 5): true}
 	ok(not ChessPattern.covers(K.ROOK, o, Vector2i(4, 7), 5, blocked),
 		"quan dung chan cat duong truot cua Xe")
-	ok(ChessPattern.covers(K.KNIGHT, o, Vector2i(6, 5), 5, blocked),
+	ok(ChessPattern.covers(K.KNIGHT, o, Vector2i(6, 5), 1, blocked),
 		"nhung KHONG chan duoc Ma (Ma nhay qua)")
 
 	print("\n--- MOI QUAN PHAI KHAI NUOC DI ---")
@@ -375,7 +378,7 @@ func _run() -> void:
 	ok(ChessPattern.covers(K.LANCE, o2, Vector2i(4,7), 7, {}), "Huong Xa ban xuoi")
 	ok(not ChessPattern.covers(K.LANCE, o2, Vector2i(4,1), 7, {}), "Huong Xa KHONG ban nguoc")
 	# KIM TUONG (shogi) — 6 o bat doi xung
-	ok(ChessPattern.cells(K.GOLD, o2, 1, {}).size() == 6, "Kim Tuong phu dung 6 o")
+	ok(ChessPattern.cells(K.GOLD, o2, 1, {}).size() == 6, "Kim Tuong tam 1 phu dung 6 o")
 	ok(not ChessPattern.covers(K.GOLD, o2, Vector2i(5,3), 1, {}), "Kim Tuong KHONG danh cheo sau")
 	# TUONG co tuong — cheo dung 2 o, CAN TAM
 	ok(ChessPattern.covers(K.XIANG, o2, Vector2i(6,6), 5, {}), "Tuong Dien nhay cheo 2 o")
@@ -436,6 +439,54 @@ func _run() -> void:
 	if any_t != null:
 		ok(any_t.current_damage >= 1, "sat thuong luon >= 1",
 			"%d" % any_t.current_damage)
+
+	print("
+--- TAM BAN PHAI CO TAC DUNG VOI MOI NUOC DI ---")
+	# Nuoc NHAY von la tap o CO DINH nen `max_range` khong anh huong gi — do duoc
+	# Ma/Tot/Vua/KimTuong/TuongDien phu y het nhau o tam 3, 4 va 6. Nghia la MOI
+	# nguon "+1 tam ban" (perk, trang bi, o Bang, ★3, Hang Long) la SO CHET voi
+	# sau tren muoi ba nuoc di. Nguoi choi nhat duoc ma khong thay khac biet gi.
+	# Nay: tam = SO VONG, moi +1 mo dung mot vong.
+	var no_effect := ""
+	for kind3 in [K.ROOK, K.BISHOP, K.QUEEN, K.KNIGHT, K.PAWN, K.KING,
+			K.SIEGE, K.GOLD, K.XIANG]:
+		var blk3 := {}
+		var n1: int = ChessPattern.cells(kind3, Vector2i(4, 4), 2, blk3).size()
+		var n2: int = ChessPattern.cells(kind3, Vector2i(4, 4), 3, blk3).size()
+		if n2 <= n1:
+			no_effect += "%d " % kind3
+	ok(no_effect == "", "moi nuoc di deu phu NHIEU HON khi +1 tam", no_effect)
+
+	# cells() va covers() phai KHOP TUYET DOI — hai diem vao, mot su that.
+	var blk4 := {Vector2i(5, 5): true}
+	var mismatch2 := ""
+	for kind4 in [K.ROOK, K.BISHOP, K.QUEEN, K.KNIGHT, K.PAWN, K.KING,
+			K.CANNON, K.LANCE, K.GOLD, K.XIANG]:
+		for r4 in [1, 2, 4]:
+			var look := {}
+			for c5 in ChessPattern.cells(kind4, Vector2i(4, 4), r4, blk4):
+				look[c5] = true
+			for yy in range(-6, 7):
+				for xx in range(-6, 7):
+					var tgt := Vector2i(4, 4) + Vector2i(xx, yy)
+					if look.has(tgt) != ChessPattern.covers(kind4, Vector2i(4, 4), tgt, r4, blk4):
+						mismatch2 += "k%d r%d %s " % [kind4, r4, str(tgt)]
+	ok(mismatch2 == "", "cells() va covers() khop nhau moi nuoc di / moi tam",
+		mismatch2.substr(0, 120))
+
+	print("
+--- PANEL O NGUYEN TO PHAI HIEN CAP O ---")
+	# Component HUD gan bang `X.attach(hud)` nen cha no la HUD, KHONG phai
+	# game_map. `_find_territory_manager` tung dung `get_parent()` va luon tra
+	# null ⇒ ca muc nguyen to trong panel o (cap o, Dau keo dai, phan ung, thuong
+	# thap, xem truoc cap ke) VA nut ban o deu chet cam. Nguoi choi xep chong o
+	# len cap 3 ma panel khong hien gi khac.
+	var tp = hud.get("_tower_panel")
+	ok(tp != null, "co panel thap")
+	if tp != null and tp.has_method("_find_territory_manager"):
+		ok(tp.call("_find_territory_manager") != null,
+			"panel tim duoc TerritoryManager (khong dung get_parent)")
+	ok(map.get("coverage_overlay") != null, "co lop to sang tam phu")
 
 	print("\n--- HE DA CAT ---")
 	ok(not FeatureFlags.SEASONS_ENABLED, "mua da tat")
