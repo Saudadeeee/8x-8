@@ -6,9 +6,9 @@
 script = ExtResource("1_87igf")
 id = "focus_lens"
 name = "Thấu Kính Tụ Quang"
-desc = "+12% chí mạng."
+desc = "Tầm bắn +1 ô. Với quân trượt, một ô nữa thường là cả một khúc đường."
 slot = "accessory"
 cost = 70
 effect = {
-"crit_bonus": 0.12
+"range_bonus": 1
 }

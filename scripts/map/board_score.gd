@@ -95,11 +95,45 @@ func cell_mult(cell: Vector2i) -> float:
 func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 
-	# 1. Thế cờ đang phủ ô này
+	var gm0 := map.get_node_or_null("/root/GameManagerSingleton")
+
+	# 1. Thế cờ đang phủ ô này (+ thưởng di vật cộng vào MỌI thế)
 	var cf := map.get_node_or_null("ChessFormations")
+	var fbonus := 0.0
+	if gm0 != null:
+		fbonus = maxf(0.0, float(gm0.relic_formation_mult_bonus))
 	if cf and cf.has_method("mult_at"):
 		for e in cf.call("formations_at", cell):
-			out.append(e)
+			if e is Dictionary and fbonus > 0.0:
+				var d0: Dictionary = e
+				d0["mult"] = float(d0.get("mult", 1.0)) + fbonus
+				out.append(d0)
+			else:
+				out.append(e)
+
+	# 1b. Di vật kiểu Joker — sửa CÁCH TÍNH, không chỉ cộng một con số.
+	if gm0 != null and cf != null:
+		# Đa dạng: thưởng theo số LOẠI thế khác nhau đang có trên bàn.
+		var variety := float(gm0.relic_variety_mult)
+		if variety > 0.0:
+			var kinds: int = (cf.call("counts") as Dictionary).size()
+			if kinds > 0:
+				out.append({"name": "Vương Miện Gãy", "mult": 1.0 + variety * float(kinds)})
+		# Cờ tàn: bàn càng thưa, mỗi quân càng mạnh.
+		var endg := float(gm0.relic_endgame_mult)
+		if endg > 0.0:
+			var n_units: int = _towers().size()
+			var empty: int = maxi(0, 20 - n_units)
+			out.append({"name": "Cờ Tàn", "mult": 1.0 + endg * float(empty)})
+		# Con Tốt Thí: mỗi Tốt trên bàn cộng Bội cho các quân KHÁC.
+		var tithe := float(gm0.relic_pawn_tithe)
+		if tithe > 0.0:
+			var pawns := 0
+			for t in _towers():
+				if t.has_method("pattern_kind") and int(t.pattern_kind()) == ChessPattern.Kind.PAWN:
+					pawns += 1
+			if pawns > 0:
+				out.append({"name": "Con Tốt Thí", "mult": 1.0 + tithe * float(pawns)})
 
 	# 2. Cấp ô nguyên tố dưới chân
 	var tm = map.get("territory_manager")

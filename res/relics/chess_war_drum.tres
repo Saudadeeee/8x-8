@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7005"]
+
+[resource]
+script = ExtResource("1_r7005")
+id = "chess_war_drum"
+name = "Trống Trận"
+desc = "Mọi thế cờ mạnh thêm +0.35 Bội. Càng xếp được nhiều thế, càng lãi."
+cost = 300
+effect = {
+"formation_mult_bonus": 0.35
+}

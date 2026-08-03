@@ -1007,8 +1007,18 @@ func refresh_coverage() -> void:
 	_home_cell = Vector2i(-9999, -9999)
 	var blocked := _blocked_shared.duplicate()
 	blocked.erase(home_cell())        # ô của chính mình không tự chặn mình
+	# Di vật "Đường Thẳng Vô Tận": Xe/Tượng/Hậu xuyên qua quân của mình.
+	var gm_r := get_node_or_null("/root/GameManagerSingleton")
+	if gm_r != null and bool(gm_r.relic_ignore_block):
+		blocked = {}
 	covered_cells = ChessPattern.cells(pattern_kind(), home_cell(),
 		effective_range(), blocked)
+	# Di vật "Vó Ngựa": Mã nhảy thêm một vòng chữ L xa hơn (±1,±3 / ±3,±1).
+	if pattern_kind() == ChessPattern.Kind.KNIGHT and gm_r != null 			and int(gm_r.relic_knight_reach) > 0:
+		for st in ChessPattern.KNIGHT_FAR:
+			var c2: Vector2i = home_cell() + st
+			if not blocked.has(c2) and not covered_cells.has(c2):
+				covered_cells.append(c2)
 	_covered_lookup = {}
 	for c in covered_cells:
 		_covered_lookup[c] = true

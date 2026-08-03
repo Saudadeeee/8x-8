@@ -30,6 +30,13 @@ const EFFECT_KEYS: Array[String] = [
 	"potion_slot_bonus", "potion_radius", "potion_duration_bonus",
 	"elite_always_drop", "marked_damage_taken", "tile_discount",
 	"vein_spread", "all_elements_damage_pct", "crystal_gold_mult",
+	# Khoá chạm thẳng vào công thức Nền × Bội. THÊM KHOÁ MỚI PHẢI THÊM VÀO ĐÂY:
+	# `_sanitize` lọc trắng, khoá lạ bị VỨT im lặng (chỉ push_warning) nên di vật
+	# vẫn mua được, vẫn hiện mô tả, mà không làm gì cả. Đã dính đúng lỗi này với
+	# cả 8 di vật cờ — audit_wiring không bắt được vì khoá có người ĐỌC, chỉ là
+	# không bao giờ có giá trị.
+	"formation_mult_bonus", "variety_mult", "endgame_mult",
+	"knight_reach", "ignore_block", "pawn_tithe",
 ]
 
 const RELICS: Array[Dictionary] = [
@@ -247,6 +254,15 @@ func totals() -> Dictionary:
 		"elite_always_drop": false, "marked_damage_taken": 0.0,
 		"tile_discount": 0.0, "vein_spread": false,
 		"all_elements_damage_pct": 0.0, "crystal_gold_mult": 1.0,
+		# ── Khoá chạm thẳng vào công thức Nền × Bội ──────────────────────
+		# Đây là lớp nội dung kiểu Joker: mỗi món sửa CÁCH TÍNH, không chỉ
+		# cộng một con số. Không có lớp này thì di vật chỉ là +% nhàm chán.
+		"formation_mult_bonus": 0.0,   # cộng vào Bội của MỌI thế cờ
+		"variety_mult": 0.0,           # cộng Bội theo số LOẠI thế đang có
+		"endgame_mult": 0.0,           # càng ít quân trên bàn, Bội càng cao
+		"knight_reach": 0,             # Mã phủ thêm vòng ô chữ L xa hơn
+		"ignore_block": false,         # Xe/Tượng/Hậu không bị quân mình chắn
+		"pawn_tithe": 0.0,             # mỗi Tốt trên bàn cộng Bội cho quân khác
 	}
 	for id in _owned:
 		var effect: Dictionary = relic_data(id).get("effect", {})
@@ -257,8 +273,12 @@ func totals() -> Dictionary:
 					out[key] = float(out[key]) * float(value)
 				"max_marks", "equip_slot_bonus", "potion_slot_bonus":
 					out[key] = maxi(int(out[key]), int(value))
-				"elite_always_drop", "vein_spread":
+				"elite_always_drop", "vein_spread", "ignore_block":
 					out[key] = bool(out[key]) or bool(value)
+				"formation_mult_bonus", "variety_mult", "endgame_mult", "pawn_tithe":
+					out[key] = float(out[key]) + float(value)   # CỘNG DỒN, không lấy max
+				"knight_reach":
+					out[key] = int(out[key]) + int(value)
 				_:
 					out[key] = maxf(float(out[key]), float(value))
 	return out
@@ -278,6 +298,19 @@ func _apply_all() -> void:
 		gm.set("relic_vein_spread", bool(t["vein_spread"]))
 		gm.set("relic_elite_always_drop", bool(t["elite_always_drop"]))
 		gm.set("relic_all_elements_pct", float(t["all_elements_damage_pct"]))
+		gm.set("relic_formation_mult_bonus", float(t["formation_mult_bonus"]))
+		gm.set("relic_variety_mult", float(t["variety_mult"]))
+		gm.set("relic_endgame_mult", float(t["endgame_mult"]))
+		gm.set("relic_knight_reach", int(t["knight_reach"]))
+		gm.set("relic_ignore_block", bool(t["ignore_block"]))
+		gm.set("relic_pawn_tithe", float(t["pawn_tithe"]))
+		# Nước đi đổi ⇒ tầm phủ của MỌI quân đổi theo. Không bảo dựng lại thì di
+		# vật chỉ có tác dụng với quân đặt SAU khi mua.
+		if is_inside_tree():
+			Tower.bump_layout(get_tree())
+			for t2 in get_tree().get_nodes_in_group("towers"):
+				if is_instance_valid(t2) and t2.has_method("refresh_coverage"):
+					t2.refresh_coverage()
 
 	if _equipment != null and is_instance_valid(_equipment):
 		_equipment.slots_per_tower = EquipmentSystem.BASE_SLOTS + int(t["equip_slot_bonus"])

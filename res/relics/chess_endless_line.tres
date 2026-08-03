@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7003"]
+
+[resource]
+script = ExtResource("1_r7003")
+id = "chess_endless_line"
+name = "Đường Thẳng Vô Tận"
+desc = "Xe, Tượng và Hậu XUYÊN QUA quân của mình. Hết lo tự bịt đường bắn."
+cost = 320
+effect = {
+"ignore_block": true
+}

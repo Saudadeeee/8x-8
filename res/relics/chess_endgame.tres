@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7001"]
+
+[resource]
+script = ExtResource("1_r7001")
+id = "chess_endgame"
+name = "Cờ Tàn"
+desc = "Mỗi ô trống dưới trần quân cộng +0.035 Bội. Bàn thưa thì mỗi quân đáng giá hơn — đi ngược với lối lấp đầy."
+cost = 240
+effect = {
+"endgame_mult": 0.035
+}

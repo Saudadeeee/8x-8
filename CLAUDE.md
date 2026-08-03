@@ -1068,17 +1068,40 @@ Không vào được thì tắt cờ ở `scripts/managers/feature_flags.gd`.
   thế cờ · luật Rival King. Ô nguyên tố nay dạy như **nguồn Bội thứ hai**.
 - **Ba lỗi cân bằng chỉ lộ ra khi chơi trọn ván bằng bot:**
   (1) `wave_total_hp` KHÔNG tính máu boss → ngưỡng nói dối ở đúng wave quan
-      trọng nhất, người chơi thấy "đủ" rồi thua ngay;
+	  trọng nhất, người chơi thấy "đủ" rồi thua ngay;
   (2) `wave_duration` ở wave boss dùng 6 lính = 9 giây, trong khi Rival King đi
-      trọn đường mất ~30 giây → công suất bị đánh giá thấp 3×;
+	  trọn đường mất ~30 giây → công suất bị đánh giá thấp 3×;
   (3) mốc mùa vẫn là hằng cứng (≤2/≤5/≤8) viết cho ván 20 wave → với ván 12 wave
-      thì Mùa Thu ập tới ngay wave 6 và ngưỡng nhảy 1507 → 4454 trong MỘT bước.
-      Nay mốc chia theo TỈ LỆ độ dài ván + `SEASON_BLEND = 0.55` giữ lại một phần
-      địch mùa trước để dốc thoải.
+	  thì Mùa Thu ập tới ngay wave 6 và ngưỡng nhảy 1507 → 4454 trong MỘT bước.
+	  Nay mốc chia theo TỈ LỆ độ dài ván + `SEASON_BLEND = 0.55` giữ lại một phần
+	  địch mùa trước để dốc thoải.
 - Máu boss 1200–1600 → **420–560**: bảng cũ cân cho bàn 24×24 với 100+ tháp.
 - Đo lại (bot đặt tối ưu, hai lần chạy): HP 20 giữ tới wave 4, sứt nhẹ ở wave 5
   (boss đầu), **thua ở wave 9** (boss thứ hai). Người chơi thật biết xáo shop,
   loại quân khỏi bộ và mua ô nguyên tố sẽ đi xa hơn.
+
+*Lớp nội dung kiểu Joker + dọn nốt (2026-08-03, tiếp):*
+- **8 di vật CHẠM VÀO CÔNG THỨC** (`res/relics/chess_*.tres`) — mỗi món sửa CÁCH
+  TÍNH chứ không cộng một con số: Vương Miện Gãy (thưởng theo số LOẠI thế cờ) ·
+  Cờ Tàn / Vua Đơn Độc (bàn càng thưa càng mạnh) · Vó Ngựa (Mã nhảy thêm vòng
+  chữ L xa) · Đường Thẳng Vô Tận (Xe/Tượng/Hậu xuyên qua quân mình) · Con Tốt Thí
+  · Trống Trận · Đại Cục. Đo được +24% → +126% tuỳ bố cục, đã siết 4 món.
+- **BẪY NẶNG — `RelicSystem._sanitize` lọc TRẮNG khoá hiệu ứng.** Sáu khoá mới
+  không có trong `EFFECT_KEYS` bị VỨT im lặng (chỉ `push_warning`), nên cả 8 di
+  vật mua được, hiện mô tả đầy đủ, mà **không làm gì cả**. `audit_wiring.py`
+  KHÔNG bắt được vì khoá có người đọc — chỉ là không bao giờ có giá trị.
+  Thêm khoá hiệu ứng mới thì PHẢI thêm vào `EFFECT_KEYS`.
+- Di vật đổi nước đi (Vó Ngựa, Đường Thẳng Vô Tận) phải gọi `Tower.bump_layout`
+  + `refresh_coverage()` trong `_apply_all`, nếu không chỉ quân đặt SAU mới hưởng.
+- `focus_lens` (trang bị crit) đã chết vì crit tắt → đổi thành +1 tầm bắn.
+- **Boss KHÔNG khoá quân đang bị luật Rival King làm câm** — hai cơ chế khoá
+  chồng nhau thì người chơi mất phần lớn đội hình trong vài giây và không phòng
+  bị được. Luật Vua đã là hình phạt, boss không phạt lần hai.
+- `ENEMIES_PER_WAVE` 8 → 10: đo được bot đạt tỉ lệ 1.3–3.2 ở bốn wave đầu, không
+  có sức ép thì bốn wave đầu chỉ là thủ tục bấm nút.
+- Đo lại trọn ván: HP 20·20·20·20 → 13 (boss đầu) → 13 → 8 → 8 → thua wave 9.
+  Dốc thật, không còn vách đá.
+- Việt hoá nốt màn thắng/thua và nhãn khoá ở màn chọn vua.
 
 *Bảy sửa theo phản hồi chơi thử (2026-08-02):*
 - **Pha chuẩn bị KHÔNG còn đếm ngược.** `PhaseController.request_start_wave()` là

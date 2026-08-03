@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7007"]
+
+[resource]
+script = ExtResource("1_r7007")
+id = "chess_lone_king"
+name = "Vua Đơn Độc"
+desc = "Bàn càng thưa càng mạnh (+0.045 mỗi ô trống) nhưng phải trả bằng chỗ: không cộng gì nếu bàn đã kín."
+cost = 270
+effect = {
+"endgame_mult": 0.045
+}

@@ -243,6 +243,52 @@ func _run() -> void:
 	ok(not tut_src.contains("mở rộng thêm một hướng"),
 		"tutorial khong con day mo rong ban do (da bo)")
 
+	print("
+--- DI VAT CHAM VAO CONG THUC ---")
+	# Lop noi dung kieu Joker: moi mon sua CACH TINH, khong chi cong mot con so.
+	# Kiem tung mon phai LAM DOI gi do — mot lan da dinh: `_sanitize` loc trang
+	# khoa hieu ung, 6 khoa moi bi VUT im lang nen ca 8 di vat mua duoc, hien mo
+	# ta day du, ma khong lam gi ca.
+	var rs = map.relic_system
+	ok(rs != null, "co he di vat")
+	var chess_relics: Array[String] = []
+	for rid in rs.all_ids():
+		if str(rid).begins_with("chess_"):
+			chess_relics.append(str(rid))
+	ok(chess_relics.size() >= 6, "co it nhat 6 di vat cham cong thuc",
+		"%d mon" % chess_relics.size())
+
+	# Moi khoa hieu ung phai nam trong danh sach trang, neu khong no bi vut.
+	var key_missing := ""
+	for k in ["formation_mult_bonus", "variety_mult", "endgame_mult",
+			"knight_reach", "ignore_block", "pawn_tithe"]:
+		if not RelicSystem.EFFECT_KEYS.has(k):
+			key_missing += k + " "
+	ok(key_missing == "", "moi khoa moi nam trong EFFECT_KEYS", key_missing)
+
+	# ...va effect sau khi sanitize phai KHONG RONG
+	var empty_eff := ""
+	for rid in chess_relics:
+		var eff: Dictionary = rs.relic_data(rid).get("effect", {})
+		if eff.is_empty():
+			empty_eff += rid + " "
+	ok(empty_eff == "", "khong di vat nao bi vut sach hieu ung", empty_eff)
+
+	# Ignore_block: kiem THANG tren ChessPattern (khong phu thuoc bo cuc ban)
+	var blk := {Vector2i(4, 5): true}
+	ok(not ChessPattern.covers(ChessPattern.Kind.ROOK, Vector2i(4, 4), Vector2i(4, 7), 5, blk),
+		"binh thuong Xe bi chan")
+	ok(ChessPattern.covers(ChessPattern.Kind.ROOK, Vector2i(4, 4), Vector2i(4, 7), 5, {}),
+		"bo chan thi Xe xuyen qua (di vat Duong Thang Vo Tan)")
+	# Knight_reach: vong chu L xa phai la 8 o KHAC voi 8 o goc
+	var near := ChessPattern.KNIGHT_STEPS
+	var far := ChessPattern.KNIGHT_FAR
+	ok(far.size() == 8, "co 8 buoc nhay chu L xa")
+	var overlap := 0
+	for st2 in far:
+		if near.has(st2): overlap += 1
+	ok(overlap == 0, "buoc xa khong trung buoc gan", "%d trung" % overlap)
+
 	print("\n--- HE DA CAT ---")
 	ok(not FeatureFlags.SEASONS_ENABLED, "mua da tat")
 	ok(not FeatureFlags.BIOME_CLIMATE_ENABLED, "khi hau biome da tat")

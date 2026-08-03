@@ -275,7 +275,13 @@ func _cast_lava_breath() -> void:
 	_announce_ability()
 	_ring_burst(_boss_stats.ability_radius, Color(1.0, 0.45, 0.15), RING_POINTS)
 	var duration: float = maxf(0.2, _boss_stats.disable_duration)
+	# KHÔNG khoá quân đang bị luật Rival King làm câm — hai cơ chế khoá chồng
+	# nhau thì người chơi mất phần lớn đội hình trong vài giây và không có cách
+	# nào phòng bị. Luật Vua đã là hình phạt, boss không nên phạt lần hai.
+	var kr := get_node_or_null("/root/GameMap/KingRules")
 	for tower in towers:
+		if kr != null and tower.has_method("pattern_kind") 				and bool(kr.call("silences", int(tower.pattern_kind()))):
+			continue
 		_disable_tower(tower, duration)
 
 ## Vô hiệu hoá tháp mà KHÔNG sửa tower.gd:

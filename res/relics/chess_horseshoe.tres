@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7002"]
+
+[resource]
+script = ExtResource("1_r7002")
+id = "chess_horseshoe"
+name = "Vó Ngựa"
+desc = "Mã nhảy thêm một vòng chữ L xa hơn — phủ tới 16 ô thay vì 8."
+cost = 280
+effect = {
+"knight_reach": 1
+}

@@ -43,6 +43,12 @@ const KNIGHT_STEPS: Array[Vector2i] = [
 	Vector2i(1, -2), Vector2i(2, -1), Vector2i(-1, -2), Vector2i(-2, -1),
 ]
 
+## Bước nhảy chữ L XA — chỉ dùng khi có di vật "Vó Ngựa".
+const KNIGHT_FAR: Array[Vector2i] = [
+	Vector2i(1, 3), Vector2i(3, 1), Vector2i(-1, 3), Vector2i(-3, 1),
+	Vector2i(1, -3), Vector2i(3, -1), Vector2i(-1, -3), Vector2i(-3, -1),
+]
+
 ## Tầm tối thiểu của SIEGE — máy bắn đá không hạ nòng được.
 const SIEGE_MIN_RANGE: int = 2
 

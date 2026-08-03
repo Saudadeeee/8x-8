@@ -102,13 +102,13 @@ func _build_ui() -> void:
 	stats_vbox.add_theme_constant_override("separation", 5)
 	vbox.add_child(stats_vbox)
 
-	_wave_label = _make_stat_label("Wave Reached: 0")
+	_wave_label = _make_stat_label("Tới wave: 0")
 	stats_vbox.add_child(_wave_label)
-	_enemies_label = _make_stat_label("Enemies Defeated: 0")
+	_enemies_label = _make_stat_label("Đã hạ: 0 địch")
 	stats_vbox.add_child(_enemies_label)
-	_gold_label = _make_stat_label("Gold Earned: 0")
+	_gold_label = _make_stat_label("Vàng kiếm được: 0")
 	stats_vbox.add_child(_gold_label)
-	_meta_pts_label = _make_stat_label("Meta Points Earned: 0")
+	_meta_pts_label = _make_stat_label("Điểm tích luỹ: 0 ★")
 	UIStyle.glyph(_meta_pts_label, 20, Color(1.0, 0.84, 0.0, 1.0))
 	stats_vbox.add_child(_meta_pts_label)
 
@@ -137,7 +137,7 @@ func _build_ui() -> void:
 	vbox.add_child(btn_hbox)
 
 	var menu_btn = Button.new()
-	menu_btn.text = "  Return to Menu"
+	menu_btn.text = "  Về Menu Chính"
 	menu_btn.custom_minimum_size = Vector2(210, 52)
 	UIStyle.apply_button(menu_btn, 18)
 	menu_btn.pressed.connect(_go_to.bind("res://scenes/ui/main_menu.tscn"))
@@ -164,10 +164,10 @@ func _make_stat_label(text: String) -> Label:
 
 ## Số liệu tổng kết dùng số đếm chạy — cảm giác "cộng điểm" cuối ván.
 func show_stats(wave: int, enemies: int, gold: int, meta_pts: int) -> void:
-	UIStyle.count_to(_wave_label, 0, wave, "Wave Reached: %d", 0.55)
-	UIStyle.count_to(_enemies_label, 0, enemies, "Enemies Defeated: %d", 0.75)
-	UIStyle.count_to(_gold_label, 0, gold, "Gold Earned: %d", 0.9)
-	UIStyle.count_to(_meta_pts_label, 0, meta_pts, "Meta Points Earned: %d", 1.05)
+	UIStyle.count_to(_wave_label, 0, wave, "Tới wave: %d", 0.55)
+	UIStyle.count_to(_enemies_label, 0, enemies, "Đã hạ: %d địch", 0.75)
+	UIStyle.count_to(_gold_label, 0, gold, "Vàng kiếm được: %d", 0.9)
+	UIStyle.count_to(_meta_pts_label, 0, meta_pts, "Điểm tích luỹ: %d ★", 1.05)
 
 # ── Bảng đóng góp sát thương ──────────────────────────────────────────────────
 

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7006"]
+
+[resource]
+script = ExtResource("1_r7006")
+id = "chess_grand_strategy"
+name = "Đại Cục"
+desc = "Cộng gộp: mọi thế +0.25 Bội, và mỗi loại thế khác nhau thêm +0.2 nữa."
+cost = 340
+effect = {
+"formation_mult_bonus": 0.25,
+"variety_mult": 0.2
+}

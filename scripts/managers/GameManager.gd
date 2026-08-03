@@ -105,6 +105,16 @@ var meta_tower_damage_pct: float = 0.0   # +% sát thương cho mọi tháp
 var meta_tower_speed_pct: float = 0.0    # +% tốc đánh cho mọi tháp
 var meta_bonus_territories: int = 0      # ô lãnh thổ cộng thêm đầu ván
 
+# ── Di vật chạm thẳng vào công thức Nền × Bội ────────────────────────────────
+# RelicSystem._apply_all() GHI ĐÈ mọi field này mỗi lần đổi sở hữu — bán một
+# món là giá trị tự về mặc định, không cần undo riêng.
+var relic_formation_mult_bonus: float = 0.0  # cộng vào Bội của MỌI thế cờ
+var relic_variety_mult: float = 0.0          # cộng Bội theo số LOẠI thế đang có
+var relic_endgame_mult: float = 0.0          # ít quân trên bàn thì Bội cao hơn
+var relic_knight_reach: int = 0              # Mã phủ thêm vòng chữ L xa
+var relic_ignore_block: bool = false         # Xe/Tượng/Hậu xuyên qua quân mình
+var relic_pawn_tithe: float = 0.0            # mỗi Tốt cộng Bội cho quân khác
+
 # --- BIOME STATE (per-run — BiomeEffects ghi, reset trong start_run) ---
 # Nguồn sự thật cho hiệu ứng khí hậu toàn bản đồ. enemy.gd đọc 2 hệ số dưới
 # lúc load_enemy_data (quái ĐÃ spawn không đổi), game_map lấy vàng/kill qua

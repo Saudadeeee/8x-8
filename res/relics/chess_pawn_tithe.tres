@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7004"]
+
+[resource]
+script = ExtResource("1_r7004")
+id = "chess_pawn_tithe"
+name = "Con Tốt Thí"
+desc = "Mỗi Tốt đứng trên bàn cộng +0.08 Bội cho toàn bàn. Tường Tốt bỗng thành nền móng."
+cost = 230
+effect = {
+"pawn_tithe": 0.08
+}

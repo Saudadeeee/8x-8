@@ -20,7 +20,9 @@ signal boss_escaped
 ## Quy mô wave đã hạ theo BÀN 8×8 + TRẦN QUÂN. Bảng cũ (14 +3/wave, 20 wave,
 ## 850 địch) được cân cho bàn nở tới 24×24 và số tháp không giới hạn — đo được
 ## 106 tháp ở wave 14. Với 8-20 quân trên 64 ô thì cùng số địch đó là bất khả.
-const ENEMIES_PER_WAVE: int = 8
+## 10 chứ không 8: đo được bot đạt tỉ lệ 1.3-3.2 ở bốn wave đầu — không có sức
+## ép thì bốn wave đầu chỉ là thủ tục bấm nút.
+const ENEMIES_PER_WAVE: int = 10
 const ENEMIES_PER_WAVE_INCREMENT: int = 2
 ## Máu địch tăng theo CẤP SỐ NHÂN, không phải cộng tuyến tính.
 ## Lý do: sức mạnh người chơi vốn nhân dồn (★ ×3.2 · synergy +30% · perk · cấp ô

@@ -314,7 +314,7 @@ func _select_king(king: KingStats) -> void:
 		_detail_locked.text = ""
 		_start_btn.disabled = false
 	else:
-		_detail_locked.text = " LOCKED — cần %d Meta Points" % king.unlock_cost
+		_detail_locked.text = " CHƯA MỞ — cần %d điểm tích luỹ" % king.unlock_cost
 		_start_btn.disabled = true
 	# Nhấn mạnh việc đổi tướng: tên pulse + model quay lại từ đầu
 	UIStyle.pulse(_detail_name, 1.10)
