@@ -222,6 +222,9 @@ func _ready() -> void:
 	army_deck = ArmyDeck.new()
 	army_deck.name = "ArmyDeck"
 	add_child(army_deck)
+	# Panel bộ quân đang mở phải cập nhật ngay khi bộ đổi (mua thao tác lên bộ,
+	# rút quân) — không nối thì nó hiện số cũ và người chơi tưởng mua hụt.
+	army_deck.deck_changed.connect(_on_deck_changed)
 	if shop_manager:
 		shop_manager.army_deck = army_deck
 
@@ -265,6 +268,8 @@ func _ready() -> void:
 	tower_placer.tower_placed.connect(func(_p, _t): update_ui())
 	tower_placer.tower_placed.connect(_on_tower_placed_apply_perks)
 	tower_placer.tower_placed.connect(_on_tower_placed_apply_tile_buff)
+	# Chạm trần quân mà im lặng thì người chơi tưởng game hỏng — nối lý do ra HUD.
+	tower_placer.place_rejected.connect(_on_place_rejected)
 	tower_placer.tower_placed.connect(func(_p, _t): _recount_element_synergy())
 	tower_placer.tower_dismissed.connect(func(_p, _r): _recount_element_synergy())
 	tower_placer.tower_dismissed.connect(func(_p, refund): current_gold += refund; update_ui())
@@ -975,6 +980,20 @@ func apply_deck_action(action_id: String) -> bool:
 		"deck_morph":
 			return parts.size() >= 3 and army_deck.transmute(parts[1], parts[2])
 	return false
+
+
+func _on_deck_changed(_counts: Dictionary) -> void:
+	var hud := get_node_or_null("HUD")
+	if hud and hud.has_method("is_deck_panel_open") and hud.is_deck_panel_open():
+		hud.refresh_deck_panel()
+
+
+func _on_place_rejected(reason: String) -> void:
+	phase_controller.phase_message = "⚠ " + reason
+	update_ui()
+	var am = get_node_or_null("/root/AudioManagerSingleton")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx("error", -6.0)
 
 
 func _on_prep_ready_changed(ready: bool) -> void:

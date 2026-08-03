@@ -227,13 +227,23 @@ func _element_glow(biome: String) -> Color:
 
 # --- KHỞI TẠO LÃNH THỔ ĐẦU GAME ---
 func initialize(count: int, grid_data: Dictionary, km: KingManager, bottom_y: int = 4) -> void:
+	# Duyệt BIÊN LƯỚI, không duyệt `grid_data.keys()`.
+	#
+	# `grid_data` CHỈ chứa ô đường (chuỗi "path") và ô có quân — ô trống không
+	# bao giờ là khoá. Duyệt keys() nên luôn ra 0 ứng viên, tức
+	# `KingStats.starting_territory_count` là số chết từ commit đầu tiên: mọi vua
+	# khai 3-5 ô lãnh thổ mà thực tế nhận 0. Không ai phát hiện vì game vẫn chạy.
+	# Từ bản Balatro-hoá thì nó nặng hơn hẳn — ô nguyên tố nuôi cả NỀN lẫn BỘI.
 	var candidates: Array[Vector2i] = []
-	for pos in grid_data.keys():
-		if not (pos is Vector2i): continue
-		var p := pos as Vector2i
-		if p.y < bottom_y: continue
-		if grid_data.get(p) == "path": continue
-		candidates.append(p)
+	if grid_controller == null:
+		return
+	for y in range(grid_controller.grid_height):
+		for x in range(grid_controller.grid_width):
+			var p := Vector2i(x, y)
+			if p.y < bottom_y: continue
+			if grid_data.get(p) == "path": continue
+			if grid_data.get(p) is Node3D: continue
+			candidates.append(p)
 	candidates.shuffle()
 
 	var given = 0

@@ -313,6 +313,48 @@ func _run() -> void:
 		if near.has(st2): overlap += 1
 	ok(overlap == 0, "buoc xa khong trung buoc gan", "%d trung" % overlap)
 
+	print("
+--- LOI DA SUA (chong tai phat) ---")
+	# 1. O lanh tho khoi dau: `initialize` tung duyet `grid_data.keys()`, ma dict
+	#    do CHI chua o duong va o co quan — o trong khong bao gio la khoa. Nen
+	#    `KingStats.starting_territory_count` la so CHET tu commit dau tien: moi
+	#    vua khai 3-5 o ma thuc te nhan 0. Game van chay nen khong ai thay.
+	var tm = map.territory_manager
+	var king_now: KingStats = gm.selected_king
+	var want_tiles: int = int(king_now.starting_territory_count) if king_now else 0
+	ok(tm.owned_tiles.size() >= want_tiles,
+		"o lanh tho khoi dau duoc cap DUNG so vua khai",
+		"%d/%d" % [tm.owned_tiles.size(), want_tiles])
+	ok(tm.biome_tiles.size() == tm.owned_tiles.size(),
+		"moi o so huu deu co nguyen to")
+
+	# 2. Hai signal tung emit ma KHONG AI NGHE — cham tran quan thi im lang,
+	#    panel bo quan khong tu cap nhat. Ca hai deu la loi trai nghiem cam.
+	ok(map.tower_placer.place_rejected.get_connections().size() > 0,
+		"place_rejected co nguoi nghe (cham tran quan phai bao ly do)")
+	ok(map.army_deck.deck_changed.get_connections().size() > 0,
+		"deck_changed co nguoi nghe (panel bo tu cap nhat)")
+
+	# 3. Wave boss phai tinh CA CON BOSS vao nhom dich. Bo quen thi cong suat
+	#    tut 83% o dung wave boss — do duoc 9490 -> 1657 giua wave 8 va 9.
+	var ws2 = map.wave_spawner
+	var boss_w: int = int(WaveSpawner.BOSS_WAVES[0])
+	var groups: Array = bs.enemy_groups(boss_w)
+	var slowest := 99.0
+	for g in groups:
+		if g is Dictionary:
+			slowest = minf(slowest, float((g as Dictionary).get("speed", 99.0)))
+	ok(groups.size() >= 2, "wave boss co nhieu hon mot nhom dich",
+		"%d nhom" % groups.size())
+	ok(slowest < 1.2, "nhom cham nhat la con boss (no o tren ban rat lau)",
+		"%.2f o/giay" % slowest)
+
+	# 4. Wave boss: thua boss la thua NGAY (boss_escaped), khong lien quan mau Vua.
+	#    Nen nguong phai co nhanh so RIENG con boss.
+	ok(bs.damage_to_boss(boss_w) >= 0.0, "tinh duoc sat thuong len rieng boss")
+	ok(bs._boss_hp_only(boss_w) > 0.0, "doc duoc mau rieng cua boss",
+		"%.0f" % bs._boss_hp_only(boss_w))
+
 	print("\n--- HE DA CAT ---")
 	ok(not FeatureFlags.SEASONS_ENABLED, "mua da tat")
 	ok(not FeatureFlags.BIOME_CLIMATE_ENABLED, "khi hau biome da tat")

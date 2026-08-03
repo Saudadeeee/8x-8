@@ -2895,7 +2895,18 @@ func update_board_score(info: Dictionary) -> void:
 	_score_main.add_theme_color_override("font_color", C_GREEN if ok else C_RED)
 	_score_bar.value = clampf(ratio * 100.0, 0.0, 100.0)
 	UIStyle.tint_bar(_score_bar, C_GREEN if ok else C_RED)
-	_score_sub.text = "Sát thương cả wave / Tổng máu wave" if ok 		else "THIẾU %s — sửa bố cục trước khi bắt đầu" % UIStyle.short_number(thr - dmg)
+	var note := str(info.get("note", ""))
+	if not ok:
+		_score_sub.text = "THIẾU %s — sửa bố cục trước khi bắt đầu" 			% UIStyle.short_number(thr - dmg)
+	elif note != "":
+		_score_sub.text = note
+	else:
+		_score_sub.text = "Sát thương cả wave / Tổng máu wave"
+	# Wave boss so RIÊNG con boss: thua boss là thua NGAY, không liên quan máu Vua.
+	if bool(info.get("boss", false)):
+		_score_main.add_theme_color_override("font_color", C_GREEN if ok else C_RED)
+		if not ok:
+			_score_sub.text = "☠ KHÔNG hạ nổi Rival King — hắn chạm Vua là thua ngay"
 
 
 # ── Nút BẮT ĐẦU WAVE ─────────────────────────────────────────────────────────

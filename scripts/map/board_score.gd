@@ -197,9 +197,31 @@ func avg_mult_on_path(t: Node) -> float:
 ## Công thức này tự đúng ở cả hai đầu: quân phủ ít ô thì thời gian bắn ngắn,
 ## quân phủ nhiều ô thì bị chặn bởi thời lượng wave. Bản cũ dùng
 ## "Σ điểm ô / tốc độ × số địch" nên báo dư 4× mà quái vẫn lọt qua.
+## Thời gian một quân CÓ MỤC TIÊU trong wave, tính theo từng NHÓM địch.
+##
+## Mỗi nhóm `{count, speed}` đóng góp `count × k / speed` giây. Tính theo nhóm
+## chứ không lấy một tốc độ chung là bắt buộc: wave boss có 6 lính nhanh cộng
+## MỘT con boss rất chậm ở trên bàn ~25 giây. Dùng số lính làm `n` thì công suất
+## tụt 83% ở đúng wave boss — đo được 9490 → 1657 giữa wave 8 và 9.
+func active_seconds(t: Node, groups: Array, duration: float) -> float:
+	var k := path_cells_covered(t)
+	if k <= 0:
+		return 0.0
+	var total := 0.0
+	for g in groups:
+		if not (g is Dictionary):
+			continue
+		var d: Dictionary = g
+		var v: float = maxf(0.05, float(d.get("speed", 1.0)))
+		total += float(d.get("count", 0)) * float(k) / v
+	return minf(duration, total)
+
+
 func tower_wave_damage(t: Node, enemy_count: int, speed: float, duration: float) -> float:
 	var k := path_cells_covered(t)
 	if k <= 0:
+		return 0.0
+	if _silenced(t):
 		return 0.0
 	# Quân bị Rival King khoá nước đi thì đóng góp 0. Phải tính ở đây, nếu không
 	# bảng ngưỡng nói "đủ" trong khi nửa đội hình đứng im — đúng kiểu lời hứa sai
@@ -242,6 +264,95 @@ func wave_total_hp(wave: int) -> float:
 	if ws.has_method("is_boss_wave") and ws.is_boss_wave(wave):
 		total += _boss_hp(ws, wave)
 	return total
+
+
+## Quân có bị Rival King khoá nước đi không.
+func _silenced(t: Node) -> bool:
+	var kr := map.get_node_or_null("KingRules")
+	return kr != null and t.has_method("pattern_kind") 		and bool(kr.call("silences", int(t.pattern_kind())))
+
+
+## Các nhóm địch của một wave: [{count, speed}]. Wave boss KÈM con boss —
+## nó chậm nên ở trong tầm rất lâu, bỏ quên là đánh giá thấp cả wave.
+func enemy_groups(wave: int) -> Array:
+	var out: Array = []
+	var ws = map.get("wave_spawner")
+	if ws == null:
+		return out
+	if ws.has_method("get_wave_enemy_preview"):
+		var listed := 0
+		for row in ws.get_wave_enemy_preview(wave):
+			if row is Dictionary:
+				listed += int((row as Dictionary).get("count", 0))
+		var real: int = int(ws.calculate_enemies_for_wave(wave)) 			if ws.has_method("calculate_enemies_for_wave") else listed
+		var scale: float = (float(real) / float(listed)) if listed > 0 else 1.0
+		for row in ws.get_wave_enemy_preview(wave):
+			if row is Dictionary:
+				var d: Dictionary = row
+				out.append({
+					"count": float(d.get("count", 0)) * scale,
+					"speed": float(d.get("speed", 1.0)),
+				})
+	if ws.has_method("is_boss_wave") and ws.is_boss_wave(wave):
+		var bspd := _boss_speed(ws, wave)
+		if bspd > 0.0:
+			out.append({"count": 1.0, "speed": bspd})
+	return out
+
+
+## Tốc độ Rival King (ô/giây); 0 nếu không phải wave boss.
+func _boss_speed(ws: Node, wave: int) -> float:
+	var bs := _boss_stats(ws, wave)
+	return (float(bs.speed) / 16.0) if bs != null else 0.0
+
+
+func _boss_stats(ws: Node, wave: int) -> EnemyStats:
+	var ids = ws.get("BOSS_IDS")
+	var order = ws.get("BOSS_WAVES")
+	if not (ids is Array) or not (order is Array):
+		return null
+	var idx: int = (order as Array).find(wave)
+	if idx < 0 or (ids as Array).is_empty():
+		return null
+	var path := "res://res/enemy/%s.tres" % str((ids as Array)[idx % (ids as Array).size()])
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path) as EnemyStats
+
+
+func _is_boss_wave(wave: int) -> bool:
+	var ws = map.get("wave_spawner")
+	return ws != null and ws.has_method("is_boss_wave") and ws.is_boss_wave(wave)
+
+
+## Máu RIÊNG con boss (không tính hộ vệ).
+func _boss_hp_only(wave: int) -> float:
+	var ws = map.get("wave_spawner")
+	if ws == null:
+		return 0.0
+	var bs := _boss_stats(ws, wave)
+	if bs == null or not ws.has_method("get_boss_health_multiplier"):
+		return 0.0
+	return float(bs.max_hp) * float(ws.get_boss_health_multiplier(wave))
+
+
+## Sát thương đội hình gây lên RIÊNG con boss trong lúc nó đi hết đường.
+## Boss đi một mình qua từng ô, nên mỗi quân bắn nó đúng `k / v_boss` giây.
+func damage_to_boss(wave: int) -> float:
+	var ws = map.get("wave_spawner")
+	if ws == null:
+		return 0.0
+	var v := _boss_speed(ws, wave)
+	if v <= 0.0:
+		return 0.0
+	var groups: Array = [{"count": 1.0, "speed": v}]
+	var walk: float = float(_path_cells().size()) / v
+	var total := 0.0
+	for t in _towers():
+		if _silenced(t):
+			continue
+		total += tower_dps(t) * avg_mult_on_path(t) * active_seconds(t, groups, walk)
+	return total * EFFICIENCY
 
 
 ## Máu Rival King của wave boss (0 nếu không phải wave boss).
@@ -323,14 +434,44 @@ func summary(wave: int) -> Dictionary:
 	var ws = map.get("wave_spawner")
 	var n: int = int(ws.calculate_enemies_for_wave(wave)) if ws and ws.has_method("calculate_enemies_for_wave") else 1
 
+	# Nhóm địch thật của wave (kèm CON BOSS nếu là wave boss).
+	var groups := enemy_groups(wave)
 	var dmg := 0.0
 	for t in _towers():
-		dmg += tower_wave_damage(t, n, spd, dur)
+		if _silenced(t):
+			continue
+		dmg += tower_dps(t) * avg_mult_on_path(t) * active_seconds(t, groups, dur)
 	dmg *= EFFICIENCY
 	var thr := wave_total_hp(wave)
+
+	# ── WAVE BOSS: điều kiện thua là RIÊNG ────────────────────────────────
+	# Boss chạm Vua = THUA NGAY (`boss_escaped`), không liên quan máu Vua còn
+	# bao nhiêu. Nên ở wave boss, "tổng sát thương ≥ tổng máu wave" KHÔNG phải
+	# điều kiện sống sót — đo được tỉ lệ 1.03 mà vẫn thua sạch.
+	# Ràng buộc thật: giết được con boss TRONG lúc nó đi hết đường hay không.
+	# Lấy tỉ lệ NGẶT HƠN trong hai cái làm con số hiển thị.
+	var boss_note := ""
+	if _is_boss_wave(wave):
+		var bhp := _boss_hp_only(wave)
+		var bdmg := damage_to_boss(wave)
+		if bhp > 0.01:
+			var boss_ratio: float = bdmg / bhp
+			var wave_ratio: float = (dmg / thr) if thr > 0.01 else 999.0
+			if boss_ratio < wave_ratio:
+				# Boss là chỗ nghẽn ⇒ hiển thị chính phép so đó.
+				return {
+					"damage": bdmg, "threshold": bhp,
+					"per_enemy": damage_per_enemy(spd), "speed": spd,
+					"duration": dur, "ratio": boss_ratio,
+					"ok": bdmg >= bhp, "boss": true,
+					"note": "Sát thương lên RIÊNG Rival King / máu hắn",
+				}
+			boss_note = "Đủ hạ Rival King (×%.1f) — chỗ nghẽn là đám hộ vệ" % boss_ratio
+
 	return {
 		"damage": dmg,
 		"threshold": thr,
+		"note": boss_note,
 		"per_enemy": damage_per_enemy(spd),
 		"speed": spd,
 		"duration": dur,

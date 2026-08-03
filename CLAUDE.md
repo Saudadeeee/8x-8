@@ -1118,6 +1118,32 @@ Không vào được thì tắt cờ ở `scripts/managers/feature_flags.gd`.
   Dốc thật, không còn vách đá.
 - Việt hoá nốt màn thắng/thua và nhãn khoá ở màn chọn vua.
 
+*Kiểm toàn diện sau tái thiết kế (2026-08-04) — bốn lỗi tìm được:*
+- **`starting_territory_count` là số CHẾT từ commit đầu tiên.**
+  `TerritoryManager.initialize` duyệt `grid_data.keys()`, mà dict đó CHỈ chứa ô
+  đường (chuỗi `"path"`) và ô có quân — **ô trống không bao giờ là khoá**. Nên
+  ứng viên luôn rỗng và mọi Vua khai 3-5 ô lãnh thổ thực tế nhận 0. Không ai
+  phát hiện suốt vì game vẫn chạy bình thường. Nay duyệt BIÊN LƯỚI.
+  Từ bản Balatro-hoá thì lỗi này nặng hơn hẳn: ô nguyên tố nuôi cả NỀN lẫn BỘI.
+- **Wave boss bỏ quên chính CON BOSS khi tính nhóm địch.** `n` lấy từ
+  `calculate_enemies_for_wave` = 6 lính hộ vệ, trong khi boss ở trên bàn ~25
+  giây. Đo được công suất tụt **83%** giữa wave 8 và 9 (9490 → 1657).
+  Nay `enemy_groups()` trả từng nhóm `{count, speed}` KÈM boss — tính theo nhóm
+  cũng sửa luôn chỗ cũ lấy một tốc độ chung cho mọi loài.
+- **Wave boss có điều kiện thua RIÊNG.** Boss chạm Vua = thua NGAY
+  (`boss_escaped`), không liên quan máu Vua còn bao nhiêu. Nên "tổng sát thương
+  ≥ tổng máu wave" KHÔNG phải điều kiện sống sót — đo được tỉ lệ **1.03 mà vẫn
+  thua sạch**. Nay `summary()` so RIÊNG sát thương-lên-boss với máu boss và lấy
+  tỉ lệ NGẶT HƠN trong hai cái.
+- **Hai signal mới không ai nghe**: `tower_placer.place_rejected` (chạm trần quân
+  thì im lặng, người chơi tưởng game hỏng) và `army_deck.deck_changed` (panel bộ
+  quân không tự cập nhật sau khi mua thao tác). `audit_wiring.py` bắt được cả hai
+  — chạy nó sau mỗi lần thêm signal.
+- Kiểm sạch: trần quân vẫn cho GHÉP SAO khi bàn đã đầy · sao không làm tụt tầm ·
+  không quân nào còn dùng RADIAL · hai overlay hình thế khác cao độ (0.12 vs
+  0.13, nhãn 1.7 vs 2.0) · `MAX_WAVES` khớp `MAX_WAVES_HINT` · không perk/
+  encounter nào còn tham chiếu hệ đã tắt.
+
 *Bảy sửa theo phản hồi chơi thử (2026-08-02):*
 - **Pha chuẩn bị KHÔNG còn đếm ngược.** `PhaseController.request_start_wave()` là
   đường DUY NHẤT vào wave; `_tick_prepare` nay rỗng. Đồng hồ 30 giây cũ vừa sinh
