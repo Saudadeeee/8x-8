@@ -386,6 +386,12 @@ func recalculate_stats() -> void:
 	for v in _dmg_bonus.values(): total_dmg += v
 	for v in _spd_bonus.values(): total_spd += v
 	for v in _rng_bonus.values(): total_rng += v
+	# Di vật "Pháo Đài": Xe thành Pháo (khó bắn hơn vì cần ngòi) nên được bù
+	# sát thương. Nhân ở đây chứ không qua BuffLayer vì nó phụ thuộc nước đi
+	# HIỆN TẠI, mà nước đi đổi theo di vật.
+	var gm_c := get_node_or_null("/root/GameManagerSingleton")
+	if gm_c != null and bool(gm_c.relic_rook_as_cannon) and stats 			and int(stats.attack_pattern) == ChessPattern.Kind.ROOK:
+		total_dmg *= maxf(1.0, float(gm_c.relic_cannon_damage_mult))
 	# Meta upgrade ("Rèn vũ khí" / "Luyện tay") — cộng cho MỌI tháp, mọi ván.
 	# Cộng ở đây chứ không qua BuffLayer: nó không bao giờ bị gỡ giữa ván nên
 	# không cần một lớp riêng, và đi qua lớp nào cũng có nguy cơ bị hàm clear_*
@@ -396,7 +402,11 @@ func recalculate_stats() -> void:
 		total_spd += stats.attack_speed * maxf(0.0, float(gm_meta.meta_tower_speed_pct))
 	# star_damage_mult là hệ số NHÂN (giống season) — luôn dẫn xuất từ `star` nên
 	# không thể nhân chồng dù recalculate_stats() được gọi bao nhiêu lần.
-	current_damage       = int(total_dmg * season_damage_mult * star_damage_mult)
+	# SÀN sát thương = 1. Nhiều nguồn có thể ÂM (trang bị đánh đổi như Repeater
+	# -40% sát thương lấy +50% tốc, khí hậu biome, di vật nhân đôi mặt trái).
+	# Không có sàn thì cộng dồn đủ nhiều sẽ ra sát thương âm — quái được HỒI MÁU
+	# khi bị bắn. Đã đo được -9 với hai Repeater + di vật Song Thủ.
+	current_damage       = maxi(1, int(total_dmg * season_damage_mult * star_damage_mult))
 	# SÀN hồi chiêu theo TỈ LỆ base, không phải hằng 0.1s. Giảm hồi chiêu là số
 	# giây CỘNG PHẲNG từ nhiều nguồn (ô, perk, thuốc, trang bị); với sàn cứng 0.1
 	# một tháp base 1.0s có thể chạm 10 phát/giây = ×10 DPS, phá mọi cân bằng.
@@ -993,7 +1003,19 @@ func home_cell() -> Vector2i:
 func pattern_kind() -> int:
 	if stats == null:
 		return ChessPattern.Kind.RADIAL
-	return int(stats.attack_pattern)
+	var base_kind: int = int(stats.attack_pattern)
+	var gm_k := get_node_or_null("/root/GameManagerSingleton")
+	if gm_k == null:
+		return base_kind
+	# Di vật đổi LUẬT nước đi. Thứ tự ưu tiên: ★3 > loại quân > gốc.
+	# -1 nghĩa "không đổi" — KHÔNG dùng 0 vì 0 là Kind.ROOK hợp lệ.
+	if int(star) >= 3 and int(gm_k.relic_star3_pattern) >= 0:
+		return int(gm_k.relic_star3_pattern)
+	if base_kind == ChessPattern.Kind.PAWN and int(gm_k.relic_pawn_pattern) >= 0:
+		return int(gm_k.relic_pawn_pattern)
+	if base_kind == ChessPattern.Kind.ROOK and bool(gm_k.relic_rook_as_cannon):
+		return ChessPattern.Kind.CANNON
+	return base_kind
 
 
 func effective_range() -> int:

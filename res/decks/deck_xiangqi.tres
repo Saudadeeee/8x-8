@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StartingDeckData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/StartingDeckData.gd" id="1_d9002"]
+
+[resource]
+script = ExtResource("1_d9002")
+id = "deck_xiangqi"
+display_name = "Bộ Cờ Tướng"
+desc = "Có Pháo ngay từ đầu. Mọi Xe cũng đánh theo luật Pháo — phải có ngòi, bù lại sát thương ×2.5. Cách nghĩ hoàn toàn khác."
+origin = "Cờ tướng"
+deck = {
+"cannon": 3, "xiang_elephant": 3, "pawn": 4, "rook": 2
+}
+unlock_cost = 200
+rule = {
+"rook_as_cannon": true,
+"cannon_damage_mult": 2.5
+}
+gold_delta = 20
+unit_cap_delta = 0

@@ -40,6 +40,61 @@ const META_UPGRADES = [
 ## Thư mục vua — quét thay vì liệt kê cứng (giống màn chọn vua).
 const KING_DIR := "res://res/kings/"
 
+## Bộ Khai Cuộc — phần meta "mở LỐI CHƠI mới", khác hẳn nâng cấp cộng chỉ số.
+## Nó không làm người chơi mạnh hơn, nó cho một cách chơi khác. Mỗi bộ gắn với
+## một loại cờ và mang theo luật riêng của loại đó.
+func _build_deck_section(parent: VBoxContainer) -> void:
+	var head := Label.new()
+	head.text = "◆  BỘ KHAI CUỘC"
+	UIStyle.title(head, 28, UIStyle.GOLD)
+	parent.add_child(head)
+
+	var hint := Label.new()
+	hint.text = "Mỗi bộ lấy cảm hứng từ một loại cờ và mang luật riêng của loại đó."
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	UIStyle.body(hint, 14, UIStyle.TEXT_DIM)
+	parent.add_child(hint)
+
+	for data in ArmyDeck.all_decks():
+		var owned: bool = int(data.unlock_cost) <= 0 			or _meta.unlocked_deck_ids.has(str(data.id))
+		var picked: bool = str(_meta.selected_deck_id) == str(data.id)
+		var pieces := PackedStringArray()
+		for k in data.deck:
+			pieces.append("%s×%d" % [UIStyle.unit_name_vi(str(k)), int(data.deck[k])])
+		var btn := Button.new()
+		btn.custom_minimum_size = Vector2(0, 80)
+		if owned:
+			btn.text = "%s %s  [%s]
+%s" % [
+				"▶" if picked else "  ", data.display_name, data.origin, ", ".join(pieces)]
+		else:
+			btn.text = "  %s  [%s]  —  %d điểm
+%s" % [
+				data.display_name, data.origin, int(data.unlock_cost), ", ".join(pieces)]
+			btn.disabled = _meta.meta_points < int(data.unlock_cost)
+		UIStyle.apply_button(btn, 14,
+			UIStyle.GOLD if picked else (UIStyle.TEXT if owned else UIStyle.TEXT_DIM))
+		btn.pressed.connect(_on_deck_pressed.bind(str(data.id), int(data.unlock_cost), owned))
+		parent.add_child(btn)
+
+	parent.add_child(UIStyle.separator(UIStyle.BORDER_HI))
+
+
+func _on_deck_pressed(deck_id: String, cost: int, owned: bool) -> void:
+	if owned:
+		_meta.selected_deck_id = deck_id
+	else:
+		if _meta.meta_points < cost:
+			return
+		_meta.meta_points -= cost
+		if not _meta.unlocked_deck_ids.has(deck_id):
+			_meta.unlocked_deck_ids.append(deck_id)
+		_meta.selected_deck_id = deck_id
+	_meta.save()
+	_go_to("res://scenes/ui/meta_progression.tscn")
+
+
+
 func _go_to(path: String) -> void:
 	var sm = get_node_or_null("/root/SceneManagerSingleton")
 	if sm:
@@ -137,6 +192,8 @@ func _build_ui() -> void:
 	left_vbox.add_child(kings_title)
 
 	left_vbox.add_child(UIStyle.separator(UIStyle.BORDER_DIM))
+
+	_build_deck_section(left_vbox)
 
 	var king_index := 0
 	# Quét thư mục: thêm vua = thả một .tres, không phải sửa mảng ở đây.

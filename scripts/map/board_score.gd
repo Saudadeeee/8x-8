@@ -137,6 +137,17 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 
 	# 2. Cấp ô nguyên tố dưới chân
 	var tm = map.get("territory_manager")
+	var has_element := false
+	if tm != null and tm.has_method("has_biome_at"):
+		has_element = bool(tm.has_biome_at(cell))
+		# Di vật "Long Mạch": ô nguyên tố lan sang 4 ô kề. Ô lan KHÔNG có mesh
+		# riêng — nó chỉ tồn tại trong công thức, nên chỉ tính ở đây.
+		if not has_element and gm0 != null and bool(gm0.relic_tile_spread):
+			for dir in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
+				if bool(tm.has_biome_at(cell + dir)):
+					out.append({"name": "Long Mạch lan", "mult": 1.15})
+					has_element = true
+					break
 	if tm != null and tm.has_method("get_element_bonus"):
 		var b: Dictionary = tm.get_element_bonus(cell)
 		var rm := float(b.get("reaction_mult", 1.0))
@@ -152,6 +163,25 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 		var gr := float(gm.global_reaction_mult)
 		if gr > 1.001:
 			out.append({"name": "Di vật", "mult": gr})
+		# Di vật "Đất Cằn": thưởng cho ô KHÔNG có nguyên tố — mở lối chơi phản
+		# nguyên tố, thứ mà bản cũ không có đường nào đi.
+		var plain := float(gm.relic_plain_tile_mult)
+		if plain > 0.0 and not has_element:
+			out.append({"name": "Đất Cằn", "mult": 1.0 + plain})
+		# Di vật "Vây Bắt" (cờ vây): ô bị ≥3 quân kề bao vây.
+		var surr := float(gm.relic_surround_mult)
+		if surr > 0.0:
+			var neighbours := 0
+			for dx in [-1, 0, 1]:
+				for dy in [-1, 0, 1]:
+					if dx == 0 and dy == 0:
+						continue
+					for t in _towers():
+						if t.has_method("home_cell") and t.home_cell() == cell + Vector2i(dx, dy):
+							neighbours += 1
+							break
+			if neighbours >= 3:
+				out.append({"name": "Vây Bắt", "mult": 1.0 + surr * float(neighbours)})
 		var rule := map.get_node_or_null("KingRules")
 		if rule and rule.has_method("cell_mult"):
 			var rv := float(rule.call("cell_mult", cell))

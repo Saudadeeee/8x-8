@@ -115,6 +115,18 @@ var relic_knight_reach: int = 0              # Mã phủ thêm vòng chữ L xa
 var relic_pierce_count: int = 0              # đường trượt xuyên qua N quân mình
 var relic_pawn_tithe: float = 0.0            # mỗi Tốt cộng Bội cho quân khác
 
+# ── Di vật ĐỔI LUẬT (mượn cơ chế từ các loại cờ khác) ───────────────────────
+# -1 = không đổi. 0 là Kind hợp lệ (ROOK) nên KHÔNG được dùng 0 làm "tắt".
+var relic_pawn_pattern: int = -1             # đổi nước đi mọi Tốt
+var relic_star3_pattern: int = -1            # quân ★3 đánh theo nước này
+var relic_rook_as_cannon: bool = false       # mọi Xe thành Pháo (cần ngòi)
+var relic_cannon_damage_mult: float = 1.0    # bù sát thương cho Xe-thành-Pháo
+var relic_tile_spread: bool = false          # ô nguyên tố lan sang 4 ô kề
+var relic_plain_tile_mult: float = 0.0       # ô THƯỜNG cộng Bội
+var relic_surround_mult: float = 0.0         # cờ vây: ≥3 quân kề thì cộng Bội
+var relic_equip_share: bool = false          # trang bị áp cho mọi quân cùng loại
+var relic_equip_stack_mult: float = 1.0      # hai trang bị trùng thì NHÂN
+
 # --- BIOME STATE (per-run — BiomeEffects ghi, reset trong start_run) ---
 # Nguồn sự thật cho hiệu ứng khí hậu toàn bản đồ. enemy.gd đọc 2 hệ số dưới
 # lúc load_enemy_data (quái ĐÃ spawn không đổi), game_map lấy vàng/kill qua

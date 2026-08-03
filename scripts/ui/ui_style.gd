@@ -75,6 +75,9 @@ const UNIT_NAMES_VI := {
 	"catapult": "Máy Bắn Đá", "warlock": "Pháp Sư Hắc Ám", "dark_mage": "Ma Đạo Sĩ",
 	"longbowman": "Cung Trường", "paladin": "Thánh Kỵ", "alchemist": "Luyện Kim Sư",
 	"ice_guardian": "Vệ Binh Băng", "ballista": "Nỏ Công Thành",
+	# Quân mượn từ các loại cờ khác — mỗi loại một cơ chế cờ vua KHÔNG có.
+	"cannon": "Pháo", "lance": "Hương Xa", "gold_general": "Kim Tướng",
+	"xiang_elephant": "Tượng Điền", "dice_rider": "Kỵ Xúc Xắc",
 }
 
 

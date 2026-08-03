@@ -37,6 +37,18 @@ const EFFECT_KEYS: Array[String] = [
 	# không bao giờ có giá trị.
 	"formation_mult_bonus", "variety_mult", "endgame_mult",
 	"knight_reach", "pierce_count", "pawn_tithe",
+	# ── Đổi LUẬT chơi, không chỉ đổi số ──────────────────────────────────
+	# Đây là lớp Joker thật sự: món sửa CÁCH quân hoạt động. Mượn cơ chế từ
+	# các loại cờ khác (Pháo cờ tướng, thả quân Shogi, vây bắt cờ vây).
+	"pawn_pattern",       # đổi nước đi của MỌI Tốt (số = ChessPattern.Kind)
+	"rook_as_cannon",     # mọi Xe thành Pháo (cần ngòi) — đổi lại sát thương
+	"cannon_damage_mult", # hệ số bù cho Xe-thành-Pháo
+	"star3_pattern",      # quân ★3 đánh theo nước đi này
+	"tile_spread",        # ô nguyên tố lan sang 4 ô kề (cấp thấp hơn 1)
+	"plain_tile_mult",    # ô KHÔNG nguyên tố cộng Bội — build phản nguyên tố
+	"surround_mult",      # cờ vây: ô có ≥3 quân kề cộng Bội
+	"equip_share",        # trang bị áp cho MỌI quân cùng loại
+	"equip_stack_mult",   # hai trang bị trùng loại thì NHÂN thay vì cộng
 ]
 
 const RELICS: Array[Dictionary] = [
@@ -263,6 +275,12 @@ func totals() -> Dictionary:
 		"knight_reach": 0,             # Mã phủ thêm vòng ô chữ L xa hơn
 		"pierce_count": 0,             # đường trượt xuyên qua N quân của mình
 		"pawn_tithe": 0.0,             # mỗi Tốt trên bàn cộng Bội cho quân khác
+		# Đổi luật: -1 nghĩa là "không đổi" (0 là một Kind hợp lệ — ROOK).
+		"pawn_pattern": -1, "star3_pattern": -1,
+		"rook_as_cannon": false, "cannon_damage_mult": 1.0,
+		"tile_spread": false, "plain_tile_mult": 0.0,
+		"surround_mult": 0.0,
+		"equip_share": false, "equip_stack_mult": 1.0,
 	}
 	for id in _owned:
 		var effect: Dictionary = relic_data(id).get("effect", {})
@@ -273,9 +291,13 @@ func totals() -> Dictionary:
 					out[key] = float(out[key]) * float(value)
 				"max_marks", "equip_slot_bonus", "potion_slot_bonus":
 					out[key] = maxi(int(out[key]), int(value))
-				"elite_always_drop", "vein_spread":
+				"elite_always_drop", "vein_spread", "rook_as_cannon", "tile_spread", "equip_share":
 					out[key] = bool(out[key]) or bool(value)
-				"formation_mult_bonus", "variety_mult", "endgame_mult", "pawn_tithe":
+				"pawn_pattern", "star3_pattern":
+					out[key] = int(value)                   # món sau ghi đè món trước
+				"cannon_damage_mult", "equip_stack_mult":
+					out[key] = float(out[key]) * float(value)
+				"formation_mult_bonus", "variety_mult", "endgame_mult", "pawn_tithe", "plain_tile_mult", "surround_mult":
 					out[key] = float(out[key]) + float(value)   # CỘNG DỒN, không lấy max
 				"knight_reach", "pierce_count":
 					out[key] = int(out[key]) + int(value)   # CỘNG DỒN — xếp chồng được
@@ -303,6 +325,15 @@ func _apply_all() -> void:
 		gm.set("relic_endgame_mult", float(t["endgame_mult"]))
 		gm.set("relic_knight_reach", int(t["knight_reach"]))
 		gm.set("relic_pierce_count", int(t["pierce_count"]))
+		gm.set("relic_pawn_pattern", int(t["pawn_pattern"]))
+		gm.set("relic_star3_pattern", int(t["star3_pattern"]))
+		gm.set("relic_rook_as_cannon", bool(t["rook_as_cannon"]))
+		gm.set("relic_cannon_damage_mult", float(t["cannon_damage_mult"]))
+		gm.set("relic_tile_spread", bool(t["tile_spread"]))
+		gm.set("relic_plain_tile_mult", float(t["plain_tile_mult"]))
+		gm.set("relic_surround_mult", float(t["surround_mult"]))
+		gm.set("relic_equip_share", bool(t["equip_share"]))
+		gm.set("relic_equip_stack_mult", float(t["equip_stack_mult"]))
 		gm.set("relic_pawn_tithe", float(t["pawn_tithe"]))
 		# Nước đi đổi ⇒ tầm phủ của MỌI quân đổi theo. Không bảo dựng lại thì di
 		# vật chỉ có tác dụng với quân đặt SAU khi mua.

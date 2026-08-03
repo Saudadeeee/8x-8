@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/towers/TowerStats.gd" id="1_t8002"]
+
+[resource]
+script = ExtResource("1_t8002")
+id = "gold_general"
+attack_pattern = 10
+name = "Kim Tướng"
+description = "Shogi. Phủ sáu ô kề: bốn hướng thẳng và hai chéo phía trước. Bền, hợp làm ngòi cho Pháo."
+cost = 40
+decree_cost = 2.0
+base_damage = 30
+attack_speed = 0.95
+attack_range = 1
+attack_style = 0
+type = 0
+synergy_tag = "shogi"
+projectile_count = 1

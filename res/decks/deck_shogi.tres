@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StartingDeckData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/StartingDeckData.gd" id="1_d9003"]
+
+[resource]
+script = ExtResource("1_d9003")
+id = "deck_shogi"
+display_name = "Bộ Shogi"
+desc = "Quân bất đối xứng: Hương Xa bắn xa một hướng, Kim Tướng phủ sáu ô kề. Quân ★3 phong cấp thành nước Hậu."
+origin = "Shogi"
+deck = {
+"lance": 4, "gold_general": 4, "pawn": 4, "knight": 2
+}
+unlock_cost = 200
+rule = {
+"star3_pattern": 2
+}
+gold_delta = 0
+unit_cap_delta = 0

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/towers/TowerStats.gd" id="1_t8001"]
+
+[resource]
+script = ExtResource("1_t8001")
+id = "lance"
+attack_pattern = 9
+name = "Hương Xa"
+description = "Shogi. Chỉ bắn thẳng MỘT hướng xuôi bàn, nhưng đi rất xa và xuyên hết hàng."
+cost = 38
+decree_cost = 2.0
+base_damage = 34
+attack_speed = 1.20
+attack_range = 8
+attack_style = 0
+type = 0
+synergy_tag = "shogi"
+projectile_count = 1

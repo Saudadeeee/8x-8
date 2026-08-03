@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7209"]
+
+[resource]
+script = ExtResource("1_r7209")
+id = "rl_gold_road"
+name = "Đường Kim Tướng"
+rarity = "rare"
+desc = "Mọi Tốt đánh theo nước KIM TƯỚNG shogi: bốn hướng thẳng và hai chéo trước. Sáu ô thay vì bốn."
+cost = 190
+effect = {
+"pawn_pattern": 10
+}

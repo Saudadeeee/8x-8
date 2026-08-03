@@ -30,6 +30,16 @@ enum Kind {
 	KING,      # 8 ô kề, không bị chặn
 	SIEGE,     # vành khuyên: có tầm TỐI THIỂU, không đánh được sát mình
 	RADIAL,    # mọi ô trong bán kính — hành vi cũ, để dành cho quân "ngoài luật cờ"
+
+	# ── Nước đi mượn từ các loại cờ khác ─────────────────────────────────
+	# Mỗi loại cờ đóng góp một cơ chế mà cờ vua KHÔNG có. Đây là cách mở rộng
+	# chiều sâu mà không đụng vào concept: vẫn là `attack_pattern` trong .tres,
+	# vẫn là nước đi quyết định tầm phủ.
+	CANNON,    # PHÁO (cờ tướng) — đi như Xe nhưng PHẢI có đúng 1 quân làm NGÒI
+	LANCE,     # HƯƠNG XA (shogi) — chỉ một hướng, nhưng tầm rất xa
+	GOLD,      # KIM TƯỚNG (shogi) — 6 ô bất đối xứng: 4 hướng + 2 chéo trước
+	XIANG,     # TƯỢNG (cờ tướng) — chéo ĐÚNG 2 ô, bị cản ở ô giữa
+	DICE,      # CÁ NGỰA — vành khuyên nhưng bỏ qua ô chẵn/lẻ theo nhịp
 }
 
 const ORTHO: Array[Vector2i] = [
@@ -53,6 +63,10 @@ const KNIGHT_FAR: Array[Vector2i] = [
 const SIEGE_MIN_RANGE: int = 2
 
 ## Tên tiếng Việt để hiện trong panel quân và sách tra cứu.
+## Hướng "tiến" mặc định của quân bất đối xứng (Hương Xa, Kim Tướng).
+## Địch đi từ path[0] tới Vua, nên hướng tiến hợp lý nhất là +Y (xuống dưới).
+const FORWARD: Vector2i = Vector2i(0, 1)
+
 const KIND_LABEL := {
 	Kind.ROOK:   "Dọc hàng & cột (trượt)",
 	Kind.BISHOP: "Hai đường chéo (trượt)",
@@ -62,6 +76,11 @@ const KIND_LABEL := {
 	Kind.KING:   "Tám ô kề",
 	Kind.SIEGE:  "Vành khuyên (không đánh sát mình)",
 	Kind.RADIAL: "Mọi hướng trong tầm",
+	Kind.CANNON: "Pháo — phải có ĐÚNG 1 quân làm ngòi",
+	Kind.LANCE:  "Hương Xa — một hướng, tầm rất xa",
+	Kind.GOLD:   "Kim Tướng — 4 hướng + 2 chéo trước",
+	Kind.XIANG:  "Tượng cờ tướng — chéo đúng 2 ô, bị cản tâm",
+	Kind.DICE:   "Cá Ngựa — vành khuyên rộng, sát thương lớn",
 }
 
 ## Ký hiệu ngắn cho card shop — người chơi đọc được hình dạng trước khi đọc chữ.
@@ -70,6 +89,8 @@ const KIND_LABEL := {
 const KIND_GLYPH := {
 	Kind.ROOK: "＋", Kind.BISHOP: "✕", Kind.QUEEN: "✦", Kind.KNIGHT: "▸",
 	Kind.PAWN: "◆", Kind.KING: "▣", Kind.SIEGE: "◎", Kind.RADIAL: "●",
+	Kind.CANNON: "✷", Kind.LANCE: "▲", Kind.GOLD: "⬢",
+	Kind.XIANG: "✕", Kind.DICE: "⛁",
 }
 
 
@@ -121,6 +142,17 @@ static func cells(kind: int, from: Vector2i, max_range: int,
 			_jump(out, from, DIAG, blocked)
 		Kind.SIEGE:
 			_ring(out, from, SIEGE_MIN_RANGE, r, blocked)
+		Kind.CANNON:
+			_cannon(out, from, r, blocked)
+		Kind.LANCE:
+			_lance(out, from, r, blocked)
+		Kind.GOLD:
+			_jump(out, from, ORTHO, blocked)
+			_jump(out, from, [FORWARD + Vector2i(1, 0), FORWARD + Vector2i(-1, 0)], blocked)
+		Kind.XIANG:
+			_xiang(out, from, blocked)
+		Kind.DICE:
+			_ring(out, from, 1, r, blocked)
 		_:
 			_ring(out, from, 1, r, blocked)
 	return out
@@ -143,8 +175,28 @@ static func covers(kind: int, from: Vector2i, to: Vector2i, max_range: int,
 		Kind.SIEGE:
 			var cheb_s: int = maxi(absi(d.x), absi(d.y))
 			return cheb_s >= SIEGE_MIN_RANGE and cheb_s <= r
-		Kind.RADIAL:
+		Kind.RADIAL, Kind.DICE:
 			return maxi(absi(d.x), absi(d.y)) <= r
+		Kind.GOLD:
+			if maxi(absi(d.x), absi(d.y)) != 1:
+				return false
+			# 4 hướng thẳng + 2 chéo TRƯỚC; hai chéo sau thì không.
+			if d.x == 0 or d.y == 0:
+				return true
+			return d.y == FORWARD.y
+		Kind.XIANG:
+			if absi(d.x) != 2 or absi(d.y) != 2:
+				return false
+			# Cản tâm: ô chéo kề bị chiếm thì không đi hướng đó được.
+			return not blocked.has(from + Vector2i(signi(d.x), signi(d.y)))
+		Kind.LANCE:
+			if d.x != 0 or signi(d.y) != FORWARD.y:
+				return false
+			return _clear_line(from, to, r, blocked, pierce)
+		Kind.CANNON:
+			if d.x != 0 and d.y != 0:
+				return false
+			return _cannon_hits(from, to, r, blocked)
 		Kind.ROOK:
 			if d.x != 0 and d.y != 0:
 				return false
@@ -200,6 +252,61 @@ static func _jump(out: Array[Vector2i], from: Vector2i, steps: Array[Vector2i],
 		blocked: Dictionary) -> void:
 	for s in steps:
 		var c := from + s
+		if not blocked.has(c):
+			out.append(c)
+
+
+## PHÁO (cờ tướng) — đi thẳng như Xe, nhưng CHỈ ăn được khi có ĐÚNG MỘT quân
+## nằm giữa nó và mục tiêu ("ngòi"). Ô trước ngòi KHÔNG bắn được.
+##
+## Đây là nước đi thú vị nhất mượn từ các loại cờ khác: cả game dạy "quân mình
+## chắn đường là xấu", Pháo lật ngược lại — bạn PHẢI đặt một quân làm ngòi thì
+## nó mới bắn được. Quân của mình từ vật cản thành tài nguyên nhắm bắn.
+static func _cannon(out: Array[Vector2i], from: Vector2i, max_range: int,
+		blocked: Dictionary) -> void:
+	for dir in ORTHO:
+		var cur := from
+		var screened := false        # đã vượt qua ngòi chưa
+		for _i in max_range:
+			cur += dir
+			if blocked.has(cur):
+				if screened:
+					break            # quân THỨ HAI chặn hẳn
+				screened = true      # quân ĐẦU là ngòi
+				continue
+			if screened:
+				out.append(cur)      # chỉ ô SAU ngòi mới bắn được
+
+
+static func _cannon_hits(from: Vector2i, to: Vector2i, max_range: int,
+		blocked: Dictionary) -> bool:
+	var d := to - from
+	var dist: int = maxi(absi(d.x), absi(d.y))
+	if dist > max_range or dist == 0:
+		return false
+	var step := Vector2i(signi(d.x), signi(d.y))
+	var cur := from + step
+	var screens := 0
+	while cur != to:
+		if blocked.has(cur):
+			screens += 1
+		cur += step
+	return screens == 1              # đúng MỘT ngòi, không hơn không kém
+
+
+## HƯƠNG XA (shogi) — chỉ tiến thẳng một hướng, nhưng đi xa hơn Xe nhiều.
+static func _lance(out: Array[Vector2i], from: Vector2i, max_range: int,
+		blocked: Dictionary) -> void:
+	_slide(out, from, [FORWARD], max_range, blocked)
+
+
+## TƯỢNG cờ tướng — chéo ĐÚNG hai ô, và bị "cản tâm": ô chéo kề bị chiếm thì
+## không đi được hướng đó. Khác hẳn Tượng cờ vua (trượt vô hạn).
+static func _xiang(out: Array[Vector2i], from: Vector2i, blocked: Dictionary) -> void:
+	for dir in DIAG:
+		if blocked.has(from + dir):
+			continue                 # cản tâm
+		var c := from + dir * 2
 		if not blocked.has(c):
 			out.append(c)
 

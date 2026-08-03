@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7202"]
+
+[resource]
+script = ExtResource("1_r7202")
+id = "rl_fortress"
+name = "Pháo Đài"
+rarity = "legendary"
+desc = "Mọi Xe đánh theo luật PHÁO cờ tướng: phải có đúng một quân của bạn làm ngòi. Bù lại sát thương ×2.5. Quân chắn đường từ tai hoạ thành tài nguyên."
+cost = 400
+effect = {
+"rook_as_cannon": true,
+"cannon_damage_mult": 2.5
+}

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/towers/TowerStats.gd" id="1_t8004"]
+
+[resource]
+script = ExtResource("1_t8004")
+id = "dice_rider"
+attack_pattern = 12
+name = "Kỵ Xúc Xắc"
+description = "Cá ngựa. Phủ rộng mọi hướng, sát thương lớn nhưng hồi chiêu rất chậm."
+cost = 52
+decree_cost = 3.0
+base_damage = 76
+attack_speed = 2.30
+attack_range = 3
+attack_style = 0
+type = 0
+synergy_tag = "ludo"
+projectile_count = 1

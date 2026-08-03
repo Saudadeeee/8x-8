@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StartingDeckData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/StartingDeckData.gd" id="1_d9004"]
+
+[resource]
+script = ExtResource("1_d9004")
+id = "deck_ludo"
+display_name = "Bộ Cá Ngựa"
+desc = "Rất ít quân nhưng mỗi con đánh cực mạnh. Trần quân thấp hơn 4, vàng khởi đầu gấp đôi."
+origin = "Cá ngựa"
+deck = {
+"dice_rider": 4, "queen": 2, "rook": 2
+}
+unlock_cost = 240
+rule = {
+"endgame_mult": 0.06
+}
+gold_delta = 60
+unit_cap_delta = -4

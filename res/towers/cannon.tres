@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/towers/TowerStats.gd" id="1_t8000"]
+
+[resource]
+script = ExtResource("1_t8000")
+id = "cannon"
+attack_pattern = 8
+name = "Pháo"
+description = "Cờ tướng. Bắn dọc hàng và cột NHƯNG phải có ĐÚNG MỘT quân của bạn nằm giữa làm ngòi. Không ngòi thì không bắn được ô nào."
+cost = 46
+decree_cost = 3.0
+base_damage = 58
+attack_speed = 1.60
+attack_range = 6
+attack_style = 0
+type = 0
+synergy_tag = "xiangqi"
+projectile_count = 1

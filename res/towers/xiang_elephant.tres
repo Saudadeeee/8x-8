@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TowerStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/towers/TowerStats.gd" id="1_t8003"]
+
+[resource]
+script = ExtResource("1_t8003")
+id = "xiang_elephant"
+attack_pattern = 11
+name = "Tượng Điền"
+description = "Cờ tướng. Nhảy chéo ĐÚNG hai ô. Bị cản tâm: ô chéo kề có quân thì hướng đó tắc."
+cost = 30
+decree_cost = 1.0
+base_damage = 40
+attack_speed = 1.35
+attack_range = 2
+attack_style = 0
+type = 0
+synergy_tag = "xiangqi"
+projectile_count = 1

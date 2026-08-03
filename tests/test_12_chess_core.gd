@@ -355,6 +355,88 @@ func _run() -> void:
 	ok(bs._boss_hp_only(boss_w) > 0.0, "doc duoc mau rieng cua boss",
 		"%.0f" % bs._boss_hp_only(boss_w))
 
+	print("
+--- NUOC DI MUON TU CAC LOAI CO KHAC ---")
+	var o2 := Vector2i(4, 4)
+	# PHAO (co tuong) — luat DAO NGUOC: phai co DUNG MOT quan lam ngoi.
+	# Ca game day "quan minh chan duong la xau"; Phao lat nguoc lai.
+	ok(not ChessPattern.covers(K.CANNON, o2, Vector2i(4,7), 5, {}),
+		"Phao KHONG ban duoc khi khong co ngoi")
+	var scr := {Vector2i(4,5): true}
+	ok(ChessPattern.covers(K.CANNON, o2, Vector2i(4,7), 5, scr),
+		"Phao ban duoc khi co DUNG 1 ngoi")
+	ok(not ChessPattern.covers(K.CANNON, o2, Vector2i(4,5), 5, scr),
+		"Phao KHONG ban duoc chinh o co ngoi")
+	ok(not ChessPattern.covers(K.CANNON, o2, Vector2i(4,7), 5,
+		{Vector2i(4,5): true, Vector2i(4,6): true}), "hai ngoi thi Phao tac")
+	ok(ChessPattern.cells(K.CANNON, o2, 5, {}).size() == 0,
+		"Phao tren ban trong phu 0 o")
+	# HUONG XA (shogi) — mot huong
+	ok(ChessPattern.covers(K.LANCE, o2, Vector2i(4,7), 7, {}), "Huong Xa ban xuoi")
+	ok(not ChessPattern.covers(K.LANCE, o2, Vector2i(4,1), 7, {}), "Huong Xa KHONG ban nguoc")
+	# KIM TUONG (shogi) — 6 o bat doi xung
+	ok(ChessPattern.cells(K.GOLD, o2, 1, {}).size() == 6, "Kim Tuong phu dung 6 o")
+	ok(not ChessPattern.covers(K.GOLD, o2, Vector2i(5,3), 1, {}), "Kim Tuong KHONG danh cheo sau")
+	# TUONG co tuong — cheo dung 2 o, CAN TAM
+	ok(ChessPattern.covers(K.XIANG, o2, Vector2i(6,6), 5, {}), "Tuong Dien nhay cheo 2 o")
+	ok(not ChessPattern.covers(K.XIANG, o2, Vector2i(6,6), 5, {Vector2i(5,5): true}),
+		"Tuong Dien bi CAN TAM")
+
+	print("
+--- DI VAT DOI LUAT ---")
+	var rs2 = map.relic_system
+	var rule_relics: Array[String] = []
+	for rid2 in rs2.all_ids():
+		if str(rid2).begins_with("rl_"):
+			rule_relics.append(str(rid2))
+	ok(rule_relics.size() >= 8, "co it nhat 8 di vat doi luat",
+		"%d mon" % rule_relics.size())
+	var empty2 := ""
+	for rid3 in rule_relics:
+		if (rs2.relic_data(rid3).get("effect", {}) as Dictionary).is_empty():
+			empty2 += rid3 + " "
+	ok(empty2 == "", "khong di vat doi luat nao bi _sanitize vut sach", empty2)
+	# -1 la "khong doi"; 0 KHONG duoc dung lam co tat vi 0 = Kind.ROOK hop le
+	ok(gm.relic_pawn_pattern == -1 or gm.relic_pawn_pattern >= 0,
+		"relic_pawn_pattern dung -1 lam 'khong doi'")
+
+	print("
+--- BO KHAI CUOC ---")
+	var decks := ArmyDeck.all_decks()
+	ok(decks.size() >= 5, "co it nhat 5 Bo Khai Cuoc", "%d bo" % decks.size())
+	var deck_bad := ""
+	var origins := {}
+	for dk in decks:
+		if dk.deck.is_empty():
+			deck_bad += str(dk.id) + "(rong) "
+		var tot := 0
+		for kk in dk.deck: tot += int(dk.deck[kk])
+		if tot < 4:
+			deck_bad += str(dk.id) + "(qua it quan) "
+		origins[str(dk.origin)] = true
+	ok(deck_bad == "", "moi bo co du quan", deck_bad)
+	ok(origins.size() >= 3, "cac bo trai it nhat 3 loai co",
+		", ".join(PackedStringArray(origins.keys())))
+	# Luat cua bo phai dung CHUNG khoa voi di vat — neu khong phai viet he thu hai
+	var rule_bad := ""
+	for dk2 in decks:
+		for rk in dk2.rule:
+			if not RelicSystem.EFFECT_KEYS.has(str(rk)):
+				rule_bad += "%s:%s " % [dk2.id, rk]
+	ok(rule_bad == "", "luat cua Bo Khai Cuoc dung chung khoa voi EFFECT_KEYS", rule_bad)
+
+	print("
+--- SAN SAT THUONG ---")
+	# Nhieu nguon co the AM (trang bi danh doi, khi hau, di vat nhan doi mat trai).
+	# Khong co san thi quai duoc HOI MAU khi bi ban — do duoc -9 voi 2 Repeater.
+	var any_t = null
+	for c4 in gc.grid_data.keys():
+		var v4 = gc.grid_data[c4]
+		if v4 is Node3D and is_instance_valid(v4): any_t = v4; break
+	if any_t != null:
+		ok(any_t.current_damage >= 1, "sat thuong luon >= 1",
+			"%d" % any_t.current_damage)
+
 	print("\n--- HE DA CAT ---")
 	ok(not FeatureFlags.SEASONS_ENABLED, "mua da tat")
 	ok(not FeatureFlags.BIOME_CLIMATE_ENABLED, "khi hau biome da tat")

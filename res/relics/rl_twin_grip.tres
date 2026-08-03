@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7207"]
+
+[resource]
+script = ExtResource("1_r7207")
+id = "rl_twin_grip"
+name = "Song Thủ"
+rarity = "epic"
+desc = "Hai trang bị TRÙNG loại thì hiệu ứng NHÂN đôi thay vì cộng."
+cost = 300
+effect = {
+"equip_stack_mult": 2.0
+}

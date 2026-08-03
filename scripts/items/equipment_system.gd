@@ -418,7 +418,32 @@ func _aggregate(tower: Node) -> Dictionary:
 	if stats != null and stats.get("base_damage") != null:
 		base_damage = float(stats.get("base_damage"))
 
-	for id in equipped_on(tower):
+	# Di vật "Kho Vũ Khí": trang bị lắp trên MỘT quân áp cho MỌI quân cùng loại.
+	# Đây là món đổi luật thật sự — nó biến "chọn con nào để lắp" thành "chọn
+	# LOẠI nào để đầu tư", một quyết định khác hẳn.
+	var ids: Array[String] = equipped_on(tower)
+	var gm_e := get_node_or_null("/root/GameManagerSingleton")
+	if gm_e != null and bool(gm_e.relic_equip_share) and stats != null 			and is_inside_tree():
+		var my_id := str(stats.get("id"))
+		for other in get_tree().get_nodes_in_group("towers"):
+			if other == tower or not is_instance_valid(other):
+				continue
+			var ost: Variant = other.get("stats")
+			if ost != null and str(ost.get("id")) == my_id:
+				for oid in equipped_on(other):
+					if not ids.has(oid):
+						ids.append(oid)
+
+	# Di vật "Song Thủ": hai trang bị TRÙNG loại thì nhân thay vì cộng.
+	var dup_mult := 1.0
+	if gm_e != null and float(gm_e.relic_equip_stack_mult) > 1.0:
+		var seen := {}
+		for id2 in ids:
+			if seen.has(id2):
+				dup_mult *= float(gm_e.relic_equip_stack_mult)
+			seen[id2] = true
+
+	for id in ids:
 		var effect: Dictionary = item_data(id).get("effect", {})
 		for key in effect.keys():
 			var value: Variant = effect[key]
@@ -442,12 +467,24 @@ func _aggregate(tower: Node) -> Dictionary:
 				"growth_per_wave":
 					pass   # cộng dồn ở `_growth`, không lấy từ effect mỗi lần gộp
 	out["damage_flat"] = float(out["damage_flat"]) + float(_growth.get(tower.get_instance_id(), 0.0))
+	if dup_mult > 1.0:
+		# Nhân MỌI trục cộng, không chỉ sát thương — nhiều trang bị chỉ cho tầm
+		# hoặc tốc đánh, nhân mỗi damage_flat thì với chúng di vật là số chết.
+		for k in ["damage_flat", "speed_bonus", "reaction_radius_bonus", "cooldown_refund"]:
+			out[k] = float(out[k]) * dup_mult
+		for k2 in ["range_bonus", "projectile_bonus", "pierce_targets", "lifesteal"]:
+			out[k2] = int(round(float(out[k2]) * dup_mult))
 	return out
 
 func _apply(tower: Node) -> void:
 	if not is_instance_valid(tower):
 		return
-	if equipped_on(tower).is_empty() and not _growth.has(tower.get_instance_id()):
+	# Thoát sớm chỉ khi tháp này thật sự KHÔNG hưởng gì. Với di vật "Kho Vũ Khí"
+	# thì một tháp trống vẫn hưởng trang bị của quân CÙNG LOẠI — thoát sớm ở đây
+	# là di vật đó không bao giờ chạm tới được. Đã dính.
+	var gm_share := get_node_or_null("/root/GameManagerSingleton")
+	var sharing: bool = gm_share != null and bool(gm_share.relic_equip_share)
+	if equipped_on(tower).is_empty() and not _growth.has(tower.get_instance_id()) 			and not sharing:
 		if tower.has_method("clear_equipment_buff"):
 			tower.clear_equipment_buff()
 		return

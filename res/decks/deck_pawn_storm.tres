@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StartingDeckData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/StartingDeckData.gd" id="1_d9001"]
+
+[resource]
+script = ExtResource("1_d9001")
+id = "deck_pawn_storm"
+display_name = "Bộ Tốt Thí"
+desc = "Mười hai Tốt, không một quân lớn. Bù lại mỗi Tốt trên bàn cộng Bội cho toàn bàn, và Tốt đánh cả tám ô kề."
+origin = "Cờ vua"
+deck = {
+"pawn": 12
+}
+unlock_cost = 120
+rule = {
+"pawn_tithe": 0.10,
+"pawn_pattern": 5
+}
+gold_delta = 0
+unit_cap_delta = 2

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7203"]
+
+[resource]
+script = ExtResource("1_r7203")
+id = "rl_promotion"
+name = "Phong Cấp Shogi"
+rarity = "legendary"
+desc = "Mọi quân ★3 đánh theo nước HẬU — tám hướng, trượt. Shogi cho phong cấp gần như mọi quân, không riêng Tốt."
+cost = 380
+effect = {
+"star3_pattern": 2
+}

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StartingDeckData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/StartingDeckData.gd" id="1_d9000"]
+
+[resource]
+script = ExtResource("1_d9000")
+id = "deck_standard"
+display_name = "Bộ Chuẩn"
+desc = "Bộ cờ vua tiêu chuẩn. Cân bằng, không có luật riêng — nền tảng để so mọi bộ khác."
+origin = "Cờ vua"
+deck = {
+"pawn": 6, "rook": 3, "knight": 2, "bishop": 2, "queen": 1
+}
+unlock_cost = 0
+rule = {
+
+}
+gold_delta = 0
+unit_cap_delta = 0

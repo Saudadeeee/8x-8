@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7206"]
+
+[resource]
+script = ExtResource("1_r7206")
+id = "rl_armory"
+name = "Kho Vũ Khí"
+rarity = "legendary"
+desc = "Trang bị lắp trên một quân áp cho MỌI quân cùng loại. Chọn con nào để lắp thành chọn LOẠI nào để đầu tư."
+cost = 420
+effect = {
+"equip_share": true
+}

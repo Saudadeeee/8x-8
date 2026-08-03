@@ -225,6 +225,7 @@ func _ready() -> void:
 	# Panel bộ quân đang mở phải cập nhật ngay khi bộ đổi (mua thao tác lên bộ,
 	# rút quân) — không nối thì nó hiện số cũ và người chơi tưởng mua hụt.
 	army_deck.deck_changed.connect(_on_deck_changed)
+	_apply_deck_modifiers()
 	if shop_manager:
 		shop_manager.army_deck = army_deck
 
@@ -982,6 +983,24 @@ func apply_deck_action(action_id: String) -> bool:
 	return false
 
 
+## Vàng khởi đầu và trần quân riêng của Bộ Khai Cuộc.
+## Bộ Cá Ngựa ít quân nhưng giàu; Bộ Khổ Hạnh nghèo nhưng ô thường mạnh.
+func _apply_deck_modifiers() -> void:
+	if army_deck == null or army_deck.active_deck_id == "":
+		return
+	var data := ArmyDeck.load_deck(army_deck.active_deck_id)
+	if data == null:
+		return
+	current_gold = maxi(0, current_gold + int(data.gold_delta))
+	if _game_manager:
+		_game_manager.current_gold = current_gold
+	_deck_unit_cap_delta = int(data.unit_cap_delta)
+
+
+## Chênh lệch trần quân do Bộ Khai Cuộc quy định.
+var _deck_unit_cap_delta: int = 0
+
+
 func _on_deck_changed(_counts: Dictionary) -> void:
 	var hud := get_node_or_null("HUD")
 	if hud and hud.has_method("is_deck_panel_open") and hud.is_deck_panel_open():
@@ -1262,8 +1281,9 @@ func max_units() -> int:
 	var extra := 0
 	if king_rules and is_instance_valid(king_rules):
 		extra = king_rules.extra_places()
-	return mini(MAX_UNITS_CAP,
-		MAX_UNITS_BASE + int(floor(float(maxi(0, wave - 1)) * MAX_UNITS_PER_WAVE)) + extra)
+	return maxi(3, mini(MAX_UNITS_CAP,
+		MAX_UNITS_BASE + int(floor(float(maxi(0, wave - 1)) * MAX_UNITS_PER_WAVE))
+		+ extra + _deck_unit_cap_delta))
 
 
 ## Số quân đang đứng trên bàn.

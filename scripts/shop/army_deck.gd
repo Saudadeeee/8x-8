@@ -45,10 +45,71 @@ var permanent_star: Dictionary = {}
 var _drawn_this_wave: Dictionary = {}
 
 
+## Thư mục Bộ Khai Cuộc. Thêm bộ mới = thả một `.tres`, không sửa code.
+const DECK_DIR := "res://res/decks/"
+
+## Bộ đang dùng cho ván này (rỗng = bộ chuẩn khai cứng).
+var active_deck_id: String = ""
+## Luật riêng của bộ — dùng chung khoá với EFFECT_KEYS của di vật.
+var deck_rule: Dictionary = {}
+
+
+static func load_deck(deck_id: String) -> StartingDeckData:
+	var path := DECK_DIR + deck_id + ".tres"
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path) as StartingDeckData
+
+
+static func all_decks() -> Array[StartingDeckData]:
+	var out: Array[StartingDeckData] = []
+	var d := DirAccess.open(DECK_DIR)
+	if d == null:
+		return out
+	var names: Array[String] = []
+	for f in d.get_files():
+		var cn := f.trim_suffix(".remap")
+		if cn.ends_with(".tres"):
+			names.append(cn)
+	names.sort()
+	for n in names:
+		var r := load(DECK_DIR + n) as StartingDeckData
+		if r:
+			out.append(r)
+	return out
+
+
 func _ready() -> void:
 	add_to_group("army_decks")
 	if deck.is_empty():
+		_apply_selected_deck()
+
+
+## Nạp bộ người chơi đã chọn ở màn Tiến Trình. Thiếu/hỏng thì về bộ chuẩn —
+## KHÔNG để ván bắt đầu với bộ rỗng.
+func _apply_selected_deck() -> void:
+	var gm := get_node_or_null("/root/GameManagerSingleton")
+	var want := "deck_standard"
+	if gm != null and gm.meta_progress != null:
+		want = str(gm.meta_progress.selected_deck_id)
+	var data := load_deck(want)
+	if data == null or data.deck.is_empty():
 		reset_to_standard()
+		return
+	deck = {}
+	for k in data.deck:
+		deck[str(k)] = int(data.deck[k])
+	permanent_star.clear()
+	_drawn_this_wave.clear()
+	active_deck_id = data.id
+	deck_rule = data.rule.duplicate()
+	# Luật của bộ đi qua ĐÚNG các field di vật — không cần hệ áp dụng thứ hai.
+	if gm != null:
+		for key in deck_rule:
+			var field := "relic_" + str(key)
+			if key in gm or gm.get(field) != null:
+				gm.set(field, deck_rule[key])
+	deck_changed.emit(counts())
 
 
 func reset_to_standard() -> void:

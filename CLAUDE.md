@@ -1144,6 +1144,46 @@ Không vào được thì tắt cờ ở `scripts/managers/feature_flags.gd`.
   0.13, nhãn 1.7 vs 2.0) · `MAX_WAVES` khớp `MAX_WAVES_HINT` · không perk/
   encounter nào còn tham chiếu hệ đã tắt.
 
+*NHIỀU LOẠI CỜ + di vật đổi luật + Bộ Khai Cuộc (2026-08-04):*
+
+Ý tưởng gốc: Balatro dùng poker + tarot + planet; ở đây dùng **cờ vua + cờ tướng
++ shogi + cá ngựa + cờ vây**. Mỗi loại cờ đóng góp một cơ chế mà cờ vua KHÔNG
+có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không đụng concept**.
+
+- **5 nước đi mới** trong `ChessPattern.Kind`:
+  - `CANNON` **(Pháo — viên ngọc)**: đi thẳng như Xe nhưng chỉ bắn được ô SAU
+	đúng MỘT quân làm ngòi. Cả game dạy "quân mình chắn đường là xấu"; Pháo lật
+	ngược — bạn PHẢI đặt một quân làm ngòi. Không loại cờ nào khác có nước này.
+  - `LANCE` (Hương Xa, shogi) — một hướng, tầm rất xa
+  - `GOLD` (Kim Tướng, shogi) — 6 ô bất đối xứng, chéo TRƯỚC mới tính
+  - `XIANG` (Tượng cờ tướng) — chéo đúng 2 ô, **bị cản tâm**
+  - `DICE` (cá ngựa) — vành khuyên rộng, sát thương lớn, hồi chiêu chậm
+- **5 quân mới**, art vẽ theo NGUỒN GỐC nên nhìn là biết thuộc loại cờ nào:
+  shogi = miếng ngũ giác · cờ tướng = đĩa tròn · cá ngựa = khối xúc xắc.
+- **10 di vật ĐỔI LUẬT** (khác hẳn lớp cộng số): Tốt Nổ (Tốt đánh 8 ô) · Pháo
+  Đài (mọi Xe thành Pháo, bù ×2.5 sát thương) · Phong Cấp Shogi (★3 đánh nước
+  Hậu) · Long Mạch Lan (ô kề ô nguyên tố cũng tính) · Đất Cằn (ô THƯỜNG +45%
+  Bội — mở lối chơi phản nguyên tố) · Kho Vũ Khí (trang bị dùng chung theo
+  LOẠI quân) · Song Thủ · Vây Bắt (cờ vây).
+- **6 Bộ Khai Cuộc** (`res/decks/*.tres`) — biến thể chơi lại rẻ nhất. Mỗi bộ
+  gắn một loại cờ và mang LUẬT riêng, mở khoá bằng điểm tích luỹ. Đây là phần
+  meta "mở LỐI CHƠI mới", khác hẳn 14 nâng cấp cộng chỉ số.
+  **Luật của bộ dùng CHUNG khoá với `EFFECT_KEYS` của di vật** nên không phải
+  viết hệ áp dụng thứ hai — `_apply_selected_deck()` ghi thẳng vào `relic_*`.
+
+*Năm bẫy đã dính trong đợt này:*
+- **`match` của GDScript không cho pattern xuống dòng.** `"a", "b",
+"c":` là
+  lỗi parse "Expected expression for match pattern". Phải gộp một dòng.
+- **KHÔNG dùng 0 làm cờ "tắt" cho pattern** — 0 là `Kind.ROOK` hợp lệ. Dùng -1.
+- **`EquipmentSystem._apply` thoát sớm** khi tháp chưa lắp gì ⇒ di vật "Kho Vũ
+  Khí" (trang bị dùng chung) không bao giờ chạm tới được.
+- **Sát thương có thể ÂM.** Repeater (-40% sát lấy +50% tốc) × di vật Song Thủ
+  = đo được **-9** ⇒ quái được HỒI MÁU khi bị bắn. Nay `current_damage` có
+  sàn 1. Lỗi này tồn tại độc lập với di vật, chỉ là chưa ai chạm tới.
+- **Trần tầm 7 của `check_content.py` áp sai cho nước đi một hướng.** Hương Xa
+  tầm 8 chỉ phủ 8 ô, ít hơn Xe tầm 5 (20 ô). Luật giờ biết đọc `attack_pattern`.
+
 *Bảy sửa theo phản hồi chơi thử (2026-08-02):*
 - **Pha chuẩn bị KHÔNG còn đếm ngược.** `PhaseController.request_start_wave()` là
   đường DUY NHẤT vào wave; `_tick_prepare` nay rỗng. Đồng hồ 30 giây cũ vừa sinh

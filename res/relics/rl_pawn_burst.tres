@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7200"]
+
+[resource]
+script = ExtResource("1_r7200")
+id = "rl_pawn_burst"
+name = "Tốt Nổ"
+rarity = "epic"
+desc = "Mọi Tốt đánh CẢ TÁM ô kề thay vì bốn ô chéo. Tường Tốt từ hàng rào mỏng thành bức tường thật."
+cost = 260
+effect = {
+"pawn_pattern": 5
+}

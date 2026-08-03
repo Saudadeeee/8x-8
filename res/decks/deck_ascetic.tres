@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="StartingDeckData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/StartingDeckData.gd" id="1_d9005"]
+
+[resource]
+script = ExtResource("1_d9005")
+id = "deck_ascetic"
+display_name = "Bộ Khổ Hạnh"
+desc = "Bộ chuẩn nhưng vàng khởi đầu chỉ còn một nửa. Bù lại ô KHÔNG có nguyên tố cộng +45% Bội — không cần mua ô."
+origin = "Cờ vua"
+deck = {
+"pawn": 6, "rook": 3, "knight": 2, "bishop": 2, "queen": 1
+}
+unlock_cost = 160
+rule = {
+"plain_tile_mult": 0.45
+}
+gold_delta = -30
+unit_cap_delta = 0

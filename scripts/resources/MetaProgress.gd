@@ -18,6 +18,12 @@ class_name MetaProgress
 # Mỗi upgrade là một Dictionary: { "id": "...", "level": 1, "max_level": 5 }
 @export var meta_upgrades: Array[Dictionary] = []
 
+## Bộ Khai Cuộc đã mở khoá + bộ đang chọn cho ván tới.
+## Đây là phần meta "mở LỐI CHƠI mới" — khác hẳn nâng cấp cộng chỉ số: nó không
+## làm bạn mạnh hơn, nó cho bạn một cách chơi khác.
+@export var unlocked_deck_ids: Array[String] = ["deck_standard"]
+@export var selected_deck_id: String = "deck_standard"
+
 ## Đã xem hướng dẫn nhập môn chưa. Hiện MỘT LẦN ở ván đầu; màn Cài Đặt có nút
 ## bật lại. Để ở meta (không phải per-run) vì nó là trải nghiệm lần đầu của
 ## NGƯỜI CHƠI, không phải của ván.

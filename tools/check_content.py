@@ -118,7 +118,12 @@ for path in files('res/towers', '.tres'):
             err('%s: thieu field `%s`' % (base, field))
 
     rng = as_num(f.get('attack_range', 0))
-    if rng > MAX_RANGE:
+    # Tran tam CHI ap cho nuoc di phu nhieu huong. Huong Xa (LANCE=9) chi ban
+    # THANG MOT huong nen tam 8 van chi phu toi da 8 o — it hon Xe tam 5 (20 o).
+    # Ap chung mot tran cho moi nuoc di la ap sai bai toan.
+    ONE_WAY_PATTERNS = (9,)          # LANCE
+    pat = as_num(f.get('attack_pattern', 7))
+    if rng > MAX_RANGE and pat not in ONE_WAY_PATTERNS:
         err('%s: attack_range=%d > %d — moi thap se phu tron ban co, dat o dau '
             'cung nhu nhau' % (base, rng, MAX_RANGE))
     elif rng < MIN_RANGE:

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7208"]
+
+[resource]
+script = ExtResource("1_r7208")
+id = "rl_encircle"
+name = "Vây Bắt"
+rarity = "epic"
+desc = "Cờ vây. Ô có từ ba quân kề trở lên cộng +0.25 Bội mỗi quân kề. Thưởng cho việc dồn cụm chật."
+cost = 270
+effect = {
+"surround_mult": 0.25
+}
