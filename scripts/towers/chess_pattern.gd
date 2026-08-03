@@ -87,18 +87,31 @@ static func glyph(kind: int) -> String:
 ## Ô bị chặn không nằm trong kết quả và cắt đường trượt phía sau nó.
 ##
 ## Trả về mảng mới mỗi lần gọi — nơi gọi được phép sửa thoải mái.
+## `pierce` = số quân CỦA MÌNH mà đường trượt đi xuyên qua được trước khi dừng.
+## 0 = luật cờ chuẩn. Đây là thang ĐỘ, không phải công tắc bật/tắt: đo được chặn
+## làm mất 0% tầm phủ khi có 4 quân nhưng 19% khi có 7 quân, và trần cuối ván là
+## 20 quân — một di vật "xuyên hết" sẽ vô dụng lúc đầu và khổng lồ lúc cuối.
+##
+## Đo tầm phủ trung bình của Xe (tầm 5) trên bàn 8×8:
+##     quân |  0  |  1  |  2  | ∞
+##       10 |15.0 |18.6 |18.6 | 20.0
+##       18 |11.0 |15.7 |16.3 | 20.0
+##       22 | 9.6 |14.4 |15.5 | 20.0
+## Xuyên 1 lấy lại phần lớn (+24%…+49%), xuyên 2 chỉ thêm ~7%, vô hạn hơn xuyên
+## 2 không đáng kể. Nghĩa là giá trị dồn hết vào lượt xuyên ĐẦU — định giá di vật
+## phải theo đó, đừng bán lượt thứ hai với giá gấp đôi.
 static func cells(kind: int, from: Vector2i, max_range: int,
-		blocked: Dictionary = {}) -> Array[Vector2i]:
+		blocked: Dictionary = {}, pierce: int = 0) -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	var r: int = maxi(1, max_range)
 	match kind:
 		Kind.ROOK:
-			_slide(out, from, ORTHO, r, blocked)
+			_slide(out, from, ORTHO, r, blocked, pierce)
 		Kind.BISHOP:
-			_slide(out, from, DIAG, r, blocked)
+			_slide(out, from, DIAG, r, blocked, pierce)
 		Kind.QUEEN:
-			_slide(out, from, ORTHO, r, blocked)
-			_slide(out, from, DIAG, r, blocked)
+			_slide(out, from, ORTHO, r, blocked, pierce)
+			_slide(out, from, DIAG, r, blocked, pierce)
 		Kind.KNIGHT:
 			_jump(out, from, KNIGHT_STEPS, blocked)
 		Kind.PAWN:
@@ -115,7 +128,7 @@ static func cells(kind: int, from: Vector2i, max_range: int,
 
 ## Quân ở `from` có với tới `to` không. Dùng ở vòng lặp bắn nên tránh dựng mảng.
 static func covers(kind: int, from: Vector2i, to: Vector2i, max_range: int,
-		blocked: Dictionary = {}) -> bool:
+		blocked: Dictionary = {}, pierce: int = 0) -> bool:
 	if from == to:
 		return false
 	var d := to - from
@@ -135,44 +148,51 @@ static func covers(kind: int, from: Vector2i, to: Vector2i, max_range: int,
 		Kind.ROOK:
 			if d.x != 0 and d.y != 0:
 				return false
-			return _clear_line(from, to, r, blocked)
+			return _clear_line(from, to, r, blocked, pierce)
 		Kind.BISHOP:
 			if absi(d.x) != absi(d.y):
 				return false
-			return _clear_line(from, to, r, blocked)
+			return _clear_line(from, to, r, blocked, pierce)
 		Kind.QUEEN:
 			var straight := (d.x == 0 or d.y == 0)
 			var diagonal := absi(d.x) == absi(d.y)
 			if not (straight or diagonal):
 				return false
-			return _clear_line(from, to, r, blocked)
+			return _clear_line(from, to, r, blocked, pierce)
 	return false
 
 
 ## Đường trượt từ `from` tới `to` có thông không (và trong tầm không).
 static func _clear_line(from: Vector2i, to: Vector2i, max_range: int,
-		blocked: Dictionary) -> bool:
+		blocked: Dictionary, pierce: int = 0) -> bool:
 	var d := to - from
 	var dist: int = maxi(absi(d.x), absi(d.y))
 	if dist > max_range:
 		return false
 	var step := Vector2i(signi(d.x), signi(d.y))
 	var cur := from + step
+	var left: int = maxi(0, pierce)
 	while cur != to:
 		if blocked.has(cur):
-			return false
+			if left <= 0:
+				return false
+			left -= 1
 		cur += step
 	return true
 
 
 static func _slide(out: Array[Vector2i], from: Vector2i, dirs: Array[Vector2i],
-		max_range: int, blocked: Dictionary) -> void:
+		max_range: int, blocked: Dictionary, pierce: int = 0) -> void:
 	for dir in dirs:
 		var cur := from
+		var left: int = maxi(0, pierce)
 		for _i in max_range:
 			cur += dir
 			if blocked.has(cur):
-				break        # quân của mình chắn — dừng hẳn hướng này
+				if left <= 0:
+					break     # hết lượt xuyên — dừng hẳn hướng này
+				left -= 1
+				continue      # xuyên qua, nhưng KHÔNG phủ chính ô có quân đứng
 			out.append(cur)
 
 

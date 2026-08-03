@@ -36,7 +36,7 @@ const EFFECT_KEYS: Array[String] = [
 	# cả 8 di vật cờ — audit_wiring không bắt được vì khoá có người ĐỌC, chỉ là
 	# không bao giờ có giá trị.
 	"formation_mult_bonus", "variety_mult", "endgame_mult",
-	"knight_reach", "ignore_block", "pawn_tithe",
+	"knight_reach", "pierce_count", "pawn_tithe",
 ]
 
 const RELICS: Array[Dictionary] = [
@@ -261,7 +261,7 @@ func totals() -> Dictionary:
 		"variety_mult": 0.0,           # cộng Bội theo số LOẠI thế đang có
 		"endgame_mult": 0.0,           # càng ít quân trên bàn, Bội càng cao
 		"knight_reach": 0,             # Mã phủ thêm vòng ô chữ L xa hơn
-		"ignore_block": false,         # Xe/Tượng/Hậu không bị quân mình chắn
+		"pierce_count": 0,             # đường trượt xuyên qua N quân của mình
 		"pawn_tithe": 0.0,             # mỗi Tốt trên bàn cộng Bội cho quân khác
 	}
 	for id in _owned:
@@ -273,12 +273,12 @@ func totals() -> Dictionary:
 					out[key] = float(out[key]) * float(value)
 				"max_marks", "equip_slot_bonus", "potion_slot_bonus":
 					out[key] = maxi(int(out[key]), int(value))
-				"elite_always_drop", "vein_spread", "ignore_block":
+				"elite_always_drop", "vein_spread":
 					out[key] = bool(out[key]) or bool(value)
 				"formation_mult_bonus", "variety_mult", "endgame_mult", "pawn_tithe":
 					out[key] = float(out[key]) + float(value)   # CỘNG DỒN, không lấy max
-				"knight_reach":
-					out[key] = int(out[key]) + int(value)
+				"knight_reach", "pierce_count":
+					out[key] = int(out[key]) + int(value)   # CỘNG DỒN — xếp chồng được
 				_:
 					out[key] = maxf(float(out[key]), float(value))
 	return out
@@ -302,7 +302,7 @@ func _apply_all() -> void:
 		gm.set("relic_variety_mult", float(t["variety_mult"]))
 		gm.set("relic_endgame_mult", float(t["endgame_mult"]))
 		gm.set("relic_knight_reach", int(t["knight_reach"]))
-		gm.set("relic_ignore_block", bool(t["ignore_block"]))
+		gm.set("relic_pierce_count", int(t["pierce_count"]))
 		gm.set("relic_pawn_tithe", float(t["pawn_tithe"]))
 		# Nước đi đổi ⇒ tầm phủ của MỌI quân đổi theo. Không bảo dựng lại thì di
 		# vật chỉ có tác dụng với quân đặt SAU khi mua.

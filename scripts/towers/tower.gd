@@ -1007,12 +1007,13 @@ func refresh_coverage() -> void:
 	_home_cell = Vector2i(-9999, -9999)
 	var blocked := _blocked_shared.duplicate()
 	blocked.erase(home_cell())        # ô của chính mình không tự chặn mình
-	# Di vật "Đường Thẳng Vô Tận": Xe/Tượng/Hậu xuyên qua quân của mình.
+	# Di vật xuyên quân: đường trượt đi qua ĐÚNG N quân của mình rồi mới dừng.
+	# KHÔNG xoá sạch `blocked` — làm vậy là gỡ hẳn ràng buộc, mà chặn đường trượt
+	# chính là thứ biến việc đặt quân thành câu đố. Xuyên N là NỚI, không phải XOÁ.
 	var gm_r := get_node_or_null("/root/GameManagerSingleton")
-	if gm_r != null and bool(gm_r.relic_ignore_block):
-		blocked = {}
+	var pierce: int = int(gm_r.relic_pierce_count) if gm_r != null else 0
 	covered_cells = ChessPattern.cells(pattern_kind(), home_cell(),
-		effective_range(), blocked)
+		effective_range(), blocked, pierce)
 	# Di vật "Vó Ngựa": Mã nhảy thêm một vòng chữ L xa hơn (±1,±3 / ±3,±1).
 	if pattern_kind() == ChessPattern.Kind.KNIGHT and gm_r != null 			and int(gm_r.relic_knight_reach) > 0:
 		for st in ChessPattern.KNIGHT_FAR:
@@ -1055,6 +1056,12 @@ func _is_valid_target(e) -> bool:
 	if _coverage_version != _layout_version:
 		refresh_coverage()
 	return _covered_lookup.has(GridUtil.world_to_cell(e.global_position))
+
+
+## Số quân của mình mà đường trượt xuyên qua được (di vật). 0 = luật cờ chuẩn.
+func pierce_count() -> int:
+	var gm_p := get_node_or_null("/root/GameManagerSingleton")
+	return int(gm_p.relic_pierce_count) if gm_p != null else 0
 
 
 func update_target() -> void:

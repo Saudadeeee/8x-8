@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_r7101"]
+
+[resource]
+script = ExtResource("1_r7101")
+id = "chess_siege_bore"
+name = "Mũi Khoan Công Thành"
+rarity = "legendary"
+desc = "Đường trượt xuyên qua HAI quân của mình, và mọi thế cờ mạnh thêm +0.2 Bội. Riêng lượt xuyên thứ hai chỉ đáng ~7% — phần giá trị thật nằm ở thế cờ."
+cost = 360
+effect = {
+"pierce_count": 2,
+"formation_mult_bonus": 0.2
+}

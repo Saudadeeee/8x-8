@@ -112,7 +112,7 @@ var relic_formation_mult_bonus: float = 0.0  # cộng vào Bội của MỌI th�
 var relic_variety_mult: float = 0.0          # cộng Bội theo số LOẠI thế đang có
 var relic_endgame_mult: float = 0.0          # ít quân trên bàn thì Bội cao hơn
 var relic_knight_reach: int = 0              # Mã phủ thêm vòng chữ L xa
-var relic_ignore_block: bool = false         # Xe/Tượng/Hậu xuyên qua quân mình
+var relic_pierce_count: int = 0              # đường trượt xuyên qua N quân mình
 var relic_pawn_tithe: float = 0.0            # mỗi Tốt cộng Bội cho quân khác
 
 # --- BIOME STATE (per-run — BiomeEffects ghi, reset trong start_run) ---

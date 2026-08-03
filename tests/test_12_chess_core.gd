@@ -261,7 +261,7 @@ func _run() -> void:
 	# Moi khoa hieu ung phai nam trong danh sach trang, neu khong no bi vut.
 	var key_missing := ""
 	for k in ["formation_mult_bonus", "variety_mult", "endgame_mult",
-			"knight_reach", "ignore_block", "pawn_tithe"]:
+			"knight_reach", "pierce_count", "pawn_tithe"]:
 		if not RelicSystem.EFFECT_KEYS.has(k):
 			key_missing += k + " "
 	ok(key_missing == "", "moi khoa moi nam trong EFFECT_KEYS", key_missing)
@@ -274,12 +274,36 @@ func _run() -> void:
 			empty_eff += rid + " "
 	ok(empty_eff == "", "khong di vat nao bi vut sach hieu ung", empty_eff)
 
-	# Ignore_block: kiem THANG tren ChessPattern (khong phu thuoc bo cuc ban)
-	var blk := {Vector2i(4, 5): true}
-	ok(not ChessPattern.covers(ChessPattern.Kind.ROOK, Vector2i(4, 4), Vector2i(4, 7), 5, blk),
-		"binh thuong Xe bi chan")
-	ok(ChessPattern.covers(ChessPattern.Kind.ROOK, Vector2i(4, 4), Vector2i(4, 7), 5, {}),
-		"bo chan thi Xe xuyen qua (di vat Duong Thang Vo Tan)")
+	# XUYEN QUAN la THANG DO, khong phai cong tac.
+	# Do duoc: chan lam mat 0% tam phu voi 4 quan nhung 49% voi 22 quan; xuyen 1
+	# lay lai phan lon, xuyen 2 chi them ~7%, vo han hon xuyen 2 khong dang ke.
+	# Mot di vat "xuyen het" vi vay vua vo dung luc dau vua khong co bac nao —
+	# no XOA luat chan thay vi NOI, ma luat chan chinh la cau do dat quan.
+	var blk := {Vector2i(4, 5): true, Vector2i(4, 6): true}
+	ok(not ChessPattern.covers(ChessPattern.Kind.ROOK, Vector2i(4, 4), Vector2i(4, 7), 5, blk, 0),
+		"xuyen 0: bi chan (luat co chuan)")
+	ok(not ChessPattern.covers(ChessPattern.Kind.ROOK, Vector2i(4, 4), Vector2i(4, 7), 5, blk, 1),
+		"xuyen 1: van bi chan boi quan THU HAI")
+	ok(ChessPattern.covers(ChessPattern.Kind.ROOK, Vector2i(4, 4), Vector2i(4, 7), 5, blk, 2),
+		"xuyen 2: qua duoc ca hai quan")
+	# O co quan dung KHONG duoc tinh la phu — dich khong dung do duoc.
+	var pierced := ChessPattern.cells(ChessPattern.Kind.ROOK, Vector2i(4, 4), 5, blk, 2)
+	ok(not pierced.has(Vector2i(4, 5)) and not pierced.has(Vector2i(4, 6)),
+		"o co quan dung khong nam trong tam phu du da xuyen qua")
+	# Va KHONG con di vat nao xoa hai luat chan
+	var d3 := DirAccess.open("res://res/relics/")
+	var absolute := ""
+	for f in d3.get_files():
+		var cn3 := f.trim_suffix(".remap")
+		if not cn3.ends_with(".tres"): continue
+		var rdd = load("res://res/relics/" + cn3)
+		if rdd == null: continue
+		var e3: Dictionary = rdd.effect if "effect" in rdd else {}
+		if e3.has("ignore_block"):
+			absolute += str(rdd.id) + " "
+		if int(e3.get("pierce_count", 0)) > 3:
+			absolute += str(rdd.id) + "(xuyen qua nhieu) "
+	ok(absolute == "", "khong di vat nao XOA han luat chan", absolute)
 	# Knight_reach: vong chu L xa phai la 8 o KHAC voi 8 o goc
 	var near := ChessPattern.KNIGHT_STEPS
 	var far := ChessPattern.KNIGHT_FAR

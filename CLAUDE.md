@@ -1081,10 +1081,25 @@ Không vào được thì tắt cờ ở `scripts/managers/feature_flags.gd`.
   loại quân khỏi bộ và mua ô nguyên tố sẽ đi xa hơn.
 
 *Lớp nội dung kiểu Joker + dọn nốt (2026-08-03, tiếp):*
+- **Xuyên quân là THANG ĐỘ, không phải công tắc.** Bản đầu có di vật "Đường
+  Thẳng Vô Tận" xoá hẳn luật chặn — sai, vì chặn đường trượt CHÍNH LÀ câu đố đặt
+  quân; xoá nó là xoá câu đố chứ không phải làm người chơi giỏi hơn.
+  Đo tầm phủ trung bình của Xe (tầm 5) trên bàn 8×8:
+  | quân | xuyên 0 | xuyên 1 | xuyên 2 | vô hạn |
+  |---|---|---|---|---|
+  | 10 | 15.0 | 18.6 | 18.6 | 20.0 |
+  | 18 | 11.0 | 15.7 | 16.3 | 20.0 |
+  | 22 |  9.6 | 14.4 | 15.5 | 20.0 |
+  Giá trị dồn hết vào lượt xuyên ĐẦU (+24%…+49%); lượt thứ hai chỉ ~7%; vô hạn
+  hơn xuyên 2 không đáng kể. Nên bản "xoá luật" vừa vô dụng lúc đầu (4 quân mất
+  0% tầm phủ) vừa gần-tối-đa lúc cuối, mà không có bậc nào ở giữa.
+  Nay `pierce_count` cộng dồn: Mũi Giáo Xuyên (1, 250đ) · Mũi Khoan Công Thành
+  (2 + thưởng thế cờ, 360đ — KHÔNG bán lượt thứ hai với giá gấp đôi).
+  Ô có quân đứng vẫn KHÔNG tính là phủ dù đã xuyên qua — địch không đứng đó được.
 - **8 di vật CHẠM VÀO CÔNG THỨC** (`res/relics/chess_*.tres`) — mỗi món sửa CÁCH
   TÍNH chứ không cộng một con số: Vương Miện Gãy (thưởng theo số LOẠI thế cờ) ·
   Cờ Tàn / Vua Đơn Độc (bàn càng thưa càng mạnh) · Vó Ngựa (Mã nhảy thêm vòng
-  chữ L xa) · Đường Thẳng Vô Tận (Xe/Tượng/Hậu xuyên qua quân mình) · Con Tốt Thí
+  chữ L xa) · Mũi Giáo Xuyên / Mũi Khoan Công Thành (xuyên N quân mình) · Con Tốt Thí
   · Trống Trận · Đại Cục. Đo được +24% → +126% tuỳ bố cục, đã siết 4 món.
 - **BẪY NẶNG — `RelicSystem._sanitize` lọc TRẮNG khoá hiệu ứng.** Sáu khoá mới
   không có trong `EFFECT_KEYS` bị VỨT im lặng (chỉ `push_warning`), nên cả 8 di
