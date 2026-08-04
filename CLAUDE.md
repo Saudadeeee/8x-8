@@ -1212,6 +1212,32 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
   Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
 
+*"Không đặt được quân" — chọn ô bằng chuột (2026-08-05):*
+- **Chế độ ĐẶT dùng `GridUtil` (mặt đất), KHÔNG dùng `PickUtil`.** PickUtil bắn
+  tia vào `PickArea` của quân — hộp cao **1.5 m**, mà camera nghiêng −50° nên
+  trên màn hình nó phủ luôn **hai ô phía trước** con quân.
+  Đo được (`root.get_camera_3d().unproject_position` rồi hỏi ngược lại): quân ở
+  (2,2) → trỏ chuột vào GIỮA ô trống (2,1) và (2,0) đều trả về (2,2).
+  Cú click đó rơi vào nhánh "ô đã có quân" và bị bỏ qua IM LẶNG.
+- Triệu chứng: **bàn càng nhiều quân càng khó đặt**, và không có thông báo gì —
+  giống hệt "game hỏng". Nặng thêm từ bản Balatro-hoá vì thế cờ khuyến khích
+  xếp quân SÁT NHAU.
+- `tower_placer.update_preview` phải dùng CÙNG cách giải toạ độ, nếu không bóng
+  ma một nơi mà click rơi một nẻo.
+- **PickUtil vẫn đúng cho info / sa thải / overcharge** — ở đó người chơi nhắm
+  vào CON QUÂN. Ở chế độ đặt họ nhắm vào Ô. Đừng gộp hai thứ này lại.
+
+*Không được từ chối trong im lặng (2026-08-05):*
+- `place()` từng có **ba** đường trả về không nói gì: thiếu Sắc Lệnh · hết kho ·
+  ô đã có quân khác loại. Chỉ trần số quân là có báo.
+  `push_warning` CHỈ ra console — với người chơi thì cú click biến mất không dấu
+  vết. Nay mọi nhánh đều phát `place_rejected` (hoặc `phase_message`).
+- **Đặt quân còn tốn SẮC LỆNH** ngoài số vàng đã trả ở shop (Tốt 1.0 → Hậu 4.0).
+  Đây là cổng thứ hai mà thẻ hàng trong shop không nói rõ — nếu sau này còn báo
+  "không đặt được", kiểm chỗ này trước.
+- Test batch 12 kiểm NỘI DUNG thông báo, không chỉ kiểm "có báo". Bản đầu xanh
+  vì lý do sai: bàn đang đầy nên trần số quân bắn trước hai nhánh cần kiểm.
+
 *BỘI THÀNH THẬT (2026-08-05) — ĐỌC TRƯỚC KHI THÊM NGUỒN BỘI MỚI:*
 - **Lỗi gốc**: cả lớp "Bội" chỉ sống trong `board_score.mult_breakdown()`, mà
   file đó CHỈ có HUD đọc. Đo được: hai Xe cùng hàng (Trận Pháo) làm Bội trên HUD
@@ -1261,9 +1287,9 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   chứ không phải 1.0 ⇒ mô hình boss hụt ~4 lần. Hai nguyên nhân, sửa riêng từng
   cái thay vì bịa một hệ số:
   (1) `BOSS_ESCORT_OVERLAP` 0.8 → **0.25** — hộ vệ là lính thường, chúng chết
-      trong khoảng một phần ba đầu quãng đường chứ không sống tới cuối;
+	  trong khoảng một phần ba đầu quãng đường chứ không sống tới cuối;
   (2) `BOSS_EXTRA_SOURCES` = **1.8** — sát thương mô hình KHÔNG nhìn thấy (phản
-      ứng nguyên tố, DoT của Dấu, splash). Boss sống lâu nên ăn đủ mọi tầng DoT.
+	  ứng nguyên tố, DoT của Dấu, splash). Boss sống lâu nên ăn đủ mọi tầng DoT.
 - Sau khi sửa: tỉ lệ boss khi QUA được **1.53**, khi THUA **0.44** → 1.0 nằm
   gọn giữa. Đo lại khi đổi số hộ vệ, máu boss, hoặc sức mạnh hệ nguyên tố.
 

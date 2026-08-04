@@ -125,9 +125,14 @@ func update_preview(mouse_pos: Vector2) -> void:
 	var camera := get_viewport().get_camera_3d()
 	if camera == null:
 		return
-	# Preview phải bám ĐÚNG ô mà click sẽ nhận. Đặc biệt quan trọng với hợp nhất ★:
-	# rê lên thân tháp cùng loại thì ghost phải sáng vàng ở chính tháp đó.
-	var grid_pos := PickUtil.mouse_to_cell(camera, mouse_pos)
+	# Preview phải bám ĐÚNG ô mà click sẽ nhận — dùng CÙNG cách giải toạ độ với
+	# `game_map._unhandled_input` nhánh build, tức MẶT ĐẤT chứ không phải PickUtil.
+	#
+	# Trước đây cả hai cùng dùng PickUtil nên chúng khớp nhau, nhưng cùng SAI:
+	# hộp click của quân cao 1.5 m, camera nghiêng −50° nên nó phủ hai ô phía
+	# trước quân ⇒ rê chuột vào ô trống ngay trước một quân thì bóng ma nhảy lên
+	# CHÍNH CON QUÂN đó và cú click bị nuốt. Đo được ở `_pick.gd`.
+	var grid_pos := GridUtil.mouse_to_cell(camera, mouse_pos)
 
 	var gc         = grid_controller
 	var valid_pos: bool = grid_pos.x >= 0 and grid_pos.x < gc.grid_width \
@@ -179,18 +184,25 @@ func _can_afford_unit(stats: TowerStats) -> bool:
 
 ## Trừ tài nguyên cho một lần đặt/hợp nhất. Trả false = huỷ thao tác.
 ## Kiểm Royal Decree TRƯỚC khi tiêu stock để không mất unit khi thiếu Decree.
+## Mọi nhánh thất bại ở đây PHẢI phát `place_rejected`. `push_warning` chỉ ra
+## console — với người chơi thì cú click biến mất không dấu vết, và triệu chứng
+## giống hệt "game hỏng". Đây là hai ngõ cụt im lặng đã tồn tại từ đầu:
+## đặt quân còn tốn SẮC LỆNH ngoài số vàng đã trả ở shop, và kho có thể rỗng.
 func _pay_for_unit(stats: TowerStats) -> bool:
 	if stats == null:
 		return false
 	if king_manager and not king_manager.can_afford(stats.decree_cost):
-		push_warning("TowerPlacer: Không đủ Royal Decree! Cần: %.1f" % stats.decree_cost)
+		place_rejected.emit("Not enough Royal Decree - deploying %s costs %.1f RD (you have %.1f)."
+			% [stats.name, stats.decree_cost, king_manager.royal_decree])
 		return false
 	if shop_manager and shop_manager.is_unit_limited(stats.id):
 		if not shop_manager.consume_unit_stock(stats.id):
-			push_warning("TowerPlacer: Không còn %s để đặt." % stats.name)
+			place_rejected.emit("No %s left in your reserve - buy one in the shop first."
+				% stats.name)
 			return false
 	if king_manager and not king_manager.spend_royal_decree(stats.decree_cost):
-		push_warning("TowerPlacer: Không đủ Royal Decree! Cần: %.1f" % stats.decree_cost)
+		place_rejected.emit("Not enough Royal Decree - deploying %s costs %.1f RD."
+			% [stats.name, stats.decree_cost])
 		return false
 	return true
 

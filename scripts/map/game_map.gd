@@ -544,14 +544,40 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Build mode: place tower (PREPARE/SHOP only)
 	if phase_controller.current_phase == PhaseController.GamePhase.WAVE:
 		return
-	# Ô trống → đặt mới. Ô đã có tháp CÙNG LOẠI chưa đủ sao → hợp nhất (★).
-	if not tower_placer.is_buildable(grid_pos):
+	# Ở chế độ ĐẶT, ô đích lấy từ MẶT ĐẤT (GridUtil), không phải PickUtil.
+	#
+	# PickUtil bắn tia vào hộp click của quân — hộp cao 1.5 m, mà camera nghiêng
+	# −50° nên trên màn hình nó phủ luôn HAI Ô phía trước quân. Đo được: quân ở
+	# (2,2), trỏ chuột vào GIỮA ô trống (2,1) và (2,0) đều trả về (2,2). Cú click
+	# đó rơi vào nhánh "ô đã có quân khác loại" và bị bỏ qua IM LẶNG ⇒ triệu
+	# chứng "không đặt được quân", càng nhiều quân trên bàn càng nặng — đúng lúc
+	# thiết kế mới khuyến khích xếp quân sát nhau để ăn thế cờ.
+	#
+	# PickUtil vẫn đúng cho info / sa thải / overcharge: ở đó người chơi nhắm vào
+	# CON QUÂN. Ở chế độ đặt thì họ nhắm vào Ô. `update_preview` dùng cùng quy
+	# tắc này nên bóng ma luôn nằm đúng chỗ cú click sẽ rơi vào.
+	var build_cell := GridUtil.mouse_to_cell(camera, get_viewport().get_mouse_position())
+	if not gc.is_in_bounds(build_cell):
 		return
-	var occupied: bool = gc.grid_data.get(grid_pos) is Node3D
+	if not tower_placer.is_buildable(build_cell):
+		phase_controller.phase_message = "⚠ That is the enemy path - pieces cannot stand there."
+		update_ui()
+		return
+	var occupied: bool = gc.grid_data.get(build_cell) is Node3D
 	var mergeable: bool = occupied and tower_placer.has_method("can_merge_at") \
-		and tower_placer.can_merge_at(grid_pos, tower_placer.current_building_stats)
-	if not occupied or mergeable:
-		tower_placer.place(grid_pos)
+		and tower_placer.can_merge_at(build_cell, tower_placer.current_building_stats)
+	if occupied and not mergeable:
+		# Im lặng ở đây là ngõ cụt: người chơi bấm mà không có gì xảy ra và không
+		# biết vì sao. Nói thẳng ra.
+		var other = gc.grid_data.get(build_cell)
+		var same_kind: bool = other != null and other.get("stats") != null \
+			and tower_placer.current_building_stats != null \
+			and other.stats.id == tower_placer.current_building_stats.id
+		phase_controller.phase_message = ("⚠ That piece is already ★3 - it cannot merge further."
+			if same_kind else "⚠ That square is taken. Merging needs the SAME piece type.")
+		update_ui()
+		return
+	tower_placer.place(build_cell)
 
 ## Right-click lên tháp của mình (không ở mode nào) → Overcharge 30 vàng.
 ## Trả về true nếu click đã được "tiêu thụ" (trúng ô có tháp) — kể cả khi thiếu vàng.

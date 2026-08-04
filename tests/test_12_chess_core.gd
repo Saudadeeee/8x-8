@@ -100,6 +100,76 @@ func _run() -> void:
 	ok(on_board <= map.max_units(), "tran so quan duoc THI HANH",
 		"%d <= %d" % [on_board, map.max_units()])
 
+	# MOI lan tu choi dat quan phai NOI RA LY DO. `push_warning` chi ra console —
+	# voi nguoi choi thi cu click bien mat khong dau vet, va trieu chung giong
+	# het "game hong". Ba ngo cut im lang da co: thieu Sac Lenh, het kho, va o
+	# da co quan khac loai. Lambda GDScript bat bien local theo GIA TRI nen phai
+	# dung Array (object, bat theo tham chieu).
+	var said: Array[String] = []
+	map.tower_placer.place_rejected.connect(func(r: String): said.append(r))
+	# DON BAN truoc: phan test tren vua rai day quan toi tran, ma tran BAN TRUOC
+	# hai nhanh can kiem => test se xanh vi ly do sai.
+	for cell in gc.grid_data.keys():
+		var vv = gc.grid_data[cell]
+		if vv is Node3D and is_instance_valid(vv):
+			gc.grid_data.erase(cell)
+			vv.queue_free()
+	await process_frame
+	await process_frame
+	Tower.bump_layout(self)
+	var free_cell := Vector2i(-1, -1)
+	for y in range(gc.grid_height):
+		for x in range(gc.grid_width):
+			var c := Vector2i(x, y)
+			if not gc.is_path_cell(c) and not (gc.grid_data.get(c) is Node):
+				free_cell = c
+				break
+		if free_cell.x >= 0: break
+
+	# (a) het kho: dung stats KHONG co trong kho
+	said.clear()
+	var ghost_stats: TowerStats = load("res://res/towers/queen.tres")
+	map.shop_manager.register_troop_purchase(ghost_stats)
+	map.shop_manager.consume_unit_stock(ghost_stats.id)   # dang ky roi rut sach
+	if map.king_manager: map.king_manager.add_royal_decree(99.0)
+	map.tower_placer.start_build(ghost_stats)
+	if free_cell.x >= 0: map.tower_placer.place(free_cell)
+	map.tower_placer.cancel_build()
+	ok(said.size() > 0 and said[0].to_lower().contains("reserve"),
+		"het quan trong kho -> BAO DUNG ly do",
+		said[0] if said.size() > 0 else "(im lang)")
+
+	# (b) thieu Sac Lenh
+	said.clear()
+	if map.king_manager:
+		map.king_manager.royal_decree = 0.0
+		map.shop_manager.register_troop_purchase(ghost_stats)
+		map.tower_placer.start_build(ghost_stats)
+		if free_cell.x >= 0: map.tower_placer.place(free_cell)
+		map.tower_placer.cancel_build()
+		ok(said.size() > 0 and said[0].to_lower().contains("decree"),
+			"thieu Sac Lenh -> BAO DUNG ly do",
+			said[0] if said.size() > 0 else "(im lang)")
+		map.king_manager.add_royal_decree(99.0)
+
+	# Dat lai vai quan: phan Nen x Boi ngay duoi do sat thuong cua doi hinh,
+	# ban trong thi no bang 0 va assert do that bai vi ly do khong lien quan.
+	for _i in 4:
+		var c2 := Vector2i(-1, -1)
+		for y in range(gc.grid_height):
+			for x in range(gc.grid_width):
+				var cc := Vector2i(x, y)
+				if not gc.is_path_cell(cc) and not (gc.grid_data.get(cc) is Node):
+					c2 = cc
+					break
+			if c2.x >= 0: break
+		if c2.x < 0: break
+		map.shop_manager.register_troop_purchase(pawn)
+		map.tower_placer.start_build(pawn)
+		map.tower_placer.place(c2)
+		map.tower_placer.cancel_build()
+		await process_frame
+
 	print("\n--- NEN x BOI ---")
 	var s: Dictionary = map.board_summary()
 	ok(not s.is_empty(), "co bang Nen x Boi")
@@ -508,6 +578,37 @@ func _run() -> void:
 			"Phu 7 o nhung KHONG o nao tren duong -> panel bao phai doi cho")
 		ok(str(tp.call("_coverage_diagnosis", null, ChessPattern.Kind.KING, 4, 2)) == "",
 			"quan dang ban binh thuong thi KHONG hien canh bao")
+
+	print("\n--- CLICK PHAI TRUNG O DANG TRO (loi 'khong dat duoc quan') ---")
+	# Hop click cua quan (PickArea) cao 1.5m, camera nghieng -50 do => tren man
+	# hinh no phu luon HAI O phia truoc quan. Do duoc: quan o (2,2), tro chuot
+	# vao GIUA o trong (2,1) va (2,0) thi PickUtil deu tra ve (2,2). Cu click do
+	# roi vao nhanh "o da co quan" va bi bo qua IM LANG.
+	# => Che do DAT phai giai toa do bang MAT DAT (GridUtil), khong phai PickUtil.
+	var cam := root.get_camera_3d()
+	ok(cam != null, "co camera de kiem chieu toa do")
+	if cam != null:
+		# Tim mot quan bat ky dang dung tren ban
+		var anchor := Vector2i(-1, -1)
+		for cell in map.grid_controller.grid_data.keys():
+			if map.grid_controller.grid_data.get(cell) is Node3D:
+				anchor = cell
+				break
+		if anchor.x >= 0:
+			var wrong := 0
+			var right := 0
+			for dy in [-2, -1, 1, 2]:
+				var probe: Vector2i = anchor + Vector2i(0, dy)
+				if not map.grid_controller.is_in_bounds(probe):
+					continue
+				var scr2: Vector2 = cam.unproject_position(GridUtil.cell_to_world(probe))
+				if GridUtil.mouse_to_cell(cam, scr2) == probe:
+					right += 1
+				else:
+					wrong += 1
+			ok(wrong == 0,
+				"tro giua o thi MAT DAT tra dung o do (che do dat dung cach nay)",
+				"dung %d, sai %d" % [right, wrong])
 
 	print("\n--- BOI PHAI LA THAT, KHONG CHI LA SO TREN HUD ---")
 	# Loi da do duoc: dat hai Xe cung hang thanh Tran Phao lam BOI tren HUD nhay
