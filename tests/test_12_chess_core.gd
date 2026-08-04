@@ -509,6 +509,91 @@ func _run() -> void:
 		ok(str(tp.call("_coverage_diagnosis", null, ChessPattern.Kind.KING, 4, 2)) == "",
 			"quan dang ban binh thuong thi KHONG hien canh bao")
 
+	print("\n--- BOI PHAI LA THAT, KHONG CHI LA SO TREN HUD ---")
+	# Loi da do duoc: dat hai Xe cung hang thanh Tran Phao lam BOI tren HUD nhay
+	# 1.00 -> 2.00 trong khi `tower.current_damage` dung nguyen 34. Ca cau do xep
+	# quan — thu ma ban 8x8 khoa cung + tran so quan sinh ra de ep nguoi choi
+	# giai — duoc thuong dung BANG KHONG.
+	var gc2 = map.grid_controller
+	map.current_gold = 99000
+	# Xe ton 2.0 Sac Lenh moi con; cac phan test tren da tieu sach.
+	if map.king_manager: map.king_manager.add_royal_decree(999.0)
+	# DON BAN truoc: phan test tran so quan o tren da rai day Tot, nen `place()`
+	# se bi tran chan va `grid_data.get()` tra null. Phai xoa CA entry trong
+	# grid_data chu khong chi queue_free node.
+	for cell in gc2.grid_data.keys():
+		var v = gc2.grid_data[cell]
+		if v is Node3D and is_instance_valid(v):
+			gc2.grid_data.erase(cell)
+			v.queue_free()
+	await process_frame
+	await process_frame
+	Tower.bump_layout(self)
+	map.chess_formations.recount()
+	var rk: TowerStats = load("res://res/towers/rook.tres")
+	var ca := Vector2i(-1, -1)
+	var cb := Vector2i(-1, -1)
+	for y in range(gc2.grid_height):
+		var free_cells: Array[Vector2i] = []
+		for x in range(gc2.grid_width):
+			var cc := Vector2i(x, y)
+			if not gc2.is_path_cell(cc) and not gc2.grid_data.has(cc):
+				free_cells.append(cc)
+		if free_cells.size() >= 2:
+			ca = free_cells[0]
+			cb = free_cells[free_cells.size() - 1]
+			break
+	ok(ca.x >= 0, "tim duoc hai o trong cung mot hang de dung Tran Phao")
+	if ca.x >= 0:
+		map.shop_manager.register_troop_purchase(rk)
+		map.tower_placer.start_build(rk); map.tower_placer.place(ca)
+		map.tower_placer.cancel_build()
+		var r1 = gc2.grid_data.get(ca)
+		await process_frame
+		var d_solo: int = int(r1.current_damage)
+
+		map.shop_manager.register_troop_purchase(rk)
+		map.tower_placer.start_build(rk); map.tower_placer.place(cb)
+		map.tower_placer.cancel_build()
+		await process_frame
+		var d_pair: int = int(r1.current_damage)
+		ok(map.chess_formations.counts().has("battery"), "hai Xe cung hang = Tran Phao")
+		ok(d_pair > d_solo, "the co lam tang SAT THUONG THAT, khong chi doi so tren HUD",
+			"%d -> %d" % [d_solo, d_pair])
+		ok(map.board_score.combat_mult(ca) > 1.0,
+			"combat_mult() phan anh the co", "%.2f" % map.board_score.combat_mult(ca))
+
+		# Goi lai nhieu lan KHONG duoc nhan chong (giong star_damage_mult, no la
+		# he so DAN XUAT chu khong cong don).
+		for _i in 5:
+			r1.recalculate_stats()
+			r1.refresh_formation_mult()
+		ok(int(r1.current_damage) == d_pair, "goi lai nhieu lan khong nhan chong",
+			"%d vs %d" % [int(r1.current_damage), d_pair])
+
+		# Du bao KHONG duoc dem hai lan: `tower_dps()` da gom the co vao
+		# `current_damage`, nen trung binh tren duong di phai dung `residual_mult`.
+		ok(map.board_score.residual_mult(ca) <= map.board_score.cell_mult(ca) + 0.001,
+			"residual_mult la MOT PHAN cua cell_mult")
+		ok(is_equal_approx(map.board_score.cell_mult(ca),
+			map.board_score.combat_mult(ca) * map.board_score.residual_mult(ca)),
+			"cell_mult = combat_mult x residual_mult (khong hut, khong trung)",
+			"%.3f vs %.3f" % [map.board_score.cell_mult(ca),
+				map.board_score.combat_mult(ca) * map.board_score.residual_mult(ca)])
+
+		# Go mot Xe -> the co TAN -> sat thuong ve nhu cu. `queue_free()` de node
+		# nam trong cay toi cuoi frame, ma `tower_dismissed` xu ly DONG BO ngay
+		# luc do => lan dem lai van thay con vua bi go. Truoc day loi nay chi lam
+		# sai so tren HUD; tu khi BOI vao sat thuong that thi no ghim x2 VINH VIEN.
+		map.tower_placer.add_dismiss_stock(3)
+		map.tower_placer.enter_dismiss_mode()
+		map.tower_placer.dismiss_at(cb)
+		await process_frame
+		ok(not map.chess_formations.counts().has("battery"),
+			"go mot Xe thi Tran Phao TAN ngay (khong ke node dang queue_free)")
+		ok(int(r1.current_damage) == d_solo, "sat thuong tut ve nhu cu sau khi the co tan",
+			"%d vs %d" % [int(r1.current_damage), d_solo])
+
 	print("\n--- HE DA CAT ---")
 	ok(not FeatureFlags.SEASONS_ENABLED, "mua da tat")
 	ok(not FeatureFlags.BIOME_CLIMATE_ENABLED, "khi hau biome da tat")

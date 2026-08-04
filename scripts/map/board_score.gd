@@ -108,6 +108,42 @@ func cell_mult(cell: Vector2i) -> float:
 	return minf(m, MAX_CELL_MULT)
 
 
+## ── HAI NỬA CỦA BỘI ─────────────────────────────────────────────────────────
+##
+## `cell_mult` ở trên trộn hai thứ khác hẳn nhau về đường đi:
+##
+##   • Thế cờ và các di vật kiểu Joker (Vương Miện Gãy, Cờ Tàn, Con Tốt Thí,
+##     Đất Cằn, Vây Bắt, Long Mạch Lan, luật Rival King) — trước đây CHỈ tồn tại
+##     trong hàm này. Đo được: đặt hai Xe cùng hàng thành Trận Pháo làm Bội trên
+##     HUD nhảy 1.00 → 2.00 trong khi `tower.current_damage` đứng nguyên 34.
+##     Nghĩa là cả câu đố xếp quân — thứ mà bàn 8×8 khoá cứng và trần số quân
+##     sinh ra để ép người chơi giải — được thưởng đúng BẰNG KHÔNG.
+##     Nay chúng đi vào `Tower.formation_damage_mult` và gây sát thương thật.
+##
+##   • Khuếch đại PHẢN ỨNG nguyên tố (`reaction_mult` của cấp ô, di vật
+##     `global_reaction_mult`) và `tower_damage_pct` của ô — những thứ này VỐN
+##     ĐÃ áp thật ở nơi khác (ReactionTable và BuffLayer). Đưa chúng vào lần nữa
+##     là nhân đôi.
+##
+## Nên phải tách. `combat` = true nghĩa là "dòng này giờ do Tower áp".
+func combat_mult(cell: Vector2i) -> float:
+	var m := 1.0
+	for entry in mult_breakdown(cell):
+		if bool(entry.get("combat", false)):
+			m *= float(entry.get("mult", 1.0))
+	return minf(m, MAX_CELL_MULT)
+
+
+## Phần BỘI KHÔNG nằm trong sát thương của quân (khuếch đại phản ứng…).
+## Dùng cho dự báo: `tower_dps()` đã bao gồm phần `combat`, nhân lại là đếm hai lần.
+func residual_mult(cell: Vector2i) -> float:
+	var m := 1.0
+	for entry in mult_breakdown(cell):
+		if not bool(entry.get("combat", false)):
+			m *= float(entry.get("mult", 1.0))
+	return minf(m, MAX_CELL_MULT)
+
+
 ## Từng dòng góp vào BỘI, kèm tên — đây là thứ hiện trong tooltip khi rê chuột.
 ## Balatro cho thấy từng Joker nhân bao nhiêu; hiệu ứng hiển thị đó CHÍNH LÀ game.
 func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
@@ -125,9 +161,12 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 			if e is Dictionary and fbonus > 0.0:
 				var d0: Dictionary = e
 				d0["mult"] = float(d0.get("mult", 1.0)) + fbonus
+				d0["combat"] = true
 				out.append(d0)
-			else:
-				out.append(e)
+			elif e is Dictionary:
+				var d1: Dictionary = e
+				d1["combat"] = true
+				out.append(d1)
 
 	# 1b. Di vật kiểu Joker — sửa CÁCH TÍNH, không chỉ cộng một con số.
 	if gm0 != null and cf != null:
@@ -136,13 +175,13 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 		if variety > 0.0:
 			var kinds: int = (cf.call("counts") as Dictionary).size()
 			if kinds > 0:
-				out.append({"name": "Broken Crown", "mult": 1.0 + variety * float(kinds)})
+				out.append({"name": "Broken Crown", "mult": 1.0 + variety * float(kinds), "combat": true})
 		# Cờ tàn: bàn càng thưa, mỗi quân càng mạnh.
 		var endg := float(gm0.relic_endgame_mult)
 		if endg > 0.0:
 			var n_units: int = _towers().size()
 			var empty: int = maxi(0, 20 - n_units)
-			out.append({"name": "Endgame", "mult": 1.0 + endg * float(empty)})
+			out.append({"name": "Endgame", "mult": 1.0 + endg * float(empty), "combat": true})
 		# Con Tốt Thí: mỗi Tốt trên bàn cộng Bội cho các quân KHÁC.
 		var tithe := float(gm0.relic_pawn_tithe)
 		if tithe > 0.0:
@@ -151,7 +190,7 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 				if t.has_method("pattern_kind") and int(t.pattern_kind()) == ChessPattern.Kind.PAWN:
 					pawns += 1
 			if pawns > 0:
-				out.append({"name": "Sacrificial Pawn", "mult": 1.0 + tithe * float(pawns)})
+				out.append({"name": "Sacrificial Pawn", "mult": 1.0 + tithe * float(pawns), "combat": true})
 
 	# 2. Cấp ô nguyên tố dưới chân
 	var tm = map.get("territory_manager")
@@ -163,7 +202,7 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 		if not has_element and gm0 != null and bool(gm0.relic_tile_spread):
 			for dir in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
 				if bool(tm.has_biome_at(cell + dir)):
-					out.append({"name": "Long Mạch lan", "mult": 1.15})
+					out.append({"name": "Long Mạch lan", "mult": 1.15, "combat": true})
 					has_element = true
 					break
 	if tm != null and tm.has_method("get_element_bonus"):
@@ -185,7 +224,7 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 		# nguyên tố, thứ mà bản cũ không có đường nào đi.
 		var plain := float(gm.relic_plain_tile_mult)
 		if plain > 0.0 and not has_element:
-			out.append({"name": "Barren Ground", "mult": 1.0 + plain})
+			out.append({"name": "Barren Ground", "mult": 1.0 + plain, "combat": true})
 		# Di vật "Encirclement" (cờ vây): ô bị ≥3 quân kề bao vây.
 		var surr := float(gm.relic_surround_mult)
 		if surr > 0.0:
@@ -199,12 +238,12 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 							neighbours += 1
 							break
 			if neighbours >= 3:
-				out.append({"name": "Encirclement", "mult": 1.0 + surr * float(neighbours)})
+				out.append({"name": "Encirclement", "mult": 1.0 + surr * float(neighbours), "combat": true})
 		var rule := map.get_node_or_null("KingRules")
 		if rule and rule.has_method("cell_mult"):
 			var rv := float(rule.call("cell_mult", cell))
 			if not is_equal_approx(rv, 1.0):
-				out.append({"name": str(rule.call("rule_name")), "mult": rv})
+				out.append({"name": str(rule.call("rule_name")), "mult": rv, "combat": true})
 	return out
 
 
@@ -223,12 +262,17 @@ func path_cells_covered(t: Node) -> int:
 
 
 ## BỘI trung bình trên các ô đường mà quân này phủ.
+##
+## Dùng `residual_mult`, KHÔNG dùng `cell_mult`: phần `combat` của Bội (thế cờ,
+## di vật Joker) nay đã nằm trong `current_damage` của chính quân đó, mà
+## `tower_dps()` đọc thẳng `current_damage` ⇒ nhân `cell_mult` vào nữa là đếm
+## hai lần và dự báo phồng lên gấp đôi ở đúng những bàn xếp hình tốt nhất.
 func avg_mult_on_path(t: Node) -> float:
 	var total := 0.0
 	var n := 0
 	for c in _path_cells():
 		if t.covers_cell(c):
-			total += cell_mult(c)
+			total += residual_mult(c)
 			n += 1
 	return (total / float(n)) if n > 0 else 1.0
 
@@ -420,16 +464,29 @@ func damage_to_boss(wave: int) -> float:
 ## NGAY. Cả wave chỉ lọt 2 con / 8 sát thương, tức đàn lính không phải vấn đề:
 ## thua đúng vì con số ở giữa màn hình nói dối vào khoảnh khắc quyết định ván.
 ##
-## `BOSS_ESCORT_OVERLAP` = phần hộ vệ trung bình còn sống và CÙNG NẰM trong tầm
-## với boss (không phải toàn bộ 6 con cùng lúc).
-const BOSS_ESCORT_OVERLAP: float = 0.8
+## `BOSS_ESCORT_OVERLAP` = phần hộ vệ trung bình còn sống VÀ cùng nằm trong tầm
+## với boss. KHÔNG phải 6 con cùng lúc suốt trận: hộ vệ là lính thường, chúng
+## chết trong khoảng một phần ba đầu quãng đường, còn lại boss đi một mình.
+## 0.8 (bản đầu) coi như cả 6 con sống tới cuối — đó là chỗ sai lớn nhất.
+const BOSS_ESCORT_OVERLAP: float = 0.25
+
+## Sát thương lên boss mà mô hình KHÔNG nhìn thấy: phản ứng nguyên tố, DoT của
+## Dấu, sát thương lan, splash. `damage_to_boss` chỉ cộng DPS đạn bắn thẳng.
+## Với đàn lính thì `EFFICIENCY` đã hấp thụ sai số này, nhưng boss sống lâu hơn
+## nhiều nên nó ăn đủ mọi tầng DoT — phần bỏ sót lớn hơn hẳn.
+##
+## ĐO ĐƯỢC (bot, n=24 ván): tỉ lệ boss khi QUA được = 0.38, khi THUA = 0.14 ⇒
+## ranh giới thật nằm quanh 0.25 chứ không phải 1.0, tức mô hình hụt ~4 lần.
+## Hai hằng dưới đây cùng nhau kéo ranh giới đó về 1.0.
+## PHẢI ĐO LẠI khi đổi số hộ vệ, máu boss, hoặc sức mạnh hệ nguyên tố.
+const BOSS_EXTRA_SOURCES: float = 1.8
 
 func _boss_focus(ws: Node) -> float:
 	var escorts := 6.0
 	var n = ws.get("BOSS_WAVE_MINION_COUNT")
 	if n is int or n is float:
 		escorts = float(n)
-	return 1.0 / (1.0 + maxf(0.0, escorts) * BOSS_ESCORT_OVERLAP)
+	return BOSS_EXTRA_SOURCES / (1.0 + maxf(0.0, escorts) * BOSS_ESCORT_OVERLAP)
 
 
 ## Giáp TRUNG BÌNH của Rival King qua cả trận — hắn đi qua 3 pha và giáp tụt dần
@@ -588,7 +645,16 @@ func base_breakdown(cell: Vector2i) -> Array[Dictionary]:
 func _towers() -> Array:
 	if map == null or not map.is_inside_tree():
 		return []
-	return map.get_tree().get_nodes_in_group("towers")
+	# LỌC quân đã `queue_free()`. Node bị queue_free vẫn nằm trong cây tới CUỐI
+	# FRAME, mà `tower_dismissed` được phát và xử lý ĐỒNG BỘ ngay trong lúc đó ⇒
+	# lần đếm lại vẫn thấy con vừa bị gỡ. Đo được: gỡ một Xe khỏi Trận Pháo thì
+	# thế cờ vẫn báo còn, và (từ khi BỘI vào sát thương thật) quân còn lại giữ
+	# nguyên ×2.0 VĨNH VIỄN. Cùng lớp lỗi với dải chip HUD trước đây.
+	var out: Array = []
+	for t in map.get_tree().get_nodes_in_group("towers"):
+		if is_instance_valid(t) and not t.is_queued_for_deletion():
+			out.append(t)
+	return out
 
 
 func _path_cells() -> Array:

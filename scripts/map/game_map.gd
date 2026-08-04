@@ -211,6 +211,9 @@ func _ready() -> void:
 	add_child(relic_system)
 	relic_system.setup(equipment_system, potion_system)
 	relic_system.relics_changed.connect(potion_controller._on_relics_changed)
+	# Sáu di vật kiểu Joker (Vương Miện Gãy, Cờ Tàn, Con Tốt Thí, Đất Cằn,
+	# Vây Bắt, Trống Trận) chỉ tác động qua BỘI chiến đấu.
+	relic_system.relics_changed.connect(func(_ids): refresh_formation_mults())
 
 	element_synergy = ElementSynergy.new()
 	element_synergy.name = "ElementSynergy"
@@ -909,6 +912,9 @@ func _on_phase_changed(phase: PhaseController.GamePhase) -> void:
 				hud_r.show_king_rule(king_rules.rule_name(), king_rules.rule_desc())
 		else:
 			king_rules.clear()
+		# Luật Vua nằm trong BỘI chiến đấu ⇒ bật/tắt nó phải tính lại sát thương
+		# NGAY, nếu không "Vua Nghiêng" chỉ ăn từ lần đặt quân kế tiếp.
+		refresh_formation_mults()
 	# Ngưỡng đổi theo wave → bảng Nền × Bội phải tính lại ở mỗi lần đổi pha.
 	_refresh_board_score()
 	var hud := get_node_or_null("HUD")
@@ -1270,6 +1276,9 @@ func _on_territories_changed(biome_counts: Dictionary) -> void:
 	# Mua/nâng một ô có thể đổi nguyên tố của tháp đứng trên đó → đếm lại synergy.
 	if element_synergy:
 		element_synergy.recount()
+	# ...và đổi BỘI chiến đấu: "Long Mạch Lan" lan sang ô kề, "Đất Cằn" thưởng
+	# cho ô KHÔNG có nguyên tố — cả hai đảo chiều khi một ô được mua hoặc bán.
+	refresh_formation_mults()
 
 ## Nguyên tố người chơi đang đầu tư nhiều nhất — nguồn cho pity shop và cho
 ## draft perk định hướng. "" khi chưa có tháp nào bắn nguyên tố.
@@ -1288,7 +1297,20 @@ func _dominant_element() -> String:
 ## Đếm lại synergy nguyên tố. Hoãn một frame: `tower_placed` phát TRƯỚC khi tháp
 ## đọc xong nguyên tố ô dưới chân, đếm ngay sẽ hụt mất tháp vừa đặt.
 func _on_chess_formations_changed(_counts: Dictionary) -> void:
+	refresh_formation_mults()
 	update_ui()
+
+## Bắt MỌI quân đọc lại BỘI chiến đấu của ô nó đứng.
+##
+## Phải gọi ở mọi chỗ làm đổi Bội, không chỉ khi thế cờ đổi: di vật kiểu Joker
+## đọc số quân trên bàn (Cờ Tàn), số Tốt (Con Tốt Thí), ô kề (Vây Bắt), ô nguyên
+## tố quanh đó (Long Mạch Lan) và luật Rival King. Thiếu một chỗ gọi thì hiệu
+## ứng đúng nhưng chỉ ăn từ lần đổi bố cục KẾ TIẾP — đúng lớp lỗi "chạy nửa vời"
+## khó thấy nhất.
+func refresh_formation_mults() -> void:
+	for t in get_tree().get_nodes_in_group("towers"):
+		if is_instance_valid(t) and t.has_method("refresh_formation_mult"):
+			t.refresh_formation_mult()
 
 ## Trần số quân ở wave hiện tại.
 func max_units() -> int:

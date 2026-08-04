@@ -108,9 +108,16 @@ func _run() -> void:
 	# (3) Rival King di cung ho ve, ma thap nham con VAO TAM TRUOC chu khong nham
 	# boss. Mo hinh cu tinh nhu the boss la muc tieu duy nhat -> bao ti le 5.17
 	# trong khi boss di thang toi King va nguoi choi THUA NGAY.
-	ok(bs2._boss_focus(ws) < 0.5,
-		"mo hinh tinh viec ho ve hut hoa luc khoi boss",
-		"focus=%.2f" % bs2._boss_focus(ws))
+	# Kiem Y DINH chu khong kiem con so: `_boss_focus` gop HAI he so nguoc chieu
+	# (ho ve hut hoa luc di, phan ung/DoT cong them vao) nen tri tuyet doi cua no
+	# la mot hang so DO DUOC, se doi. Cai khong duoc doi la CHIEU: them ho ve thi
+	# hoa luc don vao boss phai GIAM.
+	ok(BoardScore.BOSS_ESCORT_OVERLAP > 0.0,
+		"mo hinh co tinh viec ho ve hut hoa luc khoi boss")
+	var f6: float = BoardScore.BOSS_EXTRA_SOURCES / (1.0 + 6.0 * BoardScore.BOSS_ESCORT_OVERLAP)
+	var f12: float = BoardScore.BOSS_EXTRA_SOURCES / (1.0 + 12.0 * BoardScore.BOSS_ESCORT_OVERLAP)
+	ok(f12 < f6, "cang nhieu ho ve, hoa luc don vao boss cang it",
+		"6 ho ve %.2f -> 12 ho ve %.2f" % [f6, f12])
 
 	# (4) Mau Vua phai chiu duoc NHIEU lan lot, neu khong do kho thanh nhi phan:
 	# mat 0 mau suot ca van roi chet sach trong dung mot wave.

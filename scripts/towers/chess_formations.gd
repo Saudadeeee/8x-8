@@ -21,33 +21,44 @@ extends Node
 
 ## Định nghĩa thế. `mult` là hệ số BỘI áp lên các ô mà thế đó phủ.
 ## Thêm thế mới = thêm một mục ở đây + một nhánh trong `_detect`.
+## HỆ SỐ ĐÃ NÉN khi BỘI trở thành THẬT (2026-08-05).
+##
+## Bảng cũ 1.8-3.0 được viết khi mấy con số này chỉ hiện trên HUD — to cho đã
+## mắt, không ai trả giá. Từ khi chúng nhân vào `Tower.formation_damage_mult`
+## thì đo được bot thắng 13/18 với ba bộ giữ nguyên 47-50/50 máu cả ván.
+##
+## Điều kiện của MỌI thế đều rất dễ (hai Xe cùng hàng là xong), nên phần thưởng
+## phải khiêm tốn: `1 + (cũ - 1) × 0.3`. Muốn hệ số to trở lại thì phải SIẾT
+## ĐIỀU KIỆN trước, không phải nâng số.
+##
+## Chúng NHÂN với nhau khi một quân nằm trong nhiều thế — hai thế đã là ×1.8.
 const SPEC := {
 	"battery": {
-		"name": "Battery",  "mult": 2.0,
+		"name": "Battery",  "mult": 1.30,
 		"desc": "Two or more Rooks on the same rank or file.",
 	},
 	"crossfire": {
-		"name": "Crossfire",   "mult": 2.2,
+		"name": "Crossfire",   "mult": 1.35,
 		"desc": "A square covered by a Rook and a Bishop at once.",
 	},
 	"knight_pair": {
-		"name": "Knight Pair",    "mult": 1.8,
+		"name": "Knight Pair",    "mult": 1.25,
 		"desc": "Two Knights sharing at least one covered square.",
 	},
 	"pawn_wall": {
-		"name": "Pawn Wall",  "mult": 2.2,
+		"name": "Pawn Wall",  "mult": 1.35,
 		"desc": "Three or more Pawns side by side on one rank.",
 	},
 	"royal_guard": {
-		"name": "Royal Guard",     "mult": 2.6,
+		"name": "Royal Guard",     "mult": 1.45,
 		"desc": "A Queen guarded by at least two adjacent pieces.",
 	},
 	"echelon": {
-		"name": "Echelon",    "mult": 2.4,
+		"name": "Echelon",    "mult": 1.40,
 		"desc": "Three or more pieces on the same diagonal.",
 	},
 	"fork": {
-		"name": "Fork",  "mult": 3.0,
+		"name": "Fork",  "mult": 1.60,
 		"desc": "One Knight covering 3 or more path squares.",
 	},
 }
@@ -263,4 +274,13 @@ func _path_lookup() -> Dictionary:
 func _towers() -> Array:
 	if map == null or not map.is_inside_tree():
 		return []
-	return map.get_tree().get_nodes_in_group("towers")
+	# LỌC quân đã `queue_free()`. Node bị queue_free vẫn nằm trong cây tới CUỐI
+	# FRAME, mà `tower_dismissed` được phát và xử lý ĐỒNG BỘ ngay trong lúc đó ⇒
+	# lần đếm lại vẫn thấy con vừa bị gỡ. Đo được: gỡ một Xe khỏi Trận Pháo thì
+	# thế cờ vẫn báo còn, và (từ khi BỘI vào sát thương thật) quân còn lại giữ
+	# nguyên ×2.0 VĨNH VIỄN. Cùng lớp lỗi với dải chip HUD trước đây.
+	var out: Array = []
+	for t in map.get_tree().get_nodes_in_group("towers"):
+		if is_instance_valid(t) and not t.is_queued_for_deletion():
+			out.append(t)
+	return out

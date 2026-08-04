@@ -1212,6 +1212,61 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
   Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
 
+*BỘI THÀNH THẬT (2026-08-05) — ĐỌC TRƯỚC KHI THÊM NGUỒN BỘI MỚI:*
+- **Lỗi gốc**: cả lớp "Bội" chỉ sống trong `board_score.mult_breakdown()`, mà
+  file đó CHỈ có HUD đọc. Đo được: hai Xe cùng hàng (Trận Pháo) làm Bội trên HUD
+  nhảy 1.00 → 2.00 trong khi `tower.current_damage` đứng nguyên 34. **7 thế cờ
+  và 9 di vật** (Vương Miện Gãy · Cờ Tàn · Vua Đơn Độc · Con Tốt Thí · Đất Cằn ·
+  Vây Bắt · Trống Trận · Đại Cục · Long Mạch Lan) đổi một con số trên màn hình
+  và không làm gì khác. Câu đố xếp quân — thứ mà bàn 8×8 khoá cứng và trần số
+  quân sinh ra để ép người chơi giải — được thưởng đúng BẰNG KHÔNG.
+- **`audit_wiring.py` không bắt được**: mấy khoá đó CÓ người đọc (board_score),
+  chỉ là không đến được chỗ gây sát thương. Thêm khoá Bội mới thì phải tự hỏi
+  "ai NHÂN nó vào sát thương?", không chỉ "ai đọc nó?".
+- **Cách sửa**: mỗi dòng trong `mult_breakdown` mang cờ `combat`.
+  `combat_mult()` = tích các dòng `combat` → `Tower.formation_damage_mult`, nhân
+  trong `recalculate_stats` cùng chỗ với `star_damage_mult`.
+  `residual_mult()` = phần còn lại (khuếch đại PHẢN ỨNG — đã áp thật ở
+  ReactionTable/BuffLayer). **Bất biến: `cell_mult = combat_mult × residual_mult`**
+  — có test chốt. Thêm dòng mới mà quên gắn cờ thì nó rơi vào residual và lại
+  thành số chết.
+- **`avg_mult_on_path` PHẢI dùng `residual_mult`**: `tower_dps()` đọc thẳng
+  `current_damage` vốn đã gồm phần combat ⇒ nhân `cell_mult` vào nữa là đếm hai
+  lần, và phồng gấp đôi đúng ở những bàn xếp hình tốt nhất.
+- **`formation_damage_mult` là hệ số DẪN XUẤT**, không cộng dồn — đọc lại từ bàn
+  mỗi lần `refresh_formation_mult()`. Gọi bao nhiêu lần cũng ra một kết quả.
+- **Phải gọi `game_map.refresh_formation_mults()` ở MỌI chỗ đổi Bội**, không chỉ
+  khi thế cờ đổi: ô nguyên tố mua/bán (Đất Cằn, Long Mạch Lan đảo chiều), di vật
+  mua/bán, và luật Rival King bật/tắt mỗi lần đổi pha.
+- **BẪY đã dính (lỗi CÓ SẴN, chỉ lộ ra khi Bội thành thật)**: `queue_free()` để
+  node nằm trong cây tới CUỐI FRAME, mà `tower_dismissed` xử lý ĐỒNG BỘ ngay lúc
+  đó ⇒ đếm lại vẫn thấy con vừa gỡ. Gỡ một Xe khỏi Trận Pháo thì thế cờ vẫn báo
+  còn, và quân còn lại giữ ×1.3 VĨNH VIỄN. `_towers()` của cả ChessFormations lẫn
+  BoardScore nay lọc `is_queued_for_deletion()`. Cùng lớp lỗi với dải chip HUD.
+- **Hệ số thế cờ nén từ 1.8-3.0 xuống 1.25-1.60** (`1 + (cũ-1)×0.3`). Bảng cũ
+  viết khi chúng chỉ là số trên HUD — to cho đã mắt, không ai trả giá. Điều kiện
+  của MỌI thế đều rất dễ (hai Xe cùng hàng là xong) nên phần thưởng phải khiêm
+  tốn. Muốn hệ số to trở lại thì SIẾT ĐIỀU KIỆN trước, không phải nâng số.
+  Chúng NHÂN với nhau khi một quân nằm trong nhiều thế.
+- **Cân bằng đo lại** (bot n=5, 30 ván): thắng **50%**, chênh lệch bộ bài
+  **1.3×** (chặt nhất từ trước). Đường cong phải nâng theo:
+  `WAVE_HP_BASE` 620→900 · `WAVE_HP_GROWTH` 1.26→1.285 · `BOSS_HP_BASE` 215→345.
+
+*Hiệu chỉnh bảng số bằng bot (2026-08-05):*
+- `tools/bot_bench.py` nay in mục **"hieu chinh bang so"**: ratio trung bình ở
+  wave THUA so với wave SỐNG QUA, và một mục RIÊNG cho wave boss. Đây là cách
+  duy nhất biết bảng đang nói dối hay không — cân bằng có thể đúng trong khi
+  con số hiển thị vẫn sai.
+- Đo được sau khi Bội thành thật: ranh giới thật của wave boss nằm ở **0.25**
+  chứ không phải 1.0 ⇒ mô hình boss hụt ~4 lần. Hai nguyên nhân, sửa riêng từng
+  cái thay vì bịa một hệ số:
+  (1) `BOSS_ESCORT_OVERLAP` 0.8 → **0.25** — hộ vệ là lính thường, chúng chết
+      trong khoảng một phần ba đầu quãng đường chứ không sống tới cuối;
+  (2) `BOSS_EXTRA_SOURCES` = **1.8** — sát thương mô hình KHÔNG nhìn thấy (phản
+      ứng nguyên tố, DoT của Dấu, splash). Boss sống lâu nên ăn đủ mọi tầng DoT.
+- Sau khi sửa: tỉ lệ boss khi QUA được **1.53**, khi THUA **0.44** → 1.0 nằm
+  gọn giữa. Đo lại khi đổi số hộ vệ, máu boss, hoặc sức mạnh hệ nguyên tố.
+
 *Bot chơi trọn ván + đường cong độ khó (2026-08-04) — ĐỌC TRƯỚC KHI SỬA SỐ:*
 - **`python tools/bot_bench.py [n] [bo...]`** chạy `tools/bot_run.gd` nhiều lần
   mỗi bộ bài rồi tóm tắt. Bot chơi trên GAME THẬT: mua hết những gì mua được,

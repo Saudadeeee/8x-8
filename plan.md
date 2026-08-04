@@ -154,3 +154,4 @@
 - [x] Integration test: full run 10 wave → VictoryScreen (187 kills, 495 meta points);
       run thua → GameOverScreen; ability +30RD wave 2; 3 encounter/run; expand tới max 32
 - [x] Screenshot nghiệm thu: HP bar, bolt, khung board, ghost, camera focus
+wwwd

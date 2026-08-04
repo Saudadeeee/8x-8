@@ -93,6 +93,31 @@ var star_damage_mult: float = 1.0
 var _star_range_bonus: int  = 0
 var _star_label: Label3D    = null
 
+## BỘI của ô quân này đứng — phần được áp THẲNG vào sát thương (thế cờ, di vật
+## kiểu Joker, luật Rival King). Giống `star_damage_mult`: luôn được DẪN XUẤT
+## lại từ bàn cờ chứ không cộng dồn, nên `recalculate_stats()` gọi bao nhiêu lần
+## cũng không nhân chồng.
+##
+## Trước đây phần này chỉ sống trong `board_score.mult_breakdown()` — tức chỉ là
+## một con số trên HUD. Đo được: hai Xe cùng hàng (Trận Pháo) làm Bội hiện ×2.00
+## trong khi sát thương thật đứng nguyên. Câu đố xếp quân không trả công gì.
+var formation_damage_mult: float = 1.0
+
+
+## Đọc lại BỘI chiến đấu của ô đang đứng rồi tính lại chỉ số.
+## game_map gọi cho MỌI quân mỗi khi bố cục / di vật / ô nguyên tố đổi.
+func refresh_formation_mult() -> void:
+	var m := 1.0
+	var mp := get_parent()
+	if mp != null and mp.get("board_score") != null:
+		var bs = mp.get("board_score")
+		if is_instance_valid(bs) and bs.has_method("combat_mult"):
+			m = maxf(0.01, float(bs.combat_mult(home_cell())))
+	if is_equal_approx(m, formation_damage_mult):
+		return
+	formation_damage_mult = m
+	recalculate_stats()
+
 # King Flame ability — temporary burn projectile override (read/written by game_map.gd)
 var boon_burn_override: bool = false
 
@@ -406,7 +431,11 @@ func recalculate_stats() -> void:
 	# -40% sát thương lấy +50% tốc, khí hậu biome, di vật nhân đôi mặt trái).
 	# Không có sàn thì cộng dồn đủ nhiều sẽ ra sát thương âm — quái được HỒI MÁU
 	# khi bị bắn. Đã đo được -9 với hai Repeater + di vật Song Thủ.
-	current_damage       = maxi(1, int(total_dmg * season_damage_mult * star_damage_mult))
+	# formation_damage_mult là phần `combat` của BỘI (thế cờ + di vật kiểu Joker
+	# + luật Rival King). NHÂN, không cộng — giống sao và mùa: đây là "Bội" của
+	# công thức Nền × Bội, mà Bội theo định nghĩa là phép nhân.
+	current_damage       = maxi(1, int(total_dmg * season_damage_mult * star_damage_mult
+		* formation_damage_mult))
 	# SÀN hồi chiêu theo TỈ LỆ base, không phải hằng 0.1s. Giảm hồi chiêu là số
 	# giây CỘNG PHẲNG từ nhiều nguồn (ô, perk, thuốc, trang bị); với sàn cứng 0.1
 	# một tháp base 1.0s có thể chạm 10 phát/giây = ×10 DPS, phá mọi cân bằng.
