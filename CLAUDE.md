@@ -1212,6 +1212,78 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
   Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
 
+*Bot chơi trọn ván + đường cong độ khó (2026-08-04) — ĐỌC TRƯỚC KHI SỬA SỐ:*
+- **`python tools/bot_bench.py [n] [bo...]`** chạy `tools/bot_run.gd` nhiều lần
+  mỗi bộ bài rồi tóm tắt. Bot chơi trên GAME THẬT: mua hết những gì mua được,
+  đặt vào ô phủ nhiều ô đường nhất, bấm START WAVE. Nó là **ngưỡng SÀN** —
+  không dùng thuốc, không tính perk, không bán quân. Người chơi phải hơn nó.
+- **Ngẫu nhiên rất lớn: n=3 có sai số ±20 điểm phần trăm.** Một lần chạy không
+  kết luận được gì. Muốn chốt một hằng số thì chạy n≥5.
+- Mốc hiện tại: **mọi bộ tới wave 12**, bot thắng ~35-45%, chênh lệch giữa bộ
+  mạnh nhất và yếu nhất còn **2.6×** (từng là 67×).
+- **Ba wave boss là bài kiểm tra, wave thường là giai đoạn dựng bàn.** Tỉ lệ
+  boss lành mạnh ≈ 1.0-1.3. Máu người chơi đứng yên gần hết ván là BÌNH THƯỜNG
+  ở thể loại này — sức ép nằm ở con số dưới màn hình, không ở thanh máu.
+- `tools/bot_run.gd` in CSV mỗi wave: `wave,hp,vàng,quân,ratio,rd,dmg1t,hp_mất,lọt`.
+  Cột `dmg1t` (sát thương lên MỘT mục tiêu) là thứ để chỉnh máu boss;
+  cột `lọt=n/Xdmg BOSS_THOAT` phân biệt "thua vì rò rỉ dần" với "thua vì boss thoát".
+- **BẪY khi viết bot**: (1) `tower_placer.is_buildable()` KHÔNG kiểm ô đã có
+  quân — bot dồn hết vào một ô rồi ghép sao, cả ván chỉ có 1 quân; (2) **thắng
+  đi qua `force_victory()` mà pha VẪN ở WAVE** (`enter_shop_phase` return ngay
+  sau khi báo thắng) nên phải kiểm `gm.current_state == VICTORY`, nếu không mọi
+  ván THẮNG bị đếm thành "treo"; (3) ngân sách phải tính bằng GIÂY TRONG GAME,
+  headless chạy frame rỗng rất nhanh nên 150k frame có khi chỉ vài chục giây.
+
+*Đường cong độ khó ĐƯỢC THIẾT KẾ (2026-08-04):*
+- `WaveSpawner.target_wave_hp(w)` = `WAVE_HP_BASE × WAVE_HP_GROWTH^(w-1)`, wave
+  boss ×`BOSS_WAVE_HP_MULT`. `get_health_multiplier` giờ là hệ số **NẮN** tổng
+  máu về đường cong đó, KHÔNG còn là đường cong độ khó. Wave boss chỉ có 6 lính
+  nên hệ số của nó to gấp ba wave thường — đó là đúng, đừng "sửa".
+- Bản cũ để tổng máu tự nảy ra: đo được 433 581 767 1476 2452 **2221** 4524 5578
+  6370 **13580** 16443 **13913** — hai wave TỤT, ba wave nhân đôi, wave cuối nhẹ
+  hơn wave 11. Nguồn nhảy là (a) đổi mùa làm bể loài nhảy máu trung bình,
+  (b) wave boss ít lính nên wave sau vọt lên. Cả hai vô hình với người chơi.
+- **Máu Rival King có đường cong RIÊNG** (`BOSS_HP_BASE`/`BOSS_HP_GROWTH`) và
+  chia cho tốc độ của chính hắn. Lý do là bất đối xứng cấu trúc: dọn cả wave thì
+  thêm quân ở đâu cũng có ích, còn hạ MỘT con boss thì chỉ quân phủ đúng đường
+  hắn đi mới tính ⇒ sát thương đơn-mục-tiêu tăng ~×1.25/wave còn máu wave tăng
+  ×1.26 nhưng theo cách khác hẳn. Buộc chung một đường thì boss bỏ xa người chơi.
+  Và ba Rival King tốc độ 9.9/13.2/11.0 nên độ khó từng do THỨ TỰ TÌNH CỜ của
+  `BOSS_IDS` quyết định (wave 5 tỉ lệ 3.92, wave 9 tỉ lệ 0.84).
+- **Máu Vua ×2.5** (Iron 20→50). Cũ: 20 máu / 2-5 sát thương mỗi lần lọt = cả
+  ván chịu được 4-10 lần lọt ⇒ thất bại một phần không hiện ra dần mà giáng
+  xuống một phát. Test batch 4 chốt: mọi Vua phải chịu ≥6 lần lọt của con nặng nhất.
+
+*BoardScore từng nói dối ở ba chỗ (2026-08-04) — con số dưới màn hình:*
+- `wave_total_hp` chỉ nắn số địch theo MỘT chiều (`real > listed`). Wave boss có
+  6 hộ vệ mà bể loài liệt kê 17 dòng ⇒ ngưỡng cao gấp ~3 lần, đúng ở ba wave
+  quan trọng nhất. `enemy_groups()` ngay bên dưới vốn đã nắn hai chiều.
+- Mô hình **bỏ qua GIÁP**. Giáp trừ phẳng mỗi phát (sàn 1): Rival King giáp 10
+  nuốt 83% sát thương của Tốt (12→2) nhưng chỉ 12% của Ballista (85→75).
+  Dùng `tower_dps_vs_armor()` khi mục tiêu đã biết; `tower_dps()` chỉ cho đàn lính.
+- Mô hình tính như thể **boss là mục tiêu duy nhất**. Hắn đi cùng 6 hộ vệ và
+  tháp nhắm con VÀO TẦM TRƯỚC. Đo ở wave 12: bảng báo 5.17 ("hạ thừa 5 lần")
+  trong khi boss đi thẳng tới King ⇒ THUA NGAY, cả wave chỉ lọt 2 con/8 sát
+  thương. `_boss_focus()` = 0.17. Thêm cơ chế mới quanh boss thì phải xem lại nó.
+
+*Van xả vàng dư — "War Levy" (2026-08-04):*
+- Đo được vàng dồn 749 → 1097 → 1333 từ wave 10 khi bàn đã kín quân. Không phải
+  "nhiều vàng thì vui": nghĩa là từ giữa ván MỌI quyết định trong shop đều miễn
+  phí, kinh tế thôi không còn là một hệ chơi.
+- Gốc: thứ đáng mua nhất về cuối (ô nguyên tố — cho BỘI, không tốn ô bàn) tính
+  bằng SẮC LỆNH; hai đồng tiền không có đường nối. `ItemType.LEVY` nối chúng.
+- **Chỉ bày khi vàng ≥ 2× giá.** Bày mọi lượt thì từ wave 5 quầy toàn hàng cố
+  định (quân bảo đảm + bộ + ô pity + thuế + trang bị + di vật = 6 món trên
+  `SHOP_SLOT_COUNT` 5) và hết sạch chỗ cho hàng ngẫu nhiên. Thêm loại hàng mới
+  vào quầy thì PHẢI đếm lại chỗ này.
+
+*Panel quân nói được VÌ SAO nó không bắn (2026-08-04):*
+- `hud_tower_panel._coverage_diagnosis()`. "0 squares (0 on path)" là ngõ cụt:
+  người chơi thấy số nhưng không biết nguyên nhân lẫn cách sửa. Nặng nhất là
+  **Pháo** (cờ tướng) — luật "phải có ĐÚNG một quân làm ngòi" không ai đoán ra,
+  mà triệu chứng lại giống hệt một quân bị hỏng. Thêm kiểu quân mới có điều kiện
+  lạ thì thêm một nhánh ở đây.
+
 *Đổi ngôn ngữ game sang TIẾNG ANH (2026-08-04):*
 - **1568 chuỗi người chơi nhìn thấy → còn ~50** (phần dư là chuỗi nằm trong chú
   thích `#`, không hiện trong game). Cảnh báo `push_warning`/`push_error` (130

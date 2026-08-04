@@ -338,6 +338,8 @@ func _ready() -> void:
 		if shop_manager.has_method("setup_item_systems"):
 			shop_manager.setup_item_systems(equipment_system, relic_system)
 			shop_manager.set_pity_element_provider(_dominant_element)
+		if shop_manager.has_method("set_gold_provider"):
+			shop_manager.set_gold_provider(func() -> int: return current_gold)
 			shop_manager.refresh_shop(true)   # roll lại để quầy có ngay trang bị
 
 	if _game_manager and _game_manager.has_signal("state_changed"):
@@ -1035,6 +1037,8 @@ func _on_shop_phase_entered(_wave: int, interest: int) -> void:
 	# Giá xáo tăng dần TRONG một phiên shop → phải hạ về mức nền ở phiên mới.
 	if shop_manager and shop_manager.has_method("reset_reroll_cost"):
 		shop_manager.reset_reroll_cost()
+	if shop_manager and shop_manager.has_method("reset_levy_cost"):
+		shop_manager.reset_levy_cost()
 	if interest > 0:
 		current_gold += interest
 		if _game_manager:
@@ -1392,6 +1396,18 @@ func _on_shop_item_purchased(item: ShopItemData) -> void:
 			var biome: String = item.territory_tag if TerritoryManager.BIOME_STATS.has(item.territory_tag) \
 				else TerritoryManager.BIOME_KEYS[randi() % TerritoryManager.BIOME_KEYS.size()]
 			territory_manager.add_stock(biome)
+		ShopItemData.ItemType.LEVY:
+			# Vàng đã bị trừ ở attempt_shop_purchase; ở đây chỉ trả Sắc Lệnh.
+			if king_manager:
+				king_manager.add_royal_decree(ShopPanelManager.LEVY_DECREE_GAIN)
+			if shop_manager:
+				shop_manager.register_levy_purchase()
+				# Bày lại NGAY với giá mới — người chơi phải thấy giá leo, nếu
+				# không nó chỉ là một nút bấm vô hạn.
+				shop_manager.remove_from_active_offers(item.id)
+				var again := shop_manager._make_levy_offer()
+				if again != null:
+					shop_manager.active_shop_offers.append(again)
 		ShopItemData.ItemType.DISMISS:
 			tower_placer.add_dismiss_stock()
 			if shop_manager:  # chỉ mua 1 lần mỗi shop phase

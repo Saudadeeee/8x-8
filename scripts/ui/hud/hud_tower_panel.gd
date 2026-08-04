@@ -260,12 +260,54 @@ func _build_pattern_row(parent: VBoxContainer, tower_node: Node3D) -> void:
 	UIStyle.body(hint2, 14, UIStyle.TEXT_DIM)
 	hint2.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	parent.add_child(hint2)
-	if on_path == 0:
+
+	var diag := _coverage_diagnosis(tower_node, kind, (covered as Array).size(), on_path)
+	if diag != "":
 		var warn := Label.new()
-		warn.text = "⚠ This piece covers no path squares — it deals no damage."
-		UIStyle.body(warn, 14, UIStyle.RED)
+		warn.text = diag
+		UIStyle.body(warn, 14, UIStyle.ORANGE)
 		warn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		parent.add_child(warn)
+
+
+## Vì sao quân này phủ ít / không phủ ô đường nào, và phải làm gì.
+##
+## "0 squares (0 on path)" là một ngõ cụt: người chơi thấy con số nhưng không
+## biết nguyên nhân lẫn cách sửa. Với Pháo (cờ tướng) thì nó còn tệ hơn — luật
+## "phải có ĐÚNG một quân làm ngòi" không ai đoán ra được, và triệu chứng lại
+## giống hệt một quân bị hỏng. Đây là chỗ đầu tiên người chơi mới sẽ mắc kẹt.
+func _coverage_diagnosis(tower_node: Node, kind: int, total: int, on_path: int) -> String:
+	if total > 0 and on_path > 0:
+		# Có bắn được, nhưng quân mình đang bịt bớt đường trượt?
+		var lost := _blocked_by_friends(tower_node, kind)
+		if lost > 0:
+			return "⚠ Your own pieces block %d more square%s. Sliding pieces stop at the first friend - a relic can let them pierce through." \
+				% [lost, "" if lost == 1 else "s"]
+		return ""
+	if total == 0:
+		match kind:
+			ChessPattern.Kind.CANNON:
+				return "⚠ A Cannon fires only THROUGH a screen: it needs EXACTLY one piece between it and its target. Place a friendly piece in its rank or file, then it opens up."
+			ChessPattern.Kind.SIEGE:
+				return "⚠ Siege pieces cannot hit anything adjacent - they need at least 2 squares of distance."
+			_:
+				return "⚠ Every line out of this square is blocked by your own pieces. Move it, or open a lane."
+	return "⚠ It reaches %d square%s but NONE of them are on the path, so it will never fire. Move it next to the gold arrows." \
+		% [total, "" if total == 1 else "s"]
+
+
+## Bao nhiêu ô sẽ phủ thêm được nếu quân MÌNH không đứng chắn đường trượt.
+func _blocked_by_friends(tower_node: Node, kind: int) -> int:
+	if tower_node == null or not is_instance_valid(tower_node):
+		return 0
+	if not tower_node.has_method("home_cell") or not tower_node.has_method("effective_range"):
+		return 0
+	var free_cells: Array = ChessPattern.cells(kind, tower_node.home_cell(),
+		int(tower_node.effective_range()), {}, 0)
+	var covered: Array = tower_node.get("covered_cells")
+	if not (covered is Array):
+		return 0
+	return maxi(0, free_cells.size() - (covered as Array).size())
 
 
 # ── "Đang hưởng": liệt kê TỪNG nguồn buff đang tác động lên tháp này ────────

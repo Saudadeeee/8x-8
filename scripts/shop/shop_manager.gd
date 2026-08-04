@@ -365,6 +365,12 @@ var _pity_element_provider: Callable = Callable()
 func set_pity_element_provider(provider: Callable) -> void:
 	_pity_element_provider = provider
 
+## Vàng hiện có — Thuế Chiến chỉ bày ra khi thật sự có vàng dư.
+var _gold_provider: Callable = Callable()
+
+func set_gold_provider(provider: Callable) -> void:
+	_gold_provider = provider
+
 func _dominant_element() -> String:
 	if not _pity_element_provider.is_valid():
 		return ""
@@ -373,6 +379,56 @@ func _dominant_element() -> String:
 
 ## Ô lãnh thổ khớp nguyên tố đang mạnh nhất — chèn vào quầy khi pity bật.
 ## Trả null nếu chưa đủ wave, chưa có build, hoặc quầy đã có sẵn ô đó.
+## ── ỐNG THOÁT CHO VÀNG DƯ ────────────────────────────────────────────────────
+## Đo bằng bot: từ wave 10 vàng dồn 749 → 1097 → 1333 trong khi bàn đã kín quân.
+## Không phải "nhiều vàng thì vui" — nó có nghĩa là từ giữa ván trở đi, MỌI quyết
+## định trong shop đều miễn phí, tức kinh tế thôi không còn là một hệ chơi nữa.
+##
+## Vàng không tiêu được vì thứ đáng mua nhất về cuối (ô nguyên tố, vì nó cho BỘI
+## và không tốn ô bàn) lại tính bằng SẮC LỆNH. Hai đồng tiền không có đường nối.
+##
+## "Thuế Chiến" nối chúng lại: bán Sắc Lệnh lấy vàng, giá LEO trong cùng một
+## phiên nên nó là van xả chứ không phải máy in. Từ wave 5 mới có — trước đó vàng
+## còn khan, mở sớm là phá luôn giai đoạn đầu.
+const LEVY_MIN_WAVE: int = 5
+const LEVY_DECREE_GAIN: float = 3.0
+const LEVY_BASE_COST: int = 120
+## Mỗi lần mua trong CÙNG phiên đắt thêm chừng này. Reset ở phiên sau.
+const LEVY_COST_STEP: int = 90
+
+var _levy_bought_this_phase: int = 0
+
+## game_map gọi khi vào pha shop (cùng chỗ gọi reset_reroll_cost).
+func reset_levy_cost() -> void:
+	_levy_bought_this_phase = 0
+
+func get_levy_cost() -> int:
+	return LEVY_BASE_COST + _levy_bought_this_phase * LEVY_COST_STEP
+
+func register_levy_purchase() -> void:
+	_levy_bought_this_phase += 1
+
+func _make_levy_offer() -> ShopItemData:
+	if current_wave < LEVY_MIN_WAVE:
+		return null
+	# Chỉ bày khi có vàng dư THẬT. Bày mọi lượt thì từ wave 5 quầy toàn hàng cố
+	# định (quân bảo đảm + bộ + ô pity + thuế + trang bị + di vật) và không còn
+	# ô nào cho hàng ngẫu nhiên — mất sạch đa dạng, đúng thứ làm shop đáng xem.
+	if not _gold_provider.is_valid():
+		return null
+	if int(_gold_provider.call()) < get_levy_cost() * 2:
+		return null
+	var item := ShopItemData.new()
+	item.id = "levy_decree"
+	item.display_name = "War Levy"
+	item.description = "Trade %d gold for %.0f Royal Decree. The price climbs each time you use it this round." \
+		% [get_levy_cost(), LEVY_DECREE_GAIN]
+	item.cost = float(get_levy_cost())
+	item.use_royal_decree = false
+	item.item_type = ShopItemData.ItemType.LEVY
+	return item
+
+
 func _make_pity_tile_offer() -> ShopItemData:
 	if current_wave < PITY_MIN_WAVE:
 		return null
@@ -565,6 +621,10 @@ func _roll_shop_offers() -> void:
 	if pity_offer != null:
 		active_shop_offers.append(pity_offer)
 		unit_candidates.erase(pity_offer)   # không để nó ra hai lần trong cùng quầy
+
+	var levy_offer := _make_levy_offer()
+	if levy_offer != null:
+		active_shop_offers.append(levy_offer)
 
 	var equip_offer := _make_equipment_offer()
 	if equip_offer != null:

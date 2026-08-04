@@ -488,6 +488,27 @@ func _run() -> void:
 			"panel tim duoc TerritoryManager (khong dung get_parent)")
 	ok(map.get("coverage_overlay") != null, "co lop to sang tam phu")
 
+	print("\n--- PANEL NOI DUOC VI SAO QUAN KHONG BAN ---")
+	# "0 squares (0 on path)" la mot ngo cut: nguoi choi thay con so nhung khong
+	# biet nguyen nhan lan cach sua. Nang nhat la PHAO (co tuong) — luat "phai co
+	# DUNG mot quan lam ngoi" khong ai doan ra, ma trieu chung lai giong het mot
+	# quan bi hong. Panel phai TU noi ra.
+	if tp != null and tp.has_method("_coverage_diagnosis"):
+		var d_cannon: String = str(tp.call("_coverage_diagnosis", null,
+			ChessPattern.Kind.CANNON, 0, 0))
+		ok(d_cannon.to_lower().contains("screen"),
+			"Phao phu 0 o -> panel giai thich luat NGOI", d_cannon.substr(0, 60))
+		var d_siege: String = str(tp.call("_coverage_diagnosis", null,
+			ChessPattern.Kind.SIEGE, 0, 0))
+		ok(d_siege.to_lower().contains("adjacent"),
+			"May ban da phu 0 o -> panel noi ro no khong danh duoc o ke")
+		var d_off: String = str(tp.call("_coverage_diagnosis", null,
+			ChessPattern.Kind.ROOK, 7, 0))
+		ok(d_off.to_lower().contains("path"),
+			"Phu 7 o nhung KHONG o nao tren duong -> panel bao phai doi cho")
+		ok(str(tp.call("_coverage_diagnosis", null, ChessPattern.Kind.KING, 4, 2)) == "",
+			"quan dang ban binh thuong thi KHONG hien canh bao")
+
 	print("\n--- HE DA CAT ---")
 	ok(not FeatureFlags.SEASONS_ENABLED, "mua da tat")
 	ok(not FeatureFlags.BIOME_CLIMATE_ENABLED, "khi hau biome da tat")

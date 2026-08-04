@@ -8,6 +8,8 @@ enum ItemType {
 	UPGRADE,
 	EQUIPMENT,   # trang bị gắn lên tháp (EquipmentSystem)
 	RELIC,       # di vật cả run (RelicSystem)
+	## Đổi VÀNG lấy Sắc Lệnh. Không phải "món hàng" mà là ống thoát cho vàng dư.
+	LEVY,
 }
 
 @export var id: String = ""

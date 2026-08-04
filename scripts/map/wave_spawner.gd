@@ -358,7 +358,7 @@ func is_boss_pending() -> bool:
 ##
 ## Hai hằng dưới đây được CHỈNH BẰNG ĐO, không suy ra từ lý thuyết: chạy
 ## `python tools/bot_bench.py` rồi đọc cột `BOSS .../...=tỉ_lệ`.
-const BOSS_HP_BASE: float = 190.0
+const BOSS_HP_BASE: float = 215.0
 const BOSS_HP_GROWTH: float = 1.27
 const BOSS_REF_SPEED: float = 11.0
 ## Phần đường cong wave mà đàn hộ vệ của wave boss chiếm (phần còn lại là boss).

@@ -110,6 +110,33 @@ func _run() -> void:
 	ok(bullet.speed <= 12.0, "dan bay du cham de nhin thay", "%.1f o/s" % bullet.speed)
 	bullet.queue_free()
 
+	print("\n--- VAN XA VANG DU (Thue Chien) ---")
+	# Do bang bot: tu wave 10 vang don 749 -> 1097 -> 1333 trong khi ban da kin
+	# quan. Nghia la tu giua van, MOI quyet dinh trong shop deu mien phi.
+	# Vang khong tieu duoc vi thu dang mua nhat ve cuoi (o nguyen to) tinh bang
+	# SAC LENH — hai dong tien khong co duong noi.
+	var sm = map.shop_manager
+	sm.update_wave(10)
+	sm.set_gold_provider(func() -> int: return 0)
+	ok(sm._make_levy_offer() == null, "khong co vang du thi KHONG bay Thue Chien")
+	sm.set_gold_provider(func() -> int: return 100000)
+	var levy = sm._make_levy_offer()
+	ok(levy != null, "co vang du thi Thue Chien xuat hien")
+	if levy != null:
+		ok(not levy.use_royal_decree, "Thue Chien tra bang VANG")
+		ok(levy.item_type == ShopItemData.ItemType.LEVY, "dung ItemType.LEVY")
+		# Gia phai LEO trong cung mot phien, neu khong no chi la nut bam vo han.
+		var c0: int = sm.get_levy_cost()
+		sm.register_levy_purchase()
+		var c1: int = sm.get_levy_cost()
+		ok(c1 > c0, "gia Thue Chien leo trong cung phien", "%d -> %d" % [c0, c1])
+		sm.reset_levy_cost()
+		ok(sm.get_levy_cost() == c0, "reset ve gia nen o phien sau")
+	sm.update_wave(1)
+	sm.set_gold_provider(func() -> int: return 100000)
+	ok(sm._make_levy_offer() == null,
+		"wave dau KHONG co Thue Chien (vang con khan, mo som la pha giai doan dau)")
+
 	print("
 == BATCH 10 FAIL=%d ==" % fail)
 	quit()
