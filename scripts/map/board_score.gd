@@ -70,6 +70,24 @@ static func tower_dps(t: Node) -> float:
 	return float(t.current_damage) * float(shots) / cd
 
 
+## DPS thực lên một mục tiêu CÓ GIÁP. Giáp trừ PHẲNG mỗi phát (sàn 1), nên nó
+## trừng phạt quân bắn nhanh - sát thương nhỏ nặng hơn hẳn quân bắn chậm - nặng
+## đòn: Rival King giáp 10 nuốt 83% sát thương của một con Tốt (12 → 2) nhưng
+## chỉ 12% của Ballista (85 → 75).
+##
+## `tower_dps` bỏ qua hoàn toàn điều này. Với đàn lính thường thì EFFICIENCY hấp
+## thụ được sai số, nhưng với Rival King thì không: đo được mô hình báo tỉ lệ
+## 1.24 ("vừa đủ hạ") trong khi bàn thật để boss chạm King ⇒ THUA NGAY. Con số
+## dưới màn hình nói dối đúng vào ba wave quan trọng nhất ván.
+static func tower_dps_vs_armor(t: Node, armor: float) -> float:
+	if not is_instance_valid(t) or t.get("stats") == null:
+		return 0.0
+	var cd: float = maxf(0.05, float(t.current_attack_speed))
+	var shots: int = maxi(1, int(t.stats.projectile_count))
+	var per_shot: float = maxf(1.0, float(t.current_damage) - maxf(0.0, armor))
+	return per_shot * float(shots) / cd
+
+
 ## NỀN của một ô = tổng DPS của mọi quân phủ ô đó.
 func cell_base(cell: Vector2i) -> float:
 	var total := 0.0
@@ -285,9 +303,13 @@ func wave_total_hp(wave: int) -> float:
 			var d: Dictionary = row
 			total += float(d.get("hp", 0)) * float(d.get("count", 0))
 			listed += int(d.get("count", 0))
-	# Bảng trinh sát chỉ liệt kê một mẫu; wave thật đông hơn. Quy về số địch thật.
+	# Bảng trinh sát chỉ liệt kê một MẪU của bể loài; wave thật có số địch khác.
+	# Quy về số thật theo CẢ HAI chiều — bản cũ chỉ nắn khi `real > listed`, mà
+	# wave boss chỉ có 6 hộ vệ trong khi bể liệt kê ~20 dòng ⇒ ngưỡng hiện ra cao
+	# gấp ~3 lần sự thật, đúng ở ba wave quan trọng nhất ván. `enemy_groups()`
+	# ngay bên dưới vốn đã nắn hai chiều nên hai hàm còn mâu thuẫn với nhau.
 	var real: int = int(ws.calculate_enemies_for_wave(wave)) if ws.has_method("calculate_enemies_for_wave") else listed
-	if listed > 0 and real > listed:
+	if listed > 0 and real > 0:
 		total *= float(real) / float(listed)
 	# MÁU BOSS phải nằm trong ngưỡng. Bỏ sót thì đúng ở wave quan trọng nhất
 	# con số lại nói dối — người chơi thấy "đủ" rồi thua ngay.
@@ -377,12 +399,52 @@ func damage_to_boss(wave: int) -> float:
 		return 0.0
 	var groups: Array = [{"count": 1.0, "speed": v}]
 	var walk: float = float(_path_cells().size()) / v
+	var armor: float = _boss_avg_armor(ws, wave)
 	var total := 0.0
 	for t in _towers():
 		if _silenced(t):
 			continue
-		total += tower_dps(t) * avg_mult_on_path(t) * active_seconds(t, groups, walk)
-	return total * EFFICIENCY
+		total += tower_dps_vs_armor(t, armor) * avg_mult_on_path(t) \
+			* active_seconds(t, groups, walk)
+	return total * EFFICIENCY * _boss_focus(ws)
+
+
+## Phần thời gian tháp thực sự BẮN VÀO Rival King.
+##
+## Hắn không đi một mình: wave boss có `BOSS_WAVE_MINION_COUNT` hộ vệ đi cùng,
+## và tháp nhắm mục tiêu ĐẦU TIÊN vào tầm chứ không nhắm boss. Mô hình cũ tính
+## như thể boss là mục tiêu duy nhất trên bàn.
+##
+## Sai số này không nhỏ — đo trên bàn thật ở wave 12: mô hình báo tỉ lệ 5.17
+## ("hạ boss thừa 5 lần") trong khi boss đi thẳng tới King và người chơi THUA
+## NGAY. Cả wave chỉ lọt 2 con / 8 sát thương, tức đàn lính không phải vấn đề:
+## thua đúng vì con số ở giữa màn hình nói dối vào khoảnh khắc quyết định ván.
+##
+## `BOSS_ESCORT_OVERLAP` = phần hộ vệ trung bình còn sống và CÙNG NẰM trong tầm
+## với boss (không phải toàn bộ 6 con cùng lúc).
+const BOSS_ESCORT_OVERLAP: float = 0.8
+
+func _boss_focus(ws: Node) -> float:
+	var escorts := 6.0
+	var n = ws.get("BOSS_WAVE_MINION_COUNT")
+	if n is int or n is float:
+		escorts = float(n)
+	return 1.0 / (1.0 + maxf(0.0, escorts) * BOSS_ESCORT_OVERLAP)
+
+
+## Giáp TRUNG BÌNH của Rival King qua cả trận — hắn đi qua 3 pha và giáp tụt dần
+## (`phase_armor`), nên lấy giáp pha 1 là bi quan, lấy pha 3 là lạc quan.
+func _boss_avg_armor(ws: Node, wave: int) -> float:
+	var bs := _boss_stats(ws, wave)
+	if bs == null:
+		return 0.0
+	var pa = bs.get("phase_armor")
+	if pa is Array and not (pa as Array).is_empty():
+		var s := 0.0
+		for a in (pa as Array):
+			s += float(a)
+		return s / float((pa as Array).size())
+	return float(bs.armor) if bs.get("armor") != null else 0.0
 
 
 ## Máu Rival King của wave boss (0 nếu không phải wave boss).

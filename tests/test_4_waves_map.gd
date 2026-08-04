@@ -21,12 +21,39 @@ func _run() -> void:
 	map.current_gold = 100000
 
 	print("\n--- SCALING THEO WAVE ---")
-	var h1: float = ws.get_health_multiplier(1)
-	var h5: float = ws.get_health_multiplier(5)
-	var h10: float = ws.get_health_multiplier(10)
-	ok(h1 < h5 and h5 < h10, "mau dich tang dan", "%.2f < %.2f < %.2f" % [h1, h5, h10])
-	ok(h10 / h5 > h5 / h1 - 0.001, "tang theo CAP SO NHAN (khong tuyen tinh)",
-		"%.2f vs %.2f" % [h10/h5, h5/h1])
+	# `get_health_multiplier` KHONG con la duong cong do kho — no la he so NAN
+	# tong mau wave ve `target_wave_hp`. Wave boss chi co 6 linh nen he so cua no
+	# to gap ba wave thuong, do la DUNG. Bat bien that nam o TONG MAU.
+	var prev := 0.0
+	var bad := ""
+	var jump_bad := ""
+	var last_ratio := 0.0
+	for w in range(1, PhaseController.MAX_WAVES + 1):
+		var tot: float = ws.target_wave_hp(w)
+		if tot <= prev:
+			bad += "w%d(%.0f<=%.0f) " % [w, tot, prev]
+		# Khong wave nao duoc nhay gap doi: do chinh la "vach da" ma duong cong
+		# nay sinh ra de xoa. Ban cu do duoc ×2.13 giua wave 8 va 10.
+		if prev > 0.0 and tot / prev > 1.85:
+			jump_bad += "w%d(x%.2f) " % [w, tot / prev]
+		prev = tot
+		last_ratio = tot
+	ok(bad == "", "tong mau wave tang dan qua CA 12 wave", bad)
+	ok(jump_bad == "", "khong wave nao nhay > 1.85x (khong con vach da)", jump_bad)
+	ok(ws.target_wave_hp(12) > ws.target_wave_hp(11),
+		"wave CUOI la dinh, khong phai cho trung",
+		"%.0f > %.0f" % [ws.target_wave_hp(12), ws.target_wave_hp(11)])
+	# Mau Rival King co duong cong RIENG (sat thuong don-muc-tieu tang ~x1.25/wave
+	# con mau wave tang x1.26 — buoc chung thi boss bo xa nguoi choi).
+	var b_prev := 0.0
+	var b_bad := ""
+	for bw in ws.BOSS_WAVES:
+		var bhp: float = float(ws._pick_boss_stats(int(bw)).max_hp) \
+			* ws.get_boss_health_multiplier(int(bw))
+		if bhp <= b_prev:
+			b_bad += "w%d(%.0f<=%.0f) " % [int(bw), bhp, b_prev]
+		b_prev = bhp
+	ok(b_bad == "", "mau Rival King tang dan qua 3 wave boss", b_bad)
 	ok(ws.get_speed_multiplier(10) > ws.get_speed_multiplier(1), "toc do dich tang dan")
 	# Chon hai wave THUONG de so — wave boss dem rieng (BOSS_WAVE_MINION_COUNT).
 	var w_a := 2
@@ -37,6 +64,70 @@ func _run() -> void:
 		"so dich tang dan (wave boss dem rieng)",
 		"w%d=%d < w%d=%d" % [w_a, ws.calculate_enemies_for_wave(w_a),
 			w_b, ws.calculate_enemies_for_wave(w_b)])
+
+	print("\n--- DO KHO DOC DUOC (chong tai phat 3 loi da do bang bot) ---")
+	# (1) Nguong hien thi cua wave BOSS tung cao gap ~3 lan su that: wave_total_hp
+	# chi nan so dich theo MOT chieu (`real > listed`), ma wave boss co 6 ho ve
+	# trong khi be loai liet ke ~20 dong.
+	var bs2 = map.board_score
+	var bwv: int = int(ws.BOSS_WAVES[0])
+	var listed := 0
+	for row in ws.get_wave_enemy_preview(bwv):
+		listed += int((row as Dictionary).get("count", 0))
+	ok(listed > ws.calculate_enemies_for_wave(bwv),
+		"be loai wave boss liet ke NHIEU hon so ho ve that (dieu kien cua loi cu)",
+		"liet ke %d, that %d" % [listed, ws.calculate_enemies_for_wave(bwv)])
+	ok(bs2.wave_total_hp(bwv) < ws.target_wave_hp(bwv) * 2.0,
+		"nguong wave boss KHONG phong to theo so dong liet ke",
+		"%.0f vs muc tieu %.0f" % [bs2.wave_total_hp(bwv), ws.target_wave_hp(bwv)])
+
+	# (2) Giap tru PHANG moi phat (san 1). Mo hinh cu bo qua han nen no hua "du
+	# suc ha boss" truoc mot Rival King giap 10.
+	var stt: TowerStats = load("res://res/towers/pawn.tres")
+	map.shop_manager.register_troop_purchase(stt)
+	var placed: Node = null
+	for y in range(gc.grid_height):
+		for x in range(gc.grid_width):
+			var cc := Vector2i(x, y)
+			if gc.is_path_cell(cc) or gc.grid_data.has(cc):
+				continue
+			map.tower_placer.start_build(stt)
+			map.tower_placer.place(cc)
+			map.tower_placer.cancel_build()
+			placed = gc.grid_data.get(cc)
+			break
+		if placed != null: break
+	ok(placed != null, "dat duoc quan de do mo hinh giap")
+	if placed != null:
+		var raw: float = BoardScore.tower_dps(placed)
+		var arm: float = BoardScore.tower_dps_vs_armor(placed, 10.0)
+		ok(arm < raw, "giap lam TUT dps trong mo hinh", "%.1f -> %.1f" % [raw, arm])
+		ok(BoardScore.tower_dps_vs_armor(placed, 99999.0) > 0.0,
+			"giap khong the dua dps ve 0 (san 1 sat thuong moi phat)")
+
+	# (3) Rival King di cung ho ve, ma thap nham con VAO TAM TRUOC chu khong nham
+	# boss. Mo hinh cu tinh nhu the boss la muc tieu duy nhat -> bao ti le 5.17
+	# trong khi boss di thang toi King va nguoi choi THUA NGAY.
+	ok(bs2._boss_focus(ws) < 0.5,
+		"mo hinh tinh viec ho ve hut hoa luc khoi boss",
+		"focus=%.2f" % bs2._boss_focus(ws))
+
+	# (4) Mau Vua phai chiu duoc NHIEU lan lot, neu khong do kho thanh nhi phan:
+	# mat 0 mau suot ca van roi chet sach trong dung mot wave.
+	var worst := 0
+	for f in DirAccess.open("res://res/enemy/").get_files():
+		var cn := f.trim_suffix(".remap")
+		if not cn.ends_with(".tres"): continue
+		var es := load("res://res/enemy/" + cn) as EnemyStats
+		if es: worst = maxi(worst, int(es.damage_to_base))
+	var kbad := ""
+	for f2 in DirAccess.open("res://res/kings/").get_files():
+		var cn2 := f2.trim_suffix(".remap")
+		if not cn2.ends_with(".tres"): continue
+		var k2 := load("res://res/kings/" + cn2) as KingStats
+		if k2 and k2.base_health < worst * 6:
+			kbad += "%s(%d) " % [k2.id, k2.base_health]
+	ok(kbad == "", "moi Vua chiu duoc >= 6 lan lot cua con nang nhat (dmg %d)" % worst, kbad)
 
 	print("\n--- MUA ---")
 	var seasons := {}

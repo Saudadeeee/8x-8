@@ -195,8 +195,56 @@ func calculate_enemies_for_wave(wave: int, boost: bool = false) -> int:
 		base_count += SHOP_EXTRA_ENEMY_COUNT
 	return base_count
 
+## Máu MỤC TIÊU của cả wave. Đường cong này ĐƯỢC THIẾT KẾ, không để nó tự nảy
+## ra từ (số quái × mùa × cấp số nhân).
+##
+## Bản cũ đo được: 433 · 581 · 767 · 1476 · 2452 · 2221 · 4524 · 5578 · 6370 ·
+## 13580 · 16443 · 13913 — tức ×1.32 ×1.32 ×1.92 ×1.66 ×0.91 ×2.04 ×1.23 ×1.14
+## ×2.13 ×1.21 ×0.85. HAI wave TỤT máu, BA wave nhân đôi, và wave 12 (Rival King
+## cuối) NHẸ hơn wave 11. Bot đo được kết quả nhị phân: mất 0 máu suốt 9 wave
+## rồi chết sạch trong một wave. Người chơi không đọc được nhịp nào từ đó.
+##
+## Nguồn nhảy KHÔNG phải hệ số máu (1.13 vốn trơn) mà là (a) mùa đổi làm bể loài
+## địch nhảy máu trung bình, (b) wave boss mang ít lính nên wave kế tiếp nhảy vọt.
+## Cả hai đều vô hình với người chơi. Nay tổng máu bị NẮN về đường cong này, còn
+## bể loài chỉ quyết định wave đó CẢM GIÁC ra sao (nhanh/chậm/giáp/hồi máu).
+const WAVE_HP_BASE: float = 620.0
+const WAVE_HP_GROWTH: float = 1.26
+## Wave boss ít lính nhưng phải là ĐỈNH của đoạn, không phải chỗ trũng.
+const BOSS_WAVE_HP_MULT: float = 1.15
+
+## Tổng máu wave nên bằng bao nhiêu (trước Ascension).
+func target_wave_hp(wave_num: int) -> float:
+	var t: float = WAVE_HP_BASE * pow(WAVE_HP_GROWTH, float(max(wave_num - 1, 0)))
+	if is_boss_wave(wave_num):
+		t *= BOSS_WAVE_HP_MULT
+	return t
+
+## Tổng máu GỐC (chưa nhân hệ số) của ĐÀN LÍNH trong wave. Boss KHÔNG nằm ở đây
+## — hắn có hệ số riêng (`get_boss_health_multiplier`) vì máu hắn còn phải bù
+## theo tốc độ.
+func _wave_base_hp(wave_num: int) -> float:
+	var pool = _get_season_enemy_pool(wave_num)
+	var sum := 0.0
+	var n := 0
+	for s: EnemyStats in pool:
+		if s == null:
+			continue
+		sum += float(s.max_hp)
+		n += 1
+	if n == 0:
+		return 0.0
+	var avg: float = sum / float(n)
+	return avg * float(calculate_enemies_for_wave(wave_num))
+
 func get_health_multiplier(wave_num: int, shop_boost: bool = false) -> float:
-	var m = pow(ENEMY_HEALTH_GROWTH, float(max(wave_num - 1, 0)))
+	var base: float = _wave_base_hp(wave_num)
+	# Wave boss: Rival King đã chiếm BOSS_HP_SHARE của đường cong, đàn hộ vệ chỉ
+	# lấp phần còn lại. Không trừ ra thì wave boss nặng hơn đường cong 30%.
+	var share: float = (1.0 - BOSS_HP_SHARE) if is_boss_wave(wave_num) else 1.0
+	# Bể loài rỗng (dữ liệu hỏng) → rơi về cấp số nhân cũ thay vì chia cho 0.
+	var m: float = (target_wave_hp(wave_num) * share / base) if base > 1.0 \
+		else pow(ENEMY_HEALTH_GROWTH, float(max(wave_num - 1, 0)))
 	if shop_boost:
 		m += SHOP_EXTRA_HEALTH_MULTIPLIER
 	return m * _ascension_mult("asc_enemy_hp_mult")
@@ -281,8 +329,48 @@ func is_boss_pending() -> bool:
 	return _is_boss_wave and not (boss_defeated_this_wave or boss_escaped_this_wave)
 
 ## Máu boss = scale theo wave × hệ số Ascension (nếu GameManager có field đó).
+## Máu Rival King là một PHẦN của đường cong wave, và được bù theo TỐC ĐỘ của
+## chính hắn.
+##
+## Vì sao phải bù tốc độ: boss đi một mình qua đường, nên sát thương nhận được
+## tỉ lệ NGHỊCH với tốc độ (đi nhanh = ít giây trong tầm bắn). Ba Rival King có
+## tốc độ 9.9 / 13.2 / 11.0 — đo được trên bàn thật: wave 5 tỉ lệ 3.92 (thừa
+## sức), wave 9 tỉ lệ 0.84 (không hạ nổi → boss chạm King → THUA NGAY). Sát
+## thương lên boss còn TỤT 4068 → 2132 dù đội hình đông thêm 4 quân, thuần tuý
+## vì con boss wave 9 nhanh hơn 33%. Độ khó đang do THỨ TỰ TÌNH CỜ của mảng
+## BOSS_IDS quyết định chứ không phải do thiết kế.
+##
+## hp ∝ 1/tốc độ giữ cho tỉ lệ không đổi ⇒ boss nhanh thì mỏng hơn. Đổi tốc độ
+## một Rival King trong .tres từ nay KHÔNG làm lệch độ khó nữa.
+##
+## Và máu boss có ĐƯỜNG CONG RIÊNG, không phải một phần của đường cong wave.
+## Lý do là một bất đối xứng cấu trúc, đo được trên bàn thật:
+##
+##   sát thương lên MỘT mục tiêu   489 → 631 → 937 → 1070 → 1472 → 2204 → 5536
+##   (≈ ×1.25 mỗi wave — đo với máu Vua đã nâng, đội hình sống tới cuối ván)
+##   máu cả wave                   ×1.355 mỗi wave
+##
+## Dọn cả wave thì thêm quân ở đâu cũng có ích; hạ MỘT con boss thì chỉ những
+## quân phủ đúng đường hắn đi mới tính, mà số ô đường không nở theo đội hình.
+## Buộc máu boss vào đường cong wave ⇒ boss bỏ xa người chơi mỗi wave một chút,
+## và vì "boss chạm King = THUA NGAY" nên nó không hiện ra dần dần mà giáng
+## xuống một phát: đo được wave 5 tỉ lệ 4.20 (thừa sức) rồi wave 9 tỉ lệ 0.73.
+##
+## Hai hằng dưới đây được CHỈNH BẰNG ĐO, không suy ra từ lý thuyết: chạy
+## `python tools/bot_bench.py` rồi đọc cột `BOSS .../...=tỉ_lệ`.
+const BOSS_HP_BASE: float = 190.0
+const BOSS_HP_GROWTH: float = 1.27
+const BOSS_REF_SPEED: float = 11.0
+## Phần đường cong wave mà đàn hộ vệ của wave boss chiếm (phần còn lại là boss).
+const BOSS_HP_SHARE: float = 0.30
+
 func get_boss_health_multiplier(wave_num: int) -> float:
-	return get_health_multiplier(wave_num, false) * get_ascension_multiplier()
+	var bs := _pick_boss_stats(wave_num)
+	if bs == null or bs.max_hp <= 0 or bs.speed <= 0.0:
+		return get_health_multiplier(wave_num, false) * get_ascension_multiplier()
+	var want: float = BOSS_HP_BASE * pow(BOSS_HP_GROWTH, float(max(wave_num - 1, 0))) \
+		* (BOSS_REF_SPEED / float(bs.speed))
+	return (want / float(bs.max_hp)) * get_ascension_multiplier()
 
 ## Đọc cấp Ascension một cách phòng thủ — GameManager chưa có field thì trả 1.0.
 func get_ascension_multiplier() -> float:
@@ -349,8 +437,10 @@ func _ensure_boss_scene() -> bool:
 
 ## Chọn Rival King theo THỨ TỰ wave boss, không random — mục tiêu của ván là
 ## hạ ĐỦ CẢ BA, nên bốc ngẫu nhiên sẽ có ván gặp trùng một vua hai lần.
-func _pick_boss_stats() -> EnemyStats:
-	var idx: int = BOSS_WAVES.find(_wave_number)
+## `wave_num` < 0 nghĩa là "wave đang chạy". Tham số hoá vì đường cong máu phải
+## tra được máu boss của wave TƯƠNG LAI (lúc trinh sát), không chỉ wave hiện tại.
+func _pick_boss_stats(wave_num: int = -1) -> EnemyStats:
+	var idx: int = BOSS_WAVES.find(wave_num if wave_num >= 0 else _wave_number)
 	if idx < 0:
 		idx = 0
 	var boss_id: String = BOSS_IDS[idx % BOSS_IDS.size()]
