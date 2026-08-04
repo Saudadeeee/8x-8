@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_r7004")
 id = "chess_pawn_tithe"
-name = "Con Tốt Thí"
-desc = "Mỗi Tốt đứng trên bàn cộng +0.08 Bội cho toàn bàn. Tường Tốt bỗng thành nền móng."
+name = "Sacrificial Pawn"
+desc = "Every Pawn on the board adds +0.08 Mult board-wide. Suddenly the Pawn Wall is a foundation."
 cost = 230
 effect = {
 "pawn_tithe": 0.08

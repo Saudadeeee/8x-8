@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_3i4j0")
 id = "solid_base"
-name = "Bệ Đá Vững"
-desc = "Miễn nhiễm đòn vô hiệu hoá tháp của boss."
+name = "Steadfast Base"
+desc = "Immune to boss abilities that disable pieces."
 rarity = "rare"
 slot = "base"
 cost = 100

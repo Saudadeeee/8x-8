@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_703nc")
 id = "nuoc_ep_da_sac"
-name = "Nước Ép Đa Sắc"
-desc = "Mỗi tháp trong vùng gắn một Dấu NGẪU NHIÊN trong 12 giây, kể cả khi đứng ô thường."
+name = "Prismatic Juice"
+desc = "Each piece in the area applies a RANDOM Mark for 12 seconds, even on a plain square."
 rarity = "epic"
 buff = {
 "grant_element": "random"

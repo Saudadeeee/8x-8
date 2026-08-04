@@ -53,66 +53,66 @@ const EFFECT_KEYS: Array[String] = [
 
 const RELICS: Array[Dictionary] = [
 	{
-		"id": "alchemy_book", "name": "Sách Giả Kim", "rarity": "epic", "cost": 220,
-		"desc": "Mọi phản ứng nguyên tố +40% sát thương.",
+		"id": "alchemy_book", "name": "Alchemist's Tome", "rarity": "epic", "cost": 220,
+		"desc": "All elemental reactions deal +40% damage.",
 		"effect": {"reaction_mult": 1.4},
 	},
 	{
-		"id": "element_wheel", "name": "Bánh Xe Nguyên Tố", "rarity": "legendary", "cost": 300,
-		"desc": "Địch mang được 3 Dấu cùng lúc thay vì 2.",
+		"id": "element_wheel", "name": "Elemental Wheel", "rarity": "legendary", "cost": 300,
+		"desc": "Enemies can carry 3 Marks at once instead of 2.",
 		"effect": {"max_marks": 3},
 	},
 	{
-		"id": "reactor", "name": "Lò Phản Ứng", "rarity": "legendary", "cost": 320,
-		"desc": "20% phản ứng nổ mà KHÔNG tiêu thụ Dấu.",
+		"id": "reactor", "name": "Reactor Core", "rarity": "legendary", "cost": 320,
+		"desc": "20% of reactions fire WITHOUT consuming their Marks.",
 		"effect": {"no_consume_chance": 0.2},
 	},
 	{
-		"id": "god_anvil", "name": "Đe Của Thần", "rarity": "epic", "cost": 240,
-		"desc": "Mỗi tháp có thêm 1 ô trang bị (2 → 3).",
+		"id": "god_anvil", "name": "Anvil of the Gods", "rarity": "epic", "cost": 240,
+		"desc": "Every piece gains 1 more equipment slot (2 -> 3).",
 		"effect": {"equip_slot_bonus": 1},
 	},
 	{
-		"id": "big_pouch", "name": "Túi Thuốc Rộng", "rarity": "rare", "cost": 150,
-		"desc": "Túi thuốc +2 ô.",
+		"id": "big_pouch", "name": "Deep Satchel", "rarity": "rare", "cost": 150,
+		"desc": "+2 potion slots.",
 		"effect": {"potion_slot_bonus": 2},
 	},
 	{
-		"id": "spyglass", "name": "Ống Nhòm", "rarity": "rare", "cost": 160,
-		"desc": "Bán kính mọi bình thuốc tăng lên 4m.",
+		"id": "spyglass", "name": "Spyglass", "rarity": "rare", "cost": 160,
+		"desc": "Every potion's radius increases to 4m.",
 		"effect": {"potion_radius": 4.0},
 	},
 	{
-		"id": "apothecary_hand", "name": "Bàn Tay Dược Sư", "rarity": "epic", "cost": 200,
-		"desc": "Thuốc buff kéo dài thêm 20 giây.",
+		"id": "apothecary_hand", "name": "Apothecary's Hand", "rarity": "epic", "cost": 200,
+		"desc": "Potion buffs last 20 seconds longer.",
 		"effect": {"potion_duration_bonus": 20.0},
 	},
 	{
-		"id": "treasure_map", "name": "Bản Đồ Kho Báu", "rarity": "rare", "cost": 170,
-		"desc": "Địch Elite LUÔN rơi thuốc.",
+		"id": "treasure_map", "name": "Treasure Map", "rarity": "rare", "cost": 170,
+		"desc": "Elite enemies ALWAYS drop a potion.",
 		"effect": {"elite_always_drop": true},
 	},
 	{
-		"id": "hunter_necklace", "name": "Vòng Cổ Thợ Săn", "rarity": "epic", "cost": 230,
-		"desc": "Địch đang mang Dấu nhận +15% sát thương từ MỌI nguồn.",
+		"id": "hunter_necklace", "name": "Hunter's Collar", "rarity": "epic", "cost": 230,
+		"desc": "Marked enemies take +15% damage from EVERY source.",
 		"effect": {"marked_damage_taken": 0.15},
 	},
 	{
-		"id": "geomancer", "name": "Địa Chất Sư", "rarity": "epic", "cost": 210,
+		"id": "geomancer", "name": "Geomancer", "rarity": "epic", "cost": 210,
 		# Không có "ghép ô không cần kề": cách nâng cấp hiện tại là đặt ô cùng loại
 		# lên CHÍNH NÓ, vốn đã chẳng đòi hỏi ô kề. Khoá đó từng được khai rồi ghi
 		# vào GameManager mà không ai đọc — đã gỡ hẳn, chỉ giữ phần giảm giá.
-		"desc": "Ô nguyên tố rẻ 40% — xây mạng lưới nhanh gấp đôi.",
+		"desc": "Element veins cost 40% less - build your network twice as fast.",
 		"effect": {"tile_discount": 0.4},
 	},
 	{
-		"id": "living_vein", "name": "Long Mạch Sống", "rarity": "legendary", "cost": 310,
-		"desc": "Ô Lv3 lan Dấu của nó sang 4 ô kề.",
+		"id": "living_vein", "name": "Living Ley Line", "rarity": "legendary", "cost": 310,
+		"desc": "Level 3 veins spread their Mark to the 4 adjacent squares.",
 		"effect": {"vein_spread": true},
 	},
 	{
-		"id": "primal_heart", "name": "Trái Tim Nguyên Sơ", "rarity": "legendary", "cost": 330,
-		"desc": "Đủ 6 nguyên tố trên bàn: mọi tháp +30% sát thương.",
+		"id": "primal_heart", "name": "Primal Heart", "rarity": "legendary", "cost": 330,
+		"desc": "With all 6 elements on the board, every piece deals +30% damage.",
 		"effect": {"all_elements_damage_pct": 0.3},
 	},
 ]
@@ -140,7 +140,7 @@ func _build_catalog() -> void:
 	_catalog.clear()
 	for relic in RELICS:
 		_catalog[str(relic["id"])] = _sanitize(relic)
-	for entry in ContentLoader.load_dir(RES_DIR, "di vật"):
+	for entry in ContentLoader.load_dir(RES_DIR, "relics"):
 		var res_clean := _sanitize(entry)
 		if not res_clean.is_empty():
 			_catalog[str(res_clean["id"])] = res_clean

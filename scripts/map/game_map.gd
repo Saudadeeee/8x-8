@@ -45,7 +45,7 @@ var equipment_system:     EquipmentSystem    = null
 var relic_system:         RelicSystem        = null
 var element_synergy:      ElementSynergy     = null
 var formation_overlay:    FormationOverlay   = null
-## Hạn mức hồi máu từ "Kiếm Hút Máu" trong wave hiện tại (reset mỗi wave).
+## Hạn mức hồi máu từ "Vampiric Blade" trong wave hiện tại (reset mỗi wave).
 var _lifesteal_this_wave: int = 0
 const LIFESTEAL_CAP_PER_WAVE: int = 3
 ## Hệ hiệu ứng gameplay của biome — script tuỳ chọn, có thì nạp, không có thì bỏ qua.
@@ -104,7 +104,7 @@ const BOSS_POTION_DROPS: int = 2
 const STARTING_POTION_ID: String = "bom_lua"
 
 ## Ô túi đang ngắm (-1 = không ở chế độ ngắm).
-## Thời gian còn lại của "Khiên Vương Triều" (giây, đếm theo delta nên tôn trọng
+## Thời gian còn lại của "Royal Aegis" (giây, đếm theo delta nên tôn trọng
 ## tốc độ game và tự dừng khi pause).
 
 var _game_manager: GameManager = null
@@ -363,7 +363,7 @@ func _ready() -> void:
 	var territory_count := 4
 	if _game_manager and _game_manager.selected_king:
 		territory_count = _game_manager.selected_king.starting_territory_count
-	# Meta "Đất phong" cộng thêm ô lãnh thổ đầu ván.
+	# Meta "Fiefdom" cộng thêm ô lãnh thổ đầu ván.
 	if _game_manager:
 		territory_count += maxi(0, int(_game_manager.meta_bonus_territories))
 	territory_manager.initialize(territory_count, grid_controller.grid_data, king_manager, int(grid_controller.grid_height / 2.0))
@@ -564,7 +564,7 @@ func _try_overcharge_at_mouse() -> bool:
 	if entry.has_method("is_overcharged") and entry.is_overcharged():
 		return true   # đang active — nuốt click, không cancel/đóng panel
 	if current_gold < OVERCHARGE_COST:
-		phase_controller.phase_message = "⚠ Không đủ vàng Overcharge! Cần %d G" % OVERCHARGE_COST
+		phase_controller.phase_message = "⚠ Not enough gold to Overcharge! Need %d G" % OVERCHARGE_COST
 		update_ui()
 		return true
 	current_gold -= OVERCHARGE_COST
@@ -579,7 +579,7 @@ func _try_overcharge_at_mouse() -> bool:
 func confirm_wave_ready() -> void:
 	phase_controller.confirm_wave_ready()
 
-## HUD gọi khi người chơi bấm "BẮT ĐẦU WAVE". Pha chuẩn bị không còn đếm ngược
+## HUD gọi khi người chơi bấm "START WAVE". Pha chuẩn bị không còn đếm ngược
 ## nên đây là ĐƯỜNG DUY NHẤT vào wave — bố trí bao lâu tuỳ người chơi.
 func request_start_wave() -> bool:
 	if _game_over_triggered:
@@ -602,7 +602,7 @@ func attempt_shop_purchase(item_id: String) -> void:
 	if not shop_manager:
 		return
 	if phase_controller.current_phase == PhaseController.GamePhase.WAVE:
-		phase_controller.phase_message = "⚠ Không thể mua hàng trong lúc chiến đấu!"
+		phase_controller.phase_message = "⚠ You cannot shop mid-battle!"
 		update_ui()
 		return
 	var item: ShopItemData = shop_manager.get_item_by_id(item_id)
@@ -620,13 +620,13 @@ func attempt_shop_purchase(item_id: String) -> void:
 			push_error("attempt_shop_purchase: KingManager null!")
 			return
 		if not king_manager.spend_royal_decree(item.cost):
-			phase_controller.phase_message = "⚠ Không đủ Royal Decree! Cần %.1f RD" % item.cost
+			phase_controller.phase_message = "⚠ Not enough Royal Decree! Need %.1f RD" % item.cost
 			update_ui()
 			return
 	else:
 		var gold_cost := int(item.cost)
 		if current_gold < gold_cost:
-			phase_controller.phase_message = "⚠ Không đủ vàng! Cần %d" % gold_cost
+			phase_controller.phase_message = "⚠ Not enough gold! Need %d" % gold_cost
 			update_ui()
 			return
 		current_gold -= gold_cost
@@ -635,12 +635,12 @@ func attempt_shop_purchase(item_id: String) -> void:
 
 func attempt_shop_reroll() -> void:
 	if phase_controller.current_phase == PhaseController.GamePhase.WAVE:
-		phase_controller.phase_message = "⚠ Không thể xáo shop trong lúc chiến đấu!"
+		phase_controller.phase_message = "⚠ You cannot reroll mid-battle!"
 		update_ui()
 		return
 	var cost: int = shop_manager.get_reroll_cost() if shop_manager and shop_manager.has_method("get_reroll_cost") else 2
 	if current_gold < cost:
-		phase_controller.phase_message = "⚠ Không đủ vàng để xáo! Cần %d G" % cost
+		phase_controller.phase_message = "⚠ Not enough gold to reroll! Need %d G" % cost
 		update_ui()
 		return
 	current_gold -= cost
@@ -702,7 +702,7 @@ func update_ui() -> void:
 		var remaining: int = territory_manager.get_stock(bk)
 		phase_display = " Đặt [%s] (x%d) — Click ô hợp lệ / RMB hủy" % [bname, remaining]
 	elif tower_placer and tower_placer.is_in_dismiss_mode():
-		phase_display = "[DISMISS] Click tháp để giải tán (RMB để hủy)"
+		phase_display = "[DISMISS] Click a piece to dismiss it (RMB to cancel)"
 
 	if hud and hud.has_method("update_labels"):
 		var can_continue: bool = phase_controller.current_phase == PhaseController.GamePhase.SHOP
@@ -711,8 +711,8 @@ func update_ui() -> void:
 	if hud and hud.has_method("update_king_info") and _game_manager and _game_manager.selected_king:
 		hud.update_king_info(_game_manager.selected_king, king_manager)
 
-	if label_health: label_health.text = "Máu: " + str(current_health)
-	if label_gold:   label_gold.text   = "Vàng: " + str(current_gold)
+	if label_health: label_health.text = "HP: " + str(current_health)
+	if label_gold:   label_gold.text   = "Gold: " + str(current_gold)
 
 # ==========================================================================
 # GAME STATE
@@ -779,7 +779,7 @@ func _grant_starting_units() -> void:
 # ==========================================================================
 
 func _on_enemy_reached_base(damage: int) -> void:
-	# "Khiên Vương Triều": Nhà Vua miễn hoàn toàn sát thương trong thời gian hiệu lực.
+	# "Royal Aegis": Nhà Vua miễn hoàn toàn sát thương trong thời gian hiệu lực.
 	if _is_king_shielded():
 		_show_shield_block()
 		return
@@ -797,7 +797,7 @@ func _on_enemy_defeated(gold: int) -> void:
 	if _game_manager and _game_manager.has_method("register_kill"):
 		combo_mult = _game_manager.register_kill()
 	var combo_gold: int = int(gold * combo_mult)
-	# Perk "Thuế Máu": vàng cộng thêm mỗi kill (đọc từ GameManager per-run state)
+	# Perk "Blood Tax": vàng cộng thêm mỗi kill (đọc từ GameManager per-run state)
 	var perk_bonus: int = _game_manager.get_perk_gold_per_kill() if _game_manager else 0
 	current_gold += combo_gold + perk_bonus
 	if _game_manager:
@@ -811,10 +811,10 @@ func _on_wave_cleared() -> void:
 			king_manager.grant_wave_clear_decree()
 		_lifesteal_this_wave = 0
 		if equipment_system:
-			equipment_system.on_wave_cleared()   # cộng dồn "Rễ Cây Cổ"
+			equipment_system.on_wave_cleared()   # cộng dồn "Ancient Roots"
 		phase_controller.enter_shop_phase()
 
-## Trang bị "Kiếm Hút Máu" — tháp gọi qua `on_kill_confirmed`.
+## Trang bị "Vampiric Blade" — tháp gọi qua `on_kill_confirmed`.
 ## Trần theo WAVE chứ không theo tháp: nhiều tháp cùng lắp cũng không hồi vô hạn.
 func equipment_lifesteal_heal(amount: int) -> void:
 	if amount <= 0 or _lifesteal_this_wave >= LIFESTEAL_CAP_PER_WAVE:
@@ -957,11 +957,11 @@ func _buy_deck_action(action_id: String) -> void:
 		return
 	var price: int = int(round(offer.cost))
 	if current_gold < price:
-		phase_controller.phase_message = "⚠ Không đủ vàng."
+		phase_controller.phase_message = "⚠ Not enough gold."
 		update_ui()
 		return
 	if not apply_deck_action(action_id):
-		phase_controller.phase_message = "⚠ Không thực hiện được thao tác này."
+		phase_controller.phase_message = "⚠ That operation is not possible."
 		update_ui()
 		return
 	current_gold -= price
@@ -1117,7 +1117,7 @@ func _on_free_tiles_granted(element: String, count: int) -> void:
 		territory_manager.add_stock(biome_key)
 	var label: String = ElementTypes.display_name(element)
 	if phase_controller:
-		phase_controller.phase_message = "✦ Vùng đất mới tặng %d ô %s!" % [count, label]
+		phase_controller.phase_message = "✦ The new region grants %d %s veins!" % [count, label]
 
 ## Tween mượt WorldEnvironment + DirectionalLight3D sang bảng màu của biome.
 func _tween_environment_to(spec: Dictionary) -> void:
@@ -1195,35 +1195,35 @@ func _describe_cell(cell: Vector2i) -> Dictionary:
 	var gc := grid_controller
 	var rows: Array = []
 	var special: String = gc.get_special_tile(cell)
-	var title := "Ô trống"
-	var subtitle := "[Đất thường]"
-	var hint := "Đặt quân lên đây, hoặc mua ô nguyên tố để biến nó thành ô có hệ."
+	var title := "Empty square"
+	var subtitle := "[Plain ground]"
+	var hint := "Place a piece here, or buy an element vein to give this square an element."
 
 	if gc.is_path_cell(cell):
-		title = "Đường đi"
-		subtitle = "[Lối quái]"
-		hint = "Không đặt được quân trên đường. Địch đi theo mũi tên vàng."
+		title = "Path"
+		subtitle = "[Enemy path]"
+		hint = "You cannot place pieces on the path. Enemies follow the gold arrows."
 	elif special == "blessed":
-		title = "Ô Phước"
-		subtitle = "[Ô đặc biệt]"
-		rows.append(["⚔ Tháp trên ô", "+%.0f%%" % (GridController.BLESSED_DMG_PCT * 100.0)])
-		hint = "Đặt quân mạnh nhất lên đây. Ô này sinh sẵn khi tạo bản đồ."
+		title = "Blessed Square"
+		subtitle = "[Special square]"
+		rows.append(["⚔ Piece on square", "+%.0f%%" % (GridController.BLESSED_DMG_PCT * 100.0)])
+		hint = "Put your strongest piece here. This square is generated with the map."
 	elif special == "cursed":
-		title = "Ô Nguyền"
-		subtitle = "[Ô đặc biệt]"
-		rows.append(["⚔ Tháp trên ô", "%.0f%%" % (GridController.CURSED_DMG_PCT * 100.0)])
-		rows.append([" Địch chết tại đây", "+%d vàng" % Enemy.CURSED_KILL_BONUS_GOLD])
-		hint = "Tránh đặt quân đắt lên đây — hoặc dùng nó làm ô kiếm vàng."
+		title = "Cursed Square"
+		subtitle = "[Special square]"
+		rows.append(["⚔ Piece on square", "%.0f%%" % (GridController.CURSED_DMG_PCT * 100.0)])
+		rows.append([" Enemies dying here", "+%d gold" % Enemy.CURSED_KILL_BONUS_GOLD])
+		hint = "Avoid putting an expensive piece here - or use it as a gold farm."
 
 	# Vùng biome luôn có, kể cả ô thường: nó quyết định chỉ số địch và tháp.
 	var biome_id: String = gc.get_cell_biome(cell) if gc.has_method("get_cell_biome") else ""
 	if biome_id != "":
-		rows.append(["◈ Vùng", str(BiomeLibrary.get_spec(biome_id).get("name", biome_id))])
-	rows.append(["◎ Toạ độ", "(%d, %d)" % [cell.x, cell.y]])
+		rows.append(["◈ Region", str(BiomeLibrary.get_spec(biome_id).get("name", biome_id))])
+	rows.append(["◎ Coordinates", "(%d, %d)" % [cell.x, cell.y]])
 	return {"title": title, "subtitle": subtitle, "rows": rows, "hint": hint}
 
 
-## Perk "Sắc Lệnh Khẩn": +RD mỗi khi wave mới bắt đầu.
+## Perk "Urgent Decree": +RD mỗi khi wave mới bắt đầu.
 func _on_wave_started_grant_perk_rd(_wave_number: int, _enemy_count: int) -> void:
 	if _game_manager and king_manager and _game_manager.perk_rd_per_wave_start > 0.0:
 		king_manager.add_royal_decree(_game_manager.perk_rd_per_wave_start)
@@ -1385,7 +1385,7 @@ func _on_shop_item_purchased(item: ShopItemData) -> void:
 				shop_manager.remove_from_active_offers(item.id)
 		ShopItemData.ItemType.RELIC:
 			if relic_system and not relic_system.add_relic(item.catalog_id):
-				phase_controller.phase_message = "★ Đủ 5 di vật — bán bớt để đổi!"
+				phase_controller.phase_message = "★ All 5 relic slots full - sell one to swap!"
 			if shop_manager:
 				shop_manager.remove_from_active_offers(item.id)
 		ShopItemData.ItemType.TERRITORY:

@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_oavn6")
 id = "loi_dinh"
-name = "Lôi Đình"
-desc = "Phản ứng Dẫn Điện lan thêm 2 mục tiêu (4 → 6)."
+name = "Thunderclap"
+desc = "The Conduct reaction chains to 2 more targets (4 -> 6)."
 rarity = "epic"
 element = {
 "conduct_extra": 2.0

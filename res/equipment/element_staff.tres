@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_bbefe")
 id = "element_staff"
-name = "Trượng Nguyên Tố"
-desc = "Luôn bắn Dấu Hoả bất kể ô đang đứng."
+name = "Element Staff"
+desc = "Always fires Fire Marks regardless of the square below."
 rarity = "epic"
 slot = "accessory"
 cost = 145

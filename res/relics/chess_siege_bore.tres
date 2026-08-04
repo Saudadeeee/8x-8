@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7101")
 id = "chess_siege_bore"
-name = "Mũi Khoan Công Thành"
+name = "Siege Bore"
 rarity = "legendary"
-desc = "Đường trượt xuyên qua HAI quân của mình, và mọi thế cờ mạnh thêm +0.2 Bội. Riêng lượt xuyên thứ hai chỉ đáng ~7% — phần giá trị thật nằm ở thế cờ."
+desc = "Sliding lines pass through TWO of your own pieces, and every formation gains +0.2 Mult. The second pierce alone is worth only ~7% - the real value is in the formations."
 cost = 360
 effect = {
 "pierce_count": 2,

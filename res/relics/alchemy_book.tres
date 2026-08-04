@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_ibpg6")
 id = "alchemy_book"
-name = "Sách Giả Kim"
-desc = "Mọi phản ứng nguyên tố +40% sát thương."
+name = "Alchemist's Tome"
+desc = "All elemental reactions deal +40% damage."
 cost = 220
 effect = {
 "reaction_mult": 1.4

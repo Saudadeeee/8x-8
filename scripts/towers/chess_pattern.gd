@@ -53,7 +53,7 @@ const KNIGHT_STEPS: Array[Vector2i] = [
 	Vector2i(1, -2), Vector2i(2, -1), Vector2i(-1, -2), Vector2i(-2, -1),
 ]
 
-## Bước nhảy chữ L XA — chỉ dùng khi có di vật "Vó Ngựa".
+## Bước nhảy chữ L XA — chỉ dùng khi có di vật "Horseshoe".
 const KNIGHT_FAR: Array[Vector2i] = [
 	Vector2i(1, 3), Vector2i(3, 1), Vector2i(-1, 3), Vector2i(-3, 1),
 	Vector2i(1, -3), Vector2i(3, -1), Vector2i(-1, -3), Vector2i(-3, -1),
@@ -61,7 +61,7 @@ const KNIGHT_FAR: Array[Vector2i] = [
 
 ## TẦM = SỐ VÒNG cho mọi nước nhảy. Bậc 1 chứ không phải 2-3.
 ##
-## Bậc thưa (2 hoặc 3) làm phần lớn nguồn "+1 tầm" trở thành số chết — đo được
+## Bậc thưa (2 hoặc 3) làm phần lớn nguồn "+1 reach" trở thành số chết — đo được
 ## Mã tầm 4 và tầm 5 phủ y hệt 16 ô, Tốt tầm 3 và 4 y hệt 8 ô. Người chơi nhặt
 ## được mà không thấy gì đổi, đúng thứ vừa báo lỗi.
 ## Bậc 1 thì luật đọc được bằng một câu — "tầm N = N vòng" — và MỌI +1 đều đổi.
@@ -78,19 +78,19 @@ const SIEGE_MIN_RANGE: int = 2
 const FORWARD: Vector2i = Vector2i(0, 1)
 
 const KIND_LABEL := {
-	Kind.ROOK:   "Dọc hàng & cột (trượt)",
-	Kind.BISHOP: "Hai đường chéo (trượt)",
-	Kind.QUEEN:  "Tám hướng (trượt)",
-	Kind.KNIGHT: "Nhảy chữ L (không bị chặn)",
-	Kind.PAWN:   "Bốn ô chéo kề",
-	Kind.KING:   "Tám ô kề",
-	Kind.SIEGE:  "Vành khuyên (không đánh sát mình)",
-	Kind.RADIAL: "Mọi hướng trong tầm",
-	Kind.CANNON: "Pháo — phải có ĐÚNG 1 quân làm ngòi",
-	Kind.LANCE:  "Hương Xa — một hướng, tầm rất xa",
-	Kind.GOLD:   "Kim Tướng — 4 hướng + 2 chéo trước",
-	Kind.XIANG:  "Tượng cờ tướng — chéo đúng 2 ô, bị cản tâm",
-	Kind.DICE:   "Cá Ngựa — vành khuyên rộng, sát thương lớn",
+	Kind.ROOK:   "Rank & file (sliding)",
+	Kind.BISHOP: "Both diagonals (sliding)",
+	Kind.QUEEN:  "All eight directions (sliding)",
+	Kind.KNIGHT: "L-jump (never blocked)",
+	Kind.PAWN:   "Four adjacent diagonals",
+	Kind.KING:   "Eight adjacent squares",
+	Kind.SIEGE:  "Ring (cannot hit adjacent)",
+	Kind.RADIAL: "All directions in range",
+	Kind.CANNON: "Cannon - needs EXACTLY 1 screen piece",
+	Kind.LANCE:  "Lance - one direction, very long reach",
+	Kind.GOLD:   "Gold General - 4 straight + 2 forward diagonals",
+	Kind.XIANG:  "Xiangqi Elephant - exactly 2 diagonal, blockable at midpoint",
+	Kind.DICE:   "Dice Rider - wide ring, heavy damage",
 }
 
 ## Ký hiệu ngắn cho card shop — người chơi đọc được hình dạng trước khi đọc chữ.
@@ -289,7 +289,7 @@ static func _slide(out: Array[Vector2i], from: Vector2i, dirs: Array[Vector2i],
 ##
 ## Vì sao phải có: nước nhảy vốn là một tập ô CỐ ĐỊNH, nên `max_range` không ảnh
 ## hưởng gì — đo được Mã/Tốt/Vua/Kim Tướng/Tượng Điền phủ y hệt nhau ở tầm 3, 4
-## và 6. Nghĩa là mọi nguồn "+1 tầm bắn" (perk, trang bị, ô Băng, ★3, Hàng Long)
+## và 6. Nghĩa là mọi nguồn "+1 reach" (perk, trang bị, ô Băng, ★3, Hàng Long)
 ## là SỐ CHẾT với sáu trên mười ba nước đi. Người chơi nhặt được mà không thấy
 ## khác biệt gì — đúng lớp lỗi "tính năng chết" nặng nhất.
 ##

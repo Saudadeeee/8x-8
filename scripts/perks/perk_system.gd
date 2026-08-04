@@ -34,7 +34,7 @@ const RARITY_WEIGHTS: Dictionary = {
 
 # ── Rarity theo tiến trình wave ────────────────────────────────────────────────
 # Trước đây trọng số CỐ ĐỊNH cho mọi wave: wave 1 đã có 3% rúng ra huyền thoại
-# "Thần Chiến Tranh" và run coi như xong từ lá đầu; ngược lại wave 12 vẫn 60%
+# "War God" và run coi như xong từ lá đầu; ngược lại wave 12 vẫn 60%
 # ra perk thường nên phần thưởng cuối run nhạt dần.
 #
 # Nay mỗi bậc có (1) wave MỞ KHOÁ — chưa tới thì không xuất hiện chút nào, và
@@ -96,69 +96,69 @@ const EFFECT_CHANNELS: Dictionary = {
 const PERKS: Array = [
 	# ── TOWER LAYER ──────────────────────────────────────────────────────
 	{
-		"id": "ren_vu_khi", "name": "Rèn Vũ Khí", "rarity": "common",
-		"desc": "+10% sát thương cho toàn bộ tháp.",
+		"id": "ren_vu_khi", "name": "Weaponsmith", "rarity": "common",
+		"desc": "+10% damage for every piece.",
 		"tower": {"damage_bonus": 0.10},
 	},
 	{
-		"id": "dau_boi_tron", "name": "Dầu Bôi Trơn", "rarity": "common",
-		"desc": "Giảm 0.08s thời gian hồi đòn của toàn bộ tháp.",
+		"id": "dau_boi_tron", "name": "Lubricant", "rarity": "common",
+		"desc": "Cut 0.08s from every piece's cooldown.",
 		"tower": {"speed_bonus": 0.08},
 	},
 	{
-		"id": "mat_dai_bang", "name": "Mắt Đại Bàng", "rarity": "rare",
-		"desc": "+1 tầm bắn cho toàn bộ tháp.",
+		"id": "mat_dai_bang", "name": "Eagle Eye", "rarity": "rare",
+		"desc": "+1 reach for every piece.",
 		"tower": {"range_bonus": 1},
 	},
 	{
-		"id": "lo_ren_hoang_gia", "name": "Lò Rèn Hoàng Gia", "rarity": "epic",
-		"desc": "+20% sát thương cho toàn bộ tháp.",
+		"id": "lo_ren_hoang_gia", "name": "Royal Forge", "rarity": "epic",
+		"desc": "+20% damage for every piece.",
 		"tower": {"damage_bonus": 0.20},
 	},
 	{
-		"id": "than_chien_tranh", "name": "Thần Chiến Tranh", "rarity": "legendary",
-		"desc": "+30% sát thương, -0.1s hồi đòn và +1 tầm bắn cho toàn bộ tháp.",
+		"id": "than_chien_tranh", "name": "War God", "rarity": "legendary",
+		"desc": "+30% damage, -0.1s cooldown and +1 reach for every piece.",
 		"tower": {"damage_bonus": 0.30, "speed_bonus": 0.1, "range_bonus": 1},
 	},
 	# ── ECONOMY ──────────────────────────────────────────────────────────
 	{
-		"id": "thue_mau", "name": "Thuế Máu", "rarity": "common",
-		"desc": "+1 vàng mỗi khi tiêu diệt một địch.",
+		"id": "thue_mau", "name": "Blood Tax", "rarity": "common",
+		"desc": "+1 gold per enemy killed.",
 		"economy": {"gold_per_kill": 1},
 	},
 	{
-		"id": "ngan_kho", "name": "Ngân Khố", "rarity": "rare",
-		"desc": "Trần lãi vàng cuối wave tăng từ 15 lên 25.",
+		"id": "ngan_kho", "name": "Treasury", "rarity": "rare",
+		"desc": "The end-of-wave interest cap rises from 15 to 25.",
 		"economy": {"interest_cap": 25},
 	},
 	{
-		"id": "ham_vang", "name": "Hầm Vàng", "rarity": "epic",
-		"desc": "Lãi suất vàng cuối wave tăng từ 10% lên 15%.",
+		"id": "ham_vang", "name": "Vault", "rarity": "epic",
+		"desc": "End-of-wave interest rises from 10% to 15%.",
 		"economy": {"interest_rate": 0.15},
 	},
 	# ── SURVIVAL (instant / one-shot) ────────────────────────────────────
 	{
-		"id": "tuong_thanh", "name": "Tường Thành", "rarity": "common",
-		"desc": "+5 máu ngay lập tức.",
+		"id": "tuong_thanh", "name": "Rampart", "rarity": "common",
+		"desc": "+5 HP immediately.",
 		"instant": {"hp_delta": 5},
 		"stackable": true,
 	},
 	{
-		"id": "hien_te", "name": "Hiến Tế", "rarity": "rare",
-		"desc": "Mất 10 máu, nhận ngay 60 vàng.",
+		"id": "hien_te", "name": "Blood Offering", "rarity": "rare",
+		"desc": "Lose 10 HP, gain 60 gold immediately.",
 		"instant": {"hp_delta": -10, "gold_delta": 60},
 		"stackable": true,
 		"requires_hp": 11,
 	},
 	# ── ROYAL DECREE ─────────────────────────────────────────────────────
 	{
-		"id": "sac_lenh_khan", "name": "Sắc Lệnh Khẩn", "rarity": "rare",
-		"desc": "+5 Sắc Lệnh Hoàng Gia mỗi khi wave mới bắt đầu.",
+		"id": "sac_lenh_khan", "name": "Urgent Decree", "rarity": "rare",
+		"desc": "+5 Royal Decree at the start of each wave.",
 		"rd": {"per_wave_start": 5.0},
 	},
 	{
-		"id": "quyen_uy", "name": "Quyền Uy", "rarity": "epic",
-		"desc": "Sắc Lệnh Hoàng Gia nhận được khi thắng wave tăng 50%.",
+		"id": "quyen_uy", "name": "Authority", "rarity": "epic",
+		"desc": "Royal Decree earned from clearing a wave increases by 50%.",
 		"rd": {"grant_mult": 1.5},
 	},
 ]

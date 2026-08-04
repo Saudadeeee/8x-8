@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_shaman")
 id = "shaman"
-display_name = "Pháp Sư Tà Thuật"
-ability_note = "Hồi máu địch xung quanh — hạ trước"
+display_name = "Shaman"
+ability_note = "Heals nearby enemies - kill it first"
 spawn_seasons = Array[int]([2, 3])
 texture = ExtResource("2_shaman")
 max_hp = 90

@@ -3,7 +3,7 @@ extends Control
 
 ## Thư mục resource tháp — dùng để đổi stats.id thành tên hiển thị.
 const TOWER_RES_FMT: String = "res://res/towers/%s.tres"
-## Số dòng tối đa của bảng "Đóng góp sát thương".
+## Số dòng tối đa của bảng "Damage contribution".
 const TOP_TOWER_COUNT: int = 5
 ## Màu thanh theo hạng: vàng · bạc · đồng · xanh dương · xanh lá.
 const RANK_COLORS: Array[Color] = [
@@ -83,7 +83,7 @@ func _build_ui() -> void:
 		UIStyle.pop_in(banner, 0.05)
 
 	var title = Label.new()
-	title.text = "CHIẾN THẮNG!"
+	title.text = "VICTORY!"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 68, Color(1.0, 0.84, 0.0, 1.0))
 	vbox.add_child(title)
@@ -91,7 +91,7 @@ func _build_ui() -> void:
 	UIStyle.breathe(title, 1.045, 2.2)
 
 	var subtitle = Label.new()
-	subtitle.text = "Vương quốc đứng vững!"
+	subtitle.text = "The kingdom holds!"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(subtitle, 20, Color(0.9, 0.9, 0.9, 1))
 	vbox.add_child(subtitle)
@@ -102,13 +102,13 @@ func _build_ui() -> void:
 	stats_vbox.add_theme_constant_override("separation", 5)
 	vbox.add_child(stats_vbox)
 
-	_wave_label = _make_stat_label("Tới wave: 0")
+	_wave_label = _make_stat_label("Reached wave: 0")
 	stats_vbox.add_child(_wave_label)
-	_enemies_label = _make_stat_label("Đã hạ: 0 địch")
+	_enemies_label = _make_stat_label("Enemies killed: 0")
 	stats_vbox.add_child(_enemies_label)
-	_gold_label = _make_stat_label("Vàng kiếm được: 0")
+	_gold_label = _make_stat_label("Gold earned: 0")
 	stats_vbox.add_child(_gold_label)
-	_meta_pts_label = _make_stat_label("Điểm tích luỹ: 0 ★")
+	_meta_pts_label = _make_stat_label("Meta points: 0 ★")
 	UIStyle.glyph(_meta_pts_label, 20, Color(1.0, 0.84, 0.0, 1.0))
 	stats_vbox.add_child(_meta_pts_label)
 
@@ -120,7 +120,7 @@ func _build_ui() -> void:
 	vbox.add_child(UIStyle.separator(UIStyle.BORDER_HI))
 
 	var dmg_title = Label.new()
-	dmg_title.text = "⚔  ĐÓNG GÓP SÁT THƯƠNG"
+	dmg_title.text = "⚔  DAMAGE CONTRIBUTION"
 	dmg_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(dmg_title, 17, UIStyle.GOLD)
 	vbox.add_child(dmg_title)
@@ -145,7 +145,7 @@ func _build_ui() -> void:
 	UIStyle.pop_in(menu_btn, 0.30)
 
 	var play_again_btn = Button.new()
-	play_again_btn.text = "⚔  Chơi Lại"
+	play_again_btn.text = "⚔  Play Again"
 	play_again_btn.custom_minimum_size = Vector2(210, 52)
 	UIStyle.apply_button_accent(play_again_btn, UIStyle.GREEN, 18)
 	play_again_btn.pressed.connect(_go_to.bind("res://scenes/ui/king_select.tscn"))
@@ -164,10 +164,10 @@ func _make_stat_label(text: String) -> Label:
 
 ## Số liệu tổng kết dùng số đếm chạy — cảm giác "cộng điểm" cuối ván.
 func show_stats(wave: int, enemies: int, gold: int, meta_pts: int) -> void:
-	UIStyle.count_to(_wave_label, 0, wave, "Tới wave: %d", 0.55)
-	UIStyle.count_to(_enemies_label, 0, enemies, "Đã hạ: %d địch", 0.75)
-	UIStyle.count_to(_gold_label, 0, gold, "Vàng kiếm được: %d", 0.9)
-	UIStyle.count_to(_meta_pts_label, 0, meta_pts, "Điểm tích luỹ: %d ★", 1.05)
+	UIStyle.count_to(_wave_label, 0, wave, "Reached wave: %d", 0.55)
+	UIStyle.count_to(_enemies_label, 0, enemies, "Enemies killed: %d", 0.75)
+	UIStyle.count_to(_gold_label, 0, gold, "Gold earned: %d", 0.9)
+	UIStyle.count_to(_meta_pts_label, 0, meta_pts, "Meta points: %d ★", 1.05)
 
 # ── Bảng đóng góp sát thương ──────────────────────────────────────────────────
 
@@ -196,7 +196,7 @@ func _fill_damage_rows(rows: Array) -> void:
 		child.queue_free()
 	if rows.is_empty():
 		var empty_lbl = Label.new()
-		empty_lbl.text = "— Chưa ghi nhận sát thương —"
+		empty_lbl.text = "— No damage recorded yet —"
 		empty_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		UIStyle.body(empty_lbl, 14, UIStyle.TEXT_DIM)
 		_damage_box.add_child(empty_lbl)
@@ -266,7 +266,7 @@ func _refresh_from_gm() -> void:
 	var parts: Array[String] = []
 	var best_combo: Variant = gm.get("run_best_combo")
 	if best_combo is int or best_combo is float:
-		parts.append("Combo cao nhất: %d" % int(best_combo))
+		parts.append("Best combo: %d" % int(best_combo))
 	var asc: Variant = gm.get("ascension_level")
 	if asc is int or asc is float:
 		parts.append("Ascension: A%d" % int(asc))

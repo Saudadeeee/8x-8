@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_yeqm2")
 tag = "longbowman"
-display_name = "Hàng Cung Dài"
+display_name = "Longbow Line"
 bonuses = Array[Dictionary]([{
 "damage_bonus": 0.12,
 "range_bonus": 0.0,

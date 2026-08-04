@@ -6,8 +6,8 @@
 script = ExtResource("1_t8001")
 id = "lance"
 attack_pattern = 9
-name = "Hương Xa"
-description = "Shogi. Chỉ bắn thẳng MỘT hướng xuôi bàn, nhưng đi rất xa và xuyên hết hàng."
+name = "Lance"
+description = "Shogi. Fires straight in ONE direction only, but reaches very far down the file."
 cost = 38
 decree_cost = 2.0
 base_damage = 34

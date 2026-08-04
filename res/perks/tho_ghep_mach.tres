@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_m3nr4")
 id = "tho_ghep_mach"
-name = "Thợ Ghép Mạch"
-desc = "Ô nguyên tố rẻ hơn 15% và mọi Dấu Thổ gây thêm 30% sát thương."
+name = "Ley Weaver"
+desc = "Element veins cost 15% less and every Earth Mark deals 30% more damage."
 rarity = "rare"
 element = {
 "element_damage": {

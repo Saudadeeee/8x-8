@@ -7,7 +7,7 @@
 script = ExtResource("1_goblin")
 id = "goblin"
 display_name = "Goblin"
-ability_note = "Di chuyển rất nhanh"
+ability_note = "Moves very fast"
 spawn_seasons = Array[int]([0, 1])
 spawn_weight = 3
 texture = ExtResource("2_goblin")

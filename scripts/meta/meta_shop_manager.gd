@@ -39,7 +39,7 @@ func _populate_defaults() -> void:
 	if bishop_stats:
 		var bishop_item = MetaShopItemData.new()
 		bishop_item.id = "meta_bishop"
-		bishop_item.display_name = "Tượng Hiền Triết"
+		bishop_item.display_name = "Sage Bishop"
 		bishop_item.description = "Unlocks a Bishop with arcane artillery."
 		bishop_item.cost = 14.0
 		bishop_item.tower_stats = bishop_stats

@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_2qdsc")
 id = "mau_rong"
-name = "Máu Rồng"
-desc = "Tháp trong vùng gắn Dấu Hoả trong 12 giây."
+name = "Dragon Blood"
+desc = "Pieces in the area apply Fire Marks for 12 seconds."
 rarity = "rare"
 buff = {
 "grant_element": "fire"

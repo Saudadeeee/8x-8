@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_idhew")
 id = "than_chien_tranh"
-name = "Thần Chiến Tranh"
-desc = "+30% sát thương, -0.1s hồi đòn và +1 tầm bắn cho toàn bộ tháp."
+name = "War God"
+desc = "+30% damage, -0.1s cooldown and +1 reach for every piece."
 rarity = "legendary"
 tower = {
 "damage_bonus": 0.3,

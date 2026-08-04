@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_xogdu")
 id = "apothecary_hand"
-name = "Bàn Tay Dược Sư"
-desc = "Thuốc buff kéo dài thêm 20 giây."
+name = "Apothecary's Hand"
+desc = "Potion buffs last 20 seconds longer."
 effect = {
 "potion_duration_bonus": 20.0
 }

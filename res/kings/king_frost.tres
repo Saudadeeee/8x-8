@@ -7,8 +7,8 @@
 [resource]
 script = ExtResource("1_kf")
 id = "king_frost"
-king_name = "Vua Băng Hà"
-lore = "Ngài chưa từng thắng nhanh trận nào. Ngài chỉ khiến kẻ địch chậm lại, chậm mãi, cho tới khi mùa đông làm nốt phần còn lại."
+king_name = "The Glacier King"
+lore = "He has never won a battle quickly. He only makes the enemy slower, and slower, until winter finishes the job."
 portrait = ExtResource("3_pt")
 base_health = 28
 base_royal_decree = 12.0
@@ -21,8 +21,8 @@ favored_unit_types = ["rook", "ice_guardian", "paladin"]
 favor_damage_bonus = 0.10
 favor_speed_bonus = 0.04
 favor_range_bonus = 0.20
-ability_name = "Vĩnh Đông"
-ability_description = "Làm chậm 80% toàn bộ địch trong 6 giây và gắn Dấu Băng. Chiêu cứu wave, không phải chiêu dọn wave."
+ability_name = "Endless Winter"
+ability_description = "Slow every enemy by 80% for 6 seconds and apply an Ice Mark. This saves a wave; it does not clear one."
 ability_decree_cost = 35.0
 ability_cooldown = 65.0
 ability_script = ExtResource("2_ab")

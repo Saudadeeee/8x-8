@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_u20v4")
 id = "mau_vua"
-name = "Máu Vua"
-desc = "Hồi ngay 5 máu cho Nhà Vua."
+name = "King's Blood"
+desc = "Instantly restore 5 HP to the King."
 rarity = "rare"
 target = "self"
 special = "heal_king"

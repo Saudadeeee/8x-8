@@ -82,53 +82,53 @@ const WILDCARD: String = "*"
 ## Mười phản ứng. `pair` không phân biệt thứ tự. THỨ TỰ TRONG BẢNG LÀ ĐỘ ƯU TIÊN.
 const TABLE: Array[Dictionary] = [
 	{
-		"id": "vaporize", "name": "Bốc Hơi",
+		"id": "vaporize", "name": "Vaporize",
 		"pair": [ElementTypes.FIRE, ElementTypes.WATER],
 		"damage_mult": 2.5, "color": Color(1.0, 0.78, 0.48),
 	},
 	{
-		"id": "melt", "name": "Tan Chảy",
+		"id": "melt", "name": "Melt",
 		"pair": [ElementTypes.FIRE, ElementTypes.ICE],
 		"damage_mult": 2.0, "color": Color(1.0, 0.45, 0.22),
 	},
 	{
-		"id": "freeze", "name": "Đóng Băng",
+		"id": "freeze", "name": "Freeze",
 		"pair": [ElementTypes.ICE, ElementTypes.WATER],
 		"damage_mult": 0.0, "color": Color(0.62, 0.9, 1.0),
 	},
 	{
-		"id": "conduct", "name": "Dẫn Điện",
+		"id": "conduct", "name": "Conduct",
 		"pair": [ElementTypes.THUNDER, ElementTypes.WATER],
 		"damage_mult": 0.6, "color": Color(0.8, 0.5, 1.0),
 	},
 	{
-		"id": "overload", "name": "Quá Tải",
+		"id": "overload", "name": "Overload",
 		"pair": [ElementTypes.THUNDER, ElementTypes.FIRE],
 		"damage_mult": 1.8, "color": Color(1.0, 0.85, 0.3),
 	},
 	{
-		"id": "contagion", "name": "Lan Truyền",
+		"id": "contagion", "name": "Contagion",
 		"pair": [ElementTypes.WATER, ElementTypes.POISON],
 		"damage_mult": 0.0, "color": Color(0.5, 1.0, 0.4),
 	},
 	{
-		"id": "superconduct", "name": "Siêu Dẫn",
+		"id": "superconduct", "name": "Superconduct",
 		"pair": [ElementTypes.THUNDER, ElementTypes.ICE],
 		"damage_mult": 0.5, "color": Color(0.55, 0.7, 1.0),
 	},
 	{
-		"id": "toxic_burn", "name": "Cháy Độc",
+		"id": "toxic_burn", "name": "Toxic Burn",
 		"pair": [ElementTypes.FIRE, ElementTypes.POISON],
 		"damage_mult": 0.0, "color": Color(0.75, 0.95, 0.2),
 	},
 	{
-		"id": "quake", "name": "Chấn Địa",
+		"id": "quake", "name": "Quake",
 		"pair": [ElementTypes.EARTH, ElementTypes.THUNDER],
 		"damage_mult": 1.2, "color": Color(0.85, 0.65, 0.35),
 	},
 	# PHẢI đứng cuối: wildcard Thổ + bất kỳ. Mọi cặp Thổ cụ thể ở trên thắng.
 	{
-		"id": "crystallize", "name": "Kết Tinh",
+		"id": "crystallize", "name": "Crystallize",
 		"pair": [ElementTypes.EARTH, WILDCARD],
 		"damage_mult": 0.8, "color": Color(1.0, 0.85, 0.35),
 	},
@@ -241,14 +241,14 @@ static func _melt(reaction: Dictionary, enemy: Node, source: Node) -> void:
 static func _freeze(reaction: Dictionary, enemy: Node, _source: Node) -> void:
 	var t := now()
 	var pos := _pos(enemy)
-	# Synergy Băng ×6 "Băng Vĩnh Cửu" bỏ hẳn cooldown ẩn — đây CHÍNH LÀ phần
+	# Synergy Băng ×6 "Eternal Ice" bỏ hẳn cooldown ẩn — đây CHÍNH LÀ phần
 	# thưởng cho lối chơi Vĩnh Đông, và là ngoại lệ DUY NHẤT của luật cooldown.
 	var eternal_ice := _perk_bool("syn_ice_no_freeze_cd")
 	if not eternal_ice and enemy.has_meta(META_FREEZE_CD_UNTIL) 			and float(enemy.get_meta(META_FREEZE_CD_UNTIL)) > t:
 		# Đang hồi — chỉ nháy hiệu ứng nhỏ để người chơi hiểu vì sao không đóng băng.
 		FX.spawn_burst(_fx_parent(enemy), pos + Vector3(0.0, 0.4, 0.0), Color(0.6, 0.85, 1.0), 5, 0.4)
 		return
-	# Perk "Hàn Băng Quyết" kéo dài thời gian đứng yên, KHÔNG đụng cooldown ẩn —
+	# Perk "Deep Freeze" kéo dài thời gian đứng yên, KHÔNG đụng cooldown ẩn —
 	# nếu cooldown cũng giãn theo thì perk tự vô hiệu hoá chính nó.
 	enemy.set_meta(META_FROZEN_UNTIL, t + FREEZE_DURATION + _perk_float("perk_freeze_bonus"))
 	enemy.set_meta(META_FREEZE_CD_UNTIL, t + FREEZE_COOLDOWN)
@@ -407,10 +407,10 @@ static func _try_crystal_shard(enemy: Node, origin: Vector3) -> void:
 	var parent := _fx_parent(enemy)
 	if parent != null and parent.is_inside_tree():
 		FX.damage_number(parent, origin + Vector3(0.0, 2.1, 0.0),
-			"◈ Mảnh %s!" % ElementTypes.display_name(element),
+			"◈ %s shard!" % ElementTypes.display_name(element),
 			ElementTypes.color_of(element), 22)
 
-## Hệ số vàng Kết Tinh — synergy Thổ ×6 "Địa Chấn" nâng 15 → 40 vàng.
+## Hệ số vàng Kết Tinh — synergy Thổ ×6 "Seismic" nâng 15 → 40 vàng.
 static func _crystal_mult(gm: Object) -> float:
 	var value: Variant = gm.get("crystal_gold_mult")
 	if value is int or value is float:
@@ -499,11 +499,11 @@ static func _perk_bool(field: String) -> bool:
 	var gm: Node = (loop as SceneTree).root.get_node_or_null("GameManagerSingleton")
 	return gm != null and bool(gm.get(field))
 
-# ── Đếm phản ứng (perk "Nhà Giả Kim") ─────────────────────────────────────────
+# ── Đếm phản ứng (perk "Alchemist's Craft") ─────────────────────────────────────────
 ## Tổng số phản ứng đã nổ trong run. game_map đọc để phát thuốc mỗi N lần.
 static var reaction_count: int = 0
 
-## Bán kính hiệu lực của một phản ứng, cộng thêm "Mắt Bão" của tháp nguồn.
+## Bán kính hiệu lực của một phản ứng, cộng thêm "Storm Eye" của tháp nguồn.
 static func _radius(base: float, source: Node) -> float:
 	if not is_instance_valid(source):
 		return base
@@ -569,7 +569,7 @@ static func _source_damage(source: Node) -> float:
 				return damage
 	return FALLBACK_DAMAGE
 
-## Hệ số khuếch đại phản ứng của tháp (trang bị "Nhẫn Cộng Hưởng", thuốc "Tinh Chất").
+## Hệ số khuếch đại phản ứng của tháp (trang bị "Resonance Ring", thuốc "Tinh Chất").
 static func _power_mult(source: Node) -> float:
 	if is_instance_valid(source):
 		var value: Variant = source.get("reaction_power_mult")

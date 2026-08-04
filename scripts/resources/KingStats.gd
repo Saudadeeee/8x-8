@@ -6,8 +6,8 @@ class_name KingStats
 # --- NHẬN DIỆN ---
 @export_group("Identity")
 @export var id: String = "king_default"
-@export var king_name: String = "Tên Vua"
-@export_multiline var lore: String = "Câu chuyện của vua..."
+@export var king_name: String = "King Name"
+@export_multiline var lore: String = "The king's story..."
 @export var portrait: Texture2D         # Ảnh chân dung trong menu chọn vua
 @export var crown_texture: Texture2D    # Ảnh vương miện hiển thị trên bàn cờ
 
@@ -37,8 +37,8 @@ class_name KingStats
 
 # --- KỸ NĂNG ĐẶC BIỆT CỦA VUA ---
 @export_group("Royal Ability")
-@export var ability_name: String = "Hoàng Lệnh"
-@export_multiline var ability_description: String = "Mô tả kỹ năng..."
+@export var ability_name: String = "Royal Command"
+@export_multiline var ability_description: String = "Ability description..."
 @export var ability_decree_cost: float = 30.0   # Tốn bao nhiêu Decree để dùng
 @export var ability_cooldown: float = 60.0       # Thời gian hồi chiêu (giây)
 # Script xử lý logic kỹ năng riêng của từng vua

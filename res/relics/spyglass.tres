@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_qp5qa")
 id = "spyglass"
-name = "Ống Nhòm"
-desc = "Bán kính mọi bình thuốc tăng lên 4m."
+name = "Spyglass"
+desc = "Every potion's radius increases to 4m."
 rarity = "rare"
 cost = 160
 effect = {

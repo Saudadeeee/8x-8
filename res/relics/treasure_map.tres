@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_mo4qb")
 id = "treasure_map"
-name = "Bản Đồ Kho Báu"
-desc = "Địch Elite LUÔN rơi thuốc."
+name = "Treasure Map"
+desc = "Elite enemies ALWAYS drop a potion."
 rarity = "rare"
 cost = 170
 effect = {

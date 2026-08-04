@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_6iixa")
 id = "mat_dai_bang"
-name = "Mắt Đại Bàng"
-desc = "+1 tầm bắn cho toàn bộ tháp."
+name = "Eagle Eye"
+desc = "+1 reach for every piece."
 rarity = "rare"
 tower = {
 "range_bonus": 1

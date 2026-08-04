@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7202")
 id = "rl_fortress"
-name = "Pháo Đài"
+name = "Fortress"
 rarity = "legendary"
-desc = "Mọi Xe đánh theo luật PHÁO cờ tướng: phải có đúng một quân của bạn làm ngòi. Bù lại sát thương ×2.5. Quân chắn đường từ tai hoạ thành tài nguyên."
+desc = "Every Rook fires by XIANGQI CANNON rules: it needs exactly one of your pieces as a screen. In exchange, x2.5 damage. Blocking pieces go from a disaster to a resource."
 cost = 400
 effect = {
 "rook_as_cannon": true,

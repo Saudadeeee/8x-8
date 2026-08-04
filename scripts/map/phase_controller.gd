@@ -7,7 +7,7 @@ class_name PhaseController
 # --- SIGNALS ---
 signal phase_changed(phase: GamePhase)
 signal prep_countdown_updated(seconds: int)
-## Nút "BẮT ĐẦU WAVE" nên sáng hay không. Phát khi vào pha chuẩn bị (false) và
+## Nút "START WAVE" nên sáng hay không. Phát khi vào pha chuẩn bị (false) và
 ## khi người chơi xác nhận xong trinh sát (true).
 signal prep_ready_changed(ready: bool)
 signal wave_started(wave_number: int, enemy_count: int)
@@ -67,7 +67,7 @@ func start_prep_phase() -> void:
 	_wave_confirmed = false
 	phase_changed.emit(current_phase)
 	prep_ready_changed.emit(false)
-	_set_phase_message("Đọc thông tin wave rồi xác nhận để bắt đầu chuẩn bị...")
+	_set_phase_message("Read the wave intel, then confirm to begin preparing...")
 
 	if wave_spawner:
 		_emit_wave_intel()
@@ -76,7 +76,7 @@ func confirm_wave_ready() -> void:
 	if current_phase != GamePhase.PREPARE or _wave_confirmed:
 		return
 	_wave_confirmed = true
-	_set_phase_message("Bố trí xong thì bấm BẮT ĐẦU WAVE | %s"
+	_set_phase_message("When your board is ready, press START WAVE | %s"
 		% (wave_spawner.get_wave_intel_text(wave_number) if wave_spawner else ""))
 	prep_ready_changed.emit(true)
 
@@ -118,7 +118,7 @@ func enter_shop_phase() -> void:
 	if wave_number >= MAX_WAVES:
 		# Hết giờ / hết quái thường KHÔNG còn tự thắng — phải hạ Rival King.
 		if not _is_boss_resolved():
-			_set_phase_message("☠ Rival King vẫn đứng vững — hạ hắn để thống nhất vương quốc!")
+			_set_phase_message("☠ The Rival King still stands - bring him down to unite the kingdom!")
 			return
 		if _game_manager:
 			_game_manager.force_victory()
@@ -143,13 +143,13 @@ func enter_shop_phase() -> void:
 	if _game_manager and _game_manager.has_method("get_interest_cap"):
 		cap = _game_manager.get_interest_cap()
 	var interest: int = min(int(gold * rate), cap)
-	var interest_msg := " | Lãi: +%d vàng" % interest if interest > 0 else ""
+	var interest_msg := " | Interest: +%d gold" % interest if interest > 0 else ""
 
 	if shop_manager:
 		shop_manager.update_wave(wave_number)
 		shop_manager.refresh_shop(true)
 
-	_set_phase_message("Wave %d hoàn thành!%s Mua quân rồi bấm NEXT WAVE." % [wave_number, interest_msg])
+	_set_phase_message("Wave %d complete!%s Buy pieces, then press NEXT WAVE." % [wave_number, interest_msg])
 	phase_changed.emit(current_phase)
 	shop_phase_entered.emit(wave_number, interest)
 

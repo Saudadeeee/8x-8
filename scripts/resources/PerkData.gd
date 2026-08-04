@@ -5,7 +5,7 @@
 extends Resource
 class_name PerkData
 
-@export_group("Nhận dạng")
+@export_group("Identity")
 ## snake_case, DUY NHẤT, trùng tên icon assets/ui/perks/<id>.png (48×48)
 @export var id: String = ""
 @export var name: String = ""
@@ -23,7 +23,7 @@ class_name PerkData
 ## Gắn perk với một loại quân — card sẽ hiện model 3D của quân đó.
 @export var unit_id: String = ""
 
-@export_group("Kênh tác dụng — điền ÍT NHẤT một nhóm")
+@export_group("Effect channel - fill in AT LEAST one group")
 ## {damage_bonus: % base, speed_bonus: giây trừ vào hồi chiêu, range_bonus: số ô}
 @export var tower: Dictionary = {}
 ## {gold_per_kill, interest_cap, interest_rate}

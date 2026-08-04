@@ -4,7 +4,7 @@
 #
 # Vì sao bắt buộc phải có: với mô hình nước đi, "tầm bắn 5" KHÔNG nói lên gì cả —
 # Xe tầm 5 phủ 20 ô theo hai trục, Mã tầm 5 phủ 16 ô hình chữ L, Tốt tầm 5 phủ 12
-# ô chéo. Người chơi nhặt được "+1 tầm bắn" mà không có cách nào thấy nó đổi cái
+# ô chéo. Người chơi nhặt được "+1 reach" mà không có cách nào thấy nó đổi cái
 # gì. Panel ghi "phủ 20 ô" là một con số trừu tượng; tô đúng ô lên bàn mới là
 # thứ đọc được.
 #

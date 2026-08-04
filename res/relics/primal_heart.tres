@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_snhnp")
 id = "primal_heart"
-name = "Trái Tim Nguyên Sơ"
-desc = "Đủ 6 nguyên tố trên bàn: mọi tháp +30% sát thương."
+name = "Primal Heart"
+desc = "With all 6 elements on the board, every piece deals +30% damage."
 rarity = "legendary"
 cost = 330
 effect = {

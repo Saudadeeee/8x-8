@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_26jke")
 id = "armor_axe"
-name = "Rìu Chém Giáp"
-desc = "Bỏ qua toàn bộ giáp mục tiêu."
+name = "Armor Axe"
+desc = "Ignores all target armor."
 cost = 65
 effect = {
 "pierce_armor": true

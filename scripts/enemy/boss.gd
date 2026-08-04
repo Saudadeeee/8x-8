@@ -163,7 +163,7 @@ func die():
 		FX.spawn_burst(parent, global_position + Vector3(0.0, 0.3, 0.0), Color(1.0, 0.92, 0.55), 34, 1.8)
 		_ring_burst(2.0, Color(1.0, 0.88, 0.4), RING_POINTS)
 		FX.damage_number(parent, global_position + Vector3(0.0, 2.4, 0.0),
-			"%s GỤC NGÃ!" % _display_name(), Color(1.0, 0.9, 0.35), 26)
+			"%s HAS FALLEN!" % _display_name(), Color(1.0, 0.9, 0.35), 26)
 	var am := get_node_or_null("/root/AudioManagerSingleton")
 	if am and am.has_method("play_sfx"):
 		am.play_sfx("victory", -3.0)
@@ -301,7 +301,7 @@ func _disable_tower(tower: Node, duration: float) -> void:
 	if parent and tower is Node3D:
 		var pos: Vector3 = (tower as Node3D).global_position
 		FX.spawn_burst(parent, pos + Vector3(0.0, 0.5, 0.0), Color(1.0, 0.4, 0.12), 12, 0.8)
-		FX.damage_number(parent, pos + Vector3(0.0, 1.1, 0.0), "TÊ LIỆT", Color(1.0, 0.5, 0.2), 15)
+		FX.damage_number(parent, pos + Vector3(0.0, 1.1, 0.0), "DISABLED", Color(1.0, 0.5, 0.2), 15)
 
 # ── Vua Băng Giá: Giá Băng Vĩnh Cửu ───────────────────────────────────────
 
@@ -343,7 +343,7 @@ func _frost_tower(tower: Node, cooldown_add: float, duration: float) -> void:
 	if parent and tower is Node3D:
 		var pos: Vector3 = (tower as Node3D).global_position
 		FX.spawn_burst(parent, pos + Vector3(0.0, 0.5, 0.0), Color(0.6, 0.88, 1.0), 10, 0.7)
-		FX.damage_number(parent, pos + Vector3(0.0, 1.1, 0.0), "ĐÓNG BĂNG", Color(0.6, 0.9, 1.0), 15)
+		FX.damage_number(parent, pos + Vector3(0.0, 1.1, 0.0), "FROZEN", Color(0.6, 0.9, 1.0), 15)
 
 # ==========================================================================
 # HELPERS

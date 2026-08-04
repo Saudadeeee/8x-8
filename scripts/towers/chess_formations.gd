@@ -23,32 +23,32 @@ extends Node
 ## Thêm thế mới = thêm một mục ở đây + một nhánh trong `_detect`.
 const SPEC := {
 	"battery": {
-		"name": "Trận Pháo",  "mult": 2.0,
-		"desc": "Hai Xe trở lên cùng một hàng hoặc một cột.",
+		"name": "Battery",  "mult": 2.0,
+		"desc": "Two or more Rooks on the same rank or file.",
 	},
 	"crossfire": {
-		"name": "Giao Hoả",   "mult": 2.2,
-		"desc": "Một ô bị cả Xe lẫn Tượng phủ cùng lúc.",
+		"name": "Crossfire",   "mult": 2.2,
+		"desc": "A square covered by a Rook and a Bishop at once.",
 	},
 	"knight_pair": {
-		"name": "Song Mã",    "mult": 1.8,
-		"desc": "Hai Mã phủ chung ít nhất một ô.",
+		"name": "Knight Pair",    "mult": 1.8,
+		"desc": "Two Knights sharing at least one covered square.",
 	},
 	"pawn_wall": {
-		"name": "Tường Tốt",  "mult": 2.2,
-		"desc": "Ba Tốt trở lên đứng liền nhau trên cùng một hàng.",
+		"name": "Pawn Wall",  "mult": 2.2,
+		"desc": "Three or more Pawns side by side on one rank.",
 	},
 	"royal_guard": {
-		"name": "Cấm Vệ",     "mult": 2.6,
-		"desc": "Hậu có ít nhất hai quân kề bảo vệ.",
+		"name": "Royal Guard",     "mult": 2.6,
+		"desc": "A Queen guarded by at least two adjacent pieces.",
 	},
 	"echelon": {
-		"name": "Thê Đội",    "mult": 2.4,
-		"desc": "Ba quân trở lên nằm trên cùng một đường chéo.",
+		"name": "Echelon",    "mult": 2.4,
+		"desc": "Three or more pieces on the same diagonal.",
 	},
 	"fork": {
-		"name": "Nước Chĩa",  "mult": 3.0,
-		"desc": "Một Mã phủ từ 3 ô đường đi trở lên.",
+		"name": "Fork",  "mult": 3.0,
+		"desc": "One Knight covering 3 or more path squares.",
 	},
 }
 

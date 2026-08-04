@@ -17,24 +17,24 @@ var _upgrade_buttons: Array[Button] = []
 # nhưng không làm gì (đúng lớp lỗi "tính năng chết âm thầm" hay gặp ở dự án này).
 const META_UPGRADES = [
 	# Kinh tế
-	{"id": "starting_gold",   "group": "Kinh tế",    "name": "Hầu bao dày (+30 vàng đầu ván)", "cost": 45, "max_level": 5},
-	{"id": "interest_cap",    "group": "Kinh tế",    "name": "Ngân khố sâu (+2 trần lãi)",     "cost": 55, "max_level": 4},
-	{"id": "gold_per_kill",   "group": "Kinh tế",    "name": "Thuế máu (+1 vàng mỗi kill)",    "cost": 70, "max_level": 3},
+	{"id": "starting_gold",   "group": "Economy",    "name": "Deep Purse (+30 starting gold)", "cost": 45, "max_level": 5},
+	{"id": "interest_cap",    "group": "Economy",    "name": "Deep Vault (+2 interest cap)",     "cost": 55, "max_level": 4},
+	{"id": "gold_per_kill",   "group": "Economy",    "name": "Blood Tax (+1 gold per kill)",    "cost": 70, "max_level": 3},
 	# Sinh tồn
-	{"id": "health_bonus",    "group": "Sinh tồn",   "name": "Thành luỹ (+4 máu Vua)",         "cost": 35, "max_level": 5},
-	{"id": "start_territory", "group": "Sinh tồn",   "name": "Đất phong (+1 ô lãnh thổ đầu ván)", "cost": 60, "max_level": 3},
+	{"id": "health_bonus",    "group": "Survival",   "name": "Bastion (+4 King HP)",         "cost": 35, "max_level": 5},
+	{"id": "start_territory", "group": "Survival",   "name": "Fiefdom (+1 starting vein)", "cost": 60, "max_level": 3},
 	# Sắc Lệnh
-	{"id": "decree_bonus",    "group": "Sắc Lệnh",   "name": "Ấn tín lớn (+10 trần Sắc Lệnh)", "cost": 40, "max_level": 5},
-	{"id": "decree_start",    "group": "Sắc Lệnh",   "name": "Chiếu chỉ sẵn (+8 Sắc Lệnh đầu ván)", "cost": 45, "max_level": 4},
-	{"id": "decree_per_wave", "group": "Sắc Lệnh",   "name": "Sắc lệnh khẩn (+1 Sắc Lệnh mỗi wave)", "cost": 65, "max_level": 3},
+	{"id": "decree_bonus",    "group": "Decree",   "name": "Great Seal (+10 Decree cap)", "cost": 40, "max_level": 5},
+	{"id": "decree_start",    "group": "Decree",   "name": "Standing Edict (+8 starting Decree)", "cost": 45, "max_level": 4},
+	{"id": "decree_per_wave", "group": "Decree",   "name": "Urgent Decree (+1 Decree per wave)", "cost": 65, "max_level": 3},
 	# Nguyên tố
-	{"id": "reaction_power",  "group": "Nguyên tố",  "name": "Cộng hưởng (+6% sát thương phản ứng)", "cost": 75, "max_level": 4},
-	{"id": "mark_slots",      "group": "Nguyên tố",  "name": "Khắc sâu (+1 Dấu giữ được)",     "cost": 110, "max_level": 1},
-	{"id": "tile_discount",   "group": "Nguyên tố",  "name": "Địa chủ (ô nguyên tố rẻ 8%)",    "cost": 60, "max_level": 3},
+	{"id": "reaction_power",  "group": "Element",  "name": "Resonance (+6% reaction damage)", "cost": 75, "max_level": 4},
+	{"id": "mark_slots",      "group": "Element",  "name": "Deep Etching (+1 Mark capacity)",     "cost": 110, "max_level": 1},
+	{"id": "tile_discount",   "group": "Element",  "name": "Landlord (veins 8% cheaper)",    "cost": 60, "max_level": 3},
 	# Đội hình
-	{"id": "tower_damage",    "group": "Đội hình",   "name": "Rèn vũ khí (+4% sát thương mọi quân)", "cost": 80, "max_level": 4},
-	{"id": "tower_speed",     "group": "Đội hình",   "name": "Luyện tay (+3% tốc đánh mọi quân)",   "cost": 80, "max_level": 4},
-	{"id": "equip_discount",  "group": "Đội hình",   "name": "Thợ rèn quen (trang bị rẻ 10%)", "cost": 55, "max_level": 3},
+	{"id": "tower_damage",    "group": "Formation",   "name": "Weaponsmith (+4% damage, all pieces)", "cost": 80, "max_level": 4},
+	{"id": "tower_speed",     "group": "Formation",   "name": "Drilling (+3% attack speed, all pieces)",   "cost": 80, "max_level": 4},
+	{"id": "equip_discount",  "group": "Formation",   "name": "Familiar Smith (equipment 10% cheaper)", "cost": 55, "max_level": 3},
 ]
 
 ## Thư mục vua — quét thay vì liệt kê cứng (giống màn chọn vua).
@@ -45,12 +45,12 @@ const KING_DIR := "res://res/kings/"
 ## một loại cờ và mang theo luật riêng của loại đó.
 func _build_deck_section(parent: VBoxContainer) -> void:
 	var head := Label.new()
-	head.text = "◆  BỘ KHAI CUỘC"
+	head.text = "◆  STARTING SETS"
 	UIStyle.title(head, 28, UIStyle.GOLD)
 	parent.add_child(head)
 
 	var hint := Label.new()
-	hint.text = "Mỗi bộ lấy cảm hứng từ một loại cờ và mang luật riêng của loại đó."
+	hint.text = "Each set draws on a different chess tradition and brings that tradition's rule."
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	UIStyle.body(hint, 14, UIStyle.TEXT_DIM)
 	parent.add_child(hint)
@@ -68,7 +68,7 @@ func _build_deck_section(parent: VBoxContainer) -> void:
 %s" % [
 				"▶" if picked else "  ", data.display_name, data.origin, ", ".join(pieces)]
 		else:
-			btn.text = "  %s  [%s]  —  %d điểm
+			btn.text = "  %s  [%s]  —  %d pts
 %s" % [
 				data.display_name, data.origin, int(data.unlock_cost), ", ".join(pieces)]
 			btn.disabled = _meta.meta_points < int(data.unlock_cost)
@@ -116,7 +116,7 @@ func _build_ui() -> void:
 
 	# Back button
 	var back_btn = Button.new()
-	back_btn.text = "←  Quay Lại"
+	back_btn.text = "←  Back"
 	back_btn.custom_minimum_size = Vector2(130, 46)
 	back_btn.position = Vector2(20, 20)
 	UIStyle.apply_button(back_btn, 17)
@@ -126,7 +126,7 @@ func _build_ui() -> void:
 
 	# Title
 	var title = Label.new()
-	title.text = "★  TIẾN TRÌNH"
+	title.text = "★  PROGRESS"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 48, UIStyle.GOLD)
 	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -155,7 +155,7 @@ func _build_ui() -> void:
 		"Total Runs: %d" % _meta.total_runs,
 		"Total Wins: %d" % _meta.total_wins,
 		"Best Wave: %d" % _meta.best_wave_reached,
-		"Điểm tích luỹ: %d ★" % _meta.meta_points,
+		"Meta points: %d ★" % _meta.meta_points,
 	]
 	for s in stat_entries:
 		var lbl = Label.new()
@@ -187,7 +187,7 @@ func _build_ui() -> void:
 	left_scroll.add_child(left_vbox)
 
 	var kings_title = Label.new()
-	kings_title.text = "♛  VUA ĐÃ MỞ"
+	kings_title.text = "♛  KINGS UNLOCKED"
 	UIStyle.title(kings_title, 24, UIStyle.GOLD)
 	left_vbox.add_child(kings_title)
 
@@ -230,7 +230,7 @@ func _build_ui() -> void:
 	right_scroll.add_child(right_vbox)
 
 	var upgrades_title = Label.new()
-	upgrades_title.text = "⚒  NÂNG CẤP VĨNH VIỄN"
+	upgrades_title.text = "⚒  PERMANENT UPGRADES"
 	UIStyle.title(upgrades_title, 24, UIStyle.GOLD)
 	right_vbox.add_child(upgrades_title)
 
@@ -283,7 +283,7 @@ func _create_king_card(king: KingStats, is_unlocked: bool) -> Control:
 		hbox.add_child(cost_label)
 
 		var unlock_btn = Button.new()
-		unlock_btn.text = "Mở khoá"
+		unlock_btn.text = "Unlock"
 		unlock_btn.custom_minimum_size = Vector2(100, 38)
 		unlock_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		UIStyle.apply_button_accent(unlock_btn, UIStyle.GREEN, 14)
@@ -345,7 +345,7 @@ func _create_upgrade_row(upgrade_def: Dictionary, _parent_vbox: VBoxContainer) -
 	hbox.add_child(cost_lbl)
 
 	var upgrade_btn = Button.new()
-	upgrade_btn.text = "Nâng cấp"
+	upgrade_btn.text = "Upgrade"
 	upgrade_btn.custom_minimum_size = Vector2(108, 38)
 	upgrade_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	UIStyle.apply_button_accent(upgrade_btn, UIStyle.BLUE, 15)
@@ -401,9 +401,9 @@ func _refresh_currency_display() -> void:
 			old_pts = int(_meta_points_label.get_meta("pts"))
 		_meta_points_label.set_meta("pts", _meta.meta_points)
 		if old_pts > 0:
-			UIStyle.count_to(_meta_points_label, old_pts, _meta.meta_points, "Điểm tích luỹ: %d ★")
+			UIStyle.count_to(_meta_points_label, old_pts, _meta.meta_points, "Meta points: %d ★")
 		else:
-			_meta_points_label.text = "Điểm tích luỹ: %d ★" % _meta.meta_points
+			_meta_points_label.text = "Meta points: %d ★" % _meta.meta_points
 	for btn in _upgrade_buttons:
 		if not is_instance_valid(btn):
 			continue

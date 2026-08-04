@@ -76,13 +76,13 @@ func _build_codex() -> void:
 	scroll.add_child(col)
 
 	var title := Label.new()
-	title.text = "SÁCH NGUYÊN TỐ"
+	title.text = "CODEX"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 24, UIStyle.GOLD)
 	col.add_child(title)
 
 	var hint := Label.new()
-	hint.text = "F1 hoặc ESC để đóng · B để xem bộ quân"
+	hint.text = "F1 or ESC to close · B for your set"
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(hint, 11, UIStyle.TEXT_DIM)
 	col.add_child(hint)
@@ -100,21 +100,21 @@ func _build_codex() -> void:
 
 ## Công thức — mục ĐẦU TIÊN vì mọi thứ khác chỉ là cách sửa hai con số này.
 func _codex_formula(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "◆ CÔNG THỨC — mọi thứ trong game chỉ sửa một trong hai số")
-	_codex_row(parent, "NỀN của một ô", Color(0.65, 0.90, 1.00),
-		"Tổng sát-thương-mỗi-giây của MỌI quân đang phủ ô đó. "
-		+ "Quân không phủ ô nào trên ĐƯỜNG ĐI thì không đóng góp gì.")
-	_codex_row(parent, "BỘI của một ô", Color(1.00, 0.80, 0.35),
-		"Thế cờ × cấp ô nguyên tố × di vật × luật Rival King. Các nguồn NHÂN "
-		+ "với nhau, nên chồng được nhiều nguồn là con đường phá vỡ ván đấu.")
-	_codex_row(parent, "Điểm ô", UIStyle.GOLD, "NỀN × BỘI. Rê chuột lên ô để xem từng dòng góp vào.")
-	_codex_row(parent, "Ngưỡng phải vượt", UIStyle.RED,
-		"Tổng máu cả wave. Thanh dưới đáy màn xanh là đủ, đỏ là biết trước sẽ thủng.")
+	_codex_heading(parent, "◆ THE FORMULA — everything in this game edits one of two numbers")
+	_codex_row(parent, "BASE of a square", Color(0.65, 0.90, 1.00),
+		"Total damage-per-second of EVERY piece covering that square. "
+		+ "A piece covering no PATH square contributes nothing.")
+	_codex_row(parent, "MULT of a square", Color(1.00, 0.80, 0.35),
+		"Formations × vein level × relics × Rival King rule. Sources MULTIPLY "
+		+ "together, so stacking many sources is how you break the run open.")
+	_codex_row(parent, "Square Score", UIStyle.GOLD, "BASE × MULT. Hover a square to see every line that feeds it.")
+	_codex_row(parent, "Threshold to beat", UIStyle.RED,
+		"Total HP of the whole wave. The bar at the bottom is green if you can clear it, red if you already know you cannot.")
 
 
 ## Nước đi — bảng tra "quân này với tới đâu".
 func _codex_patterns(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "＋ NƯỚC ĐI — quân đánh theo luật cờ, không theo bán kính")
+	_codex_heading(parent, "＋ MOVEMENT — pieces attack by chess rules, not by radius")
 	for kind in [ChessPattern.Kind.ROOK, ChessPattern.Kind.BISHOP,
 			ChessPattern.Kind.QUEEN, ChessPattern.Kind.KNIGHT,
 			ChessPattern.Kind.PAWN, ChessPattern.Kind.KING,
@@ -130,14 +130,14 @@ func _codex_patterns(parent: VBoxContainer) -> void:
 					names.append(UIStyle.unit_name_vi(str(st.id)))
 		_codex_row(parent, "%s %s" % [ChessPattern.glyph(kind), ChessPattern.label(kind)],
 			Color(0.70, 0.90, 1.00), ", ".join(names) if names.size() > 0 else "—")
-	_codex_row(parent, "⚠ Bị chặn", UIStyle.RED,
-		"Xe, Tượng và Hậu TRƯỢT — quân CỦA BẠN đứng chắn sẽ cắt đường bắn. "
-		+ "Mã nhảy qua được, không ai chặn nổi.")
+	_codex_row(parent, "⚠ Blocked", UIStyle.RED,
+		"Rooks, Bishops and Queens SLIDE — YOUR OWN pieces in the way cut the line. "
+		+ "Knights jump over everything; nothing blocks them.")
 
 
 ## Thế cờ — bảng "xếp thế nào được nhân bao nhiêu".
 func _codex_chess_formations(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "⬢ THẾ CỜ — nguồn BỘI lớn nhất, xếp chồng được")
+	_codex_heading(parent, "⬢ FORMATIONS — your biggest MULT source, and they stack")
 	for id in ChessFormations.ORDER:
 		_codex_row(parent, "%s  ×%.1f" % [ChessFormations.display_name(id),
 			ChessFormations.mult_of(id)],
@@ -146,7 +146,7 @@ func _codex_chess_formations(parent: VBoxContainer) -> void:
 
 ## Luật Rival King — người chơi phải tra được TRƯỚC khi tới wave boss.
 func _codex_king_rules(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "☠ RIVAL KING — mỗi vua đổi MỘT luật của bàn cờ")
+	_codex_heading(parent, "☠ RIVAL KINGS — each one changes ONE rule of the board")
 	for id in KingRules.ORDER:
 		var spec: Dictionary = KingRules.RULES.get(id, {})
 		_codex_row(parent, str(spec.get("name", id)), UIStyle.RED,
@@ -155,7 +155,7 @@ func _codex_king_rules(parent: VBoxContainer) -> void:
 
 ## Bảng khắc/kháng — đây là chỗ người chơi tra "wave này nên dùng hệ gì".
 func _codex_affinity(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "⚔ KHẮC CHẾ — Dấu và phản ứng ăn ×%.1f khi khắc, ×%.1f khi bị kháng"
+	_codex_heading(parent, "⚔ AFFINITY — Marks and reactions deal ×%.1f when strong, ×%.1f when resisted"
 		% [EnemyStats.WEAK_MULT, EnemyStats.RESIST_MULT])
 	for enemy_id in EnemyStats.DEFAULT_AFFINITY.keys():
 		var row: Array = EnemyStats.DEFAULT_AFFINITY[enemy_id]
@@ -196,17 +196,17 @@ func _codex_row(parent: VBoxContainer, left: String, left_color: Color, right: S
 	row.add_child(value)
 
 func _codex_elements(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "◆ SÁU NGUYÊN TỐ — địch mang tối đa %d Dấu cùng lúc"
+	_codex_heading(parent, "◆ SIX ELEMENTS — an enemy carries at most %d Marks at once"
 		% ElementTypes.DEFAULT_MAX_MARKS)
 	for element in ElementTypes.ALL:
 		var spec: Dictionary = ElementTypes.spec(element)
 		var parts: PackedStringArray = []
 		var dps := float(spec.get("dps", 0.0))
 		if dps > 0.0:
-			parts.append("%.0f sát thương/giây" % dps)
+			parts.append("%.0f damage/sec" % dps)
 		var slow := float(spec.get("slow", 0.0))
 		if slow > 0.0:
-			parts.append("chậm %.0f%%" % (slow * 100.0))
+			parts.append("%.0f%% slow" % (slow * 100.0))
 		if bool(spec.get("pierce_armor", false)):
 			parts.append("bỏ qua giáp")
 		if bool(spec.get("stacking", false)):
@@ -225,7 +225,7 @@ func _codex_elements(parent: VBoxContainer) -> void:
 
 ## Bảng phản ứng đọc thẳng ReactionTable.TABLE — thêm phản ứng là codex tự có.
 func _codex_reactions(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "✷ PHẢN ỨNG — hai Dấu ghép được thì NỔ và tiêu thụ cả hai")
+	_codex_heading(parent, "✷ REACTIONS — two matching Marks DETONATE and consume both")
 	for reaction in ReactionTable.TABLE:
 		var pair: Array = reaction.get("pair", [])
 		if pair.size() != 2:
@@ -276,30 +276,30 @@ func _codex_reaction_desc(id: String) -> String:
 			return ""
 
 func _codex_formations(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "⬢ HÌNH THẾ — bố cục ô có ý nghĩa")
+	_codex_heading(parent, "⬢ VEIN PATTERNS — vein layout matters")
 	for id in FormationDetector.ALL_IDS:
 		_codex_row(parent, FormationDetector.display_name(str(id)),
 			Color(0.6, 0.9, 1.0), FormationDetector.describe(str(id)))
-	_codex_row(parent, "Bát Quái", Color(1.0, 0.95, 0.75),
-		"Đủ %d nguyên tố khác nhau trên bàn: %.0f%% mỗi phản ứng thăng cấp thành NGUYÊN SƠ — nổ %.0f%% trong %.1fm."
+	_codex_row(parent, "Bagua", Color(1.0, 0.95, 0.75),
+		"With %d different elements on the board: %.0f%% of reactions upgrade to PRIMAL - a %.0f%% blast within %.1fm."
 		% [ElementTypes.ALL.size(), ReactionTable.PRIMAL_CHANCE * 100.0,
 			ReactionTable.PRIMAL_MULT * 100.0, ReactionTable.PRIMAL_RADIUS])
 
 func _codex_tile_levels(parent: VBoxContainer) -> void:
-	_codex_heading(parent, "◈ CẤP Ô — đặt ô cùng loại lên chính nó để nâng cấp")
-	var names: Array[String] = ["Lv1 Mạch", "Lv2 Nguồn", "Lv3 Long Mạch"]
+	_codex_heading(parent, "◈ VEIN LEVELS — place a matching vein on itself to upgrade")
+	var names: Array[String] = ["Lv1 Vein", "Lv2 Source", "Lv3 Ley Line"]
 	for i in range(TerritoryManager.LEVEL_BONUS.size()):
 		var bonus: Dictionary = TerritoryManager.LEVEL_BONUS[i]
 		var parts: PackedStringArray = []
 		var mark_bonus := float(bonus.get("mark_duration_bonus", 0.0))
 		if mark_bonus > 0.0:
-			parts.append("Dấu +%.0fs" % mark_bonus)
+			parts.append("Mark +%.0fs" % mark_bonus)
 		var reaction := float(bonus.get("reaction_mult", 1.0))
 		if reaction > 1.001:
-			parts.append("phản ứng ×%.2f" % reaction)
+			parts.append("reaction ×%.2f" % reaction)
 		var damage := float(bonus.get("tower_damage_pct", 0.0))
 		if damage > 0.0:
-			parts.append("tháp trên ô +%.0f%% sát thương" % (damage * 100.0))
+			parts.append("piece on square +%.0f%% damage" % (damage * 100.0))
 		if parts.is_empty():
 			parts.append("gắn Dấu tiêu chuẩn")
 		_codex_row(parent, names[i] if i < names.size() else "Lv%d" % (i + 1),

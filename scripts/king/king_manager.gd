@@ -64,7 +64,7 @@ func grant_wave_clear_decree() -> void:
 	var grant := 25.0
 	if _king_stats_ref:
 		grant = _king_stats_ref.base_royal_decree
-	# Perk "Quyền Uy": nhân hệ số RD nhận được khi thắng wave (RD không regen tự động)
+	# Perk "Authority": nhân hệ số RD nhận được khi thắng wave (RD không regen tự động)
 	var gm := get_node_or_null("/root/GameManagerSingleton") as GameManager
 	if gm:
 		grant *= gm.perk_decree_grant_mult

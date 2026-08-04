@@ -6,8 +6,8 @@ class_name TerritoryStats
 # --- NHẬN DIỆN ---
 @export_group("Identity")
 @export var id: String = "territory_default"
-@export var territory_name: String = "Tên Lãnh Thổ"
-@export_multiline var description: String = "Mô tả lãnh thổ..."
+@export var territory_name: String = "Territory Name"
+@export_multiline var description: String = "Territory description..."
 @export var owner_king_id: String = ""      # ID của vua sở hữu lãnh thổ này
 @export var tile_texture: Texture2D         # Hình ảnh tile đặc biệt
 

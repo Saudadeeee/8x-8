@@ -6,8 +6,8 @@
 script = ExtResource("1_t8002")
 id = "gold_general"
 attack_pattern = 10
-name = "Kim Tướng"
-description = "Shogi. Phủ sáu ô kề: bốn hướng thẳng và hai chéo phía trước. Bền, hợp làm ngòi cho Pháo."
+name = "Gold General"
+description = "Shogi. Covers six adjacent squares: four straight and two forward diagonals. Sturdy - a good screen for a Cannon."
 cost = 40
 decree_cost = 2.0
 base_damage = 30

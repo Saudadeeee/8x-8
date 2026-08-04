@@ -1,23 +1,23 @@
 [
 	{
 		"id": "luoi_giao_tien_tuyen",
-		"name": "Lưỡi Giáo Tiền Tuyến",
+		"name": "Frontline Spears",
 		"rarity": "common",
-		"desc": "Thợ rèn mài lại toàn bộ khí giới: +8% sát thương cho toàn bộ tháp.",
+		"desc": "The smiths regrind every blade: +8% damage for every piece.",
 		"tower": {"damage_bonus": 0.08}
 	},
 	{
 		"id": "thue_chu_hau",
-		"name": "Thuế Chư Hầu",
+		"name": "Vassal Tribute",
 		"rarity": "rare",
-		"desc": "Các lãnh chúa chư hầu cống nạp: +2 vàng mỗi khi tiêu diệt một địch.",
+		"desc": "Vassal lords pay tribute: +2 gold per enemy killed.",
 		"economy": {"gold_per_kill": 2}
 	},
 	{
 		"id": "quan_su_hoang_trieu",
-		"name": "Quân Sư Hoàng Triều",
+		"name": "Royal Strategist",
 		"rarity": "epic",
-		"desc": "Quân sư dâng kế sách: +12% sát thương toàn bộ tháp và +3 Sắc Lệnh Hoàng Gia mỗi khi wave mới bắt đầu.",
+		"desc": "The strategist offers a plan: +12% damage for every piece, and +3 Royal Decree at the start of each wave.",
 		"tower": {"damage_bonus": 0.12},
 		"rd": {"per_wave_start": 3.0}
 	}

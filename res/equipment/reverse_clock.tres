@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_hl2b8")
 id = "reverse_clock"
-name = "Đồng Hồ Ngược"
-desc = "Mỗi phản ứng nổ gần đây: hồi chiêu tháp này −0.1s."
+name = "Reverse Clock"
+desc = "Each nearby reaction cuts this piece's cooldown by 0.1s."
 rarity = "epic"
 slot = "accessory"
 cost = 125

@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_18d3c")
 id = "thue_mau"
-name = "Thuế Máu"
-desc = "+1 vàng mỗi khi tiêu diệt một địch."
+name = "Blood Tax"
+desc = "+1 gold per enemy killed."
 economy = {
 "gold_per_kill": 1
 }

@@ -23,28 +23,28 @@ extends Node
 ##   "toll"      — mỗi quân trên bàn làm Bội toàn cục giảm một chút
 const RULES := {
 	"silent_king": {
-		"name": "Vua Câm", "kind": "silence", "pattern": ChessPattern.Kind.BISHOP,
-		"desc": "Tượng không bắn trong wave này. Đường chéo của ngươi vô dụng.",
+		"name": "The Mute King", "kind": "silence", "pattern": ChessPattern.Kind.BISHOP,
+		"desc": "Bishops do not fire this wave. Your diagonals are useless.",
 	},
 	"mute_rook": {
-		"name": "Vua Nghẽn", "kind": "silence", "pattern": ChessPattern.Kind.ROOK,
-		"desc": "Xe không bắn trong wave này. Cột và hàng im lặng.",
+		"name": "The Choked King", "kind": "silence", "pattern": ChessPattern.Kind.ROOK,
+		"desc": "Rooks do not fire this wave. Ranks and files fall silent.",
 	},
 	"tilted_king": {
-		"name": "Vua Nghiêng", "kind": "half", "keep_left": true, "mult": 0.35,
-		"desc": "Chỉ quân ở nửa bàn BÊN TRÁI được tính Bội đầy đủ.",
+		"name": "The Tilted King", "kind": "half", "keep_left": true, "mult": 0.35,
+		"desc": "Only pieces on the LEFT half of the board get full Mult.",
 	},
 	"mirror_king": {
-		"name": "Vua Gương", "kind": "no_stack",
-		"desc": "Mỗi loại thế cờ chỉ tính MỘT lần, dù ngươi xếp được bao nhiêu.",
+		"name": "The Mirror King", "kind": "no_stack",
+		"desc": "Each formation type counts ONCE, no matter how many you build.",
 	},
 	"hasty_king": {
-		"name": "Vua Vội", "kind": "haste", "speed_mult": 1.6, "extra_places": 3,
-		"desc": "Quân của hắn đi nhanh 60%. Bù lại ngươi được thêm 3 lượt đặt.",
+		"name": "The Hasty King", "kind": "haste", "speed_mult": 1.6, "extra_places": 3,
+		"desc": "His troops move 60% faster. In exchange you get 3 extra placements.",
 	},
 	"toll_king": {
-		"name": "Vua Thuế", "kind": "toll", "per_unit": 0.03,
-		"desc": "Mỗi quân trên bàn làm Bội toàn cục giảm 3%. Đông chưa chắc mạnh.",
+		"name": "The Toll King", "kind": "toll", "per_unit": 0.03,
+		"desc": "Every piece on the board cuts global Mult by 3%. More is not always stronger.",
 	},
 }
 

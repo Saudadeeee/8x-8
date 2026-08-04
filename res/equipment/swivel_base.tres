@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_4spac")
 id = "swivel_base"
-name = "Chân Đế Xoay"
-desc = "+1 ô tầm bắn."
+name = "Swivel Mount"
+desc = "+1 reach."
 slot = "base"
 cost = 60
 effect = {

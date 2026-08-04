@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_afdox")
 tag = "ice_guardian"
-display_name = "Vệ Binh Băng"
+display_name = "Ice Guardian"
 bonuses = Array[Dictionary]([{
 "damage_bonus": 0.08,
 "range_bonus": 0.0,

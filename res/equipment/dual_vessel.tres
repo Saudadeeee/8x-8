@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_f3pig")
 id = "dual_vessel"
-name = "Bình Chứa Kép"
-desc = "Gắn thêm Dấu của ô nguyên tố kề → tự kích phản ứng một mình."
+name = "Dual Vessel"
+desc = "Also applies the Mark of an adjacent vein - triggering reactions on its own."
 rarity = "legendary"
 slot = "accessory"
 cost = 190

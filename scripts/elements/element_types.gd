@@ -21,41 +21,41 @@ const ALL: Array[String] = [FIRE, ICE, THUNDER, WATER, POISON, EARTH]
 ## dps/slow chỉ là hiệu ứng NỀN — sức mạnh thật nằm ở phản ứng khi ghép 2 Dấu.
 const SPEC: Dictionary = {
 	FIRE: {
-		"name": "Hoả", "icon": "H", "emoji": "", "color": Color("ff6a12"),
+		"name": "Fire", "icon": "H", "emoji": "", "color": Color("ff6a12"),
 		"dps": 12.0, "slow": 0.0, "duration": 4.0,
 		"pierce_armor": false, "stacking": false,
-		"desc": "Cháy 12 sát thương/giây",
+		"desc": "Burns for 12 damage/sec",
 	},
 	ICE: {
-		"name": "Băng", "icon": "B", "emoji": "❄", "color": Color("8fd0ee"),
+		"name": "Ice", "icon": "B", "emoji": "❄", "color": Color("8fd0ee"),
 		"dps": 0.0, "slow": 0.35, "duration": 3.0,
 		"pierce_armor": false, "stacking": false,
-		"desc": "Làm chậm 35%",
+		"desc": "Slows by 35%",
 	},
 	THUNDER: {
-		"name": "Lôi", "icon": "L", "emoji": "", "color": Color("c86aff"),
+		"name": "Thunder", "icon": "L", "emoji": "", "color": Color("c86aff"),
 		"dps": 8.0, "slow": 0.0, "duration": 4.0,
 		"pierce_armor": true, "stacking": false,
-		"desc": "Giật 8 sát thương/giây, bỏ qua giáp",
+		"desc": "Shocks for 8 damage/sec, ignores armor",
 	},
 	WATER: {
-		"name": "Thuỷ", "icon": "N", "emoji": "", "color": Color("3a7ab0"),
+		"name": "Water", "icon": "N", "emoji": "", "color": Color("3a7ab0"),
 		"dps": 0.0, "slow": 0.0, "duration": 5.0,
 		"pierce_armor": false, "stacking": false,
 		"amplify_from": [ICE, THUNDER], "amplify_pct": 0.20,
-		"desc": "Ướt: +20% sát thương Băng/Lôi. Tự nó không gây sát thương",
+		"desc": "Wet: +20% Ice/Thunder damage. Deals no damage on its own",
 	},
 	POISON: {
-		"name": "Độc", "icon": "Đ", "emoji": "☠", "color": Color("66e03a"),
+		"name": "Poison", "icon": "P", "emoji": "☠", "color": Color("66e03a"),
 		"dps": 6.0, "slow": 0.0, "duration": 8.0,
 		"pierce_armor": false, "stacking": true, "max_stacks": 5,
-		"desc": "6 sát thương/giây, cộng dồn tối đa 5 tầng",
+		"desc": "6 damage/sec, stacks up to 5 times",
 	},
 	EARTH: {
-		"name": "Thổ", "icon": "T", "emoji": "", "color": Color("8a7550"),
+		"name": "Earth", "icon": "T", "emoji": "", "color": Color("8a7550"),
 		"dps": 0.0, "slow": 0.25, "duration": 5.0,
 		"pierce_armor": false, "stacking": false,
-		"desc": "Làm chậm 25%, địch chết để lại mảnh vàng",
+		"desc": "Slows by 25%; slain enemies drop gold shards",
 	},
 }
 

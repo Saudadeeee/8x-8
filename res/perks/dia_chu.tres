@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_8x3ne")
 id = "dia_chu"
-name = "Địa Chủ"
-desc = "Ô nguyên tố trong shop rẻ hơn 25%."
+name = "Landlord"
+desc = "Element veins cost 25% less in the shop."
 element = {
 "tile_discount": 0.25
 }

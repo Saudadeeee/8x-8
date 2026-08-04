@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_a4qp5")
 id = "reactor"
-name = "Lò Phản Ứng"
-desc = "20% phản ứng nổ mà KHÔNG tiêu thụ Dấu."
+name = "Reactor Core"
+desc = "20% of reactions fire WITHOUT consuming their Marks."
 rarity = "legendary"
 cost = 320
 effect = {

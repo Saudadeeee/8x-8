@@ -100,7 +100,7 @@ func _build_ui() -> void:
 	add_child(bg)
 
 	var back_btn = Button.new()
-	back_btn.text = "←  Quay Lại"
+	back_btn.text = "←  Back"
 	back_btn.custom_minimum_size = Vector2(210, 56)
 	back_btn.position = Vector2(20, 20)
 	UIStyle.apply_button(back_btn, 28)
@@ -109,7 +109,7 @@ func _build_ui() -> void:
 	UIStyle.slide_in(back_btn, Vector2(-160, 0), 0.3)
 
 	var title = Label.new()
-	title.text = "♛  CHỌN VUA"
+	title.text = "♛  CHOOSE YOUR KING"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 48, UIStyle.GOLD)
 	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -186,7 +186,7 @@ func _build_ui() -> void:
 	UIStyle.pop_in(icon_frame, 0.12)
 
 	_detail_name = Label.new()
-	_detail_name.text = "Chọn một vị Vua"
+	_detail_name.text = "Choose a King"
 	_detail_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(_detail_name, 42, UIStyle.GOLD)
 	detail_vbox.add_child(_detail_name)
@@ -227,7 +227,7 @@ func _build_ui() -> void:
 	_build_ascension_row(detail_vbox)
 
 	_start_btn = Button.new()
-	_start_btn.text = "⚔  BẮT ĐẦU"
+	_start_btn.text = "⚔  START"
 	_start_btn.custom_minimum_size = Vector2(260, 62)
 	_start_btn.disabled = true
 	UIStyle.apply_button_accent(_start_btn, UIStyle.GREEN, 22)
@@ -278,7 +278,7 @@ func _create_king_card_button(king: KingStats, is_unlocked: bool) -> Button:
 ## Danh sách quân được sủng ái, đã Việt hoá.
 static func _favored_names(ids: Array[String]) -> String:
 	if ids.is_empty():
-		return "Không có"
+		return "None"
 	var out := PackedStringArray()
 	for uid in ids:
 		out.append(UIStyle.unit_name_vi(uid))
@@ -298,15 +298,15 @@ func _select_king(king: KingStats) -> void:
 			_detail_icon.setup(KING_MODEL_PATH)
 	_detail_name.text = king.king_name
 	_detail_lore.text = king.lore
-	_detail_stats.text = "Máu: %d  |  Sắc Lệnh: %.0f/%.0f  |  Hồi: %.1f/giây  |  Ô đất: %d" % [
+	_detail_stats.text = "HP: %d  |  Decree: %.0f/%.0f  |  Regen: %.1f/s  |  Veins: %d" % [
 		king.base_health, king.base_royal_decree, king.decree_max,
 		king.decree_regen_rate, king.starting_territory_count
 	]
-	_detail_favor.text = "Sủng ái: %s  |  Sát thương +%.0f%%  Tốc độ +%.0f%%  Tầm +%.0f%%" % [
+	_detail_favor.text = "Favors: %s  |  Damage +%.0f%%  Speed +%.0f%%  Reach +%.0f%%" % [
 		_favored_names(king.favored_unit_types),
 		king.favor_damage_bonus * 100, king.favor_speed_bonus * 100, king.favor_range_bonus * 100
 	]
-	_detail_ability.text = "[%s]\n%s\n(Hồi chiêu %.0f giây  |  Tốn %.0f Sắc Lệnh)" % [
+	_detail_ability.text = "[%s]\n%s\n(Cooldown %.0fs  |  Costs %.0f Decree)" % [
 		king.ability_name, king.ability_description,
 		king.ability_cooldown, king.ability_decree_cost
 	]
@@ -314,7 +314,7 @@ func _select_king(king: KingStats) -> void:
 		_detail_locked.text = ""
 		_start_btn.disabled = false
 	else:
-		_detail_locked.text = " CHƯA MỞ — cần %d điểm tích luỹ" % king.unlock_cost
+		_detail_locked.text = " LOCKED - needs %d meta points" % king.unlock_cost
 		_start_btn.disabled = true
 	# Nhấn mạnh việc đổi tướng: tên pulse + model quay lại từ đầu
 	UIStyle.pulse(_detail_name, 1.10)
@@ -384,7 +384,7 @@ func _shift_ascension(delta: int) -> void:
 func _refresh_ascension_ui() -> void:
 	var cap := _max_ascension()
 	if is_instance_valid(_asc_value_label):
-		_asc_value_label.text = "Thăng Cấp A%d" % _ascension_level
+		_asc_value_label.text = "Ascension A%d" % _ascension_level
 	if is_instance_valid(_asc_prev_btn):
 		_asc_prev_btn.disabled = _ascension_level <= 0
 	if is_instance_valid(_asc_next_btn):
@@ -393,11 +393,11 @@ func _refresh_ascension_ui() -> void:
 		return
 	if _ascension_level <= 0:
 		if cap <= 0:
-			_asc_desc_label.text = "Độ khó thường. Thắng một ván để mở khoá A1."
+			_asc_desc_label.text = "Normal difficulty. Win a run to unlock A1."
 		else:
-			_asc_desc_label.text = "Độ khó thường  ·  đã mở tới A%d" % cap
+			_asc_desc_label.text = "Normal difficulty  ·  unlocked up to A%d" % cap
 		return
-	_asc_desc_label.text = "Máu địch +%d%%  ·  Tốc độ địch +%d%%  ·  Vàng khởi đầu %d  ·  Thưởng meta +%d%%" % [
+	_asc_desc_label.text = "Enemy HP +%d%%  ·  Enemy speed +%d%%  ·  Starting gold %d  ·  Meta reward +%d%%" % [
 		int(round(ASC_HP_PER_LEVEL * 100.0 * _ascension_level)),
 		int(round(ASC_SPEED_PER_LEVEL * 100.0 * _ascension_level)),
 		ASC_GOLD_PER_LEVEL * _ascension_level,

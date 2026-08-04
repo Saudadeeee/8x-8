@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7201")
 id = "rl_pawn_lance"
-name = "Tốt Trường Thương"
+name = "Pikeman Pawn"
 rarity = "epic"
-desc = "Mọi Tốt đánh thẳng một hướng xuôi bàn, tầm rất xa. Đổi phủ rộng lấy phủ sâu."
+desc = "Every Pawn fires straight down the board, very far. Trades width for depth."
 cost = 240
 effect = {
 "pawn_pattern": 9

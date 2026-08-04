@@ -1,5 +1,5 @@
 # res://scripts/elements/element_marks.gd
-# Component "Dấu Nguyên Tố" gắn trên MỖI địch — enemy tự `add_child` trong `_ready()`.
+# Component "Element Mark" gắn trên MỖI địch — enemy tự `add_child` trong `_ready()`.
 #
 # Trách nhiệm (futureplan.md §1.1):
 #   - Giữ tối đa `max_marks` Dấu; Dấu thứ N+1 đẩy Dấu CŨ NHẤT ra.
@@ -15,7 +15,7 @@ extends Node
 ## Phát khi một phản ứng nổ trên chính con địch này.
 signal reaction_triggered(reaction_id: String, position: Vector3)
 
-## Số Dấu tối đa mang cùng lúc. Di Vật "Bánh Xe Nguyên Tố" nâng lên 3 (futureplan §3.3).
+## Số Dấu tối đa mang cùng lúc. Di Vật "Elemental Wheel" nâng lên 3 (futureplan §3.3).
 var max_marks: int = ElementTypes.DEFAULT_MAX_MARKS
 
 # Nhãn nổi trên đầu — cao hơn HP bar của enemy (HP_BAR_HEIGHT = 1.25) để không chồng.
@@ -51,7 +51,7 @@ func _exit_tree() -> void:
 
 # ── API công khai ─────────────────────────────────────────────────────────────
 
-## Gắn một Dấu. `duration_mult` đến từ trang bị "Đá Dẫn Nguyên Tố" / thuốc "Dầu Dẫn".
+## Gắn một Dấu. `duration_mult` đến từ trang bị "Conductor Stone" / thuốc "Conductive Oil".
 ## `duration_bonus` cộng THẲNG số giây (thưởng cấp Ô nguyên tố: Lv2 +2s, Lv3 +4s).
 ## Cộng SAU khi nhân `duration_mult` để hai nguồn không nhân chồng nhau.
 func apply(element: String, source: Node = null, duration_mult: float = 1.0,
@@ -89,7 +89,7 @@ func apply(element: String, source: Node = null, duration_mult: float = 1.0,
 		var reaction: Dictionary = ReactionTable.find(element, other_element)
 		if reaction.is_empty():
 			continue
-		# Di vật "Lò Phản Ứng": có xác suất phản ứng nổ mà KHÔNG ăn Dấu cũ.
+		# Di vật "Reactor Core": có xác suất phản ứng nổ mà KHÔNG ăn Dấu cũ.
 		# Dấu MỚI vẫn không được thêm vào (nếu thêm cả hai thì mỗi đòn sau đó
 		# lại nổ tiếp và vòng lặp phản ứng thành vô hạn).
 		if not _keeps_marks():
@@ -114,9 +114,9 @@ func apply(element: String, source: Node = null, duration_mult: float = 1.0,
 	_refresh_label()
 	_perk_water_spread(element, source, duration_mult)
 
-## Perk "Thuỷ Mạch" — Dấu Thuỷ vừa bám thì tự cấy sang 1 địch kề gần nhất.
+## Perk "Water Vein" — Dấu Thuỷ vừa bám thì tự cấy sang 1 địch kề gần nhất.
 ## Dùng `implant` để không kích phản ứng dây chuyền, và chỉ chạy ở nhánh
-## "Dấu mới được thêm" nên gia hạn Dấu cũ không lây thêm lần nữa.
+## "the newest Mark added" nên gia hạn Dấu cũ không lây thêm lần nữa.
 const WATER_SPREAD_RADIUS: float = 2.0
 
 func _perk_water_spread(element: String, source: Node, duration_mult: float) -> void:
@@ -155,7 +155,7 @@ func implant(element: String, stacks: int = 1, source: Node = null, duration_mul
 	if not ElementTypes.is_valid(element) or not _owner_alive():
 		return
 	var spec: Dictionary = ElementTypes.spec(element)
-	# Dùng _stack_cap chứ không đọc thẳng spec: perk "Độc Sư" / synergy "Đại Dịch"
+	# Dùng _stack_cap chứ không đọc thẳng spec: perk "Toxicologist" / synergy "Plague"
 	# phải nâng trần cho CẢ Dấu cấy (Cháy Độc, Lan Truyền), không riêng Dấu bắn ra.
 	var cap: int = _stack_cap(element, spec) if bool(spec.get("stacking", false)) else 1
 	var deadline: float = now() + ElementTypes.duration_of(element) * maxf(0.05, duration_mult)
@@ -183,7 +183,7 @@ func has_mark(element: String) -> bool:
 func mark_count() -> int:
 	return _marks.size()
 
-## Synergy Hoả ×6 "Biển Lửa" — mỗi nhịp cháy, Dấu Hoả cấy sang địch trong bán kính.
+## Synergy Hoả ×6 "Sea of Flame" — mỗi nhịp cháy, Dấu Hoả cấy sang địch trong bán kính.
 ## Dùng `implant` nên KHÔNG tự kích phản ứng: nếu dùng `apply`, một con dính Thuỷ
 ## đứng cạnh sẽ nổ Bốc Hơi mỗi giây và biến DoT thành máy huỷ diệt vô hạn.
 func _sea_of_fire_spread(mark: Dictionary) -> void:
@@ -218,7 +218,7 @@ func _owner_element_mult(element: String) -> float:
 		return 1.0
 	return float(_owner_node.call("element_multiplier", element))
 
-## % sát thương DoT cộng thêm cho một nguyên tố (perk "Hoả Sư"...).
+## % sát thương DoT cộng thêm cho một nguyên tố (perk "Pyromancer"...).
 func _perk_element_bonus(element: String) -> float:
 	var gm := get_node_or_null("/root/GameManagerSingleton")
 	if gm == null:
@@ -229,7 +229,7 @@ func _perk_element_bonus(element: String) -> float:
 	var value: Variant = (table as Dictionary).get(element)
 	return maxf(0.0, float(value)) if (value is int or value is float) else 0.0
 
-## Trần số tầng của một Dấu — perk "Độc Sư" nâng trần Độc.
+## Trần số tầng của một Dấu — perk "Toxicologist" nâng trần Độc.
 func _stack_cap(element: String, spec: Dictionary) -> int:
 	var cap: int = maxi(1, int(spec.get("max_stacks", 1)))
 	if element != ElementTypes.POISON:
@@ -237,7 +237,7 @@ func _stack_cap(element: String, spec: Dictionary) -> int:
 	var gm := get_node_or_null("/root/GameManagerSingleton")
 	if gm == null:
 		return cap
-	# Hai nguồn nâng trần: perk "Độc Sư" (8) và synergy Độc ×6 "Đại Dịch" (10).
+	# Hai nguồn nâng trần: perk "Toxicologist" (8) và synergy Độc ×6 "Plague" (10).
 	# Lấy MAX — chồng cả hai vẫn là 10, không cộng thành 18.
 	for field in ["perk_poison_max_stacks", "syn_poison_stacks"]:
 		var value: Variant = gm.get(field)
@@ -245,7 +245,7 @@ func _stack_cap(element: String, spec: Dictionary) -> int:
 			cap = maxi(cap, int(value))
 	return cap
 
-## Lượt phản ứng này có giữ lại Dấu cũ không (di vật "Lò Phản Ứng")?
+## Lượt phản ứng này có giữ lại Dấu cũ không (di vật "Reactor Core")?
 func _keeps_marks() -> bool:
 	var gm := get_node_or_null("/root/GameManagerSingleton")
 	if gm == null:
@@ -360,7 +360,7 @@ func _apply_dot() -> void:
 		var amount := dps * float(maxi(1, int(m.get("stacks", 1))))
 		if wet and amplify_from.has(element):
 			amount *= 1.0 + amplify_pct
-		# Perk theo nguyên tố ("Hoả Sư", "Thợ Ghép Mạch") — nhân vào DoT của
+		# Perk theo nguyên tố ("Pyromancer", "Ley Weaver") — nhân vào DoT của
 		# đúng Dấu đó, KHÔNG đụng sát thương phản ứng (đã có reaction_power_mult).
 		amount *= 1.0 + _perk_element_bonus(element)
 		# Khắc/kháng nguyên tố của loài (EnemyStats.DEFAULT_AFFINITY).

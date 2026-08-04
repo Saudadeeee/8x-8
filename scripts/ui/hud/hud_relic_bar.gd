@@ -74,7 +74,7 @@ func _build_relic_bar() -> void:
 	# Hệ nguyên tố không tự giải thích được, người chơi phải biết chỗ tra.
 	var codex_hint := Label.new()
 	codex_hint.name = "CodexHint"
-	codex_hint.text = "F1 — Sách Nguyên Tố"
+	codex_hint.text = "F1 — Codex"
 	codex_hint.anchor_left = 1.0
 	codex_hint.anchor_right = 1.0
 	codex_hint.offset_left = -float(UIStyle.HUD_RIGHT_PANEL_WIDTH) - 12.0
@@ -116,7 +116,7 @@ func refresh_relics(ids: Array) -> void:
 		else:
 			slot.icon = null
 			slot.text = HudText.short_label({"name": display})
-		slot.tooltip_text = "%s\n%s\n\n(Bấm để bán, hoàn 40%%)" % [display, str(data.get("desc", ""))]
+		slot.tooltip_text = "%s\n%s\n\n(Click to sell, refunds 40%%)" % [display, str(data.get("desc", ""))]
 		slot.disabled = false
 		HudText.style_button_text(slot, 13, UIStyle.GOLD)
 

@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7100")
 id = "chess_spearhead"
-name = "Mũi Giáo Xuyên"
+name = "Spearhead"
 rarity = "epic"
-desc = "Xe, Tượng và Hậu bắn XUYÊN QUA một quân của mình rồi mới dừng. Bàn càng chật càng đáng giá — với 7 quân đã mất 19% tầm phủ vì bị chắn."
+desc = "Rooks, Bishops and Queens fire THROUGH one of your own pieces before stopping. The tighter the board the better - at 7 pieces you already lose 19% of your coverage to blocking."
 cost = 250
 effect = {
 "pierce_count": 1

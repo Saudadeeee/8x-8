@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_i7yxi")
 id = "tia_set_dong_chai"
-name = "Tia Sét Đóng Chai"
-desc = "Tháp trong vùng gắn Dấu Lôi trong 12 giây."
+name = "Bottled Lightning"
+desc = "Pieces in the area apply Thunder Marks for 12 seconds."
 rarity = "rare"
 buff = {
 "grant_element": "thunder"

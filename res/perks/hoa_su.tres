@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_446gw")
 id = "hoa_su"
-name = "Hoả Sư"
-desc = "Thiêu đốt của Dấu Hoả mạnh thêm 50%. Nền của mọi lối chơi Hoả."
+name = "Pyromancer"
+desc = "Fire Mark burn deals 50% more. The foundation of every Fire build."
 rarity = "rare"
 element = {
 "element_damage": {

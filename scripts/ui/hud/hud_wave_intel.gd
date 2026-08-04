@@ -53,7 +53,7 @@ func show_wave_intel_popup(data: Dictionary) -> void:
 
 	# Title
 	var title_lbl = Label.new()
-	title_lbl.text = "⚔  TRINH SÁT — WAVE %d" % data.get("wave", 0)
+	title_lbl.text = "⚔  SCOUTING — WAVE %d" % data.get("wave", 0)
 	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title_lbl, 22, UIStyle.GOLD)
 	vbox.add_child(title_lbl)
@@ -82,7 +82,7 @@ func show_wave_intel_popup(data: Dictionary) -> void:
 	var header_row = HBoxContainer.new()
 	header_row.add_theme_constant_override("separation", 8)
 	vbox.add_child(header_row)
-	for col_text in ["Quân địch", "SL", "HP", "Tốc độ", "Dmg", "Khắc / Kháng", "Năng lực"]:
+	for col_text in ["Enemies", "SL", "HP", "Speed", "Dmg", "Weak / Resist", "Ability"]:
 		var h = Label.new()
 		h.text = col_text
 		UIStyle.body(h, 11, UIStyle.TEXT_DIM)
@@ -110,7 +110,7 @@ func show_wave_intel_popup(data: Dictionary) -> void:
 			"×%d" % e.get("count", 0),
 			str(e.get("hp", 0)),
 			# speed trong .tres vẫn là px/s (16 px = 1 ô) — chỉ quy đổi khi hiển thị
-			"%.1f ô/s" % (float(e.get("speed", 0)) / 16.0),
+			"%.1f sq/s" % (float(e.get("speed", 0)) / 16.0),
 			"-%d HP" % e.get("damage", 1),
 			# Cột khắc/kháng — thứ quyết định NÊN ĐẶT THÁP LÊN Ô NÀO cho wave này.
 			_affinity_text(str(e.get("id", ""))),
@@ -129,14 +129,14 @@ func show_wave_intel_popup(data: Dictionary) -> void:
 
 	# Total
 	var total_lbl = Label.new()
-	total_lbl.text = "Tổng: %d địch phải tiêu diệt" % data.get("total", 0)
+	total_lbl.text = "Total: %d enemies to kill" % data.get("total", 0)
 	total_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(total_lbl, 15, UIStyle.TEXT)
 	vbox.add_child(total_lbl)
 
 	# Close button — xác nhận bắt đầu countdown
 	var close_btn = Button.new()
-	close_btn.text = "⚔  SẴN SÀNG CHIẾN ĐẤU!"
+	close_btn.text = "⚔  READY TO FIGHT!"
 	close_btn.custom_minimum_size = Vector2(260, 46)
 	UIStyle.apply_button_accent(close_btn, UIStyle.RED, 15)
 	close_btn.pressed.connect(func():

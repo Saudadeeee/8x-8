@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_d9005")
 id = "deck_ascetic"
-display_name = "Bộ Khổ Hạnh"
-desc = "Bộ chuẩn nhưng vàng khởi đầu chỉ còn một nửa. Bù lại ô KHÔNG có nguyên tố cộng +45% Bội — không cần mua ô."
-origin = "Cờ vua"
+display_name = "Ascetic Set"
+desc = "The standard set on half the starting gold. In exchange, squares WITHOUT an element add +45% Mult - you never need to buy veins."
+origin = "Chess"
 deck = {
 "pawn": 6, "rook": 3, "knight": 2, "bishop": 2, "queen": 1
 }

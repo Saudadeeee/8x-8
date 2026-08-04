@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_r7000")
 id = "chess_broken_crown"
-name = "Vương Miện Gãy"
-desc = "Mỗi LOẠI thế cờ khác nhau trên bàn cộng +0.22 Bội cho toàn bàn. Thưởng cho đội hình đa dạng, không phải đội hình dồn một kiểu."
+name = "Broken Crown"
+desc = "Each DIFFERENT formation type on the board adds +0.22 Mult board-wide. Rewards variety, not stacking one shape."
 cost = 260
 effect = {
 "variety_mult": 0.22

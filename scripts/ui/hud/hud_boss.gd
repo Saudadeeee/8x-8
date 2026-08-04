@@ -189,7 +189,7 @@ func show_boss_intro(name: String, title: String) -> void:
 	overlay.add_child(center)
 
 	var sub_top := Label.new()
-	sub_top.text = "☠  KẺ THÙ HÙNG MẠNH XUẤT HIỆN  ☠"
+	sub_top.text = "☠  A MIGHTY FOE APPEARS  ☠"
 	sub_top.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UIStyle.title(sub_top, 22, UIStyle.BLOOD.lightened(0.35))

@@ -8,8 +8,8 @@ enum Element { FIRE, WATER, WOOD, EARTH, METAL, DARK, LIGHT }
 
 @export_group("General")
 @export var id: String = "unit_id"
-@export var name: String = "Tên Đơn Vị"
-@export_multiline var description: String = "Mô tả đơn vị..."
+@export var name: String = "Unit Name"
+@export_multiline var description: String = "Unit description..."
 @export var cost: int = 5           # Vàng — mua trong Shop
 @export var decree_cost: float = 1.0 # Royal Decree — để triển khai lên bàn cờ
 
@@ -34,9 +34,9 @@ enum Element { FIRE, WATER, WOOD, EARTH, METAL, DARK, LIGHT }
 ## Đây là chỉ số QUAN TRỌNG NHẤT của một quân: nó biến vị trí đặt thành câu đố
 ## thay vì "đặt đâu cũng như nhau" của mô hình bán kính cũ.
 ##   0 Xe · 1 Tượng · 2 Hậu · 3 Mã · 4 Tốt · 5 Vua · 6 Công thành · 7 Toả tròn
-@export_enum("Xe (dọc+ngang)", "Tượng (chéo)", "Hậu (8 hướng)", "Mã (chữ L)",
-	"Tốt (4 chéo kề)", "Vua (8 ô kề)", "Công thành (vành khuyên)",
-	"Toả tròn (mọi hướng)") var attack_pattern: int = 7
+@export_enum("Rook (rank + file)", "Bishop (diagonal)", "Queen (8 directions)", "Knight (L-jump)",
+	"Pawn (4 diagonals)", "King (8 adjacent)", "Siege (ring)",
+	"Radial (all directions)") var attack_pattern: int = 7
 
 @export var element: Element = Element.FIRE
 @export var faction: String = "iron"   # "iron" | "wild" | "hell" | "magic"

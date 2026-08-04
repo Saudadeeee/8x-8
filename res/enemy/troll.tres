@@ -7,7 +7,7 @@
 script = ExtResource("1_troll")
 id = "troll"
 display_name = "Troll"
-ability_note = "Hồi 8 HP/giây — dồn hỏa lực"
+ability_note = "Regenerates 8 HP/sec - focus fire"
 spawn_seasons = Array[int]([1, 3])
 texture = ExtResource("2_troll")
 max_hp = 250

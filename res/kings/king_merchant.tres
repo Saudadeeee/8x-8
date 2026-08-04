@@ -7,8 +7,8 @@
 [resource]
 script = ExtResource("1_km")
 id = "king_merchant"
-king_name = "Vua Thương Hội"
-lore = "Ngài chưa bao giờ rút kiếm. Ngài mua đội quân mạnh hơn đội quân đang tiến đến — và trả bằng tiền của chính kẻ đã thuê chúng."
+king_name = "The Merchant King"
+lore = "He has never drawn a sword. He buys an army stronger than the one marching at him - paid for with the coin of whoever hired it."
 portrait = ExtResource("3_pt")
 base_health = 14
 base_royal_decree = 18.0
@@ -21,8 +21,8 @@ favored_unit_types = ["pawn", "alchemist", "warlock"]
 favor_damage_bonus = 0.12
 favor_speed_bonus = 0.10
 favor_range_bonus = 0.05
-ability_name = "Kim Khố"
-ability_description = "Nhận 60 vàng + 22 mỗi wave đã qua, và trả giá xáo shop về mức đáy. Đổi Sắc Lệnh lấy quyền chọn hàng."
+ability_name = "Golden Coffer"
+ability_description = "Gain 60 gold plus 22 per wave survived, and reset the reroll price to its floor. Trade Decree for the right to pick your stock."
 ability_decree_cost = 30.0
 ability_cooldown = 55.0
 ability_script = ExtResource("2_ab")

@@ -118,13 +118,13 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 		if variety > 0.0:
 			var kinds: int = (cf.call("counts") as Dictionary).size()
 			if kinds > 0:
-				out.append({"name": "Vương Miện Gãy", "mult": 1.0 + variety * float(kinds)})
+				out.append({"name": "Broken Crown", "mult": 1.0 + variety * float(kinds)})
 		# Cờ tàn: bàn càng thưa, mỗi quân càng mạnh.
 		var endg := float(gm0.relic_endgame_mult)
 		if endg > 0.0:
 			var n_units: int = _towers().size()
 			var empty: int = maxi(0, 20 - n_units)
-			out.append({"name": "Cờ Tàn", "mult": 1.0 + endg * float(empty)})
+			out.append({"name": "Endgame", "mult": 1.0 + endg * float(empty)})
 		# Con Tốt Thí: mỗi Tốt trên bàn cộng Bội cho các quân KHÁC.
 		var tithe := float(gm0.relic_pawn_tithe)
 		if tithe > 0.0:
@@ -133,14 +133,14 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 				if t.has_method("pattern_kind") and int(t.pattern_kind()) == ChessPattern.Kind.PAWN:
 					pawns += 1
 			if pawns > 0:
-				out.append({"name": "Con Tốt Thí", "mult": 1.0 + tithe * float(pawns)})
+				out.append({"name": "Sacrificial Pawn", "mult": 1.0 + tithe * float(pawns)})
 
 	# 2. Cấp ô nguyên tố dưới chân
 	var tm = map.get("territory_manager")
 	var has_element := false
 	if tm != null and tm.has_method("has_biome_at"):
 		has_element = bool(tm.has_biome_at(cell))
-		# Di vật "Long Mạch": ô nguyên tố lan sang 4 ô kề. Ô lan KHÔNG có mesh
+		# Di vật "Ley Line": ô nguyên tố lan sang 4 ô kề. Ô lan KHÔNG có mesh
 		# riêng — nó chỉ tồn tại trong công thức, nên chỉ tính ở đây.
 		if not has_element and gm0 != null and bool(gm0.relic_tile_spread):
 			for dir in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
@@ -153,7 +153,7 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 		var rm := float(b.get("reaction_mult", 1.0))
 		var dp := float(b.get("tower_damage_pct", 0.0))
 		if rm > 1.001:
-			out.append({"name": "Ô nguyên tố", "mult": rm})
+			out.append({"name": "Element vein", "mult": rm})
 		if dp > 0.001:
 			out.append({"name": "Long mạch", "mult": 1.0 + dp})
 
@@ -163,12 +163,12 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 		var gr := float(gm.global_reaction_mult)
 		if gr > 1.001:
 			out.append({"name": "Di vật", "mult": gr})
-		# Di vật "Đất Cằn": thưởng cho ô KHÔNG có nguyên tố — mở lối chơi phản
+		# Di vật "Barren Ground": thưởng cho ô KHÔNG có nguyên tố — mở lối chơi phản
 		# nguyên tố, thứ mà bản cũ không có đường nào đi.
 		var plain := float(gm.relic_plain_tile_mult)
 		if plain > 0.0 and not has_element:
-			out.append({"name": "Đất Cằn", "mult": 1.0 + plain})
-		# Di vật "Vây Bắt" (cờ vây): ô bị ≥3 quân kề bao vây.
+			out.append({"name": "Barren Ground", "mult": 1.0 + plain})
+		# Di vật "Encirclement" (cờ vây): ô bị ≥3 quân kề bao vây.
 		var surr := float(gm.relic_surround_mult)
 		if surr > 0.0:
 			var neighbours := 0
@@ -181,7 +181,7 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 							neighbours += 1
 							break
 			if neighbours >= 3:
-				out.append({"name": "Vây Bắt", "mult": 1.0 + surr * float(neighbours)})
+				out.append({"name": "Encirclement", "mult": 1.0 + surr * float(neighbours)})
 		var rule := map.get_node_or_null("KingRules")
 		if rule and rule.has_method("cell_mult"):
 			var rv := float(rule.call("cell_mult", cell))
@@ -494,9 +494,9 @@ func summary(wave: int) -> Dictionary:
 					"per_enemy": damage_per_enemy(spd), "speed": spd,
 					"duration": dur, "ratio": boss_ratio,
 					"ok": bdmg >= bhp, "boss": true,
-					"note": "Sát thương lên RIÊNG Rival King / máu hắn",
+					"note": "Damage to the Rival King alone / his HP",
 				}
-			boss_note = "Đủ hạ Rival King (×%.1f) — chỗ nghẽn là đám hộ vệ" % boss_ratio
+			boss_note = "Enough to kill the Rival King (×%.1f) - his guards are the bottleneck" % boss_ratio
 
 	return {
 		"damage": dmg,

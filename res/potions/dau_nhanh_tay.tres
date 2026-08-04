@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_3vwu4")
 id = "dau_nhanh_tay"
-name = "Dầu Nhanh Tay"
-desc = "Tháp trong vùng giảm 0.35s hồi chiêu trong 12 giây."
+name = "Quickhand Oil"
+desc = "Pieces in the area lose 0.35s cooldown for 12 seconds."
 buff = {
 "speed_bonus": 0.35
 }

@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_3e2n1")
 id = "vein_conduit"
-name = "Ống Dẫn Mạch"
-desc = "Đứng ô thường vẫn nhận Dấu của ô nguyên tố KỀ BÊN."
+name = "Ley Conduit"
+desc = "On a plain square, still gains the Mark of an ADJACENT vein."
 rarity = "rare"
 slot = "accessory"
 cost = 110

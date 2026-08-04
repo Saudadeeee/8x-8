@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_d9000")
 id = "deck_standard"
-display_name = "Bộ Chuẩn"
-desc = "Bộ cờ vua tiêu chuẩn. Cân bằng, không có luật riêng — nền tảng để so mọi bộ khác."
-origin = "Cờ vua"
+display_name = "Standard Set"
+desc = "The standard chess set. Balanced, no special rule - the baseline every other set is measured against."
+origin = "Chess"
 deck = {
 "pawn": 6, "rook": 3, "knight": 2, "bishop": 2, "queen": 1
 }

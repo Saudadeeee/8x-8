@@ -24,7 +24,7 @@ const PERK_RARITY_COLORS := {
 	"legendary": Color(1.00, 0.78, 0.15, 1.0),   # vàng
 }
 const PERK_RARITY_NAMES := {
-	"common": "Thường", "rare": "Hiếm", "epic": "Sử Thi", "legendary": "Huyền Thoại",
+	"common": "Common", "rare": "Rare", "epic": "Epic", "legendary": "Legendary",
 }
 
 var _perk_draft_overlay: ColorRect = null
@@ -71,7 +71,7 @@ func show_perk_draft(perks: Array, on_pick: Callable) -> void:
 	UIStyle.pop_in(title)
 
 	var subtitle = Label.new()
-	subtitle.text = "Phần thưởng sau wave — hiệu lực đến hết ván"
+	subtitle.text = "Post-wave reward — lasts the rest of the run"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(subtitle, 13, UIStyle.TEXT_DIM)
 	center.add_child(subtitle)
@@ -171,7 +171,7 @@ func _create_perk_card(perk: Dictionary, on_pick: Callable) -> Control:
 	vbox.add_child(desc_lbl)
 
 	var pick_btn = Button.new()
-	pick_btn.text = "CHỌN"
+	pick_btn.text = "CHOOSE"
 	pick_btn.custom_minimum_size = Vector2(0, 38)
 	UIStyle.apply_button_accent(pick_btn, accent, 14)
 	pick_btn.pressed.connect(func():
@@ -182,7 +182,7 @@ func _create_perk_card(perk: Dictionary, on_pick: Callable) -> Control:
 	card.gui_input.connect(func(event: InputEvent):
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			_pick_perk_card_animated(card, perk.get("id", ""), on_pick))
-	UIStyle.make_click_target(card)  # nút "Chọn" bên trong vẫn bấm được
+	UIStyle.make_click_target(card)  # nút "Choose" bên trong vẫn bấm được
 	UIStyle.hover_lift(card, 1.055)
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	return card

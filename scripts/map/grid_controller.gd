@@ -607,7 +607,7 @@ func get_element_at(cell: Vector2i) -> String:
 
 	if not ElementTypes.is_valid(element):
 		element = ElementTypes.NONE
-		# Di vật "Long Mạch Sống": ô Lv3 lan nguyên tố của nó sang 4 ô kề.
+		# Di vật "Living Ley Line": ô Lv3 lan nguyên tố của nó sang 4 ô kề.
 		# Chỉ chạy khi ô này TRỐNG nên ô nguyên tố thật không bao giờ bị ghi đè.
 		if resolved and _vein_spread_enabled():
 			element = _vein_from_neighbour(cell)

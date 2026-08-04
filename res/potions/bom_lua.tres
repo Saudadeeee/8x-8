@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_bgnap")
 id = "bom_lua"
-name = "Bom Lửa"
-desc = "120 sát thương trong vùng 2m và gắn Dấu Hoả."
+name = "Firebomb"
+desc = "120 damage in a 2m area and applies a Fire Mark."
 target = "enemies"
 radius = 2.0
 strike = {

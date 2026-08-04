@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_mhlx5")
 id = "binh_nuoc_ban"
-name = "Bình Nước Bẩn"
-desc = "Không gây sát thương — gắn Dấu Thuỷ cho TOÀN BỘ địch trên màn."
+name = "Murky Flask"
+desc = "Deals no damage - applies a Water Mark to EVERY enemy on screen."
 rarity = "rare"
 target = "enemies"
 radius = 999.0

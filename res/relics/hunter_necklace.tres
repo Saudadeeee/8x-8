@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_v54sw")
 id = "hunter_necklace"
-name = "Vòng Cổ Thợ Săn"
-desc = "Địch đang mang Dấu nhận +15% sát thương từ MỌI nguồn."
+name = "Hunter's Collar"
+desc = "Marked enemies take +15% damage from EVERY source."
 cost = 230
 effect = {
 "marked_damage_taken": 0.15

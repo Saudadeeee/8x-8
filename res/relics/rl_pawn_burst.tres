@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7200")
 id = "rl_pawn_burst"
-name = "Tốt Nổ"
+name = "Bursting Pawn"
 rarity = "epic"
-desc = "Mọi Tốt đánh CẢ TÁM ô kề thay vì bốn ô chéo. Tường Tốt từ hàng rào mỏng thành bức tường thật."
+desc = "Every Pawn hits ALL EIGHT adjacent squares instead of four diagonals. The Pawn Wall stops being a fence and becomes a wall."
 cost = 260
 effect = {
 "pawn_pattern": 5

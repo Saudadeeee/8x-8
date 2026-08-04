@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7207")
 id = "rl_twin_grip"
-name = "Song Thủ"
+name = "Twin Grip"
 rarity = "epic"
-desc = "Hai trang bị TRÙNG loại thì hiệu ứng NHÂN đôi thay vì cộng."
+desc = "Two copies of the SAME equipment MULTIPLY instead of add."
 cost = 300
 effect = {
 "equip_stack_mult": 2.0

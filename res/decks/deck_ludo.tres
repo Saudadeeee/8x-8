@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_d9004")
 id = "deck_ludo"
-display_name = "Bộ Cá Ngựa"
-desc = "Rất ít quân nhưng mỗi con đánh cực mạnh. Trần quân thấp hơn 4, vàng khởi đầu gấp đôi."
-origin = "Cá ngựa"
+display_name = "Ludo Set"
+desc = "Very few pieces, each hitting extremely hard. Unit cap is 4 lower, starting gold is doubled."
+origin = "Ludo"
 deck = {
 "dice_rider": 4, "queen": 2, "rook": 2
 }

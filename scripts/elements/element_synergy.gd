@@ -27,12 +27,12 @@ const LEVEL_STATS: Array[Dictionary] = [
 
 ## Tên mốc ×6 — hiệu ứng đổi luật, mỗi nguyên tố một kiểu.
 const CAPSTONE: Dictionary = {
-	ElementTypes.FIRE:    {"name": "Phần Thiên Hỏa Hải",   "desc": "Hỏa Ấn bùng phát, mỗi nhịp thiêu đốt lan truyền sang kẻ địch trong phạm vi 1.5m."},
-	ElementTypes.ICE:     {"name": "Vạn Niên Hàn Băng",    "desc": "Hàn khí thấu xương, trạng thái Đóng Băng gỡ bỏ hoàn toàn thời gian cooldown ẩn."},
-	ElementTypes.THUNDER: {"name": "Cuồng Lôi Chấn Thiên", "desc": "Sấm sét liên hoàn, trạng thái Dẫn Điện lan tỏa lên tối đa 8 mục tiêu."},
-	ElementTypes.POISON:  {"name": "Thiên Phạt Cổ Độc",    "desc": "Kịch độc thâm nhập, Độc Ấn có thể ngưng tụ cộng dồn tối đa 10 tầng."},
-	ElementTypes.WATER:   {"name": "Phiên Thiên Nộ Triều", "desc": "Sóng dữ bao trùm, kẻ địch vừa xuất chiến lập tức bị gán Thủy Ấn."},
-	ElementTypes.EARTH:   {"name": "Băng Sơn Liệt Địa",    "desc": "Đại địa sinh kim, trạng thái Kết Tinh ngưng tụ 40 vàng thay vì 15."},
+	ElementTypes.FIRE:    {"name": "Sea of Flame",   "desc": "Fire Marks erupt: each burn tick spreads to enemies within 1.5m."},
+	ElementTypes.ICE:     {"name": "Eternal Ice",    "desc": "Bone-deep cold: Freeze loses its hidden cooldown entirely."},
+	ElementTypes.THUNDER: {"name": "Thunderstorm", "desc": "Chained thunder: Conduct spreads to as many as 8 targets."},
+	ElementTypes.POISON:  {"name": "Ancient Plague",    "desc": "Deep venom: Poison Marks stack up to 10 times."},
+	ElementTypes.WATER:   {"name": "Raging Tide", "desc": "A rolling tide: every enemy spawns already carrying a Water Mark."},
+	ElementTypes.EARTH:   {"name": "Glacier Split",    "desc": "The earth breeds gold: Crystallize condenses 40 gold instead of 15."},
 }
 
 ## Bảng Địa Chấn: 40/15 ≈ 2.67. Viết thành hằng để chỉnh một chỗ.
@@ -153,7 +153,7 @@ func summary_text() -> String:
 		var next_threshold: int = THRESHOLDS[mini(level, THRESHOLDS.size() - 1)]
 		parts.append("%s %d/%d" % [ElementTypes.display_name(element), count, next_threshold])
 	if bagua_active:
-		parts.append("☯ Bát Quái")
+		parts.append("☯ Bagua")
 	return " · ".join(parts)
 
 ## Danh sách mốc ×6 đang bật — HUD hiện tên để người chơi biết mình mở được gì.

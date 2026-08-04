@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_im5g7")
 id = "khien_vuong_trieu"
-name = "Khiên Vương Triều"
-desc = "Nhà Vua miễn mọi sát thương trong 10 giây."
+name = "Royal Aegis"
+desc = "The King is immune to all damage for 10 seconds."
 rarity = "epic"
 target = "self"
 duration = 10.0

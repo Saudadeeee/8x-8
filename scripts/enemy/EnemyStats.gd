@@ -68,16 +68,16 @@ const RESIST_MULT: float = 0.6
 ## Ở ĐÂY cùng chỗ với DEFAULT_AFFINITY: thêm một loài địch mới thì mọi
 ## thứ UI cần biết về nó nằm trong CÙNG một file.
 const ABILITY_NOTES := {
-	"orc":        "Đòn đánh mạnh",
-	"goblin":     "Di chuyển rất nhanh",
-	"skeleton":   "Kháng chậm, Undead",
-	"dark_knight":"Máu cao, khó hạ",
-	"demon_imp":  "Tốc độ cao, thiêu đốt",
-	"troll":      "Hồi 8 HP/giây — dồn hỏa lực",
-	"wraith":     "Cực nhanh, máu giấy",
-	"shaman":     "Hồi máu địch xung quanh — hạ trước",
-	"golem":      "Giáp 6: đòn nhẹ gần như vô dụng",
-	"bat":        "Bầy đàn yếu, bay nhanh",
+	"orc":        "Heavy hits",
+	"goblin":     "Moves very fast",
+	"skeleton":   "Slow-resistant, Undead",
+	"dark_knight":"High HP, hard to kill",
+	"demon_imp":  "Fast, applies burn",
+	"troll":      "Regenerates 8 HP/sec - focus fire",
+	"wraith":     "Extremely fast, paper HP",
+	"shaman":     "Heals nearby enemies - kill it first",
+	"golem":      "Armor 6: light hits are nearly useless",
+	"bat":        "Weak swarm, flies fast",
 }
 
 const DEFAULT_AFFINITY: Dictionary = {

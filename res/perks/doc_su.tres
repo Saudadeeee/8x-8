@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_ehs27")
 id = "doc_su"
-name = "Độc Sư"
-desc = "Dấu Độc cộng dồn tối đa 8 tầng thay vì 5."
+name = "Toxicologist"
+desc = "Poison Marks stack up to 8 times instead of 5."
 rarity = "epic"
 element = {
 "poison_max_stacks": 8.0

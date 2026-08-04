@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_r7006")
 id = "chess_grand_strategy"
-name = "Đại Cục"
-desc = "Cộng gộp: mọi thế +0.25 Bội, và mỗi loại thế khác nhau thêm +0.2 nữa."
+name = "Grand Strategy"
+desc = "Both at once: every formation gets +0.25 Mult, and each different formation type adds another +0.2."
 cost = 340
 effect = {
 "formation_mult_bonus": 0.25,

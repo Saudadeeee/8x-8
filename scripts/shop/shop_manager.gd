@@ -102,7 +102,7 @@ func refresh_shop(is_free: bool = false) -> void:
 	shop_offers_refreshed.emit(active_shop_offers.duplicate())
 
 ## Giá thực trả sau giảm giá. Hiện chỉ ô lãnh thổ/nguyên tố được giảm
-## (di vật "Địa Chất Sư", perk "Địa Chủ"); các loại khác trả nguyên giá.
+## (di vật "Geomancer", perk "Landlord"); các loại khác trả nguyên giá.
 ## HUD gọi cùng hàm này để số hiển thị luôn khớp số bị trừ.
 func effective_cost(item: ShopItemData) -> float:
 	if item == null:
@@ -136,7 +136,7 @@ func attempt_purchase(item_id: String, king_manager: KingManager) -> bool:
 		shop_purchase_failed.emit(item_id, "Mục hàng không tồn tại.")
 		return false
 	if king_manager == null:
-		shop_purchase_failed.emit(item_id, "Chưa chọn vua.")
+		shop_purchase_failed.emit(item_id, "No king selected.")
 		return false
 	var price: float = effective_cost(item)
 	if price > 0.0 and not king_manager.can_afford(price):
@@ -300,15 +300,15 @@ func _populate_default_items() -> void:
 
 	# --- TERRITORY ITEMS (Royal Decree) ---
 	# Tên + giá ở đây; MÔ TẢ lấy thẳng từ TerritoryManager.BIOME_STATS để không bao
-	# giờ lệch với chỉ số thật (bảng cũ viết cứng "+6 Sát thương" và đã lệch sau
+	# giờ lệch với chỉ số thật (bảng cũ viết cứng "+6 Damage" và đã lệch sau
 	# khi buff ô chuyển sang phần trăm).
 	var biome_defs = [
-		{"id": "territory_fire",    "name": "Mạch Hoả",  "cost": 3.0, "tag": "fire"},
-		{"id": "territory_swamp",   "name": "Mạch Thuỷ", "cost": 2.0, "tag": "swamp"},
-		{"id": "territory_ice",     "name": "Mạch Băng", "cost": 2.5, "tag": "ice"},
-		{"id": "territory_forest",  "name": "Mạch Độc",  "cost": 2.5, "tag": "forest"},
-		{"id": "territory_desert",  "name": "Mạch Thổ",  "cost": 2.5, "tag": "desert"},
-		{"id": "territory_thunder", "name": "Mạch Lôi",  "cost": 3.0, "tag": "thunder"},
+		{"id": "territory_fire",    "name": "Fire Vein",  "cost": 3.0, "tag": "fire"},
+		{"id": "territory_swamp",   "name": "Water Vein", "cost": 2.0, "tag": "swamp"},
+		{"id": "territory_ice",     "name": "Ice Vein", "cost": 2.5, "tag": "ice"},
+		{"id": "territory_forest",  "name": "Poison Vein",  "cost": 2.5, "tag": "forest"},
+		{"id": "territory_desert",  "name": "Earth Vein",  "cost": 2.5, "tag": "desert"},
+		{"id": "territory_thunder", "name": "Thunder Vein",  "cost": 3.0, "tag": "thunder"},
 	]
 	for bd in biome_defs:
 		bd["desc"] = str((TerritoryManager.BIOME_STATS.get(bd["tag"], {}) as Dictionary)
@@ -329,8 +329,8 @@ func _populate_default_items() -> void:
 	# --- DISMISS ITEM (Free — reward comes from tower sold) ---
 	var dismiss_item = ShopItemData.new()
 	dismiss_item.id = "dismiss_order"
-	dismiss_item.display_name = "Lệnh Giải Tán"
-	dismiss_item.description = "Giải tán một tháp, hoàn trả 50% giá trị Vàng."
+	dismiss_item.display_name = "Dismissal Order"
+	dismiss_item.description = "Dismiss a piece, refunding 50% of its gold value."
 	dismiss_item.cost = 0.0
 	dismiss_item.use_royal_decree = false
 	dismiss_item.item_type = ShopItemData.ItemType.DISMISS
@@ -456,16 +456,16 @@ func _make_deck_offer() -> ShopItemData:
 	match kind:
 		"deck_thin":
 			item.id = "deck_thin:%s" % target
-			item.display_name = "Loại %s khỏi bộ" % vn
-			item.description = "Bộ mỏng đi → lượt sau dễ rút trúng quân mạnh hơn."
+			item.display_name = "Remove %s from your set" % vn
+			item.description = "A thinner set means better odds of drawing a strong piece next time."
 		"deck_star":
 			item.id = "deck_star:%s" % target
-			item.display_name = "%s lên sao vĩnh viễn" % vn
-			item.description = "Mọi %s rút ra từ nay đều mang thêm một sao." % vn
+			item.display_name = "%s gains a permanent star" % vn
+			item.description = "Every %s you draw from now on carries an extra star." % vn
 		"deck_morph":
 			item.id = "deck_morph:pawn:queen"
-			item.display_name = "Phong Hậu toàn bộ Tốt"
-			item.description = "Mọi Tốt trong bộ hoá thành Hậu. Bộ ít quân nhưng nặng ký."
+			item.display_name = "Promote every Pawn to Queen"
+			item.description = "Every Pawn in your set becomes a Queen. Fewer pieces, far heavier."
 			item.cost += 60.0
 	return item
 

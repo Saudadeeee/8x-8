@@ -58,237 +58,237 @@ func _build_default_encounters() -> Array[Resource]:
 
 	# ── 1. THƯƠNG NHÂN LANG THANG ─────────────────────────────────────
 	# Giá trị: thuốc +5HP (-40G) | bản đồ chiến thuật +25RD (-30G) | chỉ đường +20G
-	result.append(_enc("wandering_merchant", "Thương Nhân Lang Thang",
-		"Một thương nhân bị thương đang rao bán hàng hoá. Có gì đó hữu ích — nhưng không rẻ.",
+	result.append(_enc("wandering_merchant", "Wandering Merchant",
+		"A wounded merchant is selling his stock. Something here is useful - none of it is cheap.",
 		EncounterData.EncounterType.MIXED, EncounterData.Rarity.COMMON, 1, 1.5,
-		[_choice("Mua thuốc hồi phục\n[-40 Vàng  →  +5 HP]",
-			"Đắt nhưng HP là thứ không thể mua lại dễ dàng.", -40, 5, 0.0),
-		 _choice("Mua bản đồ chiến thuật\n[-30 Vàng  →  +25 RD tối đa vĩnh viễn]",
-			"Kiến thức này sẽ nâng cao khả năng chỉ huy của ngươi.", -30, 0, 25.0),
-		 _choice("Chỉ đường cho hắn\n[Miễn phí  →  +20 Vàng (ông ta trả ơn)]",
-			"Phần thưởng nhỏ. Không có gì mất đi.", 20, 0, 0.0)],
+		[_choice("Buy healing supplies\n[-40 Gold  →  +5 HP]",
+			"Expensive - but HP is not easily bought back.", -40, 5, 0.0),
+		 _choice("Buy the tactical maps\n[-30 Gold  →  +25 permanent max Decree]",
+			"This knowledge sharpens your command.", -30, 0, 25.0),
+		 _choice("Point him the way\n[Free  →  +20 Gold (he repays you)]",
+			"A small reward. Nothing lost.", 20, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_merchant.png"))
 
 	# ── 2. KHO BÁU CỔ ĐẠI ────────────────────────────────────────────
 	# Giá trị: phá khóa +80G (-8HP bẫy) | mở cẩn thận +40G (-2HP) | bỏ qua (-không gì)
-	result.append(_enc("ancient_treasury", "Kho Báu Cổ Đại",
-		"Hầm kho phong kín bao năm. Vàng bên trong rất nhiều — nhưng bẫy chưa chắc đã hỏng.",
+	result.append(_enc("ancient_treasury", "Ancient Vault",
+		"A vault sealed for years. There is a great deal of gold inside - and the traps may still work.",
 		EncounterData.EncounterType.RISK, EncounterData.Rarity.UNCOMMON, 1, 1.0,
-		[_choice("Phá khóa vào ngay\n[+80 Vàng  →  -8 HP (bẫy kích hoạt)]",
-			"Tham lam? Chắc chắn. Nhưng 80 vàng không phải con số nhỏ.", 80, -8, 0.0),
-		 _choice("Mở cẩn thận từng phần\n[+40 Vàng  →  -2 HP (cạm bẫy nhỏ)]",
-			"Bền bỉ hơn nhưng vẫn có giá phải trả.", 40, -2, 0.0),
-		 _choice("Không đáng liều\n[Bỏ qua — không mất gì, không được gì]",
-			"An toàn tuyệt đối. Cơ hội này không phải lần cuối.", 0, 0, 0.0)],
+		[_choice("Break the lock now\n[+80 Gold  →  -8 HP (traps fire)]",
+			"Greedy? Certainly. But 80 gold is not a small number.", 80, -8, 0.0),
+		 _choice("Open it carefully, piece by piece\n[+40 Gold  →  -2 HP (a small trap)]",
+			"More durable, and still not free.", 40, -2, 0.0),
+		 _choice("Not worth the risk\n[Skip - nothing lost, nothing gained]",
+			"Perfectly safe. This is not the last chance.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_treasury.png"))
 
 	# ── 3. ĐỀN THỜ BỊ NGUYỀN ─────────────────────────────────────────
 	# Giá trị: nhận lời nguyền +50G (-8HP) | phá hủy +10G (-3HP mảnh vỡ) | rời đi (0)
-	result.append(_enc("cursed_shrine", "Đền Thờ Bị Nguyền",
-		"Ánh sáng tím bốc ra từ bàn thờ. Lời thì thầm hứa hẹn vàng bạc đổi lấy máu.",
+	result.append(_enc("cursed_shrine", "Cursed Shrine",
+		"Violet light pours from the shrine. A whisper promises gold in exchange for blood.",
 		EncounterData.EncounterType.RISK, EncounterData.Rarity.UNCOMMON, 2, 0.8,
-		[_choice("Cầu nguyện và nhận lời nguyền\n[+50 Vàng  →  -8 HP]",
-			"Vàng bạc đổi bằng sinh mệnh. Ngươi có sẵn sàng?", 50, -8, 0.0),
-		 _choice("Phá hủy đền thờ\n[+10 Vàng (mảnh vỡ)  →  -3 HP (đá bắn)]",
-			"Hủy diệt mang lại ít vàng nhưng vẫn có giá.", 10, -3, 0.0),
-		 _choice("Rời đi ngay\n[Không có gì — không mất, không được]",
-			"Đôi khi khôn ngoan nhất là không làm gì.", 0, 0, 0.0)],
+		[_choice("Pray and accept the curse\n[+50 Gold  →  -8 HP]",
+			"Gold bought with life. Are you willing?", 50, -8, 0.0),
+		 _choice("Destroy the shrine\n[+10 Gold (fragments)  →  -3 HP (flying stone)]",
+			"Destruction pays a little, and still costs something.", 10, -3, 0.0),
+		 _choice("Leave at once\n[Nothing - no loss, no gain]",
+			"Sometimes the wisest move is to do nothing.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_shrine.png"))
 
 	# ── 4. BẦY QUẠ ĐEN ───────────────────────────────────────────────
 	# Giá trị: chống lại +25G (-5HP) | đốt lửa +10G (-3HP) | rút lui an toàn (-15G)
-	result.append(_enc("black_crow_swarm", "Bầy Quạ Đen",
-		"Nghìn con quạ đổ xuống như bóng tối. Chúng mang điềm báo — và cả vũ khí rơi của lính chết.",
+	result.append(_enc("black_crow_swarm", "Murder of Crows",
+		"A thousand crows fall like nightfall. They carry an omen - and the weapons of the dead.",
 		EncounterData.EncounterType.RISK, EncounterData.Rarity.COMMON, 1, 1.2,
-		[_choice("Chiến đấu với bầy quạ\n[+25 Vàng (vũ khí thu hồi)  →  -5 HP]",
-			"Đánh bại chúng mang lại chiến lợi phẩm — nhưng vẫn bị thương.", 25, -5, 0.0),
-		 _choice("Đốt lửa xua đuổi\n[+10 Vàng (nguyên liệu cháy)  →  -3 HP (khói độc)]",
-			"An toàn hơn nhưng vẫn không thoát hoàn toàn.", 10, -3, 0.0),
-		 _choice("Rút lui nhường đường\n[-15 Vàng (mất trang bị)  →  Không mất HP]",
-			"Tính mạng quan trọng hơn vàng — nhưng vàng không phải rẻ.", -15, 0, 0.0)],
+		[_choice("Fight the flock\n[+25 Gold (recovered weapons)  →  -5 HP]",
+			"Beating them yields spoils - and wounds.", 25, -5, 0.0),
+		 _choice("Burn them off\n[+10 Gold (salvaged fuel)  →  -3 HP (toxic smoke)]",
+			"Safer, but not entirely clean.", 10, -3, 0.0),
+		 _choice("Fall back and let them pass\n[-15 Gold (lost gear)  →  No HP lost]",
+			"Life matters more than gold - but gold is not cheap either.", -15, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_crows.png"))
 
 	# ── 5. GIAO ƯỚC BÓNG TỐI ─────────────────────────────────────────
 	# Giá trị: ký giao ước +100G (-15HP) | phủ nhận -25G (an toàn) | bỏ chạy (-5HP miễn phí)
-	result.append(_enc("dark_pact", "Giao Ước Bóng Tối",
-		"Bóng hình không mặt đặt hợp đồng trước mặt ngươi. 100 vàng đổi 15 máu. Mực đã chuẩn bị sẵn.",
+	result.append(_enc("dark_pact", "Dark Bargain",
+		"A faceless shape lays a contract before you. A hundred gold for fifteen life. The ink is already mixed.",
 		EncounterData.EncounterType.RISK, EncounterData.Rarity.RARE, 3, 0.5,
-		[_choice("Ký giao ước\n[+100 Vàng  →  -15 HP (vĩnh viễn trong run này)]",
-			"Lợi nhuận cao nhất. Nhưng 15 HP không bao giờ quay lại.", 100, -15, 0.0),
-		 _choice("Phủ nhận bằng vàng\n[-25 Vàng  →  Thoát an toàn hoàn toàn]",
-			"Trả tiền để thoát. Đắt nhưng sạch tay.", -25, 0, 0.0),
-		 _choice("Bỏ chạy\n[-5 HP (bị tấn công khi chạy)  →  Không mất vàng]",
-			"Rẻ hơn nhưng không miễn phí. Bóng hình không thích bị phớt lờ.", 0, -5, 0.0)],
+		[_choice("Sign the contract\n[+100 Gold  →  -15 HP (for the rest of this run)]",
+			"The biggest payout. But those 15 HP never come back.", 100, -15, 0.0),
+		 _choice("Buy your way out\n[-25 Gold  →  Walk away clean]",
+			"Pay your way out. Expensive, but clean.", -25, 0, 0.0),
+		 _choice("Run\n[-5 HP (struck while fleeing)  →  No gold lost]",
+			"Cheaper, but not free. The shape dislikes being ignored.", 0, -5, 0.0)],
 		"res://assets/ui/encounters/encounter_pact.png"))
 
 	# ── 6. VỊ VUA LANG THANG ─────────────────────────────────────────
 	# Giá trị: thuê cố vấn -50G (+50RD max) | đổi bí quyết -20G (+4HP) | từ chối (0)
-	result.append(_enc("wandering_king", "Vị Vua Lang Thang",
-		"Một vị vua đã mất ngai vàng đề nghị chia sẻ kiến thức. Ông ta có nhiều thứ để dạy — không miễn phí.",
+	result.append(_enc("wandering_king", "The Wandering King",
+		"A king who lost his throne offers to share what he knows. He has much to teach - none of it free.",
 		EncounterData.EncounterType.MIXED, EncounterData.Rarity.RARE, 2, 0.6,
-		[_choice("Ký liên minh chiến lược\n[-50 Vàng  →  +50 RD tối đa vĩnh viễn]",
-			"Đắt nhất. Nhưng RD tối đa là lợi thế lâu dài không thể bỏ qua.", -50, 0, 50.0),
-		 _choice("Trao đổi bí quyết chữa thương\n[-20 Vàng  →  +4 HP]",
-			"Rẻ hơn. HP là nguồn lực quý giá.", -20, 4, 0.0),
-		 _choice("Từ chối lịch sự\n[Không mất gì — không được gì]",
-			"Bảo tồn vàng. Cơ hội khác sẽ đến.", 0, 0, 0.0)],
+		[_choice("Sign a strategic alliance\n[-50 Gold  →  +50 permanent max Decree]",
+			"The most expensive. But max Decree is a long-term edge you cannot ignore.", -50, 0, 50.0),
+		 _choice("Trade healing knowledge\n[-20 Gold  →  +4 HP]",
+			"Cheaper. HP is a precious resource.", -20, 4, 0.0),
+		 _choice("Decline politely\n[Nothing lost - nothing gained]",
+			"Keep the gold. Another chance will come.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_king.png"))
 
 	# ── 7. ĐỒN TIỀN TIÊU BỎ HOANG ────────────────────────────────────
 	# Giá trị: lục soát đầy đủ +35G (-5HP bẫy) | kiểm tra nhanh +15G (an toàn) | bỏ qua (0)
-	result.append(_enc("abandoned_outpost", "Đồn Tiền Tiêu Bỏ Hoang",
-		"Vũ khí và vàng vẫn còn trong đồn — nhưng bẫy cũ chưa chắc đã hết tác dụng.",
+	result.append(_enc("abandoned_outpost", "Abandoned Outpost",
+		"Weapons and gold still sit in the outpost - but the old traps may not be dead yet.",
 		EncounterData.EncounterType.MIXED, EncounterData.Rarity.COMMON, 1, 1.0,
-		[_choice("Lục soát toàn bộ\n[+35 Vàng  →  -5 HP (bẫy cũ kích hoạt)]",
-			"Tham lam nhưng hữu lý. Chỉ mất 5 HP cho 35 vàng.", 35, -5, 0.0),
-		 _choice("Kiểm tra những gì rõ ràng\n[+15 Vàng  →  Không mất HP]",
-			"An toàn. Ít hơn nhưng chắc chắn.", 15, 0, 0.0),
-		 _choice("Bỏ qua đồn\n[Không có gì — tiếp tục nhiệm vụ]",
-			"Thời gian là tài nguyên.", 0, 0, 0.0)],
+		[_choice("Search everything\n[+35 Gold  →  -5 HP (an old trap fires)]",
+			"Greedy but reasonable. Only 5 HP for 35 gold.", 35, -5, 0.0),
+		 _choice("Check only the obvious\n[+15 Gold  →  No HP lost]",
+			"Safe. Less, but certain.", 15, 0, 0.0),
+		 _choice("Skip the outpost\n[Nothing - press on]",
+			"Time is a resource.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_outpost.png"))
 
 	# ── 8. TRẠM QUÂN Y ───────────────────────────────────────────────
 	# Giá trị: chữa đầy -40G (+8HP) | sơ cứu -15G (+3HP) | từ chối (0 — HP thấp hơn về sau)
-	result.append(_enc("field_hospital", "Trạm Quân Y Chiến Trường",
-		"Bác sĩ quân y có thể hồi phục vết thương — nhưng phẫu thuật chiến trường không rẻ.",
+	result.append(_enc("field_hospital", "Field Infirmary",
+		"The field surgeon can close your wounds - but battlefield surgery is not cheap.",
 		EncounterData.EncounterType.MIXED, EncounterData.Rarity.COMMON, 2, 1.0,
-		[_choice("Điều trị đầy đủ\n[-40 Vàng  →  +8 HP]",
-			"Đắt nhất nhưng hồi phục nhiều nhất. Đáng giá khi HP thấp.", -40, 8, 0.0),
-		 _choice("Sơ cứu nhanh\n[-15 Vàng  →  +3 HP]",
-			"Kinh tế hơn. Đủ để trụ thêm vài đợt tấn công.", -15, 3, 0.0),
-		 _choice("Từ chối điều trị\n[Tiết kiệm vàng — HP thấp về sau là vấn đề của ngươi]",
-			"Miễn phí hôm nay. Nhưng HP thấp trong tương lai sẽ đắt hơn nhiều.", 0, 0, 0.0)],
+		[_choice("Full treatment\n[-40 Gold  →  +8 HP]",
+			"The most expensive, and the most healing. Worth it when HP is low.", -40, 8, 0.0),
+		 _choice("Quick first aid\n[-15 Gold  →  +3 HP]",
+			"More economical. Enough to hold a few more assaults.", -15, 3, 0.0),
+		 _choice("Refuse treatment\n[Save the gold - low HP later is your problem]",
+			"Free today. But low HP later costs far more.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_hospital.png"))
 
 	# ── 9. LÒ RÈN CỔ ĐẠI ─────────────────────────────────────────────
 	# Giá trị: tôi luyện -60G (+50RD max) | bán phế liệu -3HP (+25G) | bỏ qua (0)
-	result.append(_enc("ancient_forge", "Lò Rèn Cổ Đại",
-		"Lò rèn cổ đại vẫn còn nhiệt. Kẻ nào đủ kiên nhẫn có thể đúc lại bản thân — hoặc bán phế liệu.",
+	result.append(_enc("ancient_forge", "Ancient Forge",
+		"The ancient forge still holds its heat. Anyone patient enough could reforge themselves - or sell the scrap.",
 		EncounterData.EncounterType.MIXED, EncounterData.Rarity.UNCOMMON, 3, 0.7,
-		[_choice("Tôi luyện ý chí chiến lược\n[-60 Vàng  →  +50 RD tối đa vĩnh viễn]",
-			"Đầu tư dài hạn. Tốn nhiều vàng nhưng RD max tăng mạnh.", -60, 0, 50.0),
-		 _choice("Thu nhặt và bán phế liệu\n[-3 HP (bỏng tay)  →  +25 Vàng]",
-			"Nguy hiểm nhỏ, lợi nhuận vừa phải. Không cần vốn.", 25, -3, 0.0),
-		 _choice("Bỏ qua lò rèn\n[Không mất gì — không được gì]",
-			"Không phải lúc này.", 0, 0, 0.0)],
+		[_choice("Temper your strategic will\n[-60 Gold  →  +50 permanent max Decree]",
+			"A long-term investment. Costly in gold, but max Decree climbs sharply.", -60, 0, 50.0),
+		 _choice("Gather and sell the scrap\n[-3 HP (burned hands)  →  +25 Gold]",
+			"Small risk, modest profit. No capital required.", 25, -3, 0.0),
+		 _choice("Skip the forge\n[Nothing lost - nothing gained]",
+			"Not this time.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_forge.png"))
 
 	# ── 10. BÓNG MA CHIẾN TRƯỜNG ─────────────────────────────────────
 	# Giá trị: hấp thụ năng lượng -10HP (+45RD max) | lắng nghe ký ức -8HP (+50G) | xua đuổi -20G (an toàn)
-	result.append(_enc("battlefield_ghost", "Bóng Ma Chiến Trường",
-		"Linh hồn chiến binh tử trận còn vương vấn. Nó chứa năng lượng — và cả ký ức về những trận thắng.",
+	result.append(_enc("battlefield_ghost", "Battlefield Wraith",
+		"The spirit of a fallen warrior still lingers. It holds power - and the memory of victories.",
 		EncounterData.EncounterType.RISK, EncounterData.Rarity.RARE, 4, 0.4,
-		[_choice("Hấp thụ năng lượng ma\n[-10 HP  →  +45 RD tối đa vĩnh viễn]",
-			"Đau nhưng xứng đáng. RD max +45 là lợi thế cực lớn.", 0, -10, 45.0),
-		 _choice("Lắng nghe ký ức chiến trận\n[-8 HP (ám ảnh tâm lý)  →  +50 Vàng]",
-			"Vàng nhiều nhưng vẫn mất HP. Không có gì là miễn phí.", 50, -8, 0.0),
-		 _choice("Xua đuổi bằng nghi lễ\n[-20 Vàng  →  Thoát an toàn hoàn toàn]",
-			"Tốn vàng nhưng HP nguyên vẹn. Lựa chọn của kẻ thận trọng.", -20, 0, 0.0)],
+		[_choice("Absorb its energy\n[-10 HP  →  +45 permanent max Decree]",
+			"It hurts, and it is worth it. +45 max Decree is an enormous edge.", 0, -10, 45.0),
+		 _choice("Listen to its memories\n[-8 HP (the visions haunt you)  →  +50 Gold]",
+			"Plenty of gold, but HP all the same. Nothing here is free.", 50, -8, 0.0),
+		 _choice("Banish it with a rite\n[-20 Gold  →  Walk away clean]",
+			"Costs gold, keeps your HP intact. The careful choice.", -20, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_ghost.png"))
 
 	# ── 11. CỐNG PHẨM HOÀNG GIA (REWARD) ─────────────────────────────
 	# Giá trị: chọn 1 trong 3 phần thưởng — vàng +30G | quân nhu +3HP | sắc lệnh +15RD max
-	result.append(_enc("royal_tribute", "Cống Phẩm Hoàng Gia",
-		"Dân làng vùng biên mang cống phẩm tạ ơn ngươi đã bảo vệ họ. Họ chỉ đủ sức dâng một món.",
+	result.append(_enc("royal_tribute", "Royal Tribute",
+		"Border villagers bring tribute for your protection. They can spare only one gift.",
 		EncounterData.EncounterType.REWARD, EncounterData.Rarity.COMMON, 1, 1.2,
-		[_choice("Nhận rương vàng\n[+30 Vàng]",
-			"Vàng luôn hữu dụng. Không có gì phải bàn.", 30, 0, 0.0),
-		 _choice("Nhận quân nhu và lương thực\n[+3 HP]",
-			"Thành lũy được gia cố, binh sĩ no bụng.", 0, 3, 0.0),
-		 _choice("Nhận cuộn sắc lệnh cổ\n[+15 RD tối đa vĩnh viễn]",
-			"Uy quyền của ngươi lan xa hơn một chút.", 0, 0, 15.0)],
+		[_choice("Take the chest of gold\n[+30 Gold]",
+			"Gold is always useful. Nothing to debate.", 30, 0, 0.0),
+		 _choice("Take supplies and food\n[+3 HP]",
+			"The walls are reinforced and the soldiers are fed.", 0, 3, 0.0),
+		 _choice("Take the ancient decree scroll\n[+15 permanent max Decree]",
+			"Your authority reaches a little further.", 0, 0, 15.0)],
 		"res://assets/ui/encounters/encounter_merchant.png"))
 
 	# ── 12. LỄ HỘI MÙA GẶT (REWARD) ──────────────────────────────────
 	# Giá trị: thu thuế +25G | chung vui +10G +2HP | nhận lương thực +4HP
-	result.append(_enc("harvest_festival", "Lễ Hội Mùa Gặt",
-		"Vụ mùa bội thu. Dân chúng mở hội ăn mừng và mời Đức Vua ngự giá. Ngươi chọn cách chia phần.",
+	result.append(_enc("harvest_festival", "Harvest Festival",
+		"The harvest is rich. The people hold a festival and invite the King. You decide how the share is split.",
 		EncounterData.EncounterType.REWARD, EncounterData.Rarity.UNCOMMON, 3, 0.8,
-		[_choice("Thu thuế mùa vụ\n[+25 Vàng]",
-			"Quốc khố đầy thêm. Dân hơi tiếc nhưng vẫn cúi đầu.", 25, 0, 0.0),
-		 _choice("Chung vui cùng dân\n[+10 Vàng (quà mừng)  →  +2 HP (sĩ khí)]",
-			"Vua gần dân, lòng quân thêm vững.", 10, 2, 0.0),
-		 _choice("Trưng thu lương thực cho quân đội\n[+4 HP]",
-			"Kho lương đầy — thành lũy trụ vững hơn.", 0, 4, 0.0)],
+		[_choice("Collect the harvest tax\n[+25 Gold]",
+			"The treasury grows. The people mind, but they bow.", 25, 0, 0.0),
+		 _choice("Celebrate with them\n[+10 Gold (gifts)  →  +2 HP (morale)]",
+			"A king close to his people has a steadier army.", 10, 2, 0.0),
+		 _choice("Requisition food for the army\n[+4 HP]",
+			"Full granaries make for a sturdier hold.", 0, 4, 0.0)],
 		"res://assets/ui/encounters/encounter_outpost.png"))
 
 	# ── 13. LÃO BINH KỂ CHUYỆN (STORY) ───────────────────────────────
 	# Giá trị: lắng nghe +10RD max | biếu vàng an dưỡng -15G (+3HP) | rời đi (0)
-	result.append(_enc("old_veteran_tale", "Lão Binh Kể Chuyện",
-		"Bên đống lửa tàn, một lão binh từng phụng sự tiên vương kể lại trận đánh năm xưa. Giọng ông run run nhưng ánh mắt vẫn rực lửa.",
+	result.append(_enc("old_veteran_tale", "The Old Soldier",
+		"By the dying fire, an old soldier who served the late king recounts a battle from long ago. His voice shakes; his eyes do not.",
 		EncounterData.EncounterType.STORY, EncounterData.Rarity.COMMON, 1, 1.0,
-		[_choice("Ngồi xuống lắng nghe trọn đêm\n[+10 RD tối đa vĩnh viễn (binh pháp cổ)]",
-			"Kinh nghiệm trăm trận của ông là kho báu không vàng nào mua nổi.", 0, 0, 10.0),
-		 _choice("Biếu vàng để ông an dưỡng tuổi già\n[-15 Vàng  →  +3 HP (lòng quân cảm phục)]",
-			"Binh sĩ nhìn thấy — và họ biết vua của mình trọng nghĩa.", -15, 3, 0.0),
-		 _choice("Gật đầu chào rồi rời đi\n[Không mất gì — không được gì]",
-			"Chiến tranh không chờ những câu chuyện cũ.", 0, 0, 0.0)],
+		[_choice("Sit and listen all night\n[+10 permanent max Decree (old doctrine)]",
+			"A hundred battles of experience is a treasure no gold can buy.", 0, 0, 10.0),
+		 _choice("Give him gold for his old age\n[-15 Gold  →  +3 HP (the troops take note)]",
+			"The soldiers saw it - and they know their king values honour.", -15, 3, 0.0),
+		 _choice("Nod and move on\n[Nothing lost - nothing gained]",
+			"War does not wait on old stories.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_hospital.png"))
 
 	# ── 14. THI SĨ LANG THANG (STORY) ────────────────────────────────
 	# Giá trị: bảo trợ -20G (+15RD max danh tiếng) | nghe một khúc -5G (+1HP) | đuổi đi (0)
-	result.append(_enc("wandering_bard", "Thi Sĩ Lang Thang",
-		"Một thi sĩ ôm đàn xin hát trường ca về cuộc chiến của ngươi. Lời ca sẽ bay xa hơn mọi lá cờ — nếu ngươi trả công xứng đáng.",
+	result.append(_enc("wandering_bard", "Wandering Bard",
+		"A poet with a lute asks to sing an epic of your war. The song will travel further than any banner - if you pay what it is worth.",
 		EncounterData.EncounterType.STORY, EncounterData.Rarity.UNCOMMON, 2, 0.9,
-		[_choice("Bảo trợ trọn trường ca\n[-20 Vàng  →  +15 RD tối đa vĩnh viễn (danh tiếng)]",
-			"Khắp vương quốc sẽ truyền tụng tên ngươi. Uy quyền theo đó mà lớn.", -20, 0, 15.0),
-		 _choice("Nghe một khúc ngắn, thưởng ít bạc\n[-5 Vàng  →  +1 HP (khích lệ ba quân)]",
-			"Một khúc quân hành cũng đủ ấm lòng lính thú đêm sương.", -5, 1, 0.0),
-		 _choice("Đuổi hắn đi\n[Không mất gì — lời ca cũng chẳng nuôi nổi ai]",
-			"Chiến trường không cần thơ. Có lẽ vậy.", 0, 0, 0.0)],
+		[_choice("Fund the whole epic\n[-20 Gold  →  +15 permanent max Decree (renown)]",
+			"The whole kingdom will pass your name along. Authority grows with it.", -20, 0, 15.0),
+		 _choice("Hear one short verse, pay a little\n[-5 Gold  →  +1 HP (the troops cheer)]",
+			"One marching song is enough to warm sentries in the night mist.", -5, 1, 0.0),
+		 _choice("Send him away\n[Nothing lost - songs feed no one]",
+			"The battlefield has no use for poetry. Perhaps.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_king.png"))
 
 	# ── 15. TẤM GƯƠNG BÓNG TỐI (STORY — riêng Phantom King) ──────────
 	# Giá trị: soi gương -5HP (+40RD max) | đập vỡ +20G | quay đi (0)
-	result.append(_enc("phantom_mirror", "Tấm Gương Bóng Tối",
-		"Trong tàn tích, một tấm gương đen không phản chiếu ánh đuốc — nó phản chiếu chính bóng tối trong ngươi. Nó thì thầm bằng giọng của Phantom King.",
+	result.append(_enc("phantom_mirror", "Mirror of Shadows",
+		"Among the ruins, a black mirror reflects no torchlight - it reflects the dark in you. It whispers in the Phantom King's voice.",
 		EncounterData.EncounterType.STORY, EncounterData.Rarity.RARE, 2, 0.9,
-		[_choice("Nhìn thẳng vào gương\n[-5 HP  →  +40 RD tối đa vĩnh viễn]",
-			"Đối diện bóng tối của chính mình — và thu phục nó.", 0, -5, 40.0),
-		 _choice("Đập vỡ tấm gương\n[+20 Vàng (mảnh bạc đen quý hiếm)]",
-			"Có những cánh cửa không nên mở. Bán mảnh vỡ cũng được giá.", 20, 0, 0.0),
-		 _choice("Quay đi không nhìn lại\n[Không có gì — bóng tối vẫn ngủ yên]",
-			"Ngươi biết rõ hơn ai hết: bóng tối luôn đòi giá.", 0, 0, 0.0)],
+		[_choice("Look straight into the mirror\n[-5 HP  →  +40 permanent max Decree]",
+			"Face your own darkness - and take it for your own.", 0, -5, 40.0),
+		 _choice("Shatter the mirror\n[+20 Gold (rare black silver)]",
+			"Some doors are better left shut. The shards still fetch a price.", 20, 0, 0.0),
+		 _choice("Turn away without looking back\n[Nothing - the dark stays asleep]",
+			"You know better than anyone: the dark always charges.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_ghost.png", "king_phantom"))
 
 	# ── 16. BÀN THỜ LỬA THIÊNG (RISK — riêng Flame Queen) ────────────
 	# Giá trị: hiến tế máu -6HP (+60G) | dâng vàng -30G (+5HP) | dập tắt (0)
-	result.append(_enc("flame_altar", "Bàn Thờ Lửa Thiêng",
-		"Ngọn lửa trên bàn thờ cổ bùng lên khi Nữ Hoàng đến gần — nó nhận ra dòng máu của chủ nhân. Lửa thiêng đòi lễ vật.",
+	result.append(_enc("flame_altar", "Altar of Sacred Flame",
+		"The flame on the old altar surges as the Queen draws near - it knows its mistress's blood. The sacred fire demands an offering.",
 		EncounterData.EncounterType.RISK, EncounterData.Rarity.RARE, 2, 0.9,
-		[_choice("Hiến tế bằng máu\n[-6 HP  →  +60 Vàng (lửa nhả vàng nung chảy)]",
-			"Lửa thiêng trả công hậu hĩnh — nhưng nó chỉ nhận máu.", 60, -6, 0.0),
-		 _choice("Dâng vàng vào ngọn lửa\n[-30 Vàng  →  +5 HP (lửa phù hộ)]",
-			"Đổi của lấy sự che chở. Ngọn lửa hài lòng.", -30, 5, 0.0),
-		 _choice("Ra lệnh dập tắt bàn thờ\n[Không có gì — lửa tắt, im lặng đến lạnh người]",
-			"Nữ Hoàng không quỳ trước bất kỳ ngọn lửa nào.", 0, 0, 0.0)],
+		[_choice("Offer blood\n[-6 HP  →  +60 Gold (the fire spits molten coin)]",
+			"The sacred fire pays well - but it takes only blood.", 60, -6, 0.0),
+		 _choice("Feed gold to the flame\n[-30 Gold  →  +5 HP (the fire blesses you)]",
+			"Wealth traded for protection. The flame is satisfied.", -30, 5, 0.0),
+		 _choice("Order the altar doused\n[Nothing - the fire dies, and the silence is cold]",
+			"The Queen kneels to no flame.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_shrine.png", "king_flame"))
 
 	# ── LONG MẠCH LỘ THIÊN ───────────────────────────────────────────
 	# Đổi HP/vàng lấy Ô NGUYÊN TỐ (futureplan §2.4). Ba lựa chọn = ba triết lý:
 	# đào sâu build hiện tại · mở rộng sang hệ khác · giữ tài nguyên.
-	result.append(_enc("exposed_ley_line", "Long Mạch Lộ Thiên",
-		"Mặt đất nứt ra, để lộ mạch nguyên tố đang chảy bên dưới. Khai thác nó không miễn phí.",
+	result.append(_enc("exposed_ley_line", "Exposed Ley Line",
+		"The ground splits open, exposing an elemental vein flowing beneath. Mining it is not free.",
 		EncounterData.EncounterType.MIXED, EncounterData.Rarity.UNCOMMON, 3, 1.2,
-		[_choice_tiles("Đào sâu theo mạch\n[-8 HP  →  3 ô cùng hệ ngươi đang mạnh nhất]",
-			"Ba ô cùng loại xếp chồng thành một Long Mạch Lv3.", 0, -8, 3, "dominant"),
-		 _choice_tiles("Khoan ngang tìm mạch lạ\n[-70 Vàng  →  2 ô nguyên tố ngẫu nhiên]",
-			"Mở đường sang một nguyên tố khác — rủi ro, nhưng biết đâu.", -70, 0, 2, "random"),
-		 _choice("Bịt mạch lại và đi tiếp\n[+35 Vàng (bán quặng vụn) — không có ô]",
-			"Không phải lúc nào cũng cần đào sâu.", 35, 0, 0.0)],
+		[_choice_tiles("Dig deep along the vein\n[-8 HP  →  3 veins of your strongest element]",
+			"Three matching veins stacked become a Level 3 Ley Line.", 0, -8, 3, "dominant"),
+		 _choice_tiles("Bore sideways for a stranger vein\n[-70 Gold  →  2 random element veins]",
+			"Opens a path to a different element - risky, but who knows.", -70, 0, 2, "random"),
+		 _choice("Seal the vein and move on\n[+35 Gold (ore scraps) - no veins]",
+			"You do not always need to dig deep.", 35, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_shrine.png"))
 
 	# ── THỢ KHẮC ĐÁ CÂM ──────────────────────────────────────────────
 	# Phiên bản "an toàn" của Long Mạch: chỉ tốn vàng, cho ít ô hơn.
-	result.append(_enc("silent_stonecutter", "Thợ Khắc Đá Câm",
-		"Một ông lão không nói được, tay chai sạn, bày ra mấy phiến đá khắc rune nguyên tố.",
+	result.append(_enc("silent_stonecutter", "The Silent Stonecutter",
+		"A mute old man with calloused hands lays out several stone slabs carved with elemental runes.",
 		EncounterData.EncounterType.REWARD, EncounterData.Rarity.COMMON, 2, 1.0,
-		[_choice_tiles("Mua hai phiến cùng loại\n[-90 Vàng  →  2 ô cùng hệ đang mạnh nhất]",
-			"Hai ô chồng lên nhau thành một Nguồn Lv2.", -90, 0, 2, "dominant"),
-		 _choice_tiles("Mua một phiến bất kỳ\n[-40 Vàng  →  1 ô ngẫu nhiên]",
-			"Rẻ, và biết đâu lại là mảnh còn thiếu của Bát Quái.", -40, 0, 1, "random"),
-		 _choice("Chỉ ngắm rồi đi\n[Miễn phí — ông lão gật đầu]",
-			"Không mất gì. Cũng không được gì.", 0, 0, 0.0)],
+		[_choice_tiles("Buy two matching slabs\n[-90 Gold  →  2 veins of your strongest element]",
+			"Two stacked veins become a Level 2 Source.", -90, 0, 2, "dominant"),
+		 _choice_tiles("Buy one slab, any kind\n[-40 Gold  →  1 random vein]",
+			"Cheap, and it might be the missing piece of your Bagua.", -40, 0, 1, "random"),
+		 _choice("Just look, then leave\n[Free - the old man nods]",
+			"Nothing lost. Nothing gained either.", 0, 0, 0.0)],
 		"res://assets/ui/encounters/encounter_merchant.png"))
 
 	return result
@@ -351,7 +351,7 @@ func _grant_element_tiles(map: Node, count: int, kind: String) -> void:
 		tm.call("add_stock", biome)
 	var phase = map.get("phase_controller")
 	if phase != null and is_instance_valid(phase):
-		phase.set("phase_message", "✦ Nhận %d ô %s từ sự kiện!" % [
+		phase.set("phase_message", "✦ Gained %d %s veins from the event!" % [
 			count, ElementTypes.display_name(element)])
 
 # --- Kích hoạt encounter ngẫu nhiên ---

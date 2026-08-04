@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_3080p")
 id = "geomancer"
-name = "Địa Chất Sư"
-desc = "Ô nguyên tố rẻ 40% — xây mạng lưới nhanh gấp đôi."
+name = "Geomancer"
+desc = "Element veins cost 40% less - build your network twice as fast."
 cost = 210
 effect = {
 "tile_discount": 0.4

@@ -92,7 +92,7 @@ func _ready():
 	# Component Dấu Nguyên Tố — mọi địch đều có, kể cả boss (BossEnemy extends Enemy).
 	marks = ElementMarks.new()
 	marks.name = "ElementMarks"
-	# Di vật "Bánh Xe Nguyên Tố" nâng trần Dấu. Đọc lúc SPAWN: quái đã ra sân
+	# Di vật "Elemental Wheel" nâng trần Dấu. Đọc lúc SPAWN: quái đã ra sân
 	# không đổi trần giữa chừng, đúng quy ước biome/ascension của dự án.
 	var gm_marks := get_node_or_null("/root/GameManagerSingleton")
 	if gm_marks != null:
@@ -420,7 +420,7 @@ func take_damage(amount: int, kind: String = "hit"):
 	var armor := effective_armor()   # 0 khi đang bị Tan Chảy xoá giáp
 	if armor > 0:
 		amount = max(1, amount - armor)   # giáp phẳng, luôn chịu tối thiểu 1
-	# Di vật "Vòng Cổ Thợ Săn": địch đang mang Dấu ăn thêm % từ MỌI nguồn.
+	# Di vật "Hunter's Collar": địch đang mang Dấu ăn thêm % từ MỌI nguồn.
 	# Nhân SAU khi trừ giáp để không biến nó thành công cụ xuyên giáp.
 	amount = int(round(amount * _marked_damage_mult()))
 	current_hp -= amount
@@ -549,7 +549,7 @@ func _earth_mark_bonus() -> int:
 		var earth_color := ElementTypes.color_of(ElementTypes.EARTH)
 		FX.spawn_burst(parent, global_position + Vector3(0.0, 0.3, 0.0), earth_color, 10, 0.7)
 		FX.damage_number(parent, global_position + Vector3(0.0, 1.1, 0.0),
-			"+%d vàng" % EARTH_MARK_BONUS_GOLD, Color(1.0, 0.85, 0.3), 15)
+			"+%d gold" % EARTH_MARK_BONUS_GOLD, Color(1.0, 0.85, 0.3), 15)
 	return EARTH_MARK_BONUS_GOLD
 
 ## Bonus vàng khi chết TRÊN ô nguyền — truy cập grid_controller của game_map (parent)
@@ -569,7 +569,7 @@ func _cursed_tile_bonus() -> int:
 		return 0
 	FX.spawn_burst(parent, global_position + Vector3(0.0, 0.3, 0.0), Color(1.0, 0.85, 0.25), 8, 0.6)
 	FX.damage_number(parent, global_position + Vector3(0.0, 1.0, 0.0),
-		"+%d vàng" % CURSED_KILL_BONUS_GOLD, Color(1.0, 0.85, 0.3), 14)
+		"+%d gold" % CURSED_KILL_BONUS_GOLD, Color(1.0, 0.85, 0.3), 14)
 	return CURSED_KILL_BONUS_GOLD
 
 func reached_end():

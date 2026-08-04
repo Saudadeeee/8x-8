@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_bat")
 id = "bat"
-display_name = "Dơi Quỷ"
-ability_note = "Bầy đàn yếu, bay nhanh"
+display_name = "Bat Swarm"
+ability_note = "Weak swarm, flies fast"
 spawn_seasons = Array[int]([0, 1])
 spawn_weight = 4
 texture = ExtResource("2_bat")

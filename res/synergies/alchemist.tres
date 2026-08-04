@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_vmowl")
 tag = "alchemist"
-display_name = "Hội Giả Kim"
+display_name = "Alchemists' Guild"
 bonuses = Array[Dictionary]([{
 "damage_bonus": 0.1,
 "range_bonus": 0.0,

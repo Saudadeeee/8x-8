@@ -7,7 +7,7 @@
 extends Resource
 class_name PotionData
 
-@export_group("Nhận dạng")
+@export_group("Identity")
 ## snake_case, DUY NHẤT, và trùng tên file icon assets/ui/potions/<id>.png
 @export var id: String = ""
 @export var name: String = ""
@@ -15,7 +15,7 @@ class_name PotionData
 ## common · rare · epic · legendary — quyết định độ hiếm khi rơi ra
 @export_enum("common", "rare", "epic", "legendary") var rarity: String = "common"
 
-@export_group("Vùng ném")
+@export_group("Throw area")
 ## "allies" = buff tháp trong vùng · "enemies" = đánh địch trong vùng ·
 ## "self" = tác dụng thẳng lên Vua, không cần ngắm
 @export_enum("allies", "enemies", "self") var target: String = "allies"
@@ -24,7 +24,7 @@ class_name PotionData
 ## Thời gian hiệu lực (giây). 0 = tác dụng tức thì.
 @export_range(0.0, 60.0, 0.5) var duration: float = 12.0
 
-@export_group("Tác dụng — điền ÍT NHẤT một nhóm")
+@export_group("Effect - fill in AT LEAST one group")
 ## Buff cho tháp trong vùng. VD {"damage_pct": 0.4} hoặc {"speed_bonus": 0.35}
 @export var buff: Dictionary = {}
 ## Đánh/gắn Dấu lên địch trong vùng. VD {"damage": 120} hoặc {"element": "fire"}

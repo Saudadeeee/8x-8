@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_d9003")
 id = "deck_shogi"
-display_name = "Bộ Shogi"
-desc = "Quân bất đối xứng: Hương Xa bắn xa một hướng, Kim Tướng phủ sáu ô kề. Quân ★3 phong cấp thành nước Hậu."
+display_name = "Shogi Set"
+desc = "Asymmetric pieces: the Lance fires far in one direction, the Gold General covers six adjacent squares. Any 3-star piece promotes to Queen movement."
 origin = "Shogi"
 deck = {
 "lance": 4, "gold_general": 4, "pawn": 4, "knight": 2

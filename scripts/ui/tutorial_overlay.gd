@@ -25,81 +25,91 @@ const CARD_W: int = 560
 ##   1. mục tiêu (số phải vượt)  2. công cụ (nước đi)  3. nhân số (thế cờ)
 ##   4. build dài hạn (bộ quân)  5. nhịp ván
 ## Không dạy nguyên tố ở đây: nó là lớp NÂNG CAO, học sau khi đã hiểu Nền × Bội.
+## Noi dung tung the: tieu de, than, va dong nhan manh (co the rong).
+##
+## Thu tu co chu dich, day theo dung thu tu nguoi choi CAN biet:
+##   1. muc tieu (so phai vuot)  2. cong cu (nuoc di)  3. nhan so (the co)
+##   4. build dai han (bo quan)  5. nhip van
 const PAGES: Array[Dictionary] = [
 	{
-		"title": "Một con số phải vượt",
-		"body": "Đáy màn hình có hai con số: SÁT THƯƠNG đội hình bạn gây ra trong wave,
+		"title": "One number to beat",
+		"body": "Two numbers sit at the bottom of the screen: the DAMAGE your board deals
 "
-			+ "và TỔNG MÁU của wave đó.
+			+ "this wave, and the TOTAL HP of that wave.
 
 "
-			+ "Xanh = đủ sức. Đỏ = biết trước sẽ thủng, hãy sửa bố cục rồi hãy bấm.
+			+ "Green means you can clear it. Red means you already know you cannot -
 "
-			+ "Không có đồng hồ đếm ngược — bạn có bao nhiêu thời gian tuỳ ý.",
-		"accent": "Rê chuột lên một ô để xem Nền × Bội của ô đó đến từ đâu",
+			+ "fix your board first. There is no countdown; take as long as you want.",
+		"accent": "Hover any square to see where its Base x Mult comes from",
 	},
 	{
-		"title": "Quân đánh theo nước đi thật",
-		"body": "Xe bắn dọc hàng và cột. Tượng bắn hai đường chéo. Mã nhảy chữ L.
+		"title": "Pieces move by real chess rules",
+		"body": "Rooks fire along ranks and files. Bishops fire on both diagonals.
 "
-			+ "Tốt đánh bốn ô chéo kề. Bạn đã biết những luật này rồi.
+			+ "Knights jump in an L. Pawns hit the four adjacent diagonals.
 
 "
-			+ "Quân CỦA BẠN chắn đường trượt của Xe và Tượng — đứng sai chỗ là tự
+			+ "YOUR OWN pieces block a Rook's or Bishop's line - a bad placement seals
 "
-			+ "bịt đường bắn của mình. Ô sáng vàng lúc đặt là ô ĐƯỜNG ĐI bạn phủ được;
+			+ "off your own fire. The gold squares shown while placing are PATH squares
 "
-			+ "chỉ ô đường mới sinh sát thương.",
-		"accent": "Bàn khoá 8×8 cả ván và có trần số quân — chọn chỗ đứng là quyết định lớn nhất",
+			+ "you cover; only path squares deal damage.",
+		"accent": "The board stays 8x8 all run and your unit count is capped - placement is your biggest decision",
 	},
 	{
-		"title": "Thế cờ nhân sát thương",
-		"body": "Xếp quân thành thế có tên để nhân BỘI cho cả vùng:
+		"title": "Formations multiply your damage",
+		"body": "Arrange pieces into named formations to multiply MULT across an area:
 
 "
-			+ "Trận Pháo — hai Xe cùng hàng hoặc cùng cột (×2.0)
+			+ "Battery - two Rooks on the same rank or file (x2.0)
 "
-			+ "Giao Hoả — một ô bị cả Xe lẫn Tượng phủ (×2.2)
+			+ "Crossfire - a square covered by both a Rook and a Bishop (x2.2)
 "
-			+ "Tường Tốt — ba Tốt liền nhau một hàng (×2.2)
+			+ "Pawn Wall - three Pawns side by side on one rank (x2.2)
 "
-			+ "Nước Chĩa — một Mã phủ từ 3 ô đường trở lên (×3.0)
+			+ "Fork - one Knight covering 3 or more path squares (x3.0)
 
 "
-			+ "Thế chồng lên nhau thì BỘI nhân với nhau. Đó là đường phá vỡ ván đấu.
+			+ "Overlapping formations MULTIPLY together. That is how a run breaks open.
 
 "
-			+ "Nguồn BỘI thứ hai là Ô NGUYÊN TỐ mua trong shop: quân đứng trên ô nào
+			+ "Your second MULT source is the ELEMENT VEIN bought in the shop: a piece
 "
-			+ "thì mang nguyên tố của ô đó, và ô lên cấp thì Bội tăng theo.",
-		"accent": "Ô thuộc một thế được tô màu · vòng sáng dưới chân là nguyên tố của ô",
+			+ "takes the element of the square it stands on, and levelling that vein
+"
+			+ "raises the Mult.",
+		"accent": "Squares in a formation are tinted - the glowing ring underfoot is the square's element",
 	},
 	{
-		"title": "Bộ quân là build của bạn",
-		"body": "Bạn khởi đầu với một bộ cờ thật. Shop RÚT quân từ bộ đó — muốn thấy Xe
+		"title": "Your set is your build",
+		"body": "You start with a real chess set. The shop DRAWS from it - to see Rooks
 "
-			+ "thường xuyên hơn thì phải LOẠI bớt Tốt khỏi bộ.
+			+ "more often, you must REMOVE Pawns from the set.
 
 "
-			+ "Shop cũng bán: nâng sao vĩnh viễn cho một loại quân, và phong Hậu cho
+			+ "The shop also sells a permanent star-up for one piece type, and promotion
 "
-			+ "toàn bộ Tốt. Bộ mỏng và nặng ký thắng bộ dày và loãng.",
-		"accent": "Bấm B để xem bộ quân và tỉ lệ rút từng loại",
+			+ "to Queen for all your Pawns. A thin, heavy set beats a thick, diluted one.",
+		"accent": "Press B to see your set and each piece's draw odds",
 	},
 	{
-		"title": "Nhịp một ván",
-		"body": "Chuẩn bị → bấm BẮT ĐẦU WAVE → Shop → chọn 1 trong 3 Perk → lặp lại.
+		"title": "The rhythm of a run",
+		"body": "Prepare -> press START WAVE -> Shop -> pick 1 of 3 Perks -> repeat.
 
 "
-			+ "12 wave. Rival King ở wave 5, 9 và 12 — mỗi vua ĐỔI MỘT LUẬT của bàn cờ
+			+ "12 waves. Rival Kings at waves 5, 9 and 12 - each one CHANGES ONE RULE
 "
-			+ "(khoá Tượng, chỉ tính nửa bàn, cấm thế cờ cộng dồn…). Đọc luật rồi xếp lại.
+			+ "of the board (silencing Bishops, counting only half the board, banning
+"
+			+ "formation stacking...). Read the rule, then rebuild.
 
 "
-			+ "Sao chỉ lên bằng cách đặt quân CÙNG LOẠI chồng lên nhau.",
-		"accent": "F1 mở Sách tra cứu · Z/X/C ném thuốc giữa trận",
+			+ "Stars only come from stacking pieces of the SAME type on each other.",
+		"accent": "F1 opens the Codex - Z/X/C throw potions mid-fight",
 	},
 ]
+
 
 var _page: int = 0
 var _root: Control = null
@@ -182,7 +192,7 @@ func _build() -> void:
 	vbox.add_child(row)
 
 	var skip := Button.new()
-	skip.text = "Bỏ qua"
+	skip.text = "Skip"
 	skip.custom_minimum_size = Vector2(150, 38)
 	UIStyle.apply_button(skip)
 	skip.pressed.connect(_finish)
@@ -198,12 +208,12 @@ func _build() -> void:
 
 func _render_page() -> void:
 	var page: Dictionary = PAGES[_page]
-	_step_lbl.text = "Bước %d / %d" % [_page + 1, PAGES.size()]
+	_step_lbl.text = "Step %d of %d" % [_page + 1, PAGES.size()]
 	_title_lbl.text = str(page.get("title", ""))
 	_body_lbl.text = str(page.get("body", ""))
 	_accent_lbl.text = str(page.get("accent", ""))
 	_accent_lbl.visible = _accent_lbl.text != ""
-	_next_btn.text = "Bắt đầu chơi" if _page == PAGES.size() - 1 else "Tiếp ›"
+	_next_btn.text = "Start playing" if _page == PAGES.size() - 1 else "Next ›"
 	UIStyle.pop_in(_card)
 
 func _next() -> void:

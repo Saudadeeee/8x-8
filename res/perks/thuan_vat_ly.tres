@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_icj85")
 id = "thuan_vat_ly"
-name = "Thuần Vật Lý"
-desc = "Tháp KHÔNG đứng trên ô nguyên tố nhận +35% sát thương. Phần thưởng cho lối chơi Thép Nguyên Bản."
+name = "Pure Steel"
+desc = "Pieces NOT standing on an element vein gain +35% damage. The reward for a Pure Steel build."
 rarity = "epic"
 element = {
 "no_element_damage": 0.35

@@ -25,11 +25,11 @@ var burn_duration: float = 0.0
 # ── Nguyên tố (đến từ Ô tháp đứng — xem futureplan.md §2) ─────────────────
 ## Dấu chính viên đạn sẽ gắn lên địch. Rỗng = đòn vật lý thuần.
 var element: String = ""
-## Dấu phụ (trang bị "Bình Chứa Kép") — gắn cùng lúc, có thể tự kích phản ứng.
+## Dấu phụ (trang bị "Dual Vessel") — gắn cùng lúc, có thể tự kích phản ứng.
 var element_secondary: String = ""
 ## Tháp bắn ra viên này — dùng để lấy reaction_power_mult / mark_duration_mult.
 var element_source: Node = null
-## Thuốc "Tinh Dầu Xuyên Giáp": bỏ qua giáp mục tiêu cho đòn này.
+## Thuốc "Armor-Piercing Oil": bỏ qua giáp mục tiêu cho đòn này.
 var pierce_armor: bool = false
 
 @onready var mesh_instance: MeshInstance3D = $Mesh
@@ -273,7 +273,7 @@ func hit_target():
 
 	if ElementTypes.is_valid(element) and target.has_method("apply_element"):
 		target.apply_element(element, src, mark_duration_mult, mark_duration_bonus)
-		# Dấu phụ ("Bình Chứa Kép"/"Lăng Kính Đôi") — có thể tự kích phản ứng một mình
+		# Dấu phụ ("Dual Vessel"/"Lăng Kính Đôi") — có thể tự kích phản ứng một mình
 		if ElementTypes.is_valid(element_secondary) and is_instance_valid(target):
 			target.apply_element(element_secondary, src, mark_duration_mult,
 				mark_duration_bonus)

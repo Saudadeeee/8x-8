@@ -5,7 +5,7 @@
 extends Resource
 class_name EquipmentData
 
-@export_group("Nhận dạng")
+@export_group("Identity")
 ## snake_case, DUY NHẤT, trùng tên icon assets/ui/equipment/<id>.png
 @export var id: String = ""
 @export var name: String = ""
@@ -15,11 +15,11 @@ class_name EquipmentData
 ## Chỉ để phân loại hiển thị; không giới hạn ô lắp.
 @export_enum("weapon", "accessory", "base") var slot: String = "weapon"
 
-@export_group("Giá")
+@export_group("Cost")
 ## Giá VÀNG trong catalog. Shop quy đổi sang Sắc Lệnh khi bày bán.
 @export_range(0, 999, 5) var cost: int = 80
 
-@export_group("Tác dụng")
+@export_group("Effect")
 ## Khoá phải nằm trong EquipmentSystem.EFFECT_KEYS và phải có nơi ĐỌC giá trị —
 ## khai khoá lạ thì món này không làm gì cả.
 @export var effect: Dictionary = {}

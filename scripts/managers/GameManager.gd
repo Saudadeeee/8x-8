@@ -81,22 +81,22 @@ const DEFAULT_INTEREST_CAP: int = 6
 const DEFAULT_INTEREST_RATE: float = 0.10
 
 var active_perks: Array[String] = []          # mirror id perk đã chọn (nguồn: PerkSystem.owned)
-var perk_gold_per_kill: int = 0               # vàng cộng thêm mỗi kill ("Thuế Máu")
-var perk_interest_cap: int = DEFAULT_INTEREST_CAP    # trần lãi cuối wave ("Ngân Khố")
-var perk_interest_rate: float = DEFAULT_INTEREST_RATE # lãi suất cuối wave ("Hầm Vàng")
-var perk_decree_grant_mult: float = 1.0       # hệ số RD nhận khi thắng wave ("Quyền Uy")
-var perk_rd_per_wave_start: float = 0.0       # RD cộng khi wave bắt đầu ("Sắc Lệnh Khẩn")
+var perk_gold_per_kill: int = 0               # vàng cộng thêm mỗi kill ("Blood Tax")
+var perk_interest_cap: int = DEFAULT_INTEREST_CAP    # trần lãi cuối wave ("Treasury")
+var perk_interest_rate: float = DEFAULT_INTEREST_RATE # lãi suất cuối wave ("Vault")
+var perk_decree_grant_mult: float = 1.0       # hệ số RD nhận khi thắng wave ("Authority")
+var perk_rd_per_wave_start: float = 0.0       # RD cộng khi wave bắt đầu ("Urgent Decree")
 
 # Perk gắn với LỐI CHƠI nguyên tố (futureplan §3.4). Mặc định = không đổi luật.
-var perk_tile_discount: float = 0.0           # "Địa Chủ" — ô nguyên tố rẻ hơn
-var perk_equip_discount: float = 0.0          # "Thợ Rèn Lang Thang" — trang bị rẻ hơn
-var perk_element_damage: Dictionary = {}      # nguyên tố → % DoT cộng thêm ("Hoả Sư")
-var perk_freeze_bonus: float = 0.0            # "Hàn Băng Quyết" — Đóng Băng lâu hơn (giây)
-var perk_conduct_extra: int = 0               # "Lôi Đình" — Dẫn Điện lan thêm mục tiêu
-var perk_water_spread: bool = false           # "Thuỷ Mạch" — Dấu Thuỷ tự lan 1 địch kề
-var perk_poison_max_stacks: int = 0           # "Độc Sư" — trần tầng Độc mới (0 = mặc định)
-var perk_potion_per_reactions: int = 0        # "Nhà Giả Kim" — mỗi N phản ứng tặng 1 thuốc
-var perk_no_element_damage: float = 0.0       # "Thuần Vật Lý" — tháp KHÔNG đứng ô nguyên tố
+var perk_tile_discount: float = 0.0           # "Landlord" — ô nguyên tố rẻ hơn
+var perk_equip_discount: float = 0.0          # "Wandering Smith" — trang bị rẻ hơn
+var perk_element_damage: Dictionary = {}      # nguyên tố → % DoT cộng thêm ("Pyromancer")
+var perk_freeze_bonus: float = 0.0            # "Deep Freeze" — Đóng Băng lâu hơn (giây)
+var perk_conduct_extra: int = 0               # "Thunderclap" — Dẫn Điện lan thêm mục tiêu
+var perk_water_spread: bool = false           # "Water Vein" — Dấu Thuỷ tự lan 1 địch kề
+var perk_poison_max_stacks: int = 0           # "Toxicologist" — trần tầng Độc mới (0 = mặc định)
+var perk_potion_per_reactions: int = 0        # "Alchemist's Craft" — mỗi N phản ứng tặng 1 thuốc
+var perk_no_element_damage: float = 0.0       # "Pure Steel" — tháp KHÔNG đứng ô nguyên tố
 
 # ── Meta upgrade (mua ở màn Tiến Trình, áp cho MỌI ván sau) ──────────────────
 # Để riêng khỏi perk_*: perk reset mỗi ván, ba biến này nạp lại từ MetaProgress
@@ -149,9 +149,9 @@ var crit_chance: float = DEFAULT_CRIT_CHANCE  # xác suất chí mạng mỗi vi
 var crit_mult:   float = DEFAULT_CRIT_MULT    # hệ số sát thương khi chí mạng
 
 # --- NGUYÊN TỐ (per-run) ---
-## Nhân vàng của phản ứng Kết Tinh. Synergy Thổ ×6 "Địa Chấn" đẩy 15 → 40 vàng.
+## Nhân vàng của phản ứng Kết Tinh. Synergy Thổ ×6 "Seismic" đẩy 15 → 40 vàng.
 var crystal_gold_mult: float = 1.0
-## Nhân sát thương MỌI phản ứng — di vật "Sách Giả Kim". Tháp đọc qua reaction_power_mult,
+## Nhân sát thương MỌI phản ứng — di vật "Alchemist's Tome". Tháp đọc qua reaction_power_mult,
 ## field này là nguồn toàn cục để tháp mới đặt cũng thừa hưởng.
 var global_reaction_mult: float = 1.0
 
@@ -376,7 +376,7 @@ func get_interest_cap() -> int:
 func get_interest_rate() -> float:
 	return perk_interest_rate
 
-## Vàng thưởng thêm mỗi kill. Gộp cả perk ("Thuế Máu") lẫn biome hiện tại —
+## Vàng thưởng thêm mỗi kill. Gộp cả perk ("Blood Tax") lẫn biome hiện tại —
 ## game_map._on_enemy_defeated chỉ gọi getter này nên không cần biết về biome.
 func get_perk_gold_per_kill() -> int:
 	return perk_gold_per_kill + biome_gold_per_kill

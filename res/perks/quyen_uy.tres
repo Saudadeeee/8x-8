@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_2q8f6")
 id = "quyen_uy"
-name = "Quyền Uy"
-desc = "Sắc Lệnh Hoàng Gia nhận được khi thắng wave tăng 50%."
+name = "Authority"
+desc = "Royal Decree earned from clearing a wave increases by 50%."
 rarity = "epic"
 rd = {
 "grant_mult": 1.5

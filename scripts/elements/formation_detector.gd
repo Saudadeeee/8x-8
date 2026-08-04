@@ -26,10 +26,10 @@ const ALL_IDS: Array[String] = [DRAGON_LINE, FOUR_PILLAR, DUAL_POLE, RING]
 ## Tên hiển thị + mô tả ngắn cho HUD. Key = hằng ID ở trên (viết literal để dict hằng
 ## chắc chắn parse được ở mọi phiên bản GDScript).
 const INFO: Dictionary = {
-	"dragon_line": {"name": "Hàng Long Trận",       "desc": "Long khí bộc phát, 3 ô cùng hệ xếp thẳng hàng — tháp ngự phía trên được tăng cường 1 tầm đánh."},
-	"four_pillar": {"name": "Tứ Trụ Kình Thiên",    "desc": "Trấn giữ tứ phương, ngưng tụ thành khối 2×2 cùng hệ — uy lực phản ứng từ trận đồ bùng nổ thêm 40%."},
-	"dual_pole":   {"name": "Lưỡng Nghi Song Cực",  "desc": "Khí trường giao thoa, 2 ô mang nguyên tố sinh phản ứng xếp liền kề — tự động kích hoạt bùng phát mỗi 4 giây."},
-	"ring":        {"name": "Tứ Tinh Củng Nguyệt",  "desc": "Vạn pháp quy tông, 4 ô cùng hệ bao bọc 1 ô thường (trận nhãn) — ô trung tâm hội tụ trọn vẹn 4 tầng Ấn ký."},
+	"dragon_line": {"name": "Dragon Line",       "desc": "Dragon breath surges: 3 matching veins in a straight line - pieces above them gain +1 reach."},
+	"four_pillar": {"name": "Four Pillars",    "desc": "Holding all four quarters: a 2x2 block of matching veins - reactions from this formation hit 40% harder."},
+	"dual_pole":   {"name": "Dual Poles",  "desc": "Crossing fields: 2 adjacent veins whose elements react - they detonate on their own every 4 seconds."},
+	"ring":        {"name": "Ring of Four",  "desc": "All paths converge: 4 matching veins surrounding 1 plain square - the centre holds all 4 Mark layers at once."},
 }
 
 ## Phần thưởng — DỮ LIỆU THUẦN, bên tiêu thụ tự áp.

@@ -1,121 +1,121 @@
 [
 	{
-		"id": "ruou_cuong_luc", "name": "Rượu Cường Lực", "rarity": "common",
-		"desc": "Tháp trong vùng +40% sát thương trong 12 giây.",
+		"id": "ruou_cuong_luc", "name": "Strength Brew", "rarity": "common",
+		"desc": "Pieces in the area gain +40% damage for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"damage_pct": 0.40}
 	},
 	{
-		"id": "dau_nhanh_tay", "name": "Dầu Nhanh Tay", "rarity": "common",
-		"desc": "Tháp trong vùng giảm 0.35s hồi chiêu trong 12 giây.",
+		"id": "dau_nhanh_tay", "name": "Quickhand Oil", "rarity": "common",
+		"desc": "Pieces in the area lose 0.35s cooldown for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"speed_bonus": 0.35}
 	},
 	{
-		"id": "nuoc_mat_dai_bang", "name": "Nước Mắt Đại Bàng", "rarity": "rare",
-		"desc": "Tháp trong vùng +2 tầm bắn trong 12 giây.",
+		"id": "nuoc_mat_dai_bang", "name": "Eagle's Tear", "rarity": "rare",
+		"desc": "Pieces in the area gain +2 reach for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"range_bonus": 2}
 	},
 	{
-		"id": "bua_da_thu", "name": "Bùa Đa Thủ", "rarity": "epic",
-		"desc": "Tháp trong vùng bắn thêm 1 mũi đạn mỗi đòn trong 12 giây.",
+		"id": "bua_da_thu", "name": "Manyhands Charm", "rarity": "epic",
+		"desc": "Pieces in the area fire 1 extra projectile per shot for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"projectile_bonus": 1}
 	},
 	{
-		"id": "tinh_dau_xuyen_giap", "name": "Tinh Dầu Xuyên Giáp", "rarity": "rare",
-		"desc": "Tháp trong vùng bỏ qua hoàn toàn giáp trong 12 giây.",
+		"id": "tinh_dau_xuyen_giap", "name": "Armor-Piercing Oil", "rarity": "rare",
+		"desc": "Pieces in the area ignore armor entirely for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"pierce_armor": true}
 	},
 	{
-		"id": "mau_rong", "name": "Máu Rồng", "rarity": "rare",
-		"desc": "Tháp trong vùng gắn Dấu Hoả trong 12 giây.",
+		"id": "mau_rong", "name": "Dragon Blood", "rarity": "rare",
+		"desc": "Pieces in the area apply Fire Marks for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"grant_element": "fire"}
 	},
 	{
-		"id": "suong_bang_gia", "name": "Sương Băng Giá", "rarity": "rare",
-		"desc": "Tháp trong vùng gắn Dấu Băng trong 12 giây.",
+		"id": "suong_bang_gia", "name": "Hoarfrost", "rarity": "rare",
+		"desc": "Pieces in the area apply Ice Marks for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"grant_element": "ice"}
 	},
 	{
-		"id": "tia_set_dong_chai", "name": "Tia Sét Đóng Chai", "rarity": "rare",
-		"desc": "Tháp trong vùng gắn Dấu Lôi trong 12 giây.",
+		"id": "tia_set_dong_chai", "name": "Bottled Lightning", "rarity": "rare",
+		"desc": "Pieces in the area apply Thunder Marks for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"grant_element": "thunder"}
 	},
 	{
-		"id": "noc_ran", "name": "Nọc Rắn", "rarity": "rare",
-		"desc": "Tháp trong vùng gắn Dấu Độc trong 12 giây.",
+		"id": "noc_ran", "name": "Serpent Venom", "rarity": "rare",
+		"desc": "Pieces in the area apply Poison Marks for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"grant_element": "poison"}
 	},
 	{
-		"id": "nuoc_thanh", "name": "Nước Thánh", "rarity": "rare",
-		"desc": "Tháp trong vùng gắn Dấu Thuỷ trong 12 giây.",
+		"id": "nuoc_thanh", "name": "Holy Water", "rarity": "rare",
+		"desc": "Pieces in the area apply Water Marks for 12 seconds.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"grant_element": "water"}
 	},
 	{
-		"id": "nuoc_ep_da_sac", "name": "Nước Ép Đa Sắc", "rarity": "epic",
-		"desc": "Mỗi tháp trong vùng gắn một Dấu NGẪU NHIÊN trong 12 giây, kể cả khi đứng ô thường.",
+		"id": "nuoc_ep_da_sac", "name": "Prismatic Juice", "rarity": "epic",
+		"desc": "Each piece in the area applies a RANDOM Mark for 12 seconds, even on a plain square.",
 		"target": "allies", "radius": 2.5, "duration": 12.0,
 		"buff": {"grant_element": "random"}
 	},
 
 	{
-		"id": "bom_lua", "name": "Bom Lửa", "rarity": "common",
-		"desc": "120 sát thương trong vùng 2m và gắn Dấu Hoả.",
+		"id": "bom_lua", "name": "Firebomb", "rarity": "common",
+		"desc": "120 damage in a 2m area and applies a Fire Mark.",
 		"target": "enemies", "radius": 2.0,
 		"strike": {"damage": 120, "element": "fire"}
 	},
 	{
-		"id": "cau_bang", "name": "Cầu Băng", "rarity": "common",
-		"desc": "60 sát thương, gắn Dấu Băng và làm chậm 50% trong 5 giây.",
+		"id": "cau_bang", "name": "Ice Orb", "rarity": "common",
+		"desc": "60 damage, applies an Ice Mark and slows by 50% for 5 seconds.",
 		"target": "enemies", "radius": 2.5,
 		"strike": {"damage": 60, "element": "ice", "slow": 0.5, "slow_duration": 5.0}
 	},
 	{
-		"id": "lo_set", "name": "Lọ Sét", "rarity": "rare",
-		"desc": "80 sát thương xuyên giáp và gắn Dấu Lôi.",
+		"id": "lo_set", "name": "Bottled Bolt", "rarity": "rare",
+		"desc": "80 armor-piercing damage and applies a Thunder Mark.",
 		"target": "enemies", "radius": 2.5,
 		"strike": {"damage": 80, "element": "thunder"}
 	},
 	{
-		"id": "binh_nuoc_ban", "name": "Bình Nước Bẩn", "rarity": "rare",
-		"desc": "Không gây sát thương — gắn Dấu Thuỷ cho TOÀN BỘ địch trên màn.",
+		"id": "binh_nuoc_ban", "name": "Murky Flask", "rarity": "rare",
+		"desc": "Deals no damage - applies a Water Mark to EVERY enemy on screen.",
 		"target": "enemies", "radius": 999.0,
 		"strike": {"damage": 0, "element": "water"}
 	},
 	{
-		"id": "khi_doc", "name": "Khí Độc", "rarity": "rare",
-		"desc": "Vùng khí độc tồn tại 8 giây — địch đi vào dính 3 tầng Độc.",
+		"id": "khi_doc", "name": "Toxic Cloud", "rarity": "rare",
+		"desc": "A toxic cloud lingers for 8 seconds - enemies entering take 3 Poison stacks.",
 		"target": "enemies", "radius": 2.5, "duration": 8.0,
 		"strike": {"damage": 0, "element": "poison", "poison_stacks": 3, "lingering": true}
 	},
 	{
-		"id": "vun_da", "name": "Vụn Đá", "rarity": "common",
-		"desc": "Gắn Dấu Thổ và làm chậm 40% trong 6 giây.",
+		"id": "vun_da", "name": "Stone Shards", "rarity": "common",
+		"desc": "Applies an Earth Mark and slows by 40% for 6 seconds.",
 		"target": "enemies", "radius": 2.5,
 		"strike": {"damage": 0, "element": "earth", "slow": 0.4, "slow_duration": 6.0}
 	},
 
 	{
-		"id": "mau_vua", "name": "Máu Vua", "rarity": "rare",
-		"desc": "Hồi ngay 5 máu cho Nhà Vua.",
+		"id": "mau_vua", "name": "King's Blood", "rarity": "rare",
+		"desc": "Instantly restore 5 HP to the King.",
 		"target": "self", "special": "heal_king"
 	},
 	{
-		"id": "khien_vuong_trieu", "name": "Khiên Vương Triều", "rarity": "epic",
-		"desc": "Nhà Vua miễn mọi sát thương trong 10 giây.",
+		"id": "khien_vuong_trieu", "name": "Royal Aegis", "rarity": "epic",
+		"desc": "The King is immune to all damage for 10 seconds.",
 		"target": "self", "special": "king_shield", "duration": 10.0
 	},
 	{
-		"id": "cat_thoi_gian", "name": "Cát Thời Gian", "rarity": "legendary",
-		"desc": "Toàn bộ địch trên bản đồ bị chậm 60% trong 5 giây.",
+		"id": "cat_thoi_gian", "name": "Sands of Time", "rarity": "legendary",
+		"desc": "Every enemy on the map is slowed by 60% for 5 seconds.",
 		"target": "self", "special": "time_sand", "duration": 5.0
 	}
 ]

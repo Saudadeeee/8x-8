@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_cb12j")
 id = "cau_bang"
-name = "Cầu Băng"
-desc = "60 sát thương, gắn Dấu Băng và làm chậm 50% trong 5 giây."
+name = "Ice Orb"
+desc = "60 damage, applies an Ice Mark and slows by 50% for 5 seconds."
 target = "enemies"
 strike = {
 "damage": 60.0,

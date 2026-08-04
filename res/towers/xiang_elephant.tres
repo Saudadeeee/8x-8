@@ -6,8 +6,8 @@
 script = ExtResource("1_t8003")
 id = "xiang_elephant"
 attack_pattern = 11
-name = "Tượng Điền"
-description = "Cờ tướng. Nhảy chéo ĐÚNG hai ô. Bị cản tâm: ô chéo kề có quân thì hướng đó tắc."
+name = "Xiangqi Elephant"
+description = "Xiangqi. Jumps EXACTLY two diagonal squares. Blocked at the midpoint: a piece on the adjacent diagonal shuts that direction down."
 cost = 30
 decree_cost = 1.0
 base_damage = 40

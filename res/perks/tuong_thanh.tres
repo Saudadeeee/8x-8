@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_ps0nn")
 id = "tuong_thanh"
-name = "Tường Thành"
-desc = "+5 máu ngay lập tức."
+name = "Rampart"
+desc = "+5 HP immediately."
 stackable = true
 instant = {
 "hp_delta": 5

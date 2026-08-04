@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_1dodt")
 id = "vun_da"
-name = "Vụn Đá"
-desc = "Gắn Dấu Thổ và làm chậm 40% trong 6 giây."
+name = "Stone Shards"
+desc = "Applies an Earth Mark and slows by 40% for 6 seconds."
 target = "enemies"
 strike = {
 "damage": 0.0,

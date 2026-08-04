@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_t6vbl")
 id = "bua_da_thu"
-name = "Bùa Đa Thủ"
-desc = "Tháp trong vùng bắn thêm 1 mũi đạn mỗi đòn trong 12 giây."
+name = "Manyhands Charm"
+desc = "Pieces in the area fire 1 extra projectile per shot for 12 seconds."
 rarity = "epic"
 buff = {
 "projectile_bonus": 1.0

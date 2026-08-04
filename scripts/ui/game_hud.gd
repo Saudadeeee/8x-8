@@ -428,7 +428,7 @@ func _build_speed_controls() -> void:
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	_speed_panel.add_child(row)
 
-	_pause_btn = _make_speed_button("⏸", "Tạm dừng / Tiếp tục  (Space)")
+	_pause_btn = _make_speed_button("⏸", "Pause / Resume  (Space)")
 	_pause_btn.pressed.connect(_toggle_pause)
 	row.add_child(_pause_btn)
 
@@ -437,7 +437,7 @@ func _build_speed_controls() -> void:
 	for i in steps.size():
 		var speed_value: float = steps[i]
 		var btn := _make_speed_button("%d×" % int(round(speed_value)),
-			"Tốc độ %d×  (phím %d)" % [int(round(speed_value)), i + 1])
+			"Speed %d×  (key %d)" % [int(round(speed_value)), i + 1])
 		# Click nút: cho phép nhảy vòng khi bấm đúng nút đang sáng
 		btn.pressed.connect(_apply_speed_index.bind(i, true))
 		row.add_child(btn)
@@ -643,11 +643,11 @@ func _on_wave_started_banner(wave_number: int, _enemy_count: int) -> void:
 ## Tên tiếng Việt dự phòng khi spec thiếu field `name` (hoặc chưa có
 ## BiomeLibrary) — HUD không bao giờ phải hiện id thô.
 const BIOME_FALLBACK_NAMES := {
-	"wasteland": "Hoang Thổ",
-	"tundra":    "Băng Nguyên",
-	"volcanic":  "Vùng Hỏa Diệm",
-	"swamp":     "Đầm Lầy Độc",
-	"verdant":   "Lục Địa Xanh",
+	"wasteland": "Wastes",
+	"tundra":    "Tundra",
+	"volcanic":  "Volcanic Region",
+	"swamp":     "Toxic Swamp",
+	"verdant":   "Green Continent",
 }
 
 # Banner treo SAT DINH man (duoi dai thong tin wave), KHONG o giua man: o giua no
@@ -717,7 +717,7 @@ func show_biome_banner(biome_name: String, desc: String) -> void:
 		return
 	var display_name := biome_name.strip_edges()
 	if display_name == "":
-		display_name = "Vùng Đất Vô Danh"
+		display_name = "Unnamed Region"
 	_biome_banner_title.text = "  %s" % display_name.to_upper()
 	var subtitle := desc.strip_edges()
 	_biome_banner_desc.text = subtitle
@@ -773,10 +773,10 @@ func update_biome_indicator(biome_name: String, mod: Dictionary, desc: String = 
 	var changed: bool = (_biome_label.text != new_text)
 	_biome_label.text = new_text
 	var lines: Array[String] = _biome_mod_lines(mod)
-	var tooltip := "Vùng môi trường: %s" % display_name
+	var tooltip := "Region: %s" % display_name
 	if desc.strip_edges() != "":
 		tooltip += "\n%s" % desc.strip_edges()
-	tooltip += "\n" + (" · ".join(lines) if not lines.is_empty() else "Không có ảnh hưởng đặc biệt.")
+	tooltip += "\n" + (" · ".join(lines) if not lines.is_empty() else "No special effect.")
 	_biome_label.tooltip_text = tooltip
 	if changed:
 		UIStyle.pulse(_biome_label, 1.18)
@@ -788,29 +788,29 @@ func _biome_mod_lines(mod: Dictionary) -> Array[String]:
 		return lines
 	var enemy_speed := _biome_mod_num(mod, "enemy_speed_mult", 1.0)
 	if not is_equal_approx(enemy_speed, 1.0):
-		lines.append("Địch %s %d%%" % [
-			"nhanh" if enemy_speed > 1.0 else "chậm",
+		lines.append("Enemies %s %d%%" % [
+			"faster" if enemy_speed > 1.0 else "slower",
 			int(round(absf(enemy_speed - 1.0) * 100.0))])
 	var enemy_hp := _biome_mod_num(mod, "enemy_hp_mult", 1.0)
 	if not is_equal_approx(enemy_hp, 1.0):
-		lines.append("Máu địch %s%d%%" % [
+		lines.append("Enemy HP %s%d%%" % [
 			"+" if enemy_hp > 1.0 else "-",
 			int(round(absf(enemy_hp - 1.0) * 100.0))])
 	var tower_dmg := _biome_mod_num(mod, "tower_dmg_pct", 0.0)
 	if not is_zero_approx(tower_dmg):
-		lines.append("Tháp %s%d%% sát thương" % [
+		lines.append("Pieces %s%d%% damage" % [
 			"+" if tower_dmg > 0.0 else "-",
 			int(round(absf(tower_dmg) * 100.0))])
 	var tower_spd := _biome_mod_num(mod, "tower_spd_delta", 0.0)
 	if not is_zero_approx(tower_spd):
-		lines.append("Tháp bắn %s %.2fs" % [
-			"chậm" if tower_spd > 0.0 else "nhanh", absf(tower_spd)])
+		lines.append("Pieces fire %s %.2fs" % [
+			"slower" if tower_spd > 0.0 else "faster", absf(tower_spd)])
 	var gold := int(round(_biome_mod_num(mod, "gold_per_kill", 0.0)))
 	if gold != 0:
-		lines.append("%+d vàng mỗi kill" % gold)
+		lines.append("%+d gold per kill" % gold)
 	var burn := _biome_mod_num(mod, "burn_mult", 1.0)
 	if not is_equal_approx(burn, 1.0):
-		lines.append("Thiêu đốt ×%.2f" % burn)
+		lines.append("Burn ×%.2f" % burn)
 	return lines
 
 ## Đọc một hệ số từ mod — chấp nhận int/float, thiếu/sai kiểu thì lấy mặc định.
@@ -877,8 +877,8 @@ func _biome_intel_line(data: Dictionary) -> String:
 		return ""
 	var lines: Array[String] = _biome_mod_lines(mod)
 	if lines.is_empty():
-		return " Vùng: %s" % display_name
-	return " Vùng: %s  —  %s" % [display_name, " · ".join(lines)]
+		return " Region: %s" % display_name
+	return " Region: %s  —  %s" % [display_name, " · ".join(lines)]
 
 # ── Combo Meter ───────────────────────────────────────────────────────────────
 func _build_combo_meter() -> void:
@@ -987,7 +987,7 @@ func _build_pause_ui() -> void:
 	root_ctrl.add_child(_pause_overlay)
 
 	var paused_lbl = Label.new()
-	paused_lbl.text = "⏸  TẠM DỪNG"
+	paused_lbl.text = "⏸  PAUSED"
 	paused_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	paused_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	paused_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1015,17 +1015,17 @@ func _build_pause_ui() -> void:
 	_esc_menu.add_child(menu_vbox)
 
 	var menu_title = Label.new()
-	menu_title.text = "⚔  TẠM DỪNG"
+	menu_title.text = "⚔  PAUSED"
 	menu_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(menu_title, 20, C_GOLD)
 	menu_vbox.add_child(menu_title)
 
 	menu_vbox.add_child(UIStyle.separator(C_BORDER))
 
-	_add_menu_button(menu_vbox, "▶  Tiếp tục  (ESC)", func(): _close_esc_menu())
-	_add_menu_button(menu_vbox, "⚙  Cài đặt", func(): _show_settings_panel())
-	_add_menu_button(menu_vbox, "  Menu chính", func(): _go_main_menu())
-	_add_menu_button(menu_vbox, "✖  Thoát game", func(): get_tree().quit())
+	_add_menu_button(menu_vbox, "▶  Resume  (ESC)", func(): _close_esc_menu())
+	_add_menu_button(menu_vbox, "⚙  Settings", func(): _show_settings_panel())
+	_add_menu_button(menu_vbox, "  Main Menu", func(): _go_main_menu())
+	_add_menu_button(menu_vbox, "✖  Quit Game", func(): get_tree().quit())
 
 	# Settings inline panel
 	_settings_panel = PanelContainer.new()
@@ -1046,20 +1046,20 @@ func _build_pause_ui() -> void:
 	_settings_panel.add_child(sv)
 
 	var stitle = Label.new()
-	stitle.text = "⚙  CÀI ĐẶT"
+	stitle.text = "⚙  SETTINGS"
 	stitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(stitle, 20, C_GOLD)
 	sv.add_child(stitle)
 	sv.add_child(UIStyle.separator(C_BORDER))
 
 	var sm = get_node_or_null("/root/SettingsManagerSingleton")
-	_add_settings_slider(sv, "Âm lượng Master", sm.master_volume if sm else 1.0, func(v: float):
+	_add_settings_slider(sv, "Master Volume", sm.master_volume if sm else 1.0, func(v: float):
 		var s = get_node_or_null("/root/SettingsManagerSingleton")
 		if s: s.set_master_volume(v))
-	_add_settings_slider(sv, "Âm nhạc", sm.music_volume if sm else 0.8, func(v: float):
+	_add_settings_slider(sv, "Music", sm.music_volume if sm else 0.8, func(v: float):
 		var s = get_node_or_null("/root/SettingsManagerSingleton")
 		if s: s.set_music_volume(v))
-	_add_settings_slider(sv, "Hiệu ứng âm thanh", sm.sfx_volume if sm else 1.0, func(v: float):
+	_add_settings_slider(sv, "Sound Effects", sm.sfx_volume if sm else 1.0, func(v: float):
 		var s = get_node_or_null("/root/SettingsManagerSingleton")
 		if s: s.set_sfx_volume(v))
 
@@ -1067,7 +1067,7 @@ func _build_pause_ui() -> void:
 	fs_row.add_theme_constant_override("separation", 12)
 	sv.add_child(fs_row)
 	var fs_lbl = Label.new()
-	fs_lbl.text = "Toàn màn hình"
+	fs_lbl.text = "Fullscreen"
 	fs_lbl.custom_minimum_size = Vector2(200, 0)
 	UIStyle.body(fs_lbl, 14, C_WHITE)
 	fs_row.add_child(fs_lbl)
@@ -1089,7 +1089,7 @@ func _build_pause_ui() -> void:
 		if s: s.save_settings())
 	sv.add_child(save_btn)
 
-	_add_menu_button(sv, "← Quay lại", func(): _settings_panel.visible = false)
+	_add_menu_button(sv, "← Back", func(): _settings_panel.visible = false)
 
 func _add_menu_button(parent: Control, txt: String, cb: Callable) -> Button:
 	var btn = Button.new()
@@ -1262,7 +1262,7 @@ func _apply_hud_styles() -> void:
 	# ── Next Wave button ──────────────────────────────────────────────────
 	if shop_next_wave_button:
 		UIStyle.apply_button_accent(shop_next_wave_button, C_GREEN, 15)
-		shop_next_wave_button.text = "▶  WAVE KẾ"
+		shop_next_wave_button.text = "▶  NEXT WAVE"
 
 	# ── Meta shop button ──────────────────────────────────────────────────
 	if meta_shop_button:
@@ -1311,7 +1311,7 @@ func _apply_hud_styles() -> void:
 	if shop_title is Label:
 		UIStyle.title(shop_title, 20, C_GOLD)
 		(shop_title as Label).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		(shop_title as Label).text = "⚒  CỬA HÀNG HOÀNG GIA"
+		(shop_title as Label).text = "⚒  ROYAL SHOP"
 		_frame_shop_header(shop_title as Label)
 
 func _on_tower_button_pressed(stats: TowerStats):
@@ -1515,7 +1515,7 @@ func _create_shop_item_card(item: ShopItemData) -> Control:
 
 	var cost_lbl = Label.new()
 	if item.cost <= 0.0:
-		cost_lbl.text = "MIỄN PHÍ"
+		cost_lbl.text = "FREE"
 		UIStyle.glyph(cost_lbl, 13, C_GREEN)
 	elif item.use_royal_decree:
 		cost_lbl.text = " %.1f" % item.cost
@@ -1661,8 +1661,8 @@ func _get_current_tower_paths() -> Array[String]:
 
 # ── Territory / Right panel extensions ────────────────────────────────────────
 const BIOME_NAMES := {
-	"fire": "Hỏa Địa", "swamp": "Đầm Lầy", "ice": "Băng Nguyên",
-	"forest": "Rừng Rậm", "desert": "Sa Mạc", "thunder": "Lôi Vực",
+	"fire": "Fireland", "swamp": "Swamp", "ice": "Tundra",
+	"forest": "Deep Forest", "desert": "Desert", "thunder": "Thunder Reach",
 }
 
 func _build_right_panel_extensions() -> void:
@@ -1673,7 +1673,7 @@ func _build_right_panel_extensions() -> void:
 	# --- Territory stock ---
 	rp_vbox.add_child(UIStyle.separator(C_BORDER))
 	var ter_header = Label.new()
-	ter_header.text = "▣  LÃNH THỔ"
+	ter_header.text = "▣  VEINS"
 	UIStyle.title(ter_header, 13, C_GOLD)
 	ter_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	rp_vbox.add_child(ter_header)
@@ -1684,7 +1684,7 @@ func _build_right_panel_extensions() -> void:
 	# --- Dismiss stock ---
 	rp_vbox.add_child(UIStyle.separator(C_BORDER))
 	var dis_header = Label.new()
-	dis_header.text = "🗡  GIẢI TÁN"
+	dis_header.text = "🗡  DISMISS"
 	UIStyle.title(dis_header, 13, C_GOLD)
 	dis_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	rp_vbox.add_child(dis_header)
@@ -1760,7 +1760,7 @@ func _create_territory_card(biome_key: String, count: int) -> void:
 	vbox.add_child(name_lbl)
 
 	var count_lbl = Label.new()
-	count_lbl.text = "×%d còn lại" % count
+	count_lbl.text = "×%d left" % count
 	UIStyle.body(count_lbl, 10, C_GREEN)
 	vbox.add_child(count_lbl)
 
@@ -1775,7 +1775,7 @@ func _create_territory_card(biome_key: String, count: int) -> void:
 	UIStyle.make_click_target(container)
 	UIStyle.hover_lift(container, 1.05)
 	container.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	container.tooltip_text = "Click để đặt %s lên bản đồ" % biome_name
+	container.tooltip_text = "Click to place %s on the board" % biome_name
 	_territory_container.add_child(container)
 	UIStyle.pop_in(container, 0.03 * _territory_container.get_child_count())
 
@@ -1810,11 +1810,11 @@ func refresh_dismiss_stock(count: int) -> void:
 	vbox.add_theme_constant_override("separation", 2)
 	hbox.add_child(vbox)
 	var name_lbl = Label.new()
-	name_lbl.text = "Giải Tán"
+	name_lbl.text = "Dismiss"
 	UIStyle.body(name_lbl, 12, C_WHITE)
 	vbox.add_child(name_lbl)
 	var count_lbl = Label.new()
-	count_lbl.text = "×%d lượt" % count
+	count_lbl.text = "×%d uses" % count
 	UIStyle.body(count_lbl, 10, red_accent.lightened(0.25))
 	vbox.add_child(count_lbl)
 	card.gui_input.connect(func(event: InputEvent):
@@ -1828,7 +1828,7 @@ func refresh_dismiss_stock(count: int) -> void:
 	UIStyle.make_click_target(card)
 	UIStyle.hover_lift(card, 1.05)
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	card.tooltip_text = "Click để chọn tháp cần giải tán (hoàn 50% vàng)"
+	card.tooltip_text = "Click a piece to dismiss it (refunds 50% gold)"
 	_dismiss_container.add_child(card)
 	UIStyle.pop_in(card)
 
@@ -1979,10 +1979,10 @@ func _on_meta_shop_button_pressed(item_id: String) -> void:
 		return
 	var success = meta_shop_manager.attempt_purchase(item_id, king)
 	if not success:
-		meta_shop_status_label.text = "Không đủ Royal Decree hoặc đã mua"
+		meta_shop_status_label.text = "Not enough Royal Decree, or already owned"
 
 func _on_meta_item_purchased(item: MetaShopItemData) -> void:
-	meta_shop_status_label.text = "Đã mở: %s" % item.display_name
+	meta_shop_status_label.text = "Unlocked: %s" % item.display_name
 	_refresh_meta_shop_list()
 	_refresh_tower_buttons()
 
@@ -2254,7 +2254,7 @@ func update_perk_list(names: Array) -> void:
 	if _perk_counter_label.has_meta("perk_count"):
 		old_count = int(_perk_counter_label.get_meta("perk_count"))
 	_perk_counter_label.set_meta("perk_count", names.size())
-	_perk_counter_label.text = "★ Đặc quyền: %d" % names.size()
+	_perk_counter_label.text = "★ Perks: %d" % names.size()
 	if names.size() > old_count:
 		UIStyle.pulse(_perk_counter_label, 1.25)
 	if names.is_empty():
@@ -2263,7 +2263,7 @@ func update_perk_list(names: Array) -> void:
 	var lines: Array[String] = []
 	for perk_name in names:
 		lines.append("• %s" % str(perk_name))
-	_perk_counter_label.tooltip_text = "Đặc quyền đã chọn:\n" + "\n".join(lines)
+	_perk_counter_label.tooltip_text = "Perks chosen:\n" + "\n".join(lines)
 
 # CHROME HUD — thanh tài nguyên + dải chip trạng thái
 # ==============================================================================
@@ -2631,20 +2631,20 @@ func refresh_deck_panel() -> void:
 	var map := _find_game_map()
 	var deck = map.get("army_deck") if map else null
 	var title := Label.new()
-	title.text = "◆  BỘ QUÂN"
+	title.text = "◆  YOUR SET"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 42, C_GOLD)
 	vb.add_child(title)
 
 	if deck == null or not is_instance_valid(deck):
 		var none := Label.new()
-		none.text = "Chưa có bộ quân."
+		none.text = "No set yet."
 		UIStyle.body(none, 14, UIStyle.TEXT_DIM)
 		vb.add_child(none)
 		return
 
 	var sub := Label.new()
-	sub.text = "%d quân trong bộ. Loại bớt quân yếu → tỉ lệ rút quân mạnh tăng lên." 		% int(deck.size())
+	sub.text = "%d pieces in your set. Remove weak ones → your odds of drawing strong ones rise." 		% int(deck.size())
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	UIStyle.body(sub, 14, UIStyle.TEXT_DIM)
@@ -2691,8 +2691,8 @@ func refresh_deck_panel() -> void:
 
 	vb.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
 	var hint := Label.new()
-	hint.text = "Shop bán thao tác lên bộ: loại quân · nâng sao vĩnh viễn · phong Hậu.
-D hoặc ESC để đóng."
+	hint.text = "The shop sells set operations: remove a piece · permanent star-up · promote to Queen.
+Press B or ESC to close."
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(hint, 14, UIStyle.TEXT_DIM)
 	vb.add_child(hint)
@@ -2742,7 +2742,7 @@ func show_king_rule(rule_name: String, rule_desc: String) -> void:
 # ── Tooltip NỀN × BỘI theo ô ─────────────────────────────────────────────────
 # Bản dịch của bảng chấm điểm Balatro: từng lá cộng bao nhiêu Chip, từng Joker
 # nhân bao nhiêu. Không có bảng này thì người chơi biết mình yếu mà không biết
-# sửa chỗ nào — và cả thiết kế "Nền × Bội" thành một con số vô nghĩa.
+# sửa chỗ nào — và cả thiết kế "Base × Mult" thành một con số vô nghĩa.
 
 var _cell_tip: PanelContainer = null
 var _cell_tip_box: VBoxContainer = null
@@ -2792,7 +2792,7 @@ func show_cell_tooltip(_cell: Vector2i, info: Dictionary, at: Vector2) -> void:
 	_cell_tip_box.add_child(head)
 
 	var sub := Label.new()
-	sub.text = "Nền × Bội" if bool(info.get("on_path", false)) 		else "Ô này KHÔNG nằm trên đường — không sinh sát thương"
+	sub.text = "Base × Mult" if bool(info.get("on_path", false)) 		else "This square is NOT on the path — it deals no damage"
 	UIStyle.body(sub, 14, UIStyle.TEXT_DIM if bool(info.get("on_path", false)) else UIStyle.RED)
 	_cell_tip_box.add_child(sub)
 
@@ -2897,16 +2897,16 @@ func update_board_score(info: Dictionary) -> void:
 	UIStyle.tint_bar(_score_bar, C_GREEN if ok else C_RED)
 	var note := str(info.get("note", ""))
 	if not ok:
-		_score_sub.text = "THIẾU %s — sửa bố cục trước khi bắt đầu" 			% UIStyle.short_number(thr - dmg)
+		_score_sub.text = "SHORT BY %s — fix your board before starting" 			% UIStyle.short_number(thr - dmg)
 	elif note != "":
 		_score_sub.text = note
 	else:
-		_score_sub.text = "Sát thương cả wave / Tổng máu wave"
+		_score_sub.text = "Wave damage / Total wave HP"
 	# Wave boss so RIÊNG con boss: thua boss là thua NGAY, không liên quan máu Vua.
 	if bool(info.get("boss", false)):
 		_score_main.add_theme_color_override("font_color", C_GREEN if ok else C_RED)
 		if not ok:
-			_score_sub.text = "☠ KHÔNG hạ nổi Rival King — hắn chạm Vua là thua ngay"
+			_score_sub.text = "☠ You cannot kill the Rival King — if he reaches your King you lose instantly"
 
 
 # ── Nút BẮT ĐẦU WAVE ─────────────────────────────────────────────────────────
@@ -2926,7 +2926,7 @@ func _ensure_start_wave_button() -> void:
 		return
 	_start_wave_btn = Button.new()
 	_start_wave_btn.name = "StartWaveButton"
-	_start_wave_btn.text = "⚔  BẮT ĐẦU WAVE"
+	_start_wave_btn.text = "⚔  START WAVE"
 	_start_wave_btn.custom_minimum_size = Vector2(360, 68)
 	UIStyle.apply_button_accent(_start_wave_btn, C_GREEN, 28)
 	UIStyle.make_click_target(_start_wave_btn)

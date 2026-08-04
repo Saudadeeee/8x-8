@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_xvvbq")
 id = "noc_ran"
-name = "Nọc Rắn"
-desc = "Tháp trong vùng gắn Dấu Độc trong 12 giây."
+name = "Serpent Venom"
+desc = "Pieces in the area apply Poison Marks for 12 seconds."
 rarity = "rare"
 buff = {
 "grant_element": "poison"

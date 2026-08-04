@@ -1202,15 +1202,39 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   Tầm gốc hạ theo: Mã 4→2, Tốt 3→2, Tượng Điền giữ 2 (Xe tầm 5 = 20 ô làm mốc).
 - **`cells()` và `covers()` lệch nhau** — hai điểm vào của cùng một luật:
   (1) `_clear_line` duyệt HỞ hai đầu nên `covers()` chấp nhận chính ô CÓ QUÂN
-      đứng, còn `cells()` loại nó ra;
+	  đứng, còn `cells()` loại nó ra;
   (2) Kim Tướng so `d.y == FORWARD.y` thay vì so DẤU — ở vòng 2 thì d.y = 2 nên
-      mọi ô chéo trước vòng ≥2 bị loại.
+	  mọi ô chéo trước vòng ≥2 bị loại.
   Test giờ quét TOÀN BỘ nước đi × tầm × ô và bắt mọi chỗ lệch.
 - **`CoverageOverlay`** — click vào quân thì tô đúng ô nó với tới (ô ĐƯỜNG vàng
   đậm, ô thường xanh nhạt, ô của chính nó xanh lá). Với mô hình nước đi, "tầm
   bắn 5" không nói lên gì: Xe/Mã/Tốt cùng tầm 5 phủ ba hình khác hẳn nhau.
   Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
   Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
+
+*Đổi ngôn ngữ game sang TIẾNG ANH (2026-08-04):*
+- **1568 chuỗi người chơi nhìn thấy → còn ~50** (phần dư là chuỗi nằm trong chú
+  thích `#`, không hiện trong game). Cảnh báo `push_warning`/`push_error` (130
+  chuỗi) GIỮ tiếng Việt — chúng chỉ ra console cho lập trình viên.
+- **Làm bằng công cụ, không sửa tay**: `tools/i18n_scan.py` (đo) ·
+  `i18n_split.py` (tách người-chơi / dev) · `i18n_apply.py` (áp bảng dịch) ·
+  `i18n_final.py` (regex cho chuỗi có ký tự PUA đứng đầu).
+  Bảng dịch ở `tools/i18n_map_{1..12}.py`, mỗi bảng một nhóm nội dung.
+  Sửa tay 1175 chuỗi duy nhất rải ở 28 thư mục thì chắc chắn bỏ sót.
+- **`i18n_apply.py` thay chuỗi DÀI trước chuỗi NGẮN** — nếu không, một chuỗi
+  ngắn là con của chuỗi dài sẽ ăn mất một đoạn và phần còn lại thành rác.
+- **BẪY: chuỗi bắt đầu bằng ký hiệu PUA** (glyph tự vẽ ``…) không khớp
+  được khi gõ bằng phím thường ⇒ `i18n_apply` báo "không tìm thấy". Phải thay
+  bằng regex trên phần SAU của chuỗi. Khoảng 50 chuỗi rơi vào lớp này.
+- **Tên riêng dịch theo NGUỒN GỐC**, không dịch nghĩa: Hương Xa → *Lance*,
+  Kim Tướng → *Gold General*, Tượng Điền → *Xiangqi Elephant*. Người chơi tra
+  Google ra đúng quân cờ đó.
+- Thế cờ ưu tiên thuật ngữ cờ vua CÓ THẬT: Trận Pháo → *Battery*, Giao Hoả →
+  *Crossfire*, Tường Tốt → *Pawn Wall*, Nước Chĩa → *Fork*.
+- Font pixel tự vẽ đã có đủ ASCII nên tiếng Anh chạy ngay, không phải dựng lại.
+- **Test kiểm tutorial phải đổi từ khoá theo**: batch 9 và 12 tìm chuỗi tiếng
+  Việt trong `tutorial_overlay.gd` — sau khi dịch thì phải tìm "rook"/"bishop"/
+  "formation"/"your set" thay vì "xe"/"tượng"/"thế"/"bộ".
 
 *Bảy sửa theo phản hồi chơi thử (2026-08-02):*
 - **Pha chuẩn bị KHÔNG còn đếm ngược.** `PhaseController.request_start_wave()` là

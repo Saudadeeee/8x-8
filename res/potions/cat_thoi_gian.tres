@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_t1h1b")
 id = "cat_thoi_gian"
-name = "Cát Thời Gian"
-desc = "Toàn bộ địch trên bản đồ bị chậm 60% trong 5 giây."
+name = "Sands of Time"
+desc = "Every enemy on the map is slowed by 60% for 5 seconds."
 rarity = "legendary"
 target = "self"
 duration = 5.0

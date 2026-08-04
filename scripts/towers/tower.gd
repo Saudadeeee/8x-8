@@ -109,7 +109,7 @@ var cooldown_timer:   Timer
 # STRONGEST = current_hp cao nhất · CLOSEST = gần tháp nhất · WEAKEST = hp thấp nhất
 enum TargetMode { FIRST, STRONGEST, CLOSEST, WEAKEST }
 
-const TARGET_MODE_LABELS: Array[String] = ["Đầu hàng", "Máu cao", "Gần nhất", "Máu thấp"]
+const TARGET_MODE_LABELS: Array[String] = ["Surrender", "Highest HP", "Nearest", "Lowest HP"]
 
 var target_mode: int = TargetMode.FIRST
 
@@ -386,7 +386,7 @@ func recalculate_stats() -> void:
 	for v in _dmg_bonus.values(): total_dmg += v
 	for v in _spd_bonus.values(): total_spd += v
 	for v in _rng_bonus.values(): total_rng += v
-	# Di vật "Pháo Đài": Xe thành Pháo (khó bắn hơn vì cần ngòi) nên được bù
+	# Di vật "Fortress": Xe thành Pháo (khó bắn hơn vì cần ngòi) nên được bù
 	# sát thương. Nhân ở đây chứ không qua BuffLayer vì nó phụ thuộc nước đi
 	# HIỆN TẠI, mà nước đi đổi theo di vật.
 	var gm_c := get_node_or_null("/root/GameManagerSingleton")
@@ -427,7 +427,7 @@ func recalculate_stats() -> void:
 ## thuốc đang chạy, và ngược lại. Rỗng cả hai = dùng nguyên tố của ô đang đứng.
 var _equip_element: String = ""
 var _potion_element: String = ""
-## Nguyên tố phụ — trang bị "Bình Chứa Kép" cho phép gắn 2 Dấu mỗi đòn.
+## Nguyên tố phụ — trang bị "Dual Vessel" cho phép gắn 2 Dấu mỗi đòn.
 var element_secondary: String = ""
 ## Hệ số khuếch đại phản ứng do tháp này kích. TỔNG HỢP — đừng gán thẳng,
 ## gọi `_refresh_element_mults()` sau khi đổi một trong ba nguồn dưới.
@@ -571,11 +571,11 @@ func refresh_tile_element_bonus() -> void:
 	var range_bonus: int = int(bonus.get("range_bonus", 0))
 
 	var pct: float = float(bonus.get("tower_damage_pct", 0.0))
-	# Di vật "Trái Tim Nguyên Sơ" — đủ 6 nguyên tố trên bàn thì MỌI tháp +30%,
+	# Di vật "Primal Heart" — đủ 6 nguyên tố trên bàn thì MỌI tháp +30%,
 	# kể cả tháp không đứng ô nguyên tố. Đi chung lớp TILE_ELEMENT vì cùng nhịp
 	# làm mới (mỗi lần bố cục ô thay đổi).
 	pct += _primal_heart_pct()
-	# Perk "Thuần Vật Lý": phần thưởng cho tháp CỐ Ý không đứng ô nguyên tố.
+	# Perk "Pure Steel": phần thưởng cho tháp CỐ Ý không đứng ô nguyên tố.
 	# Đọc `current_element()` chứ không đọc ô: tháp có Trượng Nguyên Tố vẫn bắn
 	# nguyên tố dù đứng ô thường, nên không được ăn phần thưởng này.
 	if not ElementTypes.is_valid(current_element()):
@@ -590,7 +590,7 @@ func refresh_tile_element_bonus() -> void:
 	# % của base — cùng quy ước với synergy, để không nhân chồng với sao/season.
 	_set_buff_layer(BuffLayer.TILE_ELEMENT, stats.base_damage * pct, 0.0, range_bonus)
 
-## % sát thương từ "Trái Tim Nguyên Sơ" — 0 nếu chưa đủ 6 nguyên tố trên bàn.
+## % sát thương từ "Primal Heart" — 0 nếu chưa đủ 6 nguyên tố trên bàn.
 func _primal_heart_pct() -> float:
 	var gm := get_node_or_null("/root/GameManagerSingleton")
 	if gm == null:
@@ -672,7 +672,7 @@ func apply_equipment_buff(data: Dictionary) -> void:
 	_equip_reaction_mult = maxf(0.1, float(data.get("reaction_power_mult", 1.0)))
 	_equip_mark_mult     = maxf(0.1, float(data.get("mark_duration_mult", 1.0)))
 	element_secondary    = str(data.get("element_secondary", ""))
-	# grant_element: trang bị "Trượng Nguyên Tố" ép nguyên tố bất kể ô đang đứng.
+	# grant_element: trang bị "Element Staff" ép nguyên tố bất kể ô đang đứng.
 	var forced := str(data.get("grant_element", ""))
 	_equip_element = forced if ElementTypes.is_valid(forced) else ""
 	equip_crit_bonus      = maxf(0.0, float(data.get("crit_bonus", 0.0)))
@@ -779,9 +779,9 @@ func clear_potion_buff() -> void:
 	potion_pierce_armor = false
 
 var _potion_token: int = 0
-## Thuốc "Bùa Đa Thủ": bắn thêm mấy mũi. Runtime-only, KHÔNG ghi vào stats.
+## Thuốc "Manyhands Charm": bắn thêm mấy mũi. Runtime-only, KHÔNG ghi vào stats.
 var potion_extra_projectiles: int = 0
-## Thuốc "Tinh Dầu Xuyên Giáp": đòn đánh bỏ qua giáp.
+## Thuốc "Armor-Piercing Oil": đòn đánh bỏ qua giáp.
 var potion_pierce_armor: bool = false
 
 ## Internal: write all three axes for one layer and recalculate.
@@ -1036,7 +1036,7 @@ func refresh_coverage() -> void:
 	var pierce: int = int(gm_r.relic_pierce_count) if gm_r != null else 0
 	covered_cells = ChessPattern.cells(pattern_kind(), home_cell(),
 		effective_range(), blocked, pierce)
-	# Di vật "Vó Ngựa": Mã nhảy thêm một vòng chữ L xa hơn (±1,±3 / ±3,±1).
+	# Di vật "Horseshoe": Mã nhảy thêm một vòng chữ L xa hơn (±1,±3 / ±3,±1).
 	if pattern_kind() == ChessPattern.Kind.KNIGHT and gm_r != null 			and int(gm_r.relic_knight_reach) > 0:
 		for st in ChessPattern.KNIGHT_FAR:
 			var c2: Vector2i = home_cell() + st
@@ -1049,7 +1049,7 @@ func refresh_coverage() -> void:
 	update_range_visual()
 
 
-## Rival King "Vua Câm"/"Vua Nghẽn" khoá hẳn một kiểu nước đi trong wave của hắn.
+## Rival King "The Mute King"/"The Choked King" khoá hẳn một kiểu nước đi trong wave của hắn.
 ## Kiểm ở đây chứ không xoá mục tiêu: tháp vẫn ngắm, vẫn xoay, chỉ không nhả đạn
 ## — người chơi thấy ngay quân nào đang bị khoá thay vì tưởng game hỏng.
 func _silenced_by_king() -> bool:

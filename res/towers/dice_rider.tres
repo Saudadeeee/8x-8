@@ -6,8 +6,8 @@
 script = ExtResource("1_t8004")
 id = "dice_rider"
 attack_pattern = 12
-name = "Kỵ Xúc Xắc"
-description = "Cá ngựa. Phủ rộng mọi hướng, sát thương lớn nhưng hồi chiêu rất chậm."
+name = "Dice Rider"
+description = "Ludo. Covers a wide area in all directions, heavy damage but a very slow cooldown."
 cost = 52
 decree_cost = 3.0
 base_damage = 76

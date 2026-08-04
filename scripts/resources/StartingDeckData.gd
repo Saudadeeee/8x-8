@@ -18,10 +18,10 @@ class_name StartingDeckData
 extends Resource
 
 @export var id: String = "deck_standard"
-@export var display_name: String = "Bộ Chuẩn"
+@export var display_name: String = "Standard Set"
 @export_multiline var desc: String = ""
 ## Loại cờ mà bộ này lấy cảm hứng — dùng để nhóm khi hiển thị.
-@export_enum("Cờ vua", "Cờ tướng", "Shogi", "Cá ngựa") var origin: String = "Cờ vua"
+@export_enum("Chess", "Xiangqi", "Shogi", "Ludo") var origin: String = "Chess"
 
 ## id quân → số lượng trong bộ khởi đầu.
 @export var deck: Dictionary = {}

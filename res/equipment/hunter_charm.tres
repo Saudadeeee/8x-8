@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_sgucc")
 id = "hunter_charm"
-name = "Hộ Phù Thợ Săn"
-desc = "+30% sát thương lên địch đang mang Dấu."
+name = "Hunter's Charm"
+desc = "+30% damage against marked enemies."
 rarity = "rare"
 slot = "accessory"
 cost = 105

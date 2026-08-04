@@ -50,15 +50,15 @@ func _run() -> void:
 			all_text += str(pg.get("title", "")) + str(pg.get("body", "")) 				+ str(pg.get("accent", ""))
 		var low := all_text.to_lower()
 		var missing := ""
-		if not (low.contains("sát thương") and low.contains("tổng máu")):
+		if not (low.contains("damage") and low.contains("total hp")):
 			missing += "nguong-bang-so "
-		if not (low.contains("xe") and low.contains("tượng") and low.contains("mã")):
+		if not (low.contains("rook") and low.contains("bishop") and low.contains("knight")):
 			missing += "nuoc-di-quan-co "
-		if not low.contains("thế"):
+		if not low.contains("formation"):
 			missing += "the-co "
-		if not low.contains("bộ"):
+		if not low.contains("set"):
 			missing += "bo-quan "
-		if not (low.contains("ô") and low.contains("nguyên tố")):
+		if not (low.contains("square") and low.contains("element")):
 			missing += "o-nguyen-to "
 		ok(missing == "", "tutorial day du moi bat bien cot loi", missing)
 

@@ -40,12 +40,12 @@ const BIOME_KEYS: Array[String] = ["fire", "swamp", "ice", "forest", "desert", "
 ##     Viết literal thay vì `ElementTypes.FIRE` để dict hằng chắc chắn parse được;
 ##     `_verify_element_mapping()` trong setup() bắt lỗi lệch giá trị ngay khi chạy.
 const BIOME_STATS: Dictionary = {
-	"fire":    {"name": "Mạch Hoả",  "element": "fire",    "desc": "+25% Sát thương · Dấu Hoả",          "damage_pct": 0.25, "speed_pct": 0.00, "range_bonus": 0, "color": Color(0.9, 0.3, 0.05, 0.35)},
-	"swamp":   {"name": "Mạch Thuỷ", "element": "water",   "desc": "−15% Hồi chiêu · Dấu Thuỷ",          "damage_pct": 0.00, "speed_pct": 0.15, "range_bonus": 0, "color": Color(0.2, 0.6, 0.1,  0.35)},
-	"ice":     {"name": "Mạch Băng", "element": "ice",     "desc": "+1 Tầm bắn / +8% Sát thương · Dấu Băng", "damage_pct": 0.08, "speed_pct": 0.00, "range_bonus": 1, "color": Color(0.4, 0.7, 1.0,  0.35)},
-	"forest":  {"name": "Mạch Độc",  "element": "poison",  "desc": "+12% Sát thương / −8% Hồi chiêu · Dấu Độc", "damage_pct": 0.12, "speed_pct": 0.08, "range_bonus": 0, "color": Color(0.15, 0.7, 0.1, 0.35)},
-	"desert":  {"name": "Mạch Thổ",  "element": "earth",   "desc": "+18% Sát thương · Dấu Thổ",          "damage_pct": 0.18, "speed_pct": 0.00, "range_bonus": 0, "color": Color(0.9, 0.75, 0.2, 0.35)},
-	"thunder": {"name": "Mạch Lôi",  "element": "thunder", "desc": "+10% Sát thương / +1 Tầm · Dấu Lôi", "damage_pct": 0.10, "speed_pct": 0.00, "range_bonus": 1, "color": Color(0.55, 0.25, 1.0, 0.35)},
+	"fire":    {"name": "Fire Vein",  "element": "fire",    "desc": "+25% Damage · Fire Mark",          "damage_pct": 0.25, "speed_pct": 0.00, "range_bonus": 0, "color": Color(0.9, 0.3, 0.05, 0.35)},
+	"swamp":   {"name": "Water Vein", "element": "water",   "desc": "-15% Cooldown · Water Mark",          "damage_pct": 0.00, "speed_pct": 0.15, "range_bonus": 0, "color": Color(0.2, 0.6, 0.1,  0.35)},
+	"ice":     {"name": "Ice Vein", "element": "ice",     "desc": "+1 Reach / +8% Damage · Ice Mark", "damage_pct": 0.08, "speed_pct": 0.00, "range_bonus": 1, "color": Color(0.4, 0.7, 1.0,  0.35)},
+	"forest":  {"name": "Poison Vein",  "element": "poison",  "desc": "+12% Damage / -8% Cooldown · Poison Mark", "damage_pct": 0.12, "speed_pct": 0.08, "range_bonus": 0, "color": Color(0.15, 0.7, 0.1, 0.35)},
+	"desert":  {"name": "Earth Vein",  "element": "earth",   "desc": "+18% Damage · Earth Mark",          "damage_pct": 0.18, "speed_pct": 0.00, "range_bonus": 0, "color": Color(0.9, 0.75, 0.2, 0.35)},
+	"thunder": {"name": "Thunder Vein",  "element": "thunder", "desc": "+10% Damage / +1 Reach · Thunder Mark", "damage_pct": 0.10, "speed_pct": 0.00, "range_bonus": 1, "color": Color(0.55, 0.25, 1.0, 0.35)},
 }
 
 
@@ -67,7 +67,7 @@ const TILE_Y:      float = 0.052
 const MIN_TILE_LEVEL: int = 1
 const MAX_TILE_LEVEL: int = 3
 ## Tên hiển thị theo cấp (index = level - 1).
-const LEVEL_NAMES: Array[String] = ["Mạch", "Nguồn", "Long Mạch"]
+const LEVEL_NAMES: Array[String] = ["Vein", "Source", "Ley Line"]
 ## Phần thưởng cộng dồn theo cấp — DỮ LIỆU THUẦN, hệ Dấu/phản ứng tự đọc và áp.
 ##   mark_duration_bonus : cộng thêm bao nhiêu GIÂY vào thời gian tồn tại của Dấu
 ##   reaction_mult       : hệ số NHÂN vào sát thương/hiệu lực phản ứng
@@ -542,7 +542,7 @@ func get_tile_level(pos: Vector2i) -> int:
 		return 0
 	return clampi(int(tile_level.get(pos, MIN_TILE_LEVEL)), MIN_TILE_LEVEL, MAX_TILE_LEVEL)
 
-## Tên đầy đủ của ô để hiển thị: "Mạch Hoả" / "Nguồn Hoả" / "Long Mạch Hoả".
+## Tên đầy đủ của ô để hiển thị: "Fire Vein" / "Nguồn Hoả" / "Long Mạch Hoả".
 func get_tile_display_name(pos: Vector2i) -> String:
 	var level: int = get_tile_level(pos)
 	if level <= 0:
@@ -662,7 +662,7 @@ func _recompute_formations() -> void:
 	_refresh_all_tower_tile_bonus()
 	formations_changed.emit(formations)
 
-## Số nguyên tố KHÁC NHAU đang có trên bàn — di vật "Trái Tim Nguyên Sơ" đọc.
+## Số nguyên tố KHÁC NHAU đang có trên bàn — di vật "Primal Heart" đọc.
 func distinct_element_count() -> int:
 	var seen: Dictionary = {}
 	for pos in biome_tiles.keys():

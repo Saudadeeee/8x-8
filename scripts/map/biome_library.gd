@@ -72,7 +72,7 @@ const MOD_KEYS: Dictionary = {
 const ALL: Dictionary = {
 	# Baseline: đúng như bản đồ hiện tại, mod hoàn toàn trung tính.
 	"wasteland": {
-		"name": "Hoang Mạc", "desc": "Đất nứt nẻ, cằn cỗi. Không gì ưu ái, không gì cản trở.",
+		"name": "Wasteland", "desc": "Cracked, barren ground. It favours nothing and hinders nothing.",
 		"tex_prefix": "wasteland",
 		"tint_light": Color("b8a88a"), "tint_dark": Color("4a3f35"), "tint_road": Color("6b5a3e"),
 		"tint_cliff": Color("4a3a2c"), "tint_cliff_top": Color("3f4a2e"),
@@ -99,7 +99,7 @@ const ALL: Dictionary = {
 
 	# Băng giá: địch lết chậm, nhưng tháp cũng cóng tay (chu kỳ bắn dài thêm).
 	"tundra": {
-		"name": "Băng Nguyên", "desc": "Giá buốt ghì chân địch — và cả tay xạ thủ.",
+		"name": "Tundra", "desc": "The cold drags at the enemy's feet - and at your archers' hands.",
 		"tex_prefix": "tundra",
 		"tint_light": Color("dfe9f2"), "tint_dark": Color("8fa6bd"), "tint_road": Color("9aa8b5"),
 		"tint_cliff": Color("5b6b7d"), "tint_cliff_top": Color("cfe0ee"),
@@ -125,7 +125,7 @@ const ALL: Dictionary = {
 
 	# Núi lửa: sát thương và thiêu đốt mạnh hơn, nhưng địch cũng hăng hơn.
 	"volcanic": {
-		"name": "Hoả Diệm", "desc": "Tro nóng nuôi lửa: đòn đánh rực hơn, địch cũng liều hơn.",
+		"name": "Volcanic", "desc": "Hot ash feeds the fire: your hits burn brighter, and the enemy fights harder.",
 		"tex_prefix": "volcanic",
 		"tint_light": Color("6b4038"), "tint_dark": Color("2a1a18"), "tint_road": Color("46281f"),
 		"tint_cliff": Color("2c1c18"), "tint_cliff_top": Color("6e2a18"),
@@ -151,7 +151,7 @@ const ALL: Dictionary = {
 
 	# Đầm lầy: bùn níu địch rất chậm, nhưng ẩm mốc làm vũ khí cùn đi.
 	"swamp": {
-		"name": "Đầm Lầy", "desc": "Bùn níu từng bước chân — thép cũng rỉ theo hơi nước.",
+		"name": "Swamp", "desc": "Mud clings to every step - and steel rusts in the damp.",
 		"tex_prefix": "swamp",
 		"tint_light": Color("6d7a45"), "tint_dark": Color("32402a"), "tint_road": Color("4a4630"),
 		"tint_cliff": Color("2f3a2a"), "tint_cliff_top": Color("465a30"),
@@ -177,7 +177,7 @@ const ALL: Dictionary = {
 
 	# Rừng thẳm: chiến lợi phẩm dồi dào, đổi lại quái vật ở đây dai hơn.
 	"verdant": {
-		"name": "Rừng Thẳm", "desc": "Đất trù phú: vàng về nhiều hơn, thú dữ cũng dai hơn.",
+		"name": "Verdant", "desc": "Rich land: more gold comes in, and the beasts are hardier.",
 		"tex_prefix": "verdant",
 		"tint_light": Color("8fbf5a"), "tint_dark": Color("3e6b2c"), "tint_road": Color("7a6a3c"),
 		"tint_cliff": Color("46402c"), "tint_cliff_top": Color("4f7a2c"),

@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7208")
 id = "rl_encircle"
-name = "Vây Bắt"
+name = "Encirclement"
 rarity = "epic"
-desc = "Cờ vây. Ô có từ ba quân kề trở lên cộng +0.25 Bội mỗi quân kề. Thưởng cho việc dồn cụm chật."
+desc = "Go. A square with three or more adjacent pieces gains +0.25 Mult per neighbour. Rewards packing tight."
 cost = 270
 effect = {
 "surround_mult": 0.25

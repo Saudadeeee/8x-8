@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7205")
 id = "rl_barren"
-name = "Đất Cằn"
+name = "Barren Ground"
 rarity = "epic"
-desc = "Ô KHÔNG có nguyên tố cộng +45% Bội. Mở lối chơi phản nguyên tố — dồn hết vàng vào quân thay vì vào ô."
+desc = "Squares WITHOUT an element add +45% Mult. Opens an anti-element line - pour every coin into pieces instead of veins."
 cost = 250
 effect = {
 "plain_tile_mult": 0.45

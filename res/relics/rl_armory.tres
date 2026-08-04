@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7206")
 id = "rl_armory"
-name = "Kho Vũ Khí"
+name = "Armory"
 rarity = "legendary"
-desc = "Trang bị lắp trên một quân áp cho MỌI quân cùng loại. Chọn con nào để lắp thành chọn LOẠI nào để đầu tư."
+desc = "Equipment on one piece applies to EVERY piece of the same type. Choosing which unit to equip becomes choosing which TYPE to invest in."
 cost = 420
 effect = {
 "equip_share": true

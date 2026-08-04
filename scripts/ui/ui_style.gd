@@ -63,21 +63,21 @@ const RARITY_COLORS := {
 }
 
 const RARITY_NAMES_VI := {
-	"common": "Thường", "rare": "Hiếm", "epic": "Sử Thi", "legendary": "Huyền Thoại",
+	"common": "Common", "rare": "Rare", "epic": "Epic", "legendary": "Legendary",
 }
 
 ## Tên tiếng Việt của 15 quân cờ. Một chỗ duy nhất — trước đây mọi nơi in thẳng
 ## `id` nên màn chọn vua hiện "Sủng ái: Pawn, rook" lẫn hoa thường giữa một
 ## giao diện đã Việt hoá.
 const UNIT_NAMES_VI := {
-	"pawn": "Tốt", "knight": "Mã", "bishop": "Tượng", "rook": "Xe",
-	"queen": "Hậu", "commander": "Chủ Soái", "crossbowman": "Nỏ Thủ",
-	"catapult": "Máy Bắn Đá", "warlock": "Pháp Sư Hắc Ám", "dark_mage": "Ma Đạo Sĩ",
-	"longbowman": "Cung Trường", "paladin": "Thánh Kỵ", "alchemist": "Luyện Kim Sư",
-	"ice_guardian": "Vệ Binh Băng", "ballista": "Nỏ Công Thành",
+	"pawn": "Pawn", "knight": "Knight", "bishop": "Bishop", "rook": "Rook",
+	"queen": "Queen", "commander": "Commander", "crossbowman": "Crossbowman",
+	"catapult": "Catapult", "warlock": "Warlock", "dark_mage": "Dark Mage",
+	"longbowman": "Longbowman", "paladin": "Paladin", "alchemist": "Alchemist",
+	"ice_guardian": "Ice Guardian", "ballista": "Ballista",
 	# Quân mượn từ các loại cờ khác — mỗi loại một cơ chế cờ vua KHÔNG có.
-	"cannon": "Pháo", "lance": "Hương Xa", "gold_general": "Kim Tướng",
-	"xiang_elephant": "Tượng Điền", "dice_rider": "Kỵ Xúc Xắc",
+	"cannon": "Cannon", "lance": "Lance", "gold_general": "Gold General",
+	"xiang_elephant": "Xiangqi Elephant", "dice_rider": "Dice Rider",
 }
 
 

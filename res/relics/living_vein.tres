@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_2aumd")
 id = "living_vein"
-name = "Long Mạch Sống"
-desc = "Ô Lv3 lan Dấu của nó sang 4 ô kề."
+name = "Living Ley Line"
+desc = "Level 3 veins spread their Mark to the 4 adjacent squares."
 rarity = "legendary"
 cost = 310
 effect = {

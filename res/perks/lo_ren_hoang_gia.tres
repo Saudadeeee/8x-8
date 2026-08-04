@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_qajsa")
 id = "lo_ren_hoang_gia"
-name = "Lò Rèn Hoàng Gia"
-desc = "+20% sát thương cho toàn bộ tháp."
+name = "Royal Forge"
+desc = "+20% damage for every piece."
 rarity = "epic"
 tower = {
 "damage_bonus": 0.2

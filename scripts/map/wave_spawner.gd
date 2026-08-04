@@ -73,19 +73,19 @@ const ASCENSION_HP_PER_LEVEL: float = 0.35
 const ASCENSION_FIELDS: Array[String] = ["ascension_level", "ascension", "ascension_tier"]
 
 const _ENEMY_DISPLAY_NAMES := {
-	"orc": "Orc", "goblin": "Goblin", "skeleton": "Xương Cốt",
-	"dark_knight": "Kỵ Sĩ Đen", "demon_imp": "Quỷ Con",
-	"troll": "Troll", "wraith": "Oán Hồn", "shaman": "Pháp Sư Tà Thuật",
-	"golem": "Golem Đá", "bat": "Dơi Quỷ",
+	"orc": "Orc", "goblin": "Goblin", "skeleton": "Skeleton",
+	"dark_knight": "Dark Knight", "demon_imp": "Demon Imp",
+	"troll": "Troll", "wraith": "Wraith", "shaman": "Shaman",
+	"golem": "Stone Golem", "bat": "Bat Swarm",
 }
 
 const SEASON_BUFFS := {
 	# `desc` chỉ còn mô tả LOÀI ĐỊCH của mùa, không hứa buff chỉ số nữa —
 	# `get_season_buff` trả rỗng khi FeatureFlags.SEASONS_ENABLED = false.
-	0: {"name": "Mùa Xuân", "damage_mult": 1.0,  "speed_penalty": 0.0,  "desc": "Địch nhẹ, nhanh: Dơi Quỷ và Goblin."},
-	1: {"name": "Mùa Hè",   "damage_mult": 1.15, "speed_penalty": 0.0,  "desc": "Orc và Skeleton — đông và đều."},
-	2: {"name": "Mùa Thu",  "damage_mult": 1.0,  "speed_penalty": 0.15, "desc": "Dark Knight và Demon Imp — dày máu hơn."},
-	3: {"name": "Mùa Đông", "damage_mult": 0.9,  "speed_penalty": 0.2,  "desc": "Loài cứng nhất: Troll, Golem, Dark Knight."},
+	0: {"name": "Spring", "damage_mult": 1.0,  "speed_penalty": 0.0,  "desc": "Light, fast enemies: Bat Swarms and Goblins."},
+	1: {"name": "Summer",   "damage_mult": 1.15, "speed_penalty": 0.0,  "desc": "Orcs and Skeletons - many and steady."},
+	2: {"name": "Autumn",  "damage_mult": 1.0,  "speed_penalty": 0.15, "desc": "Dark Knights and Demon Imps - thicker HP."},
+	3: {"name": "Winter", "damage_mult": 0.9,  "speed_penalty": 0.2,  "desc": "The toughest of all: Trolls, Golems, Dark Knights."},
 }
 
 enum Season { SPRING, SUMMER, AUTUMN, WINTER }
@@ -171,10 +171,10 @@ func get_season(wave_num: int) -> Season:
 
 func get_season_name(wave_num: int) -> String:
 	match get_season(wave_num):
-		Season.SPRING: return "Mùa Xuân (Wild)"
-		Season.SUMMER: return "Mùa Hè (Mixed)"
-		Season.AUTUMN: return "Mùa Thu (Undead)"
-		Season.WINTER: return "Mùa Đông (Hell)"
+		Season.SPRING: return "Spring (Wild)"
+		Season.SUMMER: return "Summer (Mixed)"
+		Season.AUTUMN: return "Autumn (Undead)"
+		Season.WINTER: return "Winter (Hell)"
 	return ""
 
 func get_season_buff(wave_num: int) -> Dictionary:
@@ -183,7 +183,7 @@ func get_season_buff(wave_num: int) -> Dictionary:
 	# tiến trình (Xuân/Hạ/Thu/Đông) và vẫn quyết định loài địch nào spawn — đó là
 	# phần đọc được; chỉ phần buff ngầm bị tắt.
 	if not FeatureFlags.SEASONS_ENABLED:
-		return {"desc": "Không ảnh hưởng chỉ số."}
+		return {"desc": "No stat effect."}
 	return SEASON_BUFFS.get(int(get_season(wave_num)), {})
 
 # --- TÍNH SỐ ENEMY ---
@@ -511,10 +511,10 @@ func get_wave_intel_text(wave_num: int) -> String:
 	var sbuff: Dictionary = get_season_buff(wave_num)
 	var season_effect: String = sbuff.get("desc", "")
 	if is_boss_wave(wave_num):
-		return "☠ WAVE BOSS %d (%s) — Một RIVAL KING xuất trận cùng %d hộ vệ: %s  |  %s" % [
+		return "☠ BOSS WAVE %d (%s) — A RIVAL KING marches with %d guards: %s  |  %s" % [
 			wave_num, get_season_name(wave_num), total, ", ".join(parts), season_effect,
 		]
-	return "Wave %d (%s) — %d địch: %s  |  %s" % [wave_num, get_season_name(wave_num), total, ", ".join(parts), season_effect]
+	return "Wave %d (%s) — %d enemies: %s  |  %s" % [wave_num, get_season_name(wave_num), total, ", ".join(parts), season_effect]
 
 ## Danh sách địch của một wave, tốc độ quy về Ô/GIÂY (dữ liệu .tres giữ px).
 ## BoardScore dùng để tính ngưỡng — nó cần cùng đơn vị với bàn cờ.
@@ -567,7 +567,7 @@ func build_wave_intel_data(wave_num: int) -> Dictionary:
 		"enemies": enemy_list,
 		# Danh tính boss được giữ bí mật tới lúc spawn — trinh sát chỉ báo có boss.
 		"is_boss_wave": is_boss_wave(wave_num),
-		"boss_hint": "☠ RIVAL KING xuất trận — hạ hắn mới thắng!" if is_boss_wave(wave_num) else "",
+		"boss_hint": "☠ A RIVAL KING takes the field - killing him is the only way to win!" if is_boss_wave(wave_num) else "",
 	}
 
 ## Tên hiển thị của một loài: ưu tiên field `display_name` trong .tres, rồi tới

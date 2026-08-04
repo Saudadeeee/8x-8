@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_hv4ci")
 id = "repeater"
-name = "Nỏ Liên Thanh"
-desc = "−40% sát thương, tốc đánh gấp đôi. Cỗ máy gắn Dấu."
+name = "Repeater"
+desc = "-40% damage, double attack speed. A Mark-applying machine."
 rarity = "rare"
 cost = 85
 effect = {

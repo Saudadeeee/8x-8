@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_t66j1")
 id = "conductor_stone"
-name = "Đá Dẫn Nguyên Tố"
-desc = "Dấu tháp này gắn kéo dài gấp đôi."
+name = "Conductor Stone"
+desc = "Marks applied by this piece last twice as long."
 rarity = "rare"
 slot = "accessory"
 cost = 100

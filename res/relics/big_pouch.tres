@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_22lf4")
 id = "big_pouch"
-name = "Túi Thuốc Rộng"
-desc = "Túi thuốc +2 ô."
+name = "Deep Satchel"
+desc = "+2 potion slots."
 rarity = "rare"
 cost = 150
 effect = {

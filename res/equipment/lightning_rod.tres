@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_dccwg")
 id = "lightning_rod"
-name = "Cột Thu Lôi"
-desc = "Luôn bắn Dấu Lôi + kéo dài Dấu 50%."
+name = "Lightning Rod"
+desc = "Always fires Thunder Marks, and Marks last 50% longer."
 rarity = "rare"
 slot = "base"
 cost = 95

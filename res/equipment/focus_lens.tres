@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_87igf")
 id = "focus_lens"
-name = "Thấu Kính Tụ Quang"
-desc = "Tầm bắn +1 ô. Với quân trượt, một ô nữa thường là cả một khúc đường."
+name = "Focus Lens"
+desc = "+1 reach. For a sliding piece, one more square is often a whole stretch of path."
 slot = "accessory"
 cost = 70
 effect = {

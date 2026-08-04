@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7203")
 id = "rl_promotion"
-name = "Phong Cấp Shogi"
+name = "Shogi Promotion"
 rarity = "legendary"
-desc = "Mọi quân ★3 đánh theo nước HẬU — tám hướng, trượt. Shogi cho phong cấp gần như mọi quân, không riêng Tốt."
+desc = "Every 3-star piece moves as a QUEEN - eight directions, sliding. Shogi promotes almost every piece, not just Pawns."
 cost = 380
 effect = {
 "star3_pattern": 2

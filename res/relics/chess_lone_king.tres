@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_r7007")
 id = "chess_lone_king"
-name = "Vua Đơn Độc"
-desc = "Bàn càng thưa càng mạnh (+0.045 mỗi ô trống) nhưng phải trả bằng chỗ: không cộng gì nếu bàn đã kín."
+name = "Lone King"
+desc = "The thinner the board the stronger you get (+0.045 per empty slot) - but it pays nothing on a full board."
 cost = 270
 effect = {
 "endgame_mult": 0.045

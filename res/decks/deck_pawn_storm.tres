@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_d9001")
 id = "deck_pawn_storm"
-display_name = "Bộ Tốt Thí"
-desc = "Mười hai Tốt, không một quân lớn. Bù lại mỗi Tốt trên bàn cộng Bội cho toàn bàn, và Tốt đánh cả tám ô kề."
-origin = "Cờ vua"
+display_name = "Pawn Storm"
+desc = "Twelve Pawns, not a single major piece. In exchange every Pawn on the board adds Mult for the whole board, and Pawns hit all eight adjacent squares."
+origin = "Chess"
 deck = {
 "pawn": 12
 }

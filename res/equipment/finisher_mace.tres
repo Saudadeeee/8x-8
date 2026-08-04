@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_xmm2d")
 id = "finisher_mace"
-name = "Chuỳ Kết Liễu"
-desc = "+100% sát thương lên địch dưới 25% máu."
+name = "Finisher Mace"
+desc = "+100% damage against enemies below 25% HP."
 rarity = "rare"
 effect = {
 "bonus_vs_low": 1.0

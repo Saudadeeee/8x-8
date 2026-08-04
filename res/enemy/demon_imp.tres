@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_imp")
 id = "demon_imp"
-display_name = "Quỷ Con"
-ability_note = "Tốc độ cao, thiêu đốt"
+display_name = "Demon Imp"
+ability_note = "Fast, applies burn"
 spawn_seasons = Array[int]([2, 3])
 spawn_weight = 2
 texture = ExtResource("2_imp")

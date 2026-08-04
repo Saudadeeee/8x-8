@@ -1,72 +1,72 @@
 [
 	{
 		"id": "hoa_su",
-		"name": "Hoả Sư",
+		"name": "Pyromancer",
 		"rarity": "rare",
-		"desc": "Thiêu đốt của Dấu Hoả mạnh thêm 50%. Nền của mọi lối chơi Hoả.",
+		"desc": "Fire Mark burn deals 50% more. The foundation of every Fire build.",
 		"element": {"element_damage": {"fire": 0.5}}
 	},
 	{
 		"id": "han_bang_quyet",
-		"name": "Hàn Băng Quyết",
+		"name": "Deep Freeze",
 		"rarity": "rare",
-		"desc": "Phản ứng Đóng Băng kéo dài 3s thay vì 2s.",
+		"desc": "The Freeze reaction lasts 3s instead of 2s.",
 		"element": {"freeze_bonus": 1.0}
 	},
 	{
 		"id": "loi_dinh",
-		"name": "Lôi Đình",
+		"name": "Thunderclap",
 		"rarity": "epic",
-		"desc": "Phản ứng Dẫn Điện lan thêm 2 mục tiêu (4 → 6).",
+		"desc": "The Conduct reaction chains to 2 more targets (4 -> 6).",
 		"element": {"conduct_extra": 2}
 	},
 	{
 		"id": "thuy_mach",
-		"name": "Thuỷ Mạch",
+		"name": "Water Vein",
 		"rarity": "rare",
-		"desc": "Dấu Thuỷ tự lan sang 1 địch kề bên — mồi phản ứng cho cả bầy.",
+		"desc": "Water Marks spread to 1 adjacent enemy - priming a reaction across the pack.",
 		"element": {"water_spread": true}
 	},
 	{
 		"id": "doc_su",
-		"name": "Độc Sư",
+		"name": "Toxicologist",
 		"rarity": "epic",
-		"desc": "Dấu Độc cộng dồn tối đa 8 tầng thay vì 5.",
+		"desc": "Poison Marks stack up to 8 times instead of 5.",
 		"element": {"poison_max_stacks": 8}
 	},
 	{
 		"id": "dia_chu",
-		"name": "Địa Chủ",
+		"name": "Landlord",
 		"rarity": "common",
-		"desc": "Ô nguyên tố trong shop rẻ hơn 25%.",
+		"desc": "Element veins cost 25% less in the shop.",
 		"element": {"tile_discount": 0.25}
 	},
 	{
 		"id": "tho_ren_lang_thang",
-		"name": "Thợ Rèn Lang Thang",
+		"name": "Wandering Smith",
 		"rarity": "rare",
-		"desc": "Trang bị trong shop rẻ hơn 30%.",
+		"desc": "Equipment costs 30% less in the shop.",
 		"element": {"equip_discount": 0.3}
 	},
 	{
 		"id": "nha_gia_kim",
-		"name": "Nhà Giả Kim",
+		"name": "Alchemist's Craft",
 		"rarity": "epic",
-		"desc": "Cứ 15 phản ứng nguyên tố nổ ra thì nhận 1 bình thuốc ngẫu nhiên.",
+		"desc": "Every 15 elemental reactions grant a random potion.",
 		"element": {"potion_per_reactions": 15}
 	},
 	{
 		"id": "thuan_vat_ly",
-		"name": "Thuần Vật Lý",
+		"name": "Pure Steel",
 		"rarity": "epic",
-		"desc": "Tháp KHÔNG đứng trên ô nguyên tố nhận +35% sát thương. Phần thưởng cho lối chơi Thép Nguyên Bản.",
+		"desc": "Pieces NOT standing on an element vein gain +35% damage. The reward for a Pure Steel build.",
 		"element": {"no_element_damage": 0.35}
 	},
 	{
 		"id": "tho_ghep_mach",
-		"name": "Thợ Ghép Mạch",
+		"name": "Ley Weaver",
 		"rarity": "rare",
-		"desc": "Ô nguyên tố rẻ hơn 15% và mọi Dấu Thổ gây thêm 30% sát thương.",
+		"desc": "Element veins cost 15% less and every Earth Mark deals 30% more damage.",
 		"element": {"tile_discount": 0.15, "element_damage": {"earth": 0.3}}
 	}
 ]

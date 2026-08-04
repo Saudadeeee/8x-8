@@ -9,8 +9,8 @@ enum Rarity { COMMON, UNCOMMON, RARE, LEGENDARY }
 # --- NHẬN DIỆN ---
 @export_group("Identity")
 @export var id: String = "encounter_default"
-@export var title: String = "Tên Sự Kiện"
-@export_multiline var flavor_text: String = "Mô tả sự kiện, tạo không khí..."
+@export var title: String = "Event Name"
+@export_multiline var flavor_text: String = "Event flavor text, sets the mood..."
 @export var encounter_icon: Texture2D
 @export var encounter_type: EncounterType = EncounterType.MIXED
 @export var rarity: Rarity = Rarity.COMMON

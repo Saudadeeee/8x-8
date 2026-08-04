@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_r7001")
 id = "chess_endgame"
-name = "Cờ Tàn"
-desc = "Mỗi ô trống dưới trần quân cộng +0.035 Bội. Bàn thưa thì mỗi quân đáng giá hơn — đi ngược với lối lấp đầy."
+name = "Endgame"
+desc = "Each empty slot under your unit cap adds +0.035 Mult. A thin board makes every piece worth more - the opposite of filling up."
 cost = 240
 effect = {
 "endgame_mult": 0.035

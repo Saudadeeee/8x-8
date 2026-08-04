@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_eowdb")
 id = "nha_gia_kim"
-name = "Nhà Giả Kim"
-desc = "Cứ 15 phản ứng nguyên tố nổ ra thì nhận 1 bình thuốc ngẫu nhiên."
+name = "Alchemist's Craft"
+desc = "Every 15 elemental reactions grant a random potion."
 rarity = "epic"
 element = {
 "potion_per_reactions": 15.0

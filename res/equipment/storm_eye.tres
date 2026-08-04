@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_ajtwk")
 id = "storm_eye"
-name = "Mắt Bão"
-desc = "Bán kính mọi phản ứng của tháp này +1m."
+name = "Storm Eye"
+desc = "Every reaction from this piece gains +1m radius."
 rarity = "epic"
 slot = "accessory"
 cost = 135

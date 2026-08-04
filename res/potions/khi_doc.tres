@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_a16pm")
 id = "khi_doc"
-name = "Khí Độc"
-desc = "Vùng khí độc tồn tại 8 giây — địch đi vào dính 3 tầng Độc."
+name = "Toxic Cloud"
+desc = "A toxic cloud lingers for 8 seconds - enemies entering take 3 Poison stacks."
 rarity = "rare"
 target = "enemies"
 duration = 8.0

@@ -146,24 +146,24 @@ func show_tower_info(stats: TowerStats, biome_key: String = "", tower_node: Node
 		var dmg_bonus: int = cur_dmg - stats.base_damage
 		var spd_bonus: float = stats.attack_speed - cur_spd
 		var rng_bonus: int = cur_rng - stats.attack_range
-		_add_buffed_int_row(vbox, "⚔ Sát thương", stats.base_damage, dmg_bonus)
-		_add_buffed_float_row(vbox, " Tốc đánh", stats.attack_speed, -spd_bonus, "s")
-		_add_buffed_int_row(vbox, "◎ Tầm bắn", stats.attack_range, rng_bonus)
+		_add_buffed_int_row(vbox, "⚔ Damage", stats.base_damage, dmg_bonus)
+		_add_buffed_float_row(vbox, " Attack Speed", stats.attack_speed, -spd_bonus, "s")
+		_add_buffed_int_row(vbox, "◎ Reach", stats.attack_range, rng_bonus)
 	else:
-		_add_info_row(vbox, "⚔ Sát thương", str(stats.base_damage))
-		_add_info_row(vbox, " Tốc đánh", "%.2fs" % stats.attack_speed)
-		_add_info_row(vbox, "◎ Tầm bắn", str(stats.attack_range))
+		_add_info_row(vbox, "⚔ Damage", str(stats.base_damage))
+		_add_info_row(vbox, " Attack Speed", "%.2fs" % stats.attack_speed)
+		_add_info_row(vbox, "◎ Reach", str(stats.attack_range))
 
 	# Special effects
 	if stats.slow_amount > 0.0:
-		_add_info_row(vbox, "❄ Làm chậm", "%.0f%% × %.1fs" % [stats.slow_amount * 100, stats.slow_duration])
+		_add_info_row(vbox, "❄ Slow", "%.0f%% × %.1fs" % [stats.slow_amount * 100, stats.slow_duration])
 	if stats.burn_dps > 0:
-		_add_info_row(vbox, " Thiêu đốt", "%d DPS × %.1fs" % [stats.burn_dps, stats.burn_duration])
+		_add_info_row(vbox, " Burn", "%d DPS × %.1fs" % [stats.burn_dps, stats.burn_duration])
 	if stats.splash_radius > 0.0:
 		# splash_radius trong .tres vẫn là px (16 px = 1 ô) — chỉ quy đổi khi hiển thị
-		_add_info_row(vbox, " AoE Splash", "%.1f ô" % (stats.splash_radius / 16.0))
+		_add_info_row(vbox, " AoE Splash", "%.1f squares" % (stats.splash_radius / 16.0))
 	if stats.projectile_count > 1:
-		_add_info_row(vbox, " Số đạn", "×%d" % stats.projectile_count)
+		_add_info_row(vbox, " Projectiles", "×%d" % stats.projectile_count)
 
 	# Territory buff on tile
 	if biome_key != "":
@@ -233,7 +233,7 @@ func _build_pattern_row(parent: VBoxContainer, tower_node: Node3D) -> void:
 		return
 	var kind: int = int(tower_node.pattern_kind())
 	parent.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
-	_add_info_row(parent, "%s Nước đi" % ChessPattern.glyph(kind),
+	_add_info_row(parent, "%s Movement" % ChessPattern.glyph(kind),
 		ChessPattern.label(kind))
 
 	var covered: Array = tower_node.get("covered_cells")
@@ -248,21 +248,21 @@ func _build_pattern_row(parent: VBoxContainer, tower_node: Node3D) -> void:
 				if gc.is_path_cell(c):
 					on_path += 1
 	# Tầm HIỆU DỤNG (đã cộng mọi nguồn) chứ không phải tầm gốc trong .tres —
-	# người chơi nhặt "+1 tầm" phải thấy con số này nhúc nhích.
+	# người chơi nhặt "+1 reach" phải thấy con số này nhúc nhích.
 	var base_r: int = int(tower_node.stats.attack_range) if tower_node.stats else 0
 	var eff_r: int = int(tower_node.effective_range()) if tower_node.has_method("effective_range") else base_r
-	_add_info_row(parent, "◎ Tầm hiệu dụng",
-		"%d%s" % [eff_r, "  (gốc %d)" % base_r if eff_r != base_r else ""])
-	_add_info_row(parent, "◎ Ô đang phủ", "%d ô (%d trên đường)"
+	_add_info_row(parent, "◎ Effective Reach",
+		"%d%s" % [eff_r, "  (base %d)" % base_r if eff_r != base_r else ""])
+	_add_info_row(parent, "◎ Squares Covered", "%d squares (%d on path)"
 		% [(covered as Array).size(), on_path])
 	var hint2 := Label.new()
-	hint2.text = "Ô vàng trên bàn = ô đường quân này với tới. Chỉ ô đó sinh sát thương."
+	hint2.text = "Gold squares on the board are path squares this piece reaches. Only those deal damage."
 	UIStyle.body(hint2, 14, UIStyle.TEXT_DIM)
 	hint2.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	parent.add_child(hint2)
 	if on_path == 0:
 		var warn := Label.new()
-		warn.text = "⚠ Quân này không phủ ô đường nào — nó không gây sát thương."
+		warn.text = "⚠ This piece covers no path squares — it deals no damage."
 		UIStyle.body(warn, 14, UIStyle.RED)
 		warn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		parent.add_child(warn)
@@ -276,10 +276,10 @@ func _build_pattern_row(parent: VBoxContainer, tower_node: Node3D) -> void:
 # thật, không phải bảng chép tay nên không bao giờ lệch với chỉ số hiển thị.
 
 const BUFF_LAYER_NAMES := {
-	0: "Nâng cấp", 1: "Vùng đất", 2: "Sủng ái Vua", 3: "Ân Vương Miện",
-	4: "Hào quang", 5: "Đồng đội cùng loại", 6: "Perk", 7: "Ô Phước/Nguyền",
-	8: "Khí hậu vùng", 9: "Trang bị", 10: "Thuốc", 11: "Ô nguyên tố",
-	12: "Đồng đội cùng hệ",
+	0: "Upgrade", 1: "Terrain", 2: "King's Favor", 3: "Crown's Boon",
+	4: "Aura", 5: "Same-type allies", 6: "Perk", 7: "Blessed/Cursed square",
+	8: "Regional climate", 9: "Equipment", 10: "Potion", 11: "Element vein",
+	12: "Same-element allies",
 }
 
 func _build_buff_source_section(parent: VBoxContainer, tower_node: Node3D) -> void:
@@ -299,25 +299,25 @@ func _build_buff_source_section(parent: VBoxContainer, tower_node: Node3D) -> vo
 		var dv := float((dmg as Dictionary).get(layer, 0.0))
 		var sv := float((spd as Dictionary).get(layer, 0.0))
 		var rv := int((rng as Dictionary).get(layer, 0))
-		if not is_zero_approx(dv): parts.append("%+.0f sát thương" % dv)
+		if not is_zero_approx(dv): parts.append("%+.0f damage" % dv)
 		# spd là số GIÂY TRỪ vào hồi chiêu → dương = bắn nhanh hơn.
-		if not is_zero_approx(sv): parts.append("%s%.2fs hồi chiêu" % ["-" if sv > 0.0 else "+", absf(sv)])
-		if rv != 0: parts.append("%+d tầm" % rv)
+		if not is_zero_approx(sv): parts.append("%s%.2fs cooldown" % ["-" if sv > 0.0 else "+", absf(sv)])
+		if rv != 0: parts.append("%+d reach" % rv)
 		if parts.is_empty():
 			continue
-		lines.append("• %s: %s" % [str(BUFF_LAYER_NAMES.get(layer, "Lớp %s" % layer)),
+		lines.append("• %s: %s" % [str(BUFF_LAYER_NAMES.get(layer, "Layer %s" % layer)),
 			", ".join(parts)])
 
 	var star: int = int(tower_node.star) if "star" in tower_node else 1
 	if star > 1:
 		var mult: float = float(tower_node.star_damage_mult)
-		lines.append("• Sao ★%d: ×%.2f sát thương (phép NHÂN, áp sau cùng)" % [star, mult])
+		lines.append("• Star ★%d: ×%.2f damage (MULTIPLIED, applied last)" % [star, mult])
 
 	if lines.is_empty():
 		return
 	parent.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
 	var head := Label.new()
-	head.text = "✦ Đang hưởng"
+	head.text = "✦ Active Bonuses"
 	UIStyle.body(head, 14, UIStyle.GOLD)
 	parent.add_child(head)
 	for line in lines:
@@ -337,14 +337,14 @@ func _build_performance_section(parent: VBoxContainer, tower_node: Node3D) -> vo
 	if tower_node.stats and int(tower_node.stats.projectile_count) > 1:
 		shots = int(tower_node.stats.projectile_count)
 	parent.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
-	_add_info_row(parent, " DPS (ước tính)", "%.1f" % (dmg * float(shots) / cd))
+	_add_info_row(parent, " DPS (estimated)", "%.1f" % (dmg * float(shots) / cd))
 
 	var gm := tower_node.get_node_or_null("/root/GameManagerSingleton")
 	if gm != null and tower_node.stats:
 		var table: Variant = gm.get("run_tower_damage")
 		if table is Dictionary:
 			var total: float = float((table as Dictionary).get(str(tower_node.stats.id), 0.0))
-			_add_info_row(parent, "⚔ Tổng đã gây (cả loại)", "%d" % int(total))
+			_add_info_row(parent, "⚔ Total dealt (this type)", "%d" % int(total))
 
 
 # ── Nguyên tố + Trang bị trong panel tháp (futureplan §2, §3.2) ────────────
@@ -363,7 +363,7 @@ func _build_element_row(parent: VBoxContainer, tower_node: Node3D) -> void:
 	parent.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
 	var row := _make_stat_row(parent)
 	var lbl := Label.new()
-	lbl.text = "✦ Nguyên tố"
+	lbl.text = "✦ Element"
 	UIStyle.body(lbl, 11, UIStyle.TEXT_DIM)
 	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(lbl)
@@ -375,7 +375,7 @@ func _build_element_row(parent: VBoxContainer, tower_node: Node3D) -> void:
 			value.text += " + " + ElementTypes.display_name(secondary)
 		UIStyle.glyph(value, 13, ElementTypes.color_of(element))
 	else:
-		value.text = "Vật lý"
+		value.text = "Physical"
 		UIStyle.body(value, 12, UIStyle.TEXT_DIM)
 	row.add_child(value)
 
@@ -389,7 +389,7 @@ func _build_equipment_section(parent: VBoxContainer, tower_node: Node3D) -> void
 	var title := Label.new()
 	var slots: int = int(equipment.get("slots_per_tower"))
 	var fitted: Array = equipment.call("equipped_on", tower_node)
-	title.text = " Trang bị (%d/%d)" % [fitted.size(), slots]
+	title.text = " Equipment (%d/%d)" % [fitted.size(), slots]
 	UIStyle.title(title, 12, UIStyle.GOLD)
 	parent.add_child(title)
 
@@ -404,14 +404,14 @@ func _build_equipment_section(parent: VBoxContainer, tower_node: Node3D) -> void
 				button.text = " %s" % str(data.get("name", fitted[i]))
 			else:
 				button.text = "● %s" % str(data.get("name", fitted[i]))
-			button.tooltip_text = "%s\n\n(Bấm để gỡ ra kho)" % str(data.get("desc", ""))
+			button.tooltip_text = "%s\n\n(Click to return it to inventory)" % str(data.get("desc", ""))
 			HudText.style_button_text(button, 11, Color(0.55, 0.9, 1.0))
 			# `bind` chứ không bắt biến vòng lặp: closure GDScript giữ THAM CHIẾU
 			# tới biến, mọi nút sẽ dùng giá trị `i` của vòng cuối cùng.
 			button.pressed.connect(_on_equip_slot_pressed.bind(tower_node, i))
 		else:
-			button.text = "＋ ô trống"
-			button.tooltip_text = "Chọn một món trong kho bên dưới."
+			button.text = "＋ empty square"
+			button.tooltip_text = "Pick an item from the inventory below."
 			HudText.style_button_text(button, 11, UIStyle.TEXT_DIM)
 			button.disabled = true
 		parent.add_child(button)
@@ -453,7 +453,7 @@ func _build_equipment_section(parent: VBoxContainer, tower_node: Node3D) -> void
 			* EquipmentSystem.SELL_REFUND_PCT))
 		var sell := Button.new()
 		sell.text = "⛁%d" % refund
-		sell.tooltip_text = "Bán món này, hoàn %d vàng." % refund
+		sell.tooltip_text = "Sell this, refund %d gold." % refund
 		sell.custom_minimum_size = Vector2(44, 0)
 		HudText.style_button_text(sell, 10, Color(1.0, 0.75, 0.4))
 		sell.pressed.connect(_on_equip_sell_pressed.bind(tower_node, i))
@@ -473,7 +473,7 @@ func _build_tile_element_section(parent: VBoxContainer, biome_key: String, pos: 
 	parent.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
 	var row := _make_stat_row(parent)
 	var lbl := Label.new()
-	lbl.text = "✦ Nguyên tố"
+	lbl.text = "✦ Element"
 	UIStyle.body(lbl, 11, UIStyle.TEXT_DIM)
 	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(lbl)
@@ -486,7 +486,7 @@ func _build_tile_element_section(parent: VBoxContainer, biome_key: String, pos: 
 		return   # panel mở từ shop, không gắn với ô cụ thể
 
 	var level: int = int(tm.call("get_tile_level", pos))
-	_add_info_row(parent, "◈ Cấp ô", "Lv%d / 3" % level)
+	_add_info_row(parent, "◈ Vein Level", "Lv%d / 3" % level)
 	var bonus: Dictionary = tm.call("get_element_bonus", pos)
 	var mark_bonus := float(bonus.get("mark_duration_bonus", 0.0))
 	var reaction_mult := float(bonus.get("reaction_mult", 1.0))
@@ -494,20 +494,20 @@ func _build_tile_element_section(parent: VBoxContainer, biome_key: String, pos: 
 	# LUÔN in cả ba dòng, kể cả khi bằng 0. Trước đây chỉ in khi > ngưỡng, nên ô
 	# Lv1 trông y hệt ô thường và người chơi kết luận "chồng ô chẳng được gì" —
 	# trong khi Lv3 thật sự cho +15% sát thương (dòng này trước KHÔNG hề hiển thị).
-	_add_info_row(parent, "⏱ Dấu kéo dài", "+%.0fs" % mark_bonus)
-	_add_info_row(parent, "✷ Phản ứng", "×%.2f" % reaction_mult)
-	_add_info_row(parent, "⚔ Tháp trên ô", "+%.0f%%" % (dmg_pct * 100.0))
+	_add_info_row(parent, "⏱ Mark Duration", "+%.0fs" % mark_bonus)
+	_add_info_row(parent, "✷ Reaction", "×%.2f" % reaction_mult)
+	_add_info_row(parent, "⚔ Piece on square", "+%.0f%%" % (dmg_pct * 100.0))
 
 	# Xem trước CẤP KẾ TIẾP: không có dòng này thì người chơi không có lý do nào
 	# để chồng ô, vì phần thưởng chỉ hiện ra SAU khi đã tiêu tài nguyên.
 	var max_lv: int = int(tm.get("MAX_TILE_LEVEL"))
 	var next_box := Label.new()
 	if level >= max_lv:
-		next_box.text = "◈ Ô đã đạt cấp tối đa."
+		next_box.text = "◈ This vein is at max level."
 		UIStyle.body(next_box, 14, UIStyle.TEXT_DIM)
 	else:
 		var nb: Dictionary = tm.LEVEL_BONUS[level]   # LEVEL_BONUS[i] = cấp i+1
-		next_box.text = "◈ Đặt thêm 1 ô %s lên đây → Lv%d: Dấu +%.0fs · Phản ứng ×%.2f · Tháp +%.0f%%" % [
+		next_box.text = "◈ Place 1 more %s vein here → Lv%d: Mark +%.0fs · Reaction ×%.2f · Piece +%.0f%%" % [
 			ElementTypes.display_name(element), level + 1,
 			float(nb.get("mark_duration_bonus", 0.0)),
 			float(nb.get("reaction_mult", 1.0)),
@@ -522,15 +522,15 @@ func _build_tile_element_section(parent: VBoxContainer, biome_key: String, pos: 
 		for id in formations:
 			names.append(FormationDetector.display_name(str(id)))
 		var form_lbl := Label.new()
-		form_lbl.text = "⬢ Hình thế: " + ", ".join(names)
+		form_lbl.text = "⬢ Formation: " + ", ".join(names)
 		UIStyle.body(form_lbl, 10, Color(0.6, 0.9, 1.0))
 		form_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		parent.add_child(form_lbl)
 
 	var sell := Button.new()
-	sell.text = "Bán ô (+%d vàng)" % int(round(
+	sell.text = "Sell vein (+%d gold)" % int(round(
 		float(TerritoryManager.TILE_GOLD_VALUE * level) * TerritoryManager.SELL_REFUND_PCT))
-	sell.tooltip_text = "Hoàn 60% giá trị. Dùng khi cần đổi hướng build."
+	sell.tooltip_text = "Refunds 60% of its value. Use it when you need to change direction."
 	HudText.style_button_text(sell, 11, Color(1.0, 0.75, 0.4))
 	sell.pressed.connect(_on_sell_tile_pressed.bind(pos))
 	parent.add_child(sell)
@@ -686,7 +686,7 @@ func show_territory_info(biome_key: String, biome_data: Dictionary,
 	UIStyle.title(name_lbl, 17, UIStyle.GOLD)
 	vbox.add_child(name_lbl)
 	var type_lbl = Label.new()
-	type_lbl.text = "[Lãnh thổ]"
+	type_lbl.text = "[Vein]"
 	type_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(type_lbl, 10, Color(0.3, 0.85, 0.4))
 	vbox.add_child(type_lbl)
@@ -700,19 +700,19 @@ func show_territory_info(biome_key: String, biome_data: Dictionary,
 	var spd_pct: float = float(biome_data.get("speed_pct", 0.0))
 	var dmg: int = int(biome_data.get("damage_bonus", 0))
 	var spd: float = float(biome_data.get("attack_speed_reduction", 0.0))
-	if dmg_pct > 0.0: _add_info_row(vbox, "⚔ Sát thương", "+%.0f%%" % (dmg_pct * 100.0))
-	if spd_pct > 0.0: _add_info_row(vbox, " Hồi chiêu", "-%.0f%%" % (spd_pct * 100.0))
+	if dmg_pct > 0.0: _add_info_row(vbox, "⚔ Damage", "+%.0f%%" % (dmg_pct * 100.0))
+	if spd_pct > 0.0: _add_info_row(vbox, " Cooldown", "-%.0f%%" % (spd_pct * 100.0))
 	var rng: int = biome_data.get("range_bonus", 0)
-	if dmg != 0: _add_info_row(vbox, "⚔ Sát thương", "+%d" % dmg)
+	if dmg != 0: _add_info_row(vbox, "⚔ Damage", "+%d" % dmg)
 	if spd != 0.0: _add_info_row(vbox, " Cooldown", "-%.1fs" % spd)
-	if rng != 0: _add_info_row(vbox, "◎ Tầm bắn", "+%d" % rng)
+	if rng != 0: _add_info_row(vbox, "◎ Reach", "+%d" % rng)
 
 	_build_tile_element_section(vbox, biome_key, pos)
 
 	vbox.add_child(UIStyle.separator(UIStyle.HUD_BORDER))
 
 	var hint = Label.new()
-	hint.text = "Đặt tower lên ô này để nhận buff."
+	hint.text = "Place a piece here to gain its buff."
 	UIStyle.body(hint, 10, UIStyle.TEXT_DIM)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(hint)
@@ -743,7 +743,7 @@ func show_cell_info(_pos: Vector2i, info: Dictionary) -> void:
 	scroll.add_child(vbox)
 
 	var name_lbl := Label.new()
-	name_lbl.text = str(info.get("title", "Ô"))
+	name_lbl.text = str(info.get("title", "Square"))
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(name_lbl, 28, UIStyle.GOLD)
 	vbox.add_child(name_lbl)
@@ -844,10 +844,10 @@ func _build_star_row(parent: VBoxContainer, tower_node: Node3D) -> void:
 
 	var hint := Label.new()
 	if cur >= 3:
-		hint.text = "Sao tối đa"
+		hint.text = "Max stars"
 		UIStyle.body(hint, 14, UIStyle.TEXT_DIM)
 	else:
-		hint.text = "Đặt thêm 1 %s lên ô này để lên ★%d" % [
+		hint.text = "Place 1 more %s here to reach ★%d" % [
 			UIStyle.unit_name_vi(str(tower_node.stats.id)) if tower_node.stats else "quân cùng loại",
 			cur + 1]
 		UIStyle.body(hint, 14, UIStyle.TEXT_DIM)

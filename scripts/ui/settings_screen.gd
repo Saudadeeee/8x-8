@@ -24,7 +24,7 @@ func _build_ui() -> void:
 	add_child(bg)
 
 	var back_btn = Button.new()
-	back_btn.text = "←  Quay Lại"
+	back_btn.text = "←  Back"
 	back_btn.custom_minimum_size = Vector2(130, 46)
 	back_btn.position = Vector2(20, 20)
 	UIStyle.apply_button(back_btn, 17)
@@ -33,7 +33,7 @@ func _build_ui() -> void:
 	UIStyle.slide_in(back_btn, Vector2(-160, 0), 0.3)
 
 	var title = Label.new()
-	title.text = "⚙  CÀI ĐẶT"
+	title.text = "⚙  SETTINGS"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(title, 48, UIStyle.GOLD)
 	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -82,7 +82,7 @@ func _build_ui() -> void:
 	vbox.add_child(fs_hbox)
 
 	var fs_label = Label.new()
-	fs_label.text = "Toàn màn hình"
+	fs_label.text = "Fullscreen"
 	fs_label.custom_minimum_size = Vector2(180, 0)
 	UIStyle.body(fs_label, 18, Color(0.9, 0.9, 0.9, 1))
 	fs_hbox.add_child(fs_label)
@@ -108,7 +108,7 @@ func _build_ui() -> void:
 	vbox.add_child(save_btn)
 
 	_saved_label = Label.new()
-	_saved_label.text = "✓ Đã lưu!"
+	_saved_label.text = "✓ Saved!"
 	_saved_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.title(_saved_label, 18, Color(0.2, 1.0, 0.2, 1))
 	_saved_label.visible = false

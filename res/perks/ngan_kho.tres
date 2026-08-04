@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_xjp4l")
 id = "ngan_kho"
-name = "Ngân Khố"
-desc = "Trần lãi vàng cuối wave tăng từ 15 lên 25."
+name = "Treasury"
+desc = "The end-of-wave interest cap rises from 15 to 25."
 rarity = "rare"
 economy = {
 "interest_cap": 25

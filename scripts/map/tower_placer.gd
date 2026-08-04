@@ -213,7 +213,7 @@ func place(grid_pos: Vector2i) -> void:
 	if not merging and owner_map != null \
 			and owner_map.has_method("can_place_more_units") \
 			and not owner_map.can_place_more_units():
-		place_rejected.emit("Đã đủ %d quân trên bàn — bán bớt hoặc ghép sao."
+		place_rejected.emit("You already have %d pieces on the board - sell some or merge for stars."
 			% int(owner_map.max_units()))
 		return
 

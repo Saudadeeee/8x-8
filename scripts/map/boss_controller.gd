@@ -58,7 +58,7 @@ func _on_boss_spawned(boss: Node) -> void:
 		if hud.has_method("show_boss_intro"): hud.show_boss_intro(boss_name, boss_title)
 		if hud.has_method("show_boss_bar"):   hud.show_boss_bar(boss_name, max_hp)
 
-	map.phase_controller.phase_message = "☠ %s đã xuất trận! Hạ hắn để thống nhất vương quốc." % boss_name
+	map.phase_controller.phase_message = "☠ %s has taken the field! Bring him down to unite the kingdom." % boss_name
 	map.update_ui()
 
 ## Bơm HP vào thanh máu HUD — chỉ gọi khi máu ĐỔI để không tốn frame budget.
@@ -79,7 +79,7 @@ func _sync_boss_bar() -> void:
 func _on_boss_phase_changed(phase: int) -> void:
 	_boss_phase   = phase
 	_boss_last_hp = -1   # ép cập nhật ngay frame sau để HUD đổi màu theo pha
-	map.phase_controller.phase_message = "☠ Rival King bước sang PHA %d — hắn mạnh hơn!" % phase
+	map.phase_controller.phase_message = "☠ The Rival King enters PHASE %d - he grows stronger!" % phase
 	map.update_ui()
 
 func _on_boss_defeated() -> void:
@@ -98,7 +98,7 @@ func _on_boss_defeated() -> void:
 	var total: int = 3
 	if map.wave_spawner and map.wave_spawner.has_method("total_rival_kings"):
 		total = map.wave_spawner.total_rival_kings()
-	map.phase_controller.phase_message = "† RIVAL KING %d/%d ĐÃ GỤC NGÃ! +%d vàng" % [kings_defeated, total, map.BOSS_BONUS_GOLD]
+	map.phase_controller.phase_message = "† RIVAL KING %d/%d HAS FALLEN! +%d gold" % [kings_defeated, total, map.BOSS_BONUS_GOLD]
 	map.update_ui()
 	_offer_boss_reward()
 
@@ -120,8 +120,8 @@ func _offer_boss_reward() -> void:
 		dominant = ElementTypes.ALL[randi() % ElementTypes.ALL.size()]
 	choices.append({
 		"id": "boss_tile_%s" % dominant,
-		"name": "Long Mạch %s" % ElementTypes.display_name(dominant),
-		"desc": "Nhận %d ô %s — đặt chồng lên nhau để lên Lv2 ngay." % [
+		"name": "%s Ley Line" % ElementTypes.display_name(dominant),
+		"desc": "Gain %d %s veins - stack them to reach Lv2 immediately." % [
 			BOSS_REWARD_TILES, ElementTypes.display_name(dominant)],
 		"rarity": "epic", "icon": ElementTypes.icon(dominant),
 	})
@@ -140,16 +140,16 @@ func _offer_boss_reward() -> void:
 		var other := _other_element(dominant)
 		choices.append({
 			"id": "boss_tile_%s" % other,
-			"name": "Mạch %s" % ElementTypes.display_name(other),
-			"desc": "Nhận %d ô %s — mở hướng đi mới." % [
+			"name": "%s Vein" % ElementTypes.display_name(other),
+			"desc": "Gain %d %s veins - opening a new direction." % [
 				BOSS_REWARD_TILES, ElementTypes.display_name(other)],
 			"rarity": "rare", "icon": ElementTypes.icon(other),
 		})
 
 	choices.append({
 		"id": "boss_gold",
-		"name": "Kho Báu Chiến Tranh",
-		"desc": "+%d vàng ngay lập tức." % BOSS_REWARD_GOLD,
+		"name": "Spoils of War",
+		"desc": "+%d gold immediately." % BOSS_REWARD_GOLD,
 		"rarity": "rare", "icon": "⛁",
 	})
 
@@ -172,11 +172,11 @@ func _apply_boss_reward(choice_id: String) -> void:
 		map.current_gold += BOSS_REWARD_GOLD
 		if map._game_manager:
 			map._game_manager.run_gold_earned += BOSS_REWARD_GOLD
-		map.phase_controller.phase_message = "⛁ Kho Báu Chiến Tranh: +%d vàng!" % BOSS_REWARD_GOLD
+		map.phase_controller.phase_message = "⛁ Spoils of War: +%d gold!" % BOSS_REWARD_GOLD
 	elif choice_id.begins_with("boss_relic_"):
 		var relic_id := choice_id.substr("boss_relic_".length())
 		if map.relic_system and map.relic_system.add_relic(relic_id):
-			map.phase_controller.phase_message = "★ Nhận di vật: %s" % \
+			map.phase_controller.phase_message = "★ Relic gained: %s" % \
 				str(map.relic_system.relic_data(relic_id).get("name", relic_id))
 	elif choice_id.begins_with("boss_tile_"):
 		var element := choice_id.substr("boss_tile_".length())
@@ -184,7 +184,7 @@ func _apply_boss_reward(choice_id: String) -> void:
 		if biome != "" and map.territory_manager:
 			for _i in range(BOSS_REWARD_TILES):
 				map.territory_manager.add_stock(biome)
-			map.phase_controller.phase_message = "✦ Nhận %d ô %s!" % [
+			map.phase_controller.phase_message = "✦ Gained %d %s veins!" % [
 				BOSS_REWARD_TILES, ElementTypes.display_name(element)]
 	map.update_ui()
 

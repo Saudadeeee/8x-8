@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_aefh1")
 id = "thuy_mach"
-name = "Thuỷ Mạch"
-desc = "Dấu Thuỷ tự lan sang 1 địch kề bên — mồi phản ứng cho cả bầy."
+name = "Water Vein"
+desc = "Water Marks spread to 1 adjacent enemy - priming a reaction across the pack."
 rarity = "rare"
 element = {
 "water_spread": true

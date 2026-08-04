@@ -7,8 +7,8 @@
 [resource]
 script = ExtResource("1_ks")
 id = "king_storm"
-king_name = "Vua Bão Tố"
-lore = "Ngài không chờ kẻ địch tới gần. Cung thủ của ngài phủ sét lên chiến trường, để mặt đất tự quyết định điều gì sẽ nổ."
+king_name = "The Storm King"
+lore = "He does not wait for the enemy to arrive. His archers blanket the field in lightning and let the ground decide what explodes."
 portrait = ExtResource("3_pt")
 base_health = 16
 base_royal_decree = 25.0
@@ -21,8 +21,8 @@ favored_unit_types = ["crossbowman", "longbowman", "ballista"]
 favor_damage_bonus = 0.18
 favor_speed_bonus = 0.12
 favor_range_bonus = 0.15
-ability_name = "Thiên Lôi Trận"
-ability_description = "Gây 24 sát thương và gắn Dấu Lôi lên toàn bộ địch. Dấu kéo dài thêm 3 giây — đủ để tháp kịp kích phản ứng."
+ability_name = "Thunder Array"
+ability_description = "Deal 24 damage and apply a Thunder Mark to every enemy. Marks last 3 seconds longer - long enough for your pieces to trigger reactions."
 ability_decree_cost = 40.0
 ability_cooldown = 70.0
 ability_script = ExtResource("2_ab")

@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_1rtmt")
 id = "hien_te"
-name = "Hiến Tế"
-desc = "Mất 10 máu, nhận ngay 60 vàng."
+name = "Blood Offering"
+desc = "Lose 10 HP, gain 60 gold immediately."
 rarity = "rare"
 stackable = true
 requires_hp = 11

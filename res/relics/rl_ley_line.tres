@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_r7204")
 id = "rl_ley_line"
-name = "Long Mạch Lan"
+name = "Spreading Ley Line"
 rarity = "epic"
-desc = "Ô kề ô nguyên tố cũng được tính là có hệ (×1.15 Bội). Ba ô nguyên tố phủ được cả một vùng."
+desc = "Squares next to an element vein count as elemental too (x1.15 Mult). Three veins can cover a whole region."
 cost = 280
 effect = {
 "tile_spread": true

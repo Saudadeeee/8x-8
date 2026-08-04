@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_npyad")
 id = "thue_chu_hau"
-name = "Thuế Chư Hầu"
-desc = "Các lãnh chúa chư hầu cống nạp: +2 vàng mỗi khi tiêu diệt một địch."
+name = "Vassal Tribute"
+desc = "Vassal lords pay tribute: +2 gold per enemy killed."
 rarity = "rare"
 economy = {
 "gold_per_kill": 2.0

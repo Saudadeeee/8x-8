@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_r7002")
 id = "chess_horseshoe"
-name = "Vó Ngựa"
-desc = "Mã nhảy thêm một vòng chữ L xa hơn — phủ tới 16 ô thay vì 8."
+name = "Horseshoe"
+desc = "Knights gain one more L-ring - covering up to 16 squares instead of 8."
 cost = 280
 effect = {
 "knight_reach": 1

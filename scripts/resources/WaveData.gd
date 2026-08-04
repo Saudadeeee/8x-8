@@ -6,7 +6,7 @@ class_name WaveData
 # --- NHẬN DIỆN ---
 @export_group("Identity")
 @export var wave_number: int = 1
-@export var wave_name: String = "Wave 1"    # VD: "Tiền Quân", "Đại Quân", "Quân Tinh Nhuệ"
+@export var wave_name: String = "Wave 1"    # VD: "Vanguard", "Grand Army", "Elite Guard"
 @export var is_boss_wave: bool = false
 
 # --- CẤU HÌNH QUÁI ---

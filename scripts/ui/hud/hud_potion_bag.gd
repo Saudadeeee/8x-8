@@ -192,9 +192,9 @@ func set_potion_aiming(active: bool, radius: float) -> void:
 		_potion_hint.visible = active
 		if active:
 			var data := _potion_slot_data(_potion_aim_slot)
-			var pname: String = str(data.get("name", "Thuốc"))
-			var scope: String = "TOÀN MAP" if radius >= 100.0 else "bán kính %.1fm" % radius
-			_potion_hint.text = " %s — Chọn vùng thả (%s) · Chuột phải để huỷ" % [pname, scope]
+			var pname: String = str(data.get("name", "Potion"))
+			var scope: String = "TOÀN MAP" if radius >= 100.0 else "%.1fm radius" % radius
+			_potion_hint.text = " %s - Pick a target area (%s) · Right-click to cancel" % [pname, scope]
 			UIStyle.pulse(_potion_hint, 1.08)
 	Input.set_default_cursor_shape(Input.CURSOR_CROSS if active else Input.CURSOR_ARROW)
 	for i in _potion_slots.size():
@@ -268,7 +268,7 @@ func _update_potion_slot(index: int) -> void:
 	if data.is_empty():
 		slot.add_theme_stylebox_override("panel", UIStyle.rarity_frame("common"))
 		slot.modulate = Color(1, 1, 1, 0.42)
-		slot.tooltip_text = "Ô túi trống — hạ Elite hoặc Rival King để nhận thuốc (%s)" \
+		slot.tooltip_text = "Empty slot — kill an Elite or a Rival King to earn a potion (%s)" \
 			% POTION_HOTKEY_NAMES[index]
 		if index < _potion_icons.size() and is_instance_valid(_potion_icons[index]):
 			_potion_icons[index].visible = false

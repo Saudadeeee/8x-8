@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_2k0d3")
 id = "quan_su_hoang_trieu"
-name = "Quân Sư Hoàng Triều"
-desc = "Quân sư dâng kế sách: +12% sát thương toàn bộ tháp và +3 Sắc Lệnh Hoàng Gia mỗi khi wave mới bắt đầu."
+name = "Royal Strategist"
+desc = "The strategist offers a plan: +12% damage for every piece, and +3 Royal Decree at the start of each wave."
 rarity = "epic"
 tower = {
 "damage_bonus": 0.12

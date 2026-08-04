@@ -7,8 +7,8 @@
 [resource]
 script = ExtResource("1_kp")
 id = "king_phantom"
-king_name = "Vua Bóng Ma"
-lore = "Một quân vương không ai thấy mặt. Tượng và Mã của ngài đánh ra từ bóng tối, nhằm đúng kẻ vừa tin rằng mình đã an toàn."
+king_name = "The Phantom King"
+lore = "A sovereign no one has ever seen. His Bishops and Knights strike from the dark, at whoever just decided they were safe."
 portrait = ExtResource("3_pt")
 base_health = 15
 base_royal_decree = 25.0
@@ -21,8 +21,8 @@ favored_unit_types = ["bishop", "knight"]
 favor_damage_bonus = 0.25
 favor_speed_bonus = 0.0
 favor_range_bonus = 0.2
-ability_name = "Màn Bóng Tối"
-ability_description = "Toàn bộ quân tàng hình trước địch trong 5 giây và được xoá sạch hồi chiêu."
+ability_name = "Shadow Veil"
+ability_description = "Every piece turns invisible to enemies for 5 seconds and has its cooldown wiped."
 ability_decree_cost = 40.0
 ability_cooldown = 60.0
 ability_script = ExtResource("2_ab")

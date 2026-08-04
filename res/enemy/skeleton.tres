@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_skeleton")
 id = "skeleton"
-display_name = "Xương Cốt"
-ability_note = "Kháng chậm, Undead"
+display_name = "Skeleton"
+ability_note = "Slow-resistant, Undead"
 spawn_seasons = Array[int]([1, 2, 3])
 spawn_weight = 2
 texture = ExtResource("2_skeleton")

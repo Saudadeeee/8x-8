@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_23ead")
 id = "ruou_cuong_luc"
-name = "Rượu Cường Lực"
-desc = "Tháp trong vùng +40% sát thương trong 12 giây."
+name = "Strength Brew"
+desc = "Pieces in the area gain +40% damage for 12 seconds."
 buff = {
 "damage_pct": 0.4
 }

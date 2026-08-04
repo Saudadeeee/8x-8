@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_isitn")
 id = "piercing_bow"
-name = "Cung Xuyên Táo"
-desc = "Mỗi phát xuyên thêm 2 địch phía sau."
+name = "Piercing Bow"
+desc = "Every shot pierces 2 more enemies behind the target."
 rarity = "rare"
 cost = 90
 effect = {

@@ -239,7 +239,7 @@ func _run() -> void:
 	var tut_missing := ""
 	# So khong phan biet hoa thuong: the tutorial viet "nuoc di thật" o giua cau.
 	var tut_low := tut_src.to_lower()
-	for kw in ["nước đi", "thế cờ", "bộ quân", "bắt đầu wave"]:
+	for kw in ["chess rules", "formation", "your set", "start wave"]:
 		if not tut_low.contains(kw):
 			tut_missing += kw + " "
 	ok(tut_missing == "", "tutorial nhac du cac tru moi", tut_missing)

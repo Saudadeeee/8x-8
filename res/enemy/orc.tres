@@ -7,7 +7,7 @@
 script = ExtResource("1_4wenm")
 id = "orc"
 display_name = "Orc"
-ability_note = "Đòn đánh mạnh"
+ability_note = "Heavy hits"
 spawn_seasons = Array[int]([0, 1, 2])
 spawn_weight = 2
 texture = ExtResource("2_sfmrb")

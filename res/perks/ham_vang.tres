@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_rpqvn")
 id = "ham_vang"
-name = "Hầm Vàng"
-desc = "Lãi suất vàng cuối wave tăng từ 10% lên 15%."
+name = "Vault"
+desc = "End-of-wave interest rises from 10% to 15%."
 rarity = "epic"
 economy = {
 "interest_rate": 0.15

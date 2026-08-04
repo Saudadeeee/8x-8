@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_dk")
 id = "dark_knight"
-display_name = "Kỵ Sĩ Đen"
-ability_note = "Máu cao, khó hạ"
+display_name = "Dark Knight"
+ability_note = "High HP, hard to kill"
 spawn_seasons = Array[int]([2, 3])
 spawn_weight = 2
 texture = ExtResource("2_dk")

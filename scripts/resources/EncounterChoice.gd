@@ -4,8 +4,8 @@ extends Resource
 class_name EncounterChoice
 
 # --- NỘI DUNG ---
-@export var choice_text: String = "Lựa chọn..."
-@export_multiline var outcome_preview: String = "Có thể xảy ra..." # Hint cho người chơi
+@export var choice_text: String = "Choice..."
+@export_multiline var outcome_preview: String = "Possible outcome..." # Hint cho người chơi
 
 # --- HẬU QUẢ ---
 @export_group("Outcomes")

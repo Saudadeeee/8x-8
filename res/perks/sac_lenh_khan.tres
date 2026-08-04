@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_e0eyb")
 id = "sac_lenh_khan"
-name = "Sắc Lệnh Khẩn"
-desc = "+5 Sắc Lệnh Hoàng Gia mỗi khi wave mới bắt đầu."
+name = "Urgent Decree"
+desc = "+5 Royal Decree at the start of each wave."
 rarity = "rare"
 rd = {
 "per_wave_start": 5.0

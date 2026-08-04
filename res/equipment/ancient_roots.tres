@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_ai2n3")
 id = "ancient_roots"
-name = "Rễ Cây Cổ"
-desc = "+5 sát thương vĩnh viễn mỗi wave tháp này sống sót."
+name = "Ancient Roots"
+desc = "+5 permanent damage for every wave this piece survives."
 rarity = "epic"
 slot = "base"
 cost = 120

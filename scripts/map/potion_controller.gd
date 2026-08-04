@@ -93,9 +93,9 @@ func _refresh_potion_aim_feedback(ground: Vector3) -> void:
 		_potion_aim_mat.emission = tint
 	if is_instance_valid(_potion_aim_label):
 		match target:
-			"allies":  _potion_aim_label.text = " %d tháp" % count
-			"enemies": _potion_aim_label.text = " %d địch" % count
-			_:         _potion_aim_label.text = " Khẩn cấp"
+			"allies":  _potion_aim_label.text = " %d pieces" % count
+			"enemies": _potion_aim_label.text = " %d enemies" % count
+			_:         _potion_aim_label.text = " Emergency"
 		_potion_aim_label.modulate = tint
 
 # ── Vòng ngắm ───────────────────────────────────────────────────────────────
@@ -234,7 +234,7 @@ func _throw_potion_at(ground: Vector3) -> void:
 	if map.potion_system == null or slot < 0:
 		return
 	var data: Dictionary = map.potion_system.get_potion_at(slot)
-	var potion_name: String = str(data.get("name", "Thuốc"))
+	var potion_name: String = str(data.get("name", "Potion"))
 	if not map.potion_system.use_potion(slot, ground):
 		return
 	if map.phase_controller:
@@ -297,7 +297,7 @@ func _hook_elite_potion_drops() -> void:
 		if enemy.has_signal("enemy_defeated"):
 			enemy.connect("enemy_defeated", _on_elite_defeated_potion_drop, CONNECT_ONE_SHOT)
 
-## Perk "Nhà Giả Kim" — cứ N phản ứng nổ ra thì tặng 1 bình. Kiểm theo NHỊP
+## Perk "Alchemist's Craft" — cứ N phản ứng nổ ra thì tặng 1 bình. Kiểm theo NHỊP
 ## quét (không phải mỗi phản ứng) vì ReactionTable là static, không phát signal.
 var _alchemist_last_count: int = 0
 
@@ -314,17 +314,17 @@ func _tick_alchemist_perk() -> void:
 		_alchemist_last_count = total
 		return
 	_alchemist_last_count = total
-	_grant_random_potion("Nhà Giả Kim")
+	_grant_random_potion("Alchemist's Craft")
 
 func _on_elite_defeated_potion_drop(_gold: int) -> void:
-	# Di vật "Bản Đồ Kho Báu" biến tỉ lệ 15% thành chắc chắn.
+	# Di vật "Treasure Map" biến tỉ lệ 15% thành chắc chắn.
 	var guaranteed: bool = map._game_manager != null and bool(map._game_manager.get("relic_elite_always_drop"))
 	if guaranteed or randf() < map.ELITE_POTION_DROP_CHANCE:
 		_grant_random_potion("Elite")
 
 # ── Hiệu ứng khẩn cấp (PotionSystem gọi ngược lên qua has_method) ───────────
 
-## "Máu Vua" — hồi máu cho Nhà Vua.
+## "King's Blood" — hồi máu cho Nhà Vua.
 func potion_heal_king(amount: int) -> void:
 	if amount <= 0:
 		return
@@ -333,10 +333,10 @@ func potion_heal_king(amount: int) -> void:
 		"+%d ❤" % amount, Color(0.4, 1.0, 0.5), 26)
 	FX.spawn_burst(map, _king_world_pos() + Vector3(0.0, 0.4, 0.0), Color(0.4, 1.0, 0.5), 16, 1.0)
 	if map.phase_controller:
-		map.phase_controller.phase_message = "❤ Máu Vua: +%d máu!" % amount
+		map.phase_controller.phase_message = "❤ King's Blood: +%d HP!" % amount
 	map.update_ui()
 
-## "Khiên Vương Triều" — Nhà Vua miễn sát thương trong `seconds` giây.
+## "Royal Aegis" — Nhà Vua miễn sát thương trong `seconds` giây.
 ## Gọi chồng thì LÀM MỚI thời hạn (lấy giá trị lớn hơn), không cộng dồn.
 func potion_king_shield(seconds: float) -> void:
 	_potion_shield_left = maxf(_potion_shield_left, maxf(0.1, seconds))
@@ -351,7 +351,7 @@ func _is_king_shielded() -> bool:
 ## Phản hồi khi khiên chặn một đòn — nếu không hiện gì, player tưởng game lỗi.
 func _show_shield_block() -> void:
 	var pos := _king_world_pos() + Vector3(0.0, 1.0, 0.0)
-	FX.damage_number(map, pos, "🛡 MIỄN", Color(0.55, 0.8, 1.0), 22)
+	FX.damage_number(map, pos, "🛡 IMMUNE", Color(0.55, 0.8, 1.0), 22)
 	FX.spawn_burst(map, pos, Color(0.55, 0.8, 1.0), 10, 0.8)
 	var am = get_node_or_null("/root/AudioManagerSingleton")
 	if am and am.has_method("play_sfx"):

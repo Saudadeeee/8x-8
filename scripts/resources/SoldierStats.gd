@@ -11,8 +11,8 @@ enum Element { FIRE, WATER, WOOD, EARTH, METAL, DARK, LIGHT, NEUTRAL }
 # --- NHẬN DIỆN ---
 @export_group("Identity")
 @export var id: String = "soldier_default"
-@export var soldier_name: String = "Tên Quân"
-@export_multiline var description: String = "Mô tả quân..."
+@export var soldier_name: String = "Soldier Name"
+@export_multiline var description: String = "Soldier description..."
 @export var unit_class: UnitClass = UnitClass.PAWN
 @export var attack_type: AttackType = AttackType.RANGED
 @export var element: Element = Element.NEUTRAL

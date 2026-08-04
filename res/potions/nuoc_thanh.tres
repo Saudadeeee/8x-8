@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_04v4b")
 id = "nuoc_thanh"
-name = "Nước Thánh"
-desc = "Tháp trong vùng gắn Dấu Thuỷ trong 12 giây."
+name = "Holy Water"
+desc = "Pieces in the area apply Water Marks for 12 seconds."
 rarity = "rare"
 buff = {
 "grant_element": "water"

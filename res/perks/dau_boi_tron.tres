@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_27wd8")
 id = "dau_boi_tron"
-name = "Dầu Bôi Trơn"
-desc = "Giảm 0.08s thời gian hồi đòn của toàn bộ tháp."
+name = "Lubricant"
+desc = "Cut 0.08s from every piece's cooldown."
 tower = {
 "speed_bonus": 0.08
 }

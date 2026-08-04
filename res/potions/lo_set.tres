@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_5h32e")
 id = "lo_set"
-name = "Lọ Sét"
-desc = "80 sát thương xuyên giáp và gắn Dấu Lôi."
+name = "Bottled Bolt"
+desc = "80 armor-piercing damage and applies a Thunder Mark."
 rarity = "rare"
 target = "enemies"
 strike = {

@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_lrefm")
 id = "nuoc_mat_dai_bang"
-name = "Nước Mắt Đại Bàng"
-desc = "Tháp trong vùng +2 tầm bắn trong 12 giây."
+name = "Eagle's Tear"
+desc = "Pieces in the area gain +2 reach for 12 seconds."
 rarity = "rare"
 buff = {
 "range_bonus": 2.0

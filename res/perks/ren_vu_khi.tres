@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_r2w2j")
 id = "ren_vu_khi"
-name = "Rèn Vũ Khí"
-desc = "+10% sát thương cho toàn bộ tháp."
+name = "Weaponsmith"
+desc = "+10% damage for every piece."
 tower = {
 "damage_bonus": 0.1
 }

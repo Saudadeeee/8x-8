@@ -24,7 +24,7 @@ signal inventory_changed(inventory: Array)
 signal tower_equipment_changed(tower: Node, ids: Array)
 
 # ── Hằng số ────────────────────────────────────────────────────────────────
-## Số ô trang bị mặc định mỗi tháp. Di Vật "Đe Của Thần" nâng lên 3.
+## Số ô trang bị mặc định mỗi tháp. Di Vật "Anvil of the Gods" nâng lên 3.
 const BASE_SLOTS: int = 2
 ## Trần kho — vượt thì món mới bị chặn (báo qua `add_item` trả false).
 const MAX_INVENTORY: int = 12
@@ -54,125 +54,125 @@ const EFFECT_KEYS: Array[String] = [
 const ITEMS: Array[Dictionary] = [
 	# --- VŨ KHÍ: đổi cách đánh ---
 	{
-		"id": "piercing_bow", "name": "Cung Xuyên Táo", "slot": "weapon",
+		"id": "piercing_bow", "name": "Piercing Bow", "slot": "weapon",
 		"rarity": "rare", "cost": 90,
-		"desc": "Mỗi phát xuyên thêm 2 địch phía sau.",
+		"desc": "Every shot pierces 2 more enemies behind the target.",
 		"effect": {"pierce_targets": 2},
 	},
 	{
-		"id": "quake_hammer", "name": "Búa Chấn Động", "slot": "weapon",
+		"id": "quake_hammer", "name": "Quake Hammer", "slot": "weapon",
 		"rarity": "rare", "cost": 95,
-		"desc": "20% mỗi đòn làm choáng 0.5s.",
+		"desc": "20% of hits stun for 0.5s.",
 		"effect": {"stun_chance": 0.2},
 	},
 	{
-		"id": "repeater", "name": "Nỏ Liên Thanh", "slot": "weapon",
+		"id": "repeater", "name": "Repeater", "slot": "weapon",
 		"rarity": "rare", "cost": 85,
-		"desc": "−40% sát thương, tốc đánh gấp đôi. Cỗ máy gắn Dấu.",
+		"desc": "-40% damage, double attack speed. A Mark-applying machine.",
 		"effect": {"damage_pct": -0.4, "speed_bonus": 0.5},
 	},
 	{
-		"id": "armor_axe", "name": "Rìu Chém Giáp", "slot": "weapon",
+		"id": "armor_axe", "name": "Armor Axe", "slot": "weapon",
 		"rarity": "common", "cost": 65,
-		"desc": "Bỏ qua toàn bộ giáp mục tiêu.",
+		"desc": "Ignores all target armor.",
 		"effect": {"pierce_armor": true},
 	},
 	{
-		"id": "hunt_javelin", "name": "Cây Lao Săn", "slot": "weapon",
+		"id": "hunt_javelin", "name": "Hunting Javelin", "slot": "weapon",
 		"rarity": "common", "cost": 60,
-		"desc": "+60% sát thương lên địch còn đầy máu.",
+		"desc": "+60% damage against enemies at full HP.",
 		"effect": {"bonus_vs_full": 0.6},
 	},
 	{
-		"id": "finisher_mace", "name": "Chuỳ Kết Liễu", "slot": "weapon",
+		"id": "finisher_mace", "name": "Finisher Mace", "slot": "weapon",
 		"rarity": "rare", "cost": 80,
-		"desc": "+100% sát thương lên địch dưới 25% máu.",
+		"desc": "+100% damage against enemies below 25% HP.",
 		"effect": {"bonus_vs_low": 1.0},
 	},
 	{
-		"id": "vampire_blade", "name": "Kiếm Hút Máu", "slot": "weapon",
+		"id": "vampire_blade", "name": "Vampiric Blade", "slot": "weapon",
 		"rarity": "epic", "cost": 130,
-		"desc": "Mỗi lần hạ địch hồi 1 HP cho Vua (tối đa 3 mỗi wave).",
+		"desc": "Each kill restores 1 HP to the King (max 3 per wave).",
 		"effect": {"lifesteal": 1},
 	},
 	# --- PHỤ KIỆN: khuếch đại nguyên tố (nhóm mở khoá lối chơi) ---
 	{
-		"id": "resonance_ring", "name": "Nhẫn Cộng Hưởng", "slot": "accessory",
+		"id": "resonance_ring", "name": "Resonance Ring", "slot": "accessory",
 		"rarity": "epic", "cost": 140,
-		"desc": "Phản ứng do tháp này kích: +50% sát thương.",
+		"desc": "Reactions triggered by this piece deal +50% damage.",
 		"effect": {"reaction_power_mult": 1.5},
 	},
 	{
-		"id": "conductor_stone", "name": "Đá Dẫn Nguyên Tố", "slot": "accessory",
+		"id": "conductor_stone", "name": "Conductor Stone", "slot": "accessory",
 		"rarity": "rare", "cost": 100,
-		"desc": "Dấu tháp này gắn kéo dài gấp đôi.",
+		"desc": "Marks applied by this piece last twice as long.",
 		"effect": {"mark_duration_mult": 2.0},
 	},
 	{
-		"id": "hunter_charm", "name": "Hộ Phù Thợ Săn", "slot": "accessory",
+		"id": "hunter_charm", "name": "Hunter's Charm", "slot": "accessory",
 		"rarity": "rare", "cost": 105,
-		"desc": "+30% sát thương lên địch đang mang Dấu.",
+		"desc": "+30% damage against marked enemies.",
 		"effect": {"bonus_vs_marked": 0.3},
 	},
 	{
-		"id": "storm_eye", "name": "Mắt Bão", "slot": "accessory",
+		"id": "storm_eye", "name": "Storm Eye", "slot": "accessory",
 		"rarity": "epic", "cost": 135,
-		"desc": "Bán kính mọi phản ứng của tháp này +1m.",
+		"desc": "Every reaction from this piece gains +1m radius.",
 		"effect": {"reaction_radius_bonus": 1.0},
 	},
 	{
-		"id": "reverse_clock", "name": "Đồng Hồ Ngược", "slot": "accessory",
+		"id": "reverse_clock", "name": "Reverse Clock", "slot": "accessory",
 		"rarity": "epic", "cost": 125,
-		"desc": "Mỗi phản ứng nổ gần đây: hồi chiêu tháp này −0.1s.",
+		"desc": "Each nearby reaction cuts this piece's cooldown by 0.1s.",
 		"effect": {"cooldown_refund": 0.1},
 	},
 	{
-		"id": "vein_conduit", "name": "Ống Dẫn Mạch", "slot": "accessory",
+		"id": "vein_conduit", "name": "Ley Conduit", "slot": "accessory",
 		"rarity": "rare", "cost": 110,
-		"desc": "Đứng ô thường vẫn nhận Dấu của ô nguyên tố KỀ BÊN.",
+		"desc": "On a plain square, still gains the Mark of an ADJACENT vein.",
 		"effect": {"conduit": true},
 	},
 	{
-		"id": "dual_vessel", "name": "Bình Chứa Kép", "slot": "accessory",
+		"id": "dual_vessel", "name": "Dual Vessel", "slot": "accessory",
 		"rarity": "legendary", "cost": 190,
-		"desc": "Gắn thêm Dấu của ô nguyên tố kề → tự kích phản ứng một mình.",
+		"desc": "Also applies the Mark of an adjacent vein - triggering reactions on its own.",
 		"effect": {"dual_vessel": true},
 	},
 	{
-		"id": "element_staff", "name": "Trượng Nguyên Tố", "slot": "accessory",
+		"id": "element_staff", "name": "Element Staff", "slot": "accessory",
 		"rarity": "epic", "cost": 145,
-		"desc": "Luôn bắn Dấu Hoả bất kể ô đang đứng.",
+		"desc": "Always fires Fire Marks regardless of the square below.",
 		"effect": {"grant_element": "fire"},
 	},
 	{
-		"id": "focus_lens", "name": "Thấu Kính Tụ Quang", "slot": "accessory",
+		"id": "focus_lens", "name": "Focus Lens", "slot": "accessory",
 		"rarity": "common", "cost": 70,
-		"desc": "+12% chí mạng.",
+		"desc": "+12% critical chance.",
 		"effect": {"crit_bonus": 0.12},
 	},
 	# --- NỀN TẢNG ---
 	{
-		"id": "solid_base", "name": "Bệ Đá Vững", "slot": "base",
+		"id": "solid_base", "name": "Steadfast Base", "slot": "base",
 		"rarity": "rare", "cost": 100,
-		"desc": "Miễn nhiễm đòn vô hiệu hoá tháp của boss.",
+		"desc": "Immune to boss abilities that disable pieces.",
 		"effect": {"immune_disable": true},
 	},
 	{
-		"id": "swivel_base", "name": "Chân Đế Xoay", "slot": "base",
+		"id": "swivel_base", "name": "Swivel Mount", "slot": "base",
 		"rarity": "common", "cost": 60,
-		"desc": "+1 ô tầm bắn.",
+		"desc": "+1 reach.",
 		"effect": {"range_bonus": 1},
 	},
 	{
-		"id": "ancient_roots", "name": "Rễ Cây Cổ", "slot": "base",
+		"id": "ancient_roots", "name": "Ancient Roots", "slot": "base",
 		"rarity": "epic", "cost": 120,
-		"desc": "+5 sát thương vĩnh viễn mỗi wave tháp này sống sót.",
+		"desc": "+5 permanent damage for every wave this piece survives.",
 		"effect": {"growth_per_wave": 5.0},
 	},
 	{
-		"id": "lightning_rod", "name": "Cột Thu Lôi", "slot": "base",
+		"id": "lightning_rod", "name": "Lightning Rod", "slot": "base",
 		"rarity": "rare", "cost": 95,
-		"desc": "Luôn bắn Dấu Lôi + kéo dài Dấu 50%.",
+		"desc": "Always fires Thunder Marks, and Marks last 50% longer.",
 		"effect": {"grant_element": "thunder", "mark_duration_mult": 1.5},
 	},
 ]
@@ -184,11 +184,11 @@ var _catalog: Dictionary = {}
 var _inventory: Array[String] = []
 ## instance_id của tháp → Array[String] id món đang gắn.
 var _equipped: Dictionary = {}
-## instance_id của tháp → tổng sát thương cộng dồn từ "Rễ Cây Cổ".
+## instance_id của tháp → tổng sát thương cộng dồn từ "Ancient Roots".
 var _growth: Dictionary = {}
-## Số ô mỗi tháp — Di Vật "Đe Của Thần" nâng lên.
+## Số ô mỗi tháp — Di Vật "Anvil of the Gods" nâng lên.
 var slots_per_tower: int = BASE_SLOTS
-## Giảm giá trang bị trong shop (perk "Thợ Rèn Lang Thang"). 0.3 = rẻ 30%.
+## Giảm giá trang bị trong shop (perk "Wandering Smith"). 0.3 = rẻ 30%.
 var shop_discount: float = 0.0
 
 func _ready() -> void:
@@ -418,7 +418,7 @@ func _aggregate(tower: Node) -> Dictionary:
 	if stats != null and stats.get("base_damage") != null:
 		base_damage = float(stats.get("base_damage"))
 
-	# Di vật "Kho Vũ Khí": trang bị lắp trên MỘT quân áp cho MỌI quân cùng loại.
+	# Di vật "Armory": trang bị lắp trên MỘT quân áp cho MỌI quân cùng loại.
 	# Đây là món đổi luật thật sự — nó biến "chọn con nào để lắp" thành "chọn
 	# LOẠI nào để đầu tư", một quyết định khác hẳn.
 	var ids: Array[String] = equipped_on(tower)
@@ -434,7 +434,7 @@ func _aggregate(tower: Node) -> Dictionary:
 					if not ids.has(oid):
 						ids.append(oid)
 
-	# Di vật "Song Thủ": hai trang bị TRÙNG loại thì nhân thay vì cộng.
+	# Di vật "Twin Grip": hai trang bị TRÙNG loại thì nhân thay vì cộng.
 	var dup_mult := 1.0
 	if gm_e != null and float(gm_e.relic_equip_stack_mult) > 1.0:
 		var seen := {}
@@ -479,7 +479,7 @@ func _aggregate(tower: Node) -> Dictionary:
 func _apply(tower: Node) -> void:
 	if not is_instance_valid(tower):
 		return
-	# Thoát sớm chỉ khi tháp này thật sự KHÔNG hưởng gì. Với di vật "Kho Vũ Khí"
+	# Thoát sớm chỉ khi tháp này thật sự KHÔNG hưởng gì. Với di vật "Armory"
 	# thì một tháp trống vẫn hưởng trang bị của quân CÙNG LOẠI — thoát sớm ở đây
 	# là di vật đó không bao giờ chạm tới được. Đã dính.
 	var gm_share := get_node_or_null("/root/GameManagerSingleton")
@@ -504,7 +504,7 @@ func refresh_all() -> void:
 # NHỊP WAVE
 # ==========================================================================
 
-## Cuối mỗi wave: cộng dồn "Rễ Cây Cổ" cho tháp còn sống, reset hạn mức hút máu.
+## Cuối mỗi wave: cộng dồn "Ancient Roots" cho tháp còn sống, reset hạn mức hút máu.
 func on_wave_cleared() -> void:
 	prune()
 	if not is_inside_tree():

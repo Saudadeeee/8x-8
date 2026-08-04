@@ -122,7 +122,7 @@ func _build_ui() -> void:
 		UIStyle.breathe(title, 1.04, 3.0)
 
 	var subtitle = Label.new()
-	subtitle.text = "Thủ Thành Cờ · Roguelike"
+	subtitle.text = "Chess Tower Defense · Roguelike"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(subtitle, 18, Color(0.8, 0.72, 0.5, 1))
 	root_vbox.add_child(subtitle)
@@ -132,7 +132,7 @@ func _build_ui() -> void:
 	var highest_asc := _highest_ascension()
 	if highest_asc > 0:
 		var asc_label = Label.new()
-		asc_label.text = "☠  Ascension cao nhất: A%d" % highest_asc
+		asc_label.text = "☠  Highest Ascension: A%d" % highest_asc
 		asc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		UIStyle.body(asc_label, 15, Color(1.0, 0.62, 0.30, 1.0))
 		root_vbox.add_child(asc_label)
@@ -150,7 +150,7 @@ func _build_ui() -> void:
 	var gm = get_node_or_null("/root/GameManagerSingleton")
 	if gm and gm.get("selected_king") != null:
 		var continue_btn = Button.new()
-		continue_btn.text = "▶  Chơi Tiếp"
+		continue_btn.text = "▶  Continue"
 		continue_btn.custom_minimum_size = Vector2(300, 60)
 		_apply_ancient_button_style(continue_btn)
 		continue_btn.pressed.connect(_go_to.bind("res://scenes/map/game_map.tscn"))
@@ -159,10 +159,10 @@ func _build_ui() -> void:
 		stagger += 0.07
 
 	var buttons = [
-		["⚔  Ván Mới", "res://scenes/ui/king_select.tscn"],
-		["★  Tiến Trình", "res://scenes/ui/meta_progression.tscn"],
-		["⚙  Cài Đặt", "res://scenes/ui/settings_screen.tscn"],
-		["✖  Thoát", "quit"],
+		["⚔  New Run", "res://scenes/ui/king_select.tscn"],
+		["★  Progress", "res://scenes/ui/meta_progression.tscn"],
+		["⚙  Settings", "res://scenes/ui/settings_screen.tscn"],
+		["✖  Quit", "quit"],
 	]
 
 	for entry in buttons:
@@ -180,7 +180,7 @@ func _build_ui() -> void:
 		stagger += 0.07
 
 	var version_label = Label.new()
-	version_label.text = "v0.1 Truy Cập Sớm"
+	version_label.text = "v0.1 Early Access"
 	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIStyle.body(version_label, 14, Color(0.6, 0.6, 0.6, 1))
 	version_label.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)

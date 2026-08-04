@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_utyvh")
 id = "god_anvil"
-name = "Đe Của Thần"
-desc = "Mỗi tháp có thêm 1 ô trang bị (2 → 3)."
+name = "Anvil of the Gods"
+desc = "Every piece gains 1 more equipment slot (2 -> 3)."
 cost = 240
 effect = {
 "equip_slot_bonus": 1
