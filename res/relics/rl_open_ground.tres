@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_open_ground"
+name = "Open Ground"
+rarity = "rare"
+desc = "Room to manoeuvre. Empty squares are not wasted squares. +3.0% damage per empty square."
+cost = 140
+effect = {
+"per_mult": {
+"empty_squares": 0.03
+}
+}

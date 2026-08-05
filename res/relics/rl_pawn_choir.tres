@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_pawn_choir"
+name = "Pawn Choir"
+rarity = "rare"
+desc = "Pawns sing loudest in numbers. +7.0% damage per Pawn."
+cost = 180
+effect = {
+"per_mult": {
+"pawns": 0.07
+}
+}

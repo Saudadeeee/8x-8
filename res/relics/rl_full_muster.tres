@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_full_muster"
+name = "Full Muster"
+rarity = "epic"
+desc = "When the army is at its legal cap, every piece fights like two. +60% damage when your army is at its cap."
+cost = 310
+effect = {
+"cond_mult": {
+"full_board": 0.6
+}
+}

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_frontier"
+name = "Frontier Watch"
+rarity = "epic"
+desc = "Few watchers, but each one watches a lot of road. +30% with 8 or fewer pieces, +3.0% per path square your army covers."
+cost = 280
+effect = {
+"cond_mult": {
+"few_pieces": 0.3
+},
+"per_mult": {
+"path_covered": 0.03
+}
+}

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_last_march"
+name = "The Last March"
+rarity = "legendary"
+desc = "Everything you have learned, spent at once. +60% while your King is below half HP, +4.5% per wave survived."
+cost = 500
+effect = {
+"cond_mult": {
+"king_hurt": 0.6
+},
+"per_mult": {
+"wave": 0.045
+}
+}

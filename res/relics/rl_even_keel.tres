@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_even_keel"
+name = "Even Keel"
+rarity = "rare"
+desc = "The even waves belong to you. +40% damage on even-numbered waves."
+cost = 170
+effect = {
+"cond_mult": {
+"even_wave": 0.4
+}
+}

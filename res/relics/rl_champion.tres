@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_champion"
+name = "Champion"
+rarity = "rare"
+desc = "One ★3 piece sets the standard for everyone else. +35% damage while any piece is *3."
+cost = 160
+effect = {
+"cond_mult": {
+"has_star3": 0.35
+}
+}

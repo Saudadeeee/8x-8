@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_royal_court"
+name = "Royal Court"
+rarity = "legendary"
+desc = "A crowned court answers only to itself. +40% while any piece is *3, +22.0% per Queen."
+cost = 720
+effect = {
+"cond_mult": {
+"has_star3": 0.4
+},
+"per_mult": {
+"queens": 0.22
+}
+}

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_spendthrift"
+name = "Spendthrift"
+rarity = "epic"
+desc = "An empty purse means everything went into the war. +90% damage while holding 30 gold or less, -35% damage while holding 300+ gold."
+cost = 290
+effect = {
+"cond_mult": {
+"broke": 0.9,
+"rich": -0.35
+}
+}

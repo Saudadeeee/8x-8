@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_quartermaster"
+name = "Quartermaster"
+rarity = "rare"
+desc = "Paid troops fight better, and there are a lot of them. +25% while holding 300+ gold, +2.5% per piece on the board."
+cost = 170
+effect = {
+"cond_mult": {
+"rich": 0.25
+},
+"per_mult": {
+"pieces": 0.025
+}
+}

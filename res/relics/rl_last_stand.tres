@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_last_stand"
+name = "Last Stand"
+rarity = "legendary"
+desc = "With the King bleeding, the army fights like it means it. +100% damage while your King is below half HP."
+cost = 560
+effect = {
+"cond_mult": {
+"king_hurt": 1.0
+}
+}

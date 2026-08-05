@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_kingslayer"
+name = "Kingslayer's Oath"
+rarity = "legendary"
+desc = "You saved everything for the three that matter. +135% damage on Rival King waves, -25% damage on even-numbered waves."
+cost = 480
+effect = {
+"cond_mult": {
+"boss_wave": 1.35,
+"even_wave": -0.25
+}
+}

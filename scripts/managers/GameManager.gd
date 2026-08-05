@@ -123,6 +123,10 @@ var relic_rook_as_cannon: bool = false       # mọi Xe thành Pháo (cần ngò
 var relic_cannon_damage_mult: float = 1.0    # bù sát thương cho Xe-thành-Pháo
 var relic_tile_spread: bool = false          # ô nguyên tố lan sang 4 ô kề
 var relic_plain_tile_mult: float = 0.0       # ô THƯỜNG cộng Bội
+## Engine di vật tổng quát (xem relic_conditions.gd). Khoá con là tên điều kiện
+## / tên bộ đếm; giá trị là phần CỘNG THÊM vào Bội. Bội = 1 + tổng.
+var relic_cond_mult: Dictionary = {}
+var relic_per_mult: Dictionary = {}
 var relic_surround_mult: float = 0.0         # cờ vây: ≥3 quân kề thì cộng Bội
 var relic_equip_share: bool = false          # trang bị áp cho mọi quân cùng loại
 var relic_equip_stack_mult: float = 1.0      # hai trang bị trùng thì NHÂN

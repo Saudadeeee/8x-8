@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_hoard"
+name = "Reliquary"
+rarity = "epic"
+desc = "Relics resonate with one another in the vault. +12.0% damage per relic you own."
+cost = 340
+effect = {
+"per_mult": {
+"relics": 0.12
+}
+}

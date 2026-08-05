@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_siege_train"
+name = "Siege Train"
+rarity = "rare"
+desc = "Rooks roll better in company. +9.0% damage per Rook."
+cost = 190
+effect = {
+"per_mult": {
+"rooks": 0.09
+}
+}

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_hoarder"
+name = "Hoarder's Curse"
+rarity = "epic"
+desc = "Wealth is power - and spending it is weakness. +85% damage while holding 300+ gold, -40% damage while holding 30 gold or less."
+cost = 280
+effect = {
+"cond_mult": {
+"rich": 0.85,
+"broke": -0.4
+}
+}

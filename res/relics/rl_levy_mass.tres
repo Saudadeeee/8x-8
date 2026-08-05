@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_levy_mass"
+name = "Mass Levy"
+rarity = "rare"
+desc = "Pawns are worthless alone and decisive together. +20% with 15 or more pieces, +5.0% per Pawn."
+cost = 180
+effect = {
+"cond_mult": {
+"many_pieces": 0.2
+},
+"per_mult": {
+"pawns": 0.05
+}
+}

@@ -1,4 +1,5 @@
 extends SceneTree
+# (phần engine di vật tổng quát nằm ở cuối file — xem "ENGINE DI VAT")
 # BATCH 3 — vat pham: thuoc / trang bi / di vat.
 var fail := 0
 func _init() -> void: _run()
@@ -133,6 +134,85 @@ func _run() -> void:
 				"=%d" % eq.slots_per_tower)
 		else:
 			print("     (khong tim thay di vat tang o — bo qua)")
+
+	print("\n--- ENGINE DI VAT TONG QUAT ---")
+	# ~70 di vat di qua DUNG MOT bo may (relic_conditions.gd). Neu bo may nay
+	# hong thi 70 mon chet cung luc — nen no phai duoc kiem ky hon bat ky mon
+	# rieng le nao.
+	var rs2 = map.relic_system
+	ok(rs2._catalog.size() >= 90, "co it nhat 90 di vat", "%d" % rs2._catalog.size())
+
+	# (1) MOI di vat phai giu duoc hieu ung sau khi qua `_sanitize`. Khoa la bi
+	# loc TRANG va im lang — do la cach 8 di vat co tung chet ma khong ai biet.
+	var empty_eff := ""
+	for rid in rs2._catalog:
+		var e: Dictionary = rs2._catalog[rid].get("effect", {})
+		if e.is_empty():
+			empty_eff += str(rid) + " "
+	ok(empty_eff == "", "khong di vat nao bi loc mat sach hieu ung", empty_eff)
+
+	# (2) Bo may dieu kien: moi ten trong bang nhan phai duoc `test()` hieu.
+	# Ten la tra false, nghia la di vat vo hai — nhung neu MOT ten trong bang
+	# nhan bi go khoi `test()` thi di vat do chet am tham.
+	var facts := RelicConditions.facts(map)
+	var unknown_cond := ""
+	for cid in RelicConditions.COND_LABELS:
+		# Goi duoc va khong nem loi la du; gia tri dung/sai tuy trang thai ban.
+		var _v: bool = RelicConditions.test(str(cid), facts)
+	for cnt in RelicConditions.COUNT_LABELS:
+		if not facts.has(str(cnt)):
+			unknown_cond += str(cnt) + " "
+	ok(unknown_cond == "", "moi bo dem trong bang nhan deu co trong facts()",
+		unknown_cond)
+
+	# (3) Dieu kien phai TRA VE dung/sai theo trang thai THAT, khong hang so.
+	var f_few := {"pieces": 3, "max_units": 10}
+	var f_many := {"pieces": 18, "max_units": 20}
+	ok(RelicConditions.test("few_pieces", f_few), "few_pieces dung khi it quan")
+	ok(not RelicConditions.test("few_pieces", f_many), "few_pieces sai khi dong quan")
+	ok(RelicConditions.test("many_pieces", f_many), "many_pieces dung khi dong quan")
+	ok(RelicConditions.test("full_board", {"pieces": 10, "max_units": 10}),
+		"full_board dung khi cham tran")
+	ok(not RelicConditions.test("khong_ton_tai", f_few),
+		"ten dieu kien LA tra false (di vat vo hai, khong lam hong van)")
+	ok(is_zero_approx(RelicConditions.count("khong_ton_tai", f_few)),
+		"ten bo dem LA tra 0")
+
+	# (4) CONG DON: hai di vat cung dieu kien phai cong lai, khong de nhau.
+	# Khong co cai nay thi mua mon thu hai lai thay suc manh dung yen.
+	while rs2._owned.size() > 0:
+		rs2.sell_relic(0)
+	var cond_ids: Array[String] = []
+	for rid in rs2._catalog:
+		var e2: Dictionary = rs2._catalog[rid].get("effect", {})
+		var cm2 = e2.get("cond_mult", {})
+		if cm2 is Dictionary and (cm2 as Dictionary).has("few_pieces") \
+				and float((cm2 as Dictionary)["few_pieces"]) > 0.0:
+			cond_ids.append(str(rid))
+	ok(cond_ids.size() >= 2, "co it nhat 2 di vat cung dung 'few_pieces'",
+		"%d" % cond_ids.size())
+	if cond_ids.size() >= 2:
+		rs2.add_relic(cond_ids[0])
+		var one: float = float((rs2.totals()["cond_mult"] as Dictionary).get("few_pieces", 0.0))
+		rs2.add_relic(cond_ids[1])
+		var two: float = float((rs2.totals()["cond_mult"] as Dictionary).get("few_pieces", 0.0))
+		ok(two > one + 0.0001, "hai di vat cung dieu kien CONG DON, khong de nhau",
+			"%.2f -> %.2f" % [one, two])
+	while rs2._owned.size() > 0:
+		rs2.sell_relic(0)
+
+	# (5) MAT TRAI phai that: di vat danh doi co gia tri AM cho dieu kien xau.
+	var has_malus := false
+	for rid in rs2._catalog:
+		var e3: Dictionary = rs2._catalog[rid].get("effect", {})
+		var cm3 = e3.get("cond_mult", {})
+		if cm3 is Dictionary:
+			for k in (cm3 as Dictionary):
+				if float((cm3 as Dictionary)[k]) < 0.0:
+					has_malus = true
+					break
+		if has_malus: break
+	ok(has_malus, "co di vat DANH DOI (mat trai am), khong chi toan mon cong them")
 
 	print("\n== BATCH 3 FAIL=%d ==" % fail)
 	quit()

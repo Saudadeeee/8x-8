@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_perfectionist"
+name = "Perfectionist"
+rarity = "legendary"
+desc = "Uniform excellence beats one prodigy surrounded by recruits. +120% damage while every piece is *2 or better, -20% damage while any piece is *3."
+cost = 450
+effect = {
+"cond_mult": {
+"all_star2": 1.2,
+"has_star3": -0.2
+}
+}

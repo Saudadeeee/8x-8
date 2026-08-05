@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_relic_hunter"
+name = "Relic Hunter"
+rarity = "epic"
+desc = "The vault gets louder the longer the war runs. +30% from wave 8 onward, +10.0% per relic you own."
+cost = 360
+effect = {
+"cond_mult": {
+"late_wave": 0.3
+},
+"per_mult": {
+"relics": 0.1
+}
+}

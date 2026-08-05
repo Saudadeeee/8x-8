@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_court_of_queens"
+name = "Court of Queens"
+rarity = "legendary"
+desc = "Queens do not share power gladly - but they do share strength. +30.0% damage per Queen."
+cost = 820
+effect = {
+"per_mult": {
+"queens": 0.3
+}
+}

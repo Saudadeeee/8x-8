@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_open_field"
+name = "Open Field"
+rarity = "rare"
+desc = "Room to swing, room to ride. +25% with 8 or fewer pieces, +2.5% per empty square."
+cost = 170
+effect = {
+"cond_mult": {
+"few_pieces": 0.25
+},
+"per_mult": {
+"empty_squares": 0.025
+}
+}

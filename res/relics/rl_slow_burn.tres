@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_slow_burn"
+name = "Slow Burn"
+rarity = "epic"
+desc = "Weak early, terrifying late - if you live that long. +105% damage from wave 8 onward, -20% damage on odd-numbered waves."
+cost = 310
+effect = {
+"cond_mult": {
+"late_wave": 1.05,
+"odd_wave": -0.2
+}
+}

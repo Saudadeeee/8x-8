@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_powder_line"
+name = "Powder Line"
+rarity = "epic"
+desc = "One Cannon is a threat. Several are a doctrine. +16.0% damage per Cannon."
+cost = 390
+effect = {
+"per_mult": {
+"cannons": 0.16
+}
+}

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_grand_court"
+name = "Grand Court"
+rarity = "epic"
+desc = "Five different movement types - a court of specialists. +55% damage with 5+ different movement types."
+cost = 300
+effect = {
+"cond_mult": {
+"five_kinds": 0.55
+}
+}

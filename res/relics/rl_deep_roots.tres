@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_deep_roots"
+name = "Deep Roots"
+rarity = "epic"
+desc = "Levelled veins run deeper than wide ones. +4.5% damage per vein level."
+cost = 230
+effect = {
+"per_mult": {
+"vein_levels": 0.045
+}
+}

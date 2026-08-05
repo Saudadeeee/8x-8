@@ -1212,6 +1212,42 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
   Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
 
+*100 DI VẬT bằng MỘT bộ máy (2026-08-05) — ĐỌC TRƯỚC KHI THÊM DI VẬT:*
+- 31 → **100 di vật**. Nhưng KHÔNG phải 100 khoá hiệu ứng: 69 món mới đi qua
+  đúng **hai** khoá tổng quát, nội dung nằm ở DỮ LIỆU.
+  `scripts/items/relic_conditions.gd` (`RelicConditions`, toàn static):
+	`cond_mult` = {tên_điều_kiện: cộng_thêm} → Bội = 1 + Σ khi điều kiện ĐÚNG
+	`per_mult`  = {tên_bộ_đếm:   mỗi_đơn_vị} → Bội = 1 + đếm × giá_trị
+- **Vì sao không đẻ 100 khoá**: mỗi khoá là một chỗ có thể CHẾT ÂM THẦM (ghi ra
+  mà không ai nhân vào sát thương — đúng lỗi đã dính với 7 thế cờ + 9 di vật).
+  Một bộ máy = một chỗ nối dây = một chỗ phải test.
+- Cả hai vào `BoardScore.mult_breakdown` với cờ `combat = true`, tức nhân thẳng
+  vào `Tower.formation_damage_mult`. **Thêm di vật KHÔNG cần sửa code** — chỉ
+  thêm một dòng vào bảng trong `tools/make_relics.py` rồi chạy lại.
+- **Gộp theo KHOÁ CON, không đè nhau**: `totals()` cộng dồn giá trị của cùng một
+  điều kiện. Thiếu chỗ này thì mua di vật thứ hai lại thấy sức mạnh đứng yên.
+- **Giá trị ÂM cho phép mặt trái** — không cần cơ chế riêng. Đó là lớp "đánh
+  đổi" (15 món): Glass Army +120% khi ≤8 quân, **−35%** khi ≥15 quân. Đo được
+  Bội ×1.90 = few_pieces +120% trừ full_hp −30%.
+- **Tên lạ trả false / 0**, di vật vô hại chứ không làm hỏng ván. Nhưng tên
+  trong `COND_LABELS` / `COUNT_LABELS` mà gỡ khỏi `test()`/`facts()` thì di vật
+  chết âm thầm — test batch 3 chốt cả hai bảng.
+- Nhãn trong tooltip in CHỮ ĐỌC ĐƯỢC kèm dấu ("with 8 or fewer pieces +120% ·
+  while your King is at full HP −30%"), không in tên khoá thô. Người chơi phải
+  thấy món nào đang TRỪ đi, không chỉ thấy tổng.
+- `facts()` đệm theo SỐ FRAME — `mult_breakdown` chạy một lần mỗi ô mà quét bàn
+  là O(số quân). Đệm tự hết hạn nên không ai phải nhớ gọi invalidate.
+- Icon sinh bằng `python tools/make_relic_icons.py`: hình nền theo NHÓM (khiên =
+  điều kiện · chồng đĩa = bộ đếm · cân công = đánh đổi · đá quý = lai), màu lõi
+  theo chủ đề, viền theo bậc. 100/100 di vật có icon.
+- **Cân bằng đo lại** (bot n=5, 30 ván): thắng **57%**, chênh lệch bộ bài
+  **1.9×**. Đường cong phải nâng theo: `WAVE_HP_GROWTH` 1.285→1.322 ·
+  `BOSS_HP_BASE` 345→385 · `BOSS_HP_GROWTH` 1.27→1.305.
+- **BẪY khi viết test cho lớp này**: đừng bắt một luật/di vật phải có tác dụng
+  SỐNG trên bàn hiện tại. `toll_king` (Bội = 1 − số_quân×3%) trả 1.0 khi bàn
+  trống — đúng đắn, không phải "luật chết". Kiểm KHAI BÁO, không kiểm tác dụng
+  sống, nếu không test chập chờn theo thế đường ngẫu nhiên.
+
 *"Không đặt được quân" — chọn ô bằng chuột (2026-08-05):*
 - **Chế độ ĐẶT dùng `GridUtil` (mặt đất), KHÔNG dùng `PickUtil`.** PickUtil bắn
   tia vào `PickArea` của quân — hộp cao **1.5 m**, mà camera nghiêng −50° nên

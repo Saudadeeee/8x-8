@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_long_war"
+name = "The Long War"
+rarity = "epic"
+desc = "From wave 8 on, your army has learned the enemy's habits. +55% damage from wave 8 onward."
+cost = 300
+effect = {
+"cond_mult": {
+"late_wave": 0.55
+}
+}

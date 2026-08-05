@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_ley_addict"
+name = "Ley Addiction"
+rarity = "epic"
+desc = "The network sustains you. Without it you are hollow. +90% damage with 6 or more veins, -45% damage while you own no elemental veins."
+cost = 290
+effect = {
+"cond_mult": {
+"many_veins": 0.9,
+"no_veins": -0.45
+}
+}

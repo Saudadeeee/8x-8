@@ -49,6 +49,12 @@ const EFFECT_KEYS: Array[String] = [
 	"surround_mult",      # cờ vây: ô có ≥3 quân kề cộng Bội
 	"equip_share",        # trang bị áp cho MỌI quân cùng loại
 	"equip_stack_mult",   # hai trang bị trùng loại thì NHÂN thay vì cộng
+	# ── ENGINE TỔNG QUÁT (xem relic_conditions.gd) ───────────────────────
+	# Hai khoá này thay cho việc đẻ ~100 khoá riêng. Nội dung nằm ở DỮ LIỆU,
+	# code chỉ có MỘT bộ máy — nên chỉ có một chỗ có thể chết âm thầm, và
+	# test chỉ phải kiểm một chỗ đó.
+	"cond_mult",          # {tên_điều_kiện: cộng_thêm} — Bội khi điều kiện đúng
+	"per_mult",           # {tên_bộ_đếm: mỗi_đơn_vị}   — Bội theo số lượng
 ]
 
 const RELICS: Array[Dictionary] = [
@@ -281,6 +287,9 @@ func totals() -> Dictionary:
 		"tile_spread": false, "plain_tile_mult": 0.0,
 		"surround_mult": 0.0,
 		"equip_share": false, "equip_stack_mult": 1.0,
+		# Gộp theo KHOÁ CON: hai di vật cùng dùng `few_pieces` thì cộng dồn giá
+		# trị chứ không đè nhau. Bội cuối = 1 + tổng.
+		"cond_mult": {}, "per_mult": {},
 	}
 	for id in _owned:
 		var effect: Dictionary = relic_data(id).get("effect", {})
@@ -301,6 +310,15 @@ func totals() -> Dictionary:
 					out[key] = float(out[key]) + float(value)   # CỘNG DỒN, không lấy max
 				"knight_reach", "pierce_count":
 					out[key] = int(out[key]) + int(value)   # CỘNG DỒN — xếp chồng được
+				"cond_mult", "per_mult":
+					# Gộp theo KHOÁ CON. Hai di vật cùng dùng `few_pieces` phải
+					# cộng dồn, không đè nhau — nếu không thì mua món thứ hai
+					# lại thấy sức mạnh đứng yên.
+					if value is Dictionary:
+						var acc: Dictionary = out[key]
+						for sub in (value as Dictionary):
+							acc[sub] = float(acc.get(sub, 0.0)) + float((value as Dictionary)[sub])
+						out[key] = acc
 				_:
 					out[key] = maxf(float(out[key]), float(value))
 	return out
@@ -335,6 +353,9 @@ func _apply_all() -> void:
 		gm.set("relic_equip_share", bool(t["equip_share"]))
 		gm.set("relic_equip_stack_mult", float(t["equip_stack_mult"]))
 		gm.set("relic_pawn_tithe", float(t["pawn_tithe"]))
+		# Engine tổng quát — BoardScore đọc hai dict này trong mult_breakdown.
+		gm.set("relic_cond_mult", t["cond_mult"])
+		gm.set("relic_per_mult", t["per_mult"])
 		# Nước đi đổi ⇒ tầm phủ của MỌI quân đổi theo. Không bảo dựng lại thì di
 		# vật chỉ có tác dụng với quân đặt SAU khi mua.
 		if is_inside_tree():

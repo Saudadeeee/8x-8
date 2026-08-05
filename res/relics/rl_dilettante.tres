@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_dilettante"
+name = "Dilettante"
+rarity = "epic"
+desc = "A wide court, thinly spread - unless you go wide enough. +95% damage with 5+ different movement types, -50% damage while every piece moves the same way."
+cost = 290
+effect = {
+"cond_mult": {
+"five_kinds": 0.95,
+"single_kind": -0.5
+}
+}

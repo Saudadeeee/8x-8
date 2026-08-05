@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_vein_tithe"
+name = "Vein Tithe"
+rarity = "rare"
+desc = "The land pays tribute for every vein you hold. +5.0% damage per elemental vein."
+cost = 160
+effect = {
+"per_mult": {
+"veins": 0.05
+}
+}

@@ -192,6 +192,41 @@ func mult_breakdown(cell: Vector2i) -> Array[Dictionary]:
 			if pawns > 0:
 				out.append({"name": "Sacrificial Pawn", "mult": 1.0 + tithe * float(pawns), "combat": true})
 
+	# 1c. ENGINE DI VẬT TỔNG QUÁT — điều kiện + bộ đếm (relic_conditions.gd).
+	# Đây là chỗ ~70 di vật "kiểu Joker" đi qua. Một bộ máy, nội dung ở dữ liệu:
+	# không đẻ thêm khoá hiệu ứng thì không đẻ thêm chỗ chết âm thầm.
+	if gm0 != null:
+		var facts := RelicConditions.facts(map)
+		var cm = gm0.get("relic_cond_mult")
+		if cm is Dictionary:
+			var bonus := 0.0
+			var names: Array[String] = []
+			for cid in (cm as Dictionary):
+				if RelicConditions.test(str(cid), facts):
+					var v := float((cm as Dictionary)[cid])
+					bonus += v
+					# Nhãn phải là CHỮ ĐỌC ĐƯỢC kèm dấu: người chơi cần thấy món
+					# nào đang TRỪ đi, không chỉ thấy tổng. Đó là chỗ Balatro
+					# sống: hiện từng dòng góp bao nhiêu.
+					names.append("%s %+d%%" % [
+						str(RelicConditions.COND_LABELS.get(cid, cid)), roundi(v * 100.0)])
+			if absf(bonus) > 0.0001:
+				out.append({"name": "Relics: " + " · ".join(names),
+					"mult": maxf(0.05, 1.0 + bonus), "combat": true})
+		var pm = gm0.get("relic_per_mult")
+		if pm is Dictionary:
+			var pbonus := 0.0
+			var pnames: Array[String] = []
+			for kid in (pm as Dictionary):
+				var n := RelicConditions.count(str(kid), facts)
+				if n > 0.0:
+					pbonus += n * float((pm as Dictionary)[kid])
+					pnames.append("%d× %s" % [int(n),
+						str(RelicConditions.COUNT_LABELS.get(kid, kid))])
+			if absf(pbonus) > 0.0001:
+				out.append({"name": "Relics: " + " · ".join(pnames),
+					"mult": maxf(0.05, 1.0 + pbonus), "combat": true})
+
 	# 2. Cấp ô nguyên tố dưới chân
 	var tm = map.get("territory_manager")
 	var has_element := false

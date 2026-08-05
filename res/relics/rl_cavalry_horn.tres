@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_cavalry_horn"
+name = "Cavalry Horn"
+rarity = "rare"
+desc = "Knights answer each other across the board. +11.0% damage per Knight."
+cost = 210
+effect = {
+"per_mult": {
+"knights": 0.11
+}
+}

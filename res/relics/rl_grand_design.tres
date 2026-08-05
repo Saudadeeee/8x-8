@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_grand_design"
+name = "Grand Design"
+rarity = "legendary"
+desc = "A full board is only worth it if it is ARRANGED. +45% when your army is at its cap, +8.0% per active formation."
+cost = 510
+effect = {
+"cond_mult": {
+"full_board": 0.45
+},
+"per_mult": {
+"formations": 0.08
+}
+}

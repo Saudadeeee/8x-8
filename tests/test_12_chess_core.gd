@@ -155,14 +155,36 @@ func _run() -> void:
 	# Dat lai vai quan: phan Nen x Boi ngay duoi do sat thuong cua doi hinh,
 	# ban trong thi no bang 0 va assert do that bai vi ly do khong lien quan.
 	for _i in 4:
+		# Phai chon o CO PHU o duong: `damage` cua bang Nen x Boi chi dem quan
+		# ban trung duong di. O trong dau tien quet tu (0,0) thuong khong phu o
+		# duong nao => sat thuong 0 va assert duoi that bai vi ly do khong lien
+		# quan (da dinh mot lan, test chap chon theo the duong ngau nhien).
 		var c2 := Vector2i(-1, -1)
 		for y in range(gc.grid_height):
 			for x in range(gc.grid_width):
 				var cc := Vector2i(x, y)
-				if not gc.is_path_cell(cc) and not (gc.grid_data.get(cc) is Node):
+				if gc.is_path_cell(cc) or gc.grid_data.get(cc) is Node:
+					continue
+				var covers := 0
+				for pc in ChessPattern.cells(int(pawn.attack_pattern), cc,
+						int(pawn.attack_range), {}):
+					if gc.is_path_cell(pc):
+						covers += 1
+				if covers > 0:
 					c2 = cc
 					break
 			if c2.x >= 0: break
+		# Du phong: khong tim duoc o phu duong thi lay o trong bat ky — ban PHAI
+		# co quan, vi `toll_king` (Boi = 1 - so_quan x 3%) doc ra "vo hieu" khi
+		# ban trong va lam test luat Rival King do vi ly do khong lien quan.
+		if c2.x < 0:
+			for y2 in range(gc.grid_height):
+				for x2 in range(gc.grid_width):
+					var cc2 := Vector2i(x2, y2)
+					if not gc.is_path_cell(cc2) and not (gc.grid_data.get(cc2) is Node):
+						c2 = cc2
+						break
+				if c2.x >= 0: break
 		if c2.x < 0: break
 		map.shop_manager.register_troop_purchase(pawn)
 		map.tower_placer.start_build(pawn)

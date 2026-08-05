@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_iron_wall"
+name = "Iron Wall"
+rarity = "epic"
+desc = "An untouched King behind a wall of Pawns. +30% while your King is at full HP, +6.0% per Pawn."
+cost = 310
+effect = {
+"cond_mult": {
+"full_hp": 0.3
+},
+"per_mult": {
+"pawns": 0.06
+}
+}

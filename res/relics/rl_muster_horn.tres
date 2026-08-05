@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_muster_horn"
+name = "Muster Horn"
+rarity = "rare"
+desc = "Every piece on the board lends a little strength to the rest. +3.5% damage per piece on the board."
+cost = 140
+effect = {
+"per_mult": {
+"pieces": 0.035
+}
+}

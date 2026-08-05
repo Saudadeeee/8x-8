@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_martyr"
+name = "Martyr's Banner"
+rarity = "legendary"
+desc = "Your army only truly wakes when the King is bleeding. +130% damage while your King is below half HP, -30% damage while your King is at full HP."
+cost = 470
+effect = {
+"cond_mult": {
+"king_hurt": 1.3,
+"full_hp": -0.3
+}
+}

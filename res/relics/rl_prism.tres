@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_prism"
+name = "Prism"
+rarity = "epic"
+desc = "Each distinct element refracts into the others. +13.0% damage per different element on the board."
+cost = 350
+effect = {
+"per_mult": {
+"elements": 0.13
+}
+}

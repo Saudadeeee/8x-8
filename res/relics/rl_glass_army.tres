@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_glass_army"
+name = "Glass Army"
+rarity = "legendary"
+desc = "Keep the army small and it is devastating. Let it swell and it shatters. +120% damage with 8 or fewer pieces, -35% damage with 15 or more pieces."
+cost = 450
+effect = {
+"cond_mult": {
+"few_pieces": 1.2,
+"many_pieces": -0.35
+}
+}

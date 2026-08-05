@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_momentum"
+name = "Momentum"
+rarity = "epic"
+desc = "Every wave survived is one more the army has learned from. +5.0% damage per wave survived."
+cost = 240
+effect = {
+"per_mult": {
+"wave": 0.05
+}
+}

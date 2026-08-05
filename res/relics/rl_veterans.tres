@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_veterans"
+name = "Veterans"
+rarity = "epic"
+desc = "An army with no raw recruits. +55% damage while every piece is *2 or better."
+cost = 300
+effect = {
+"cond_mult": {
+"all_star2": 0.55
+}
+}

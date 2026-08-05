@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RelicData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/RelicData.gd" id="1_gen"]
+
+[resource]
+script = ExtResource("1_gen")
+id = "rl_gambler"
+name = "Gambler's Coin"
+rarity = "epic"
+desc = "Heads you dominate, tails you hold on. +85% damage on odd-numbered waves, -30% damage on even-numbered waves."
+cost = 280
+effect = {
+"cond_mult": {
+"odd_wave": 0.85,
+"even_wave": -0.3
+}
+}
