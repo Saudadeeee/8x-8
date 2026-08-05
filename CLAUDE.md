@@ -1218,6 +1218,25 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
   Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
 
+*100 icon di vật vẽ qua ASEPRITE MCP (2026-08-05):*
+- Bỏ hẳn `tools/make_relic_icons.py` (sinh PNG bằng Python). Đường chính thức:
+  `python tools/relic_icon_spec.py` (đọc `.tres`, suy ra hình+màu, KHÔNG vẽ
+  pixel) → Aseprite MCP `dofile("tools/relic_icons.lua")` → `--import`.
+- **PNG sinh NGOÀI editor thì Godot CHƯA import.** Bỏ bước `--import` thì HUD
+  im lặng rơi về nhãn chữ viết tắt ("FORT · CH · GA") và nhìn y hệt icon hỏng.
+  Đã dính: 12/100 file `.import` tồn tại, phải chạy `--import` mới đủ 100.
+- **`dofile` chạy NGAY lúc gọi** — nạp bảng spec ở đầu file thì mọi tên hàm
+  trong bảng đều là `nil`. Nạp SAU khi đã định nghĩa hình.
+- **Luôn dựng bảng liên hoàn phóng to rồi chấm bằng mắt.** Ở 32px không thấy
+  lỗi; ở ×6 thấy ngay. Bắt được hai lỗi bằng đúng cách này:
+  (1) chồng đĩa dính liền thành **ổ bánh mì** — phải có viền tối ở đáy mỗi đĩa
+	  và chừa một hàng trống;
+  (2) đĩa cân vẽ bằng cung tròn nửa dưới thì **loe ra thành cánh**, cả hình đọc
+	  thành cây thánh giá — phải vẽ bằng hình thang HẸP DẦN xuống dưới.
+- Hình nền nói ngay CƠ CHẾ: khiên = điều kiện · chồng đĩa = bộ đếm · cân công =
+  đánh đổi · đá quý = lai · chìa khoá = đổi luật. Màu lõi theo chủ đề, viền theo
+  bậc hiếm.
+
 *Di vật có MẶT TRÁI — và giới hạn của công cụ đo (2026-08-05, đợt 2):*
 - **Không phạt thì mua bừa vẫn là nước đi an toàn.** Sàn bộ đếm chỉ khiến món
   chưa cam kết "không cho gì"; nó vẫn không TỆ. Đo được: bot mua bừa thắng 50%.

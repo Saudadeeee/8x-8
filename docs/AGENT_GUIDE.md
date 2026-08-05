@@ -299,7 +299,7 @@ Thứ tự nạp (`ContentLoader.load_dir`): **bảng cứng → `.tres` → JSO
 `id` thì bản sau thắng. Bản export mang đuôi `.remap` — phải `trim_suffix()`
 trước khi `load()`.
 
-### 6.5 Icon
+### 6.5 Icon và art
 
 | Loại | Đường dẫn | Cỡ |
 |---|---|---|
@@ -309,14 +309,59 @@ trước khi `load()`.
 | Quân | `assets/towers/<id>.png` | 32×32 |
 
 Tên file **trùng đúng `id`** — code ghép chuỗi, không có bảng ánh xạ.
-Thiếu icon → tự rơi về nhãn chữ, **không vỡ UI**.
+Thiếu icon → tự rơi về nhãn chữ viết tắt, **không vỡ UI**.
 
-> **Vẽ art phải qua gamedev toolkit MCP** (Aseprite MCP cho 2D, Blockbench MCP
-> cho 3D). Không tự viết script sinh PNG.
-> Số lượng lớn thì dùng `mcp__aseprite__run_lua_script` — vẫn là đường MCP.
-> **BẪY**: server không nhận ký tự ngoài ASCII trong script Lua.
+> **LUẬT: art PHẢI đi qua gamedev toolkit MCP.**
+> `mcp__aseprite__*` cho pixel 2D · `mcp__blockbench__*` cho model 3D ·
+> `mcp__rfxgen__*` cho SFX. **Không** tự viết script Python sinh PNG.
 
----
+**Quy trình bộ icon di vật** (mẫu cho mọi bộ icon hàng loạt):
+
+```bash
+python tools/relic_icon_spec.py     # 1. đọc .tres → sinh tools/relic_icon_spec.lua
+                                    #    (chỉ suy ra hình/màu, KHÔNG vẽ pixel)
+```
+```lua
+-- 2. qua Aseprite MCP run_lua_script:
+dofile("D:/Code/SourceCode/GameDev/8x-8/tools/relic_icons.lua")
+```
+```bash
+godot --headless --import           # 3. BẮT BUỘC
+```
+
+**Ba bẫy của đường này — cả ba đều đã dính:**
+
+1. **PNG sinh NGOÀI editor thì Godot chưa import.** Bỏ bước 3 thì HUD im lặng
+   rơi về nhãn chữ và nhìn y hệt "icon bị hỏng". Kiểm bằng
+   `ls assets/ui/relics/*.import | wc -l`.
+2. **Server MCP từ chối ký tự ngoài ASCII trong Lua.** Chú thích phải viết
+   không dấu.
+3. **`dofile` chạy NGAY lúc gọi.** Nạp bảng spec ở đầu file thì mọi tên hàm
+   trong đó đều là `nil` — nạp SAU khi đã định nghĩa hình.
+
+**Vẽ ở 32px — quy ước và giới hạn:**
+- outline `#14100c` **kín**, tính theo VIÊN mặt nạ (halo 3×3 từng pixel sẽ lấp
+  khe hở bên trong hình)
+- nguồn sáng cố định **trên-trái**, bóng dưới-phải, 4–6 màu
+- chi tiết mảnh **không đọc được**: dây đeo mảnh thành đốm rối, đĩa cân vẽ bằng
+  cung tròn thì loe ra thành **cánh**
+- hình **loe ra** phải dùng hai cạnh độc lập, không dùng `taper` (nó hẹp dần
+  xuống dưới)
+- **luôn dựng bảng liên hoàn phóng to** rồi chấm bằng mắt. Ở 32px không nhìn
+  thấy lỗi; ở ×6 thì thấy ngay. Đã bắt được "chồng đĩa thành ổ bánh mì" và
+  "cân công thành thánh giá có cánh" đúng bằng cách này.
+
+Nhóm hình của bộ di vật nói ngay **cơ chế**, đọc được trước khi đọc chữ:
+
+| Hình | Nhóm |
+|---|---|
+| khiên | điều kiện (`cond_mult`) |
+| chồng đĩa | bộ đếm (`per_mult`) |
+| cân công | đánh đổi (có mặt trái) |
+| đá quý | lai (điều kiện + bộ đếm) |
+| chìa khoá | đổi luật (không dùng engine) |
+
+Màu lõi theo chủ đề · viền theo bậc hiếm.
 
 ## §7. Đo và cân bằng
 
@@ -449,7 +494,7 @@ Quy ước: `feat|fix|refactor|docs|test|chore|perf|ci: <mô tả>`
 |---|---|
 | Bot **biết XÂY** để đo giá trị của việc chọn đúng di vật | **chưa có** — chặn mọi kết luận về cân bằng di vật |
 | Model 3D cho 5 quân biến thể cờ | dùng sprite 2D thay thế |
-| 100 icon di vật vẽ bằng script Python | **cần vẽ lại qua Aseprite MCP** |
+| ~~100 icon di vật vẽ bằng script Python~~ | ✅ đã vẽ lại qua Aseprite MCP (2026-08-05) |
 | Cân bằng 6 Bộ Khai Cuộc | mới đo "chạy đúng", chưa đo bộ nào quá mạnh |
 | Người thật chơi thử | **chưa có ai** — bot đo được cân bằng, không nói được chỗ nào chán |
 | Export desktop | mới build Web; desktop cần template ~800 MB |
