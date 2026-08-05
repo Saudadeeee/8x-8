@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_deep_roots"
 name = "Deep Roots"
 rarity = "epic"
-desc = "Levelled veins run deeper than wide ones. +4.5% damage per vein level."
-cost = 230
+desc = "Levelled veins run deeper than wide ones. +11.0% damage per vein level beyond the first 3."
+cost = 320
 effect = {
 "per_mult": {
-"vein_levels": 0.045
+"vein_levels": 0.11
 }
 }

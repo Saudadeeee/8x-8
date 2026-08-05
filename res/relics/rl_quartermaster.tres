@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_quartermaster"
 name = "Quartermaster"
 rarity = "rare"
-desc = "Paid troops fight better, and there are a lot of them. +25% while holding 300+ gold, +2.5% per piece on the board."
+desc = "Paid troops fight better, and there are a lot of them. +25% while holding 400+ gold, +2.5% per piece on the board."
 cost = 170
 effect = {
 "cond_mult": {

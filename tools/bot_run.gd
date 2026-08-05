@@ -22,6 +22,24 @@ var deck_id := ""
 var king_id := "king_iron"
 var seed_val := 0
 var quiet := false
+## Chien luoc mua DI VAT — day la thu can do:
+##   off = khong mua di vat nao (nen tham chieu)
+##   any = mua bat ky mon nao du tien (nguoi choi khong doc mo ta)
+##   fit = CHI mua mon dang khop voi ban co (nguoi choi choi co chu dich)
+## Neu `any` va `fit` thang bang nhau thi lua chon di vat dang VO NGHIA.
+var relic_mode := "any"
+## Bot CAM KET mot loi choi. Day moi la phep do dung: bot "fit" chi loc luc mua
+## nhung van xay ban y het bot "any", nen tat nhien no thang bang nhau. Nguoi
+## choi that chon di vat RỒI XAY BAN THEO NO.
+##   lean    = giu ban MONG (<=6 quan), mua di vat an theo `few_pieces`
+##   swarm   = nhoi toi da quan, an theo `many_pieces` / `pieces`
+##   element = dồn het vao o nguyen to, an theo `veins`/`elements`/`vein_levels`
+var build := ""
+const BUILD_KEYS := {
+	"lean":    ["few_pieces", "empty_squares", "deck_thin", "honed"],
+	"swarm":   ["many_pieces", "pieces", "full_board", "pawns"],
+	"element": ["many_veins", "veins", "vein_levels", "elements"],
+}
 ## [so lan lot, tong sat thuong, so lan boss thoat] — Array vi lambda GDScript
 ## bat bien local theo GIA TRI, bien thuong se khong bao gio doi.
 var _leaks: Array[int] = [0, 0, 0]
@@ -42,6 +60,8 @@ func _parse_args() -> void:
 			"king": king_id = kv[1]
 			"seed": seed_val = int(kv[1])
 			"quiet": quiet = kv[1] == "1"
+			"relics": relic_mode = kv[1]
+			"build": build = kv[1]
 
 
 func say(s: String) -> void:
@@ -116,6 +136,59 @@ func _run() -> void:
 	quit(0)
 
 
+## Di vat nay co KHOP voi ban co hien tai khong.
+##
+## Cham diem bang chinh cac dieu kien cua no: cong khi dieu kien dang DUNG, tru
+## khi mat trai dang bat. Day la thu nguoi choi lam khi doc mo ta — bot "fit"
+## mo phong nguoi choi co chu dich, bot "any" mo phong nguoi bam bua.
+func _relic_fits(item) -> bool:
+	var rs = map.get("relic_system")
+	if rs == null or item.get("catalog_id") == null:
+		return true
+	var data: Dictionary = rs.relic_data(str(item.catalog_id))
+	var eff: Dictionary = data.get("effect", {})
+	if eff.is_empty():
+		return true
+	RelicConditions.invalidate()
+	var facts := RelicConditions.facts(map)
+	var score := 0.0
+	var has_gate := false
+	var cm = eff.get("cond_mult", {})
+	if cm is Dictionary:
+		for cid in (cm as Dictionary):
+			has_gate = true
+			if RelicConditions.test(str(cid), facts):
+				score += float((cm as Dictionary)[cid])
+	var pm = eff.get("per_mult", {})
+	if pm is Dictionary:
+		for kid in (pm as Dictionary):
+			has_gate = true
+			score += RelicConditions.count(str(kid), facts) * float((pm as Dictionary)[kid])
+	if not has_gate:
+		return true       # mon khong dung engine (thuoc, phan ung...) — cu mua
+	if build != "":
+		# Cham theo LOI CHOI da chon, khong theo ban co luc nay: di vat mua o
+		# wave 5 phai duoc danh gia bang bo cuc ma minh SE xay, khong phai bo cuc
+		# dang co. Do dung la thu nguoi choi lam khi doc mo ta.
+		var want: Array = BUILD_KEYS.get(build, [])
+		var hit := 0.0
+		for cid in (cm as Dictionary) if cm is Dictionary else {}:
+			if want.has(str(cid)) and float((cm as Dictionary)[cid]) > 0.0:
+				hit += float((cm as Dictionary)[cid])
+		for kid in (pm as Dictionary) if pm is Dictionary else {}:
+			if want.has(str(kid)):
+				hit += float((pm as Dictionary)[kid]) * 8.0
+		# De o di vat TRONG con te hon la lap mot mon khong khop: nguoi choi that
+		# se lap day roi ban di sau. Khong co dong nay thi bot "fit" thua bot
+		# "any" chi vi no mua it mon hon — do la loi cua CONG CU DO, khong phai
+		# ket luan ve can bang.
+		var rs_n: int = (rs.get("_owned") as Array).size() if rs.get("_owned") is Array else 0
+		if hit >= 0.30:
+			return true
+		return rs_n < 2 and score >= 0.20
+	return score >= 0.25  # duoi nguong nay thi no gan nhu khong lam gi
+
+
 ## Mua het nhung gi mua duoc, dat het quan trong kho.
 func _shop_turn() -> void:
 	# Mua: uu tien quan co, roi den o nguyen to, roi vat pham.
@@ -158,6 +231,10 @@ func _place_all() -> void:
 			return
 		var st: TowerStats = map.shop_manager.get_tower_stats_by_id(pick)
 		if st == null:
+			return
+		# Build "lean" CO CHU DICH giu ban mong — do la cai gia phai tra de an
+		# duoc nhung di vat keyed vao `few_pieces`.
+		if build == "lean" and map.unit_count() >= 6:
 			return
 		var cell := _best_cell(st)
 		if cell.x < 0:
@@ -250,7 +327,28 @@ func _snapshot(w: int) -> String:
 		rd = map.king_manager.royal_decree
 	# Wave boss: in RIENG ti le sat thuong len boss. Do la dieu kien thang thuc
 	# su cua wave do — boss cham King la THUA NGAY, khong phai mat vai mau.
-	var bstr := ""
+	# Do GIA TRI THAT cua di vat: so mon dang so huu + phan Boi chung dong gop.
+	var rl_n := 0
+	var rl_mult := 1.0
+	var rs_p = map.get("relic_system")
+	if rs_p != null and rs_p.get("_owned") is Array:
+		rl_n = (rs_p.get("_owned") as Array).size()
+	var gm_p = root.get_node_or_null("/root/GameManagerSingleton")
+	if gm_p != null:
+		RelicConditions.invalidate()
+		var fx := RelicConditions.facts(map)
+		var b := 0.0
+		var cmv = gm_p.get("relic_cond_mult")
+		if cmv is Dictionary:
+			for cid in (cmv as Dictionary):
+				if RelicConditions.test(str(cid), fx):
+					b += float((cmv as Dictionary)[cid])
+		var pmv = gm_p.get("relic_per_mult")
+		if pmv is Dictionary:
+			for kid in (pmv as Dictionary):
+				b += RelicConditions.count(str(kid), fx) * float((pmv as Dictionary)[kid])
+		rl_mult = 1.0 + b
+	var bstr := ",divat=%d/x%.2f" % [rl_n, rl_mult]
 	var bs2 = map.board_score
 	if bs2 != null:
 		# Do sat thuong don-muc-tieu o MOI wave (dung wave boss gan nhat lam mau)
@@ -261,7 +359,7 @@ func _snapshot(w: int) -> String:
 				probe = int(bw)
 		var bdmg: float = bs2.damage_to_boss(probe)
 		var bhp: float = bs2._boss_hp_only(w) if map.wave_spawner.is_boss_wave(w) else 0.0
-		bstr = ",dmg1t=%.0f" % bdmg
+		bstr += ",dmg1t=%.0f" % bdmg
 		if bhp > 1.0:
 			bstr += ",BOSS %.0f/%.0f=%.2f" % [bs2.damage_to_boss(w), bhp, bs2.damage_to_boss(w) / bhp]
 	return "%d,%d,%d,%d,%.2f,%.1f%s" % [

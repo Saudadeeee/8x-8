@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_banner_line"
 name = "Banner Line"
 rarity = "epic"
-desc = "Each active formation raises another banner. +10.0% damage per active formation."
-cost = 310
+desc = "Each active formation raises another banner. +24.0% damage per active formation beyond the first 1."
+cost = 500
 effect = {
 "per_mult": {
-"formations": 0.1
+"formations": 0.24
 }
 }

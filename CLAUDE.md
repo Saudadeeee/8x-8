@@ -1212,6 +1212,38 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
   Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
 
+*Cân bằng di vật: CHỌN ĐÚNG mới thắng (2026-08-05):*
+- **Bộ đếm PHẢI có SÀN** (`RelicConditions.COUNT_FLOOR`) — chỉ phần VƯỢT sàn mới
+  tính. Không có sàn thì di vật bộ đếm là gậy chỉ số VÔ ĐIỀU KIỆN: `pieces`,
+  `stars`, `relics`, `wave` luôn > 0 nên mua món nào cũng có lãi.
+  Đo được trước khi sửa: bot mua **BỪA** đạt Bội ×3.23 còn bot **CHỌN LỌC** chỉ
+  ×2.42 — chọn lọc bị PHẠT vì nó mua ít món hơn. Ngược hẳn ý định thiết kế.
+- **Điều kiện gần như luôn đúng = quà miễn phí**, không phải lựa chọn:
+  `odd_wave`/`even_wave` đúng 50% mọi ván, `full_hp`/`late_wave`/`has_star3`
+  thường đúng. Chúng đã bị hạ xuống mức "có còn hơn không" (0.10-0.20) và chỉ
+  còn đáng giá khi làm MẶT TRÁI trong các món đánh đổi.
+- **Ngưỡng phải VỚI TỚI ĐƯỢC.** `few_pieces ≤ 6` đo được bot **0/24 ván** — cắt
+  còn 6 quân mất ~2/3 sát thương, +80% không bù nổi. Đó là tự sát, không phải
+  lối chơi. Nới về ≤9. Tương tự `many_veins` 8 → 5.
+- **Trục cam kết nào chống lại vòng lặp lõi thì rất đắt.** Trên bàn 8×8, nhiều
+  quân = nhiều tầm phủ, nên "chơi ít quân" phải trả bằng hệ số khổng lồ mới hoà.
+  Trục rẻ hơn: ô nguyên tố (tốn Sắc Lệnh, không tốn ô bàn) · thế cờ (tốn cách
+  xếp) · dồn một loại quân. Đo: lean 0% · swarm 38% · element 53%.
+- **Số đo cuối** (bot n=5, 30 ván mỗi chế độ):
+  | chế độ | thắng | Bội từ di vật |
+  |---|---|---|
+  | mua bừa | 33% | ×2.5 |
+  | bỏ qua di vật | 43% | — |
+  | cam kết + khớp (nguyên tố) | **53%** | **×3.5** |
+- **BẪY CỦA CÔNG CỤ ĐO**: bot `fit` bản đầu THUA bot `any` chỉ vì nó từ chối
+  phần lớn hàng rồi để ô di vật TRỐNG. Đó là lỗi của công cụ, không phải kết
+  luận về cân bằng. Bot phải lấp đầy ô rồi bán sau, như người chơi thật.
+- **Tỉ lệ thắng có nhiễu ±10 điểm ở n=30.** Đừng chốt hằng số dựa trên chênh
+  lệch dưới 15 điểm — đo **Bội** thay vì tỉ lệ thắng khi cần độ chính xác;
+  nó đo thẳng cơ chế và nhiễu thấp hơn nhiều.
+- `tools/bot_bench.py 5 relics=off|any|fit build=lean|swarm|element` —
+  ba chế độ mua di vật × ba lối chơi.
+
 *100 DI VẬT bằng MỘT bộ máy (2026-08-05) — ĐỌC TRƯỚC KHI THÊM DI VẬT:*
 - 31 → **100 di vật**. Nhưng KHÔNG phải 100 khoá hiệu ứng: 69 món mới đi qua
   đúng **hai** khoá tổng quát, nội dung nằm ở DỮ LIỆU.

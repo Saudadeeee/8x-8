@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_cloister"
 name = "Cloister"
 rarity = "rare"
-desc = "Bishops pray in chorus. +11.0% damage per Bishop."
-cost = 210
+desc = "Bishops pray in chorus. +25.0% damage per Bishop beyond the first 1."
+cost = 340
 effect = {
 "per_mult": {
-"bishops": 0.11
+"bishops": 0.25
 }
 }

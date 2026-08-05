@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_war_chest"
 name = "War Chest"
 rarity = "rare"
-desc = "Gold in the vault is confidence in the ranks. +40% damage while holding 300+ gold."
-cost = 170
+desc = "Gold in the vault is confidence in the ranks. +80% damage while holding 400+ gold."
+cost = 230
 effect = {
 "cond_mult": {
-"rich": 0.4
+"rich": 0.8
 }
 }

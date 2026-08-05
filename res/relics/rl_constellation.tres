@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_constellation"
 name = "Constellation"
 rarity = "epic"
-desc = "Every star above the first burns for the whole board. +9.0% damage per star above *1."
-cost = 300
+desc = "Every star above the first burns for the whole board. +20.0% damage per star above *1 beyond the first 2."
+cost = 450
 effect = {
 "per_mult": {
-"stars": 0.09
+"stars": 0.2
 }
 }

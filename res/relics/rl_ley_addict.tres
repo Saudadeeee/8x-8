@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_ley_addict"
 name = "Ley Addiction"
 rarity = "epic"
-desc = "The network sustains you. Without it you are hollow. +90% damage with 6 or more veins, -45% damage while you own no elemental veins."
+desc = "The network sustains you. Without it you are hollow. +90% damage with 8 or more veins, -45% damage while you own no elemental veins."
 cost = 290
 effect = {
 "cond_mult": {

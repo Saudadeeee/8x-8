@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_drillmaster"
 name = "Drillmaster"
 rarity = "rare"
-desc = "Any formation at all sharpens the whole army. +35% damage while any formation is active."
-cost = 160
+desc = "Any formation at all sharpens the whole army. +70% damage while 2+ formations are active."
+cost = 220
 effect = {
 "cond_mult": {
-"has_formation": 0.35
+"has_formation": 0.7
 }
 }

@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_hoard"
 name = "Reliquary"
 rarity = "epic"
-desc = "Relics resonate with one another in the vault. +12.0% damage per relic you own."
-cost = 340
+desc = "Relics resonate with one another in the vault. +6.0% damage per relic you own beyond the first 2."
+cost = 260
 effect = {
 "per_mult": {
-"relics": 0.12
+"relics": 0.06
 }
 }

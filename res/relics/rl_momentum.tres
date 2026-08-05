@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_momentum"
 name = "Momentum"
 rarity = "epic"
-desc = "Every wave survived is one more the army has learned from. +5.0% damage per wave survived."
-cost = 240
+desc = "Every wave survived is one more the army has learned from. +1.0% damage per wave survived beyond the first 7."
+cost = 190
 effect = {
 "per_mult": {
-"wave": 0.05
+"wave": 0.01
 }
 }

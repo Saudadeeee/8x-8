@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_unbroken"
 name = "Unbroken Line"
 rarity = "epic"
-desc = "An untouched King is a rallying banner. +45% damage while your King is at full HP."
-cost = 280
+desc = "An untouched King is a rallying banner. +12% damage while your King is at full HP."
+cost = 200
 effect = {
 "cond_mult": {
-"full_hp": 0.45
+"full_hp": 0.12
 }
 }

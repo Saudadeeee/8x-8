@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_regicide"
 name = "Regicide"
 rarity = "epic"
-desc = "Your army saves its best work for kings. +75% damage on Rival King waves."
-cost = 340
+desc = "Your army saves its best work for kings. +110% damage on Rival King waves."
+cost = 430
 effect = {
 "cond_mult": {
-"boss_wave": 0.75
+"boss_wave": 1.1
 }
 }

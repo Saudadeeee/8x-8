@@ -201,7 +201,30 @@ func _run() -> void:
 	while rs2._owned.size() > 0:
 		rs2.sell_relic(0)
 
-	# (5) MAT TRAI phai that: di vat danh doi co gia tri AM cho dieu kien xau.
+	# (5) BO DEM PHAI CO SAN. Khong co san thi di vat bo dem la gay chi so VO
+	# DIEU KIEN: `pieces`/`stars`/`relics`/`wave` luon > 0 nen mua mon nao cung
+	# co lai, va "chon dung di vat" thanh vo nghia. Do duoc truoc khi sua: bot
+	# mua BUA dat Boi x3.23 con bot CHON LOC chi x2.42 — nguoc han y dinh.
+	var no_floor := ""
+	for cnt2 in RelicConditions.COUNT_LABELS:
+		if int(RelicConditions.COUNT_FLOOR.get(str(cnt2), 0)) <= 0 and str(cnt2) != "queens":
+			no_floor += str(cnt2) + " "
+	ok(no_floor == "", "moi bo dem deu co SAN (tru queens — von rat hiem)", no_floor)
+	# Duoi san phai tra 0, tren san chi tinh PHAN VUOT.
+	var fl_k: int = int(RelicConditions.COUNT_FLOOR.get("knights", 0))
+	ok(is_zero_approx(RelicConditions.count("knights", {"knights": fl_k})),
+		"dung bang san -> bo dem tra 0 (chua du cam ket)")
+	ok(is_equal_approx(RelicConditions.count("knights", {"knights": fl_k + 3}), 3.0),
+		"tren san -> chi tinh phan VUOT", "%.1f" % RelicConditions.count("knights", {"knights": fl_k + 3}))
+	# Nhan phai NOI RA san, neu khong mo ta noi doi ve con so that.
+	var lie := ""
+	for cnt3 in RelicConditions.COUNT_LABELS:
+		var fl: int = int(RelicConditions.COUNT_FLOOR.get(str(cnt3), 0))
+		if fl > 0 and not str(RelicConditions.COUNT_LABELS[cnt3]).contains("beyond"):
+			lie += str(cnt3) + " "
+	ok(lie == "", "nhan cua bo dem co san deu noi ro 'beyond the first N'", lie)
+
+	# (6) MAT TRAI phai that: di vat danh doi co gia tri AM cho dieu kien xau.
 	var has_malus := false
 	for rid in rs2._catalog:
 		var e3: Dictionary = rs2._catalog[rid].get("effect", {})

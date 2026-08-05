@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_war_college"
 name = "War College"
 rarity = "epic"
-desc = "Breadth of doctrine, not depth. +20.0% damage per different formation type."
-cost = 450
+desc = "Breadth of doctrine, not depth. +45.0% damage per different formation type beyond the first 1."
+cost = 790
 effect = {
 "per_mult": {
-"formation_kinds": 0.2
+"formation_kinds": 0.45
 }
 }

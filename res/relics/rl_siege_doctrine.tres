@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_siege_doctrine"
 name = "Siege Doctrine"
 rarity = "epic"
-desc = "Rooks in formation are a doctrine, not a pile of towers. +25% while any formation is active, +7.0% per Rook."
+desc = "Rooks in formation are a doctrine, not a pile of towers. +25% while 2+ formations are active, +7.0% per Rook."
 cost = 310
 effect = {
 "cond_mult": {

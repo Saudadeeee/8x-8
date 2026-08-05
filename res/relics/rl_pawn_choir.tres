@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_pawn_choir"
 name = "Pawn Choir"
 rarity = "rare"
-desc = "Pawns sing loudest in numbers. +7.0% damage per Pawn."
-cost = 180
+desc = "Pawns sing loudest in numbers. +15.0% damage per Pawn beyond the first 2."
+cost = 250
 effect = {
 "per_mult": {
-"pawns": 0.07
+"pawns": 0.15
 }
 }

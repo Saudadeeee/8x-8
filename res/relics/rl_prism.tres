@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_prism"
 name = "Prism"
 rarity = "epic"
-desc = "Each distinct element refracts into the others. +13.0% damage per different element on the board."
-cost = 350
+desc = "Each distinct element refracts into the others. +30.0% damage per different element on the board beyond the first 2."
+cost = 590
 effect = {
 "per_mult": {
-"elements": 0.13
+"elements": 0.3
 }
 }

@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_elementalist"
 name = "Elementalist"
 rarity = "legendary"
-desc = "Command every element, not just a lot of one. +35% with 6 or more veins, +11.0% per different element on the board."
+desc = "Command every element, not just a lot of one. +35% with 8 or more veins, +11.0% per different element on the board."
 cost = 530
 effect = {
 "cond_mult": {

@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_powder_line"
 name = "Powder Line"
 rarity = "epic"
-desc = "One Cannon is a threat. Several are a doctrine. +16.0% damage per Cannon."
-cost = 390
+desc = "One Cannon is a threat. Several are a doctrine. +35.0% damage per Cannon beyond the first 1."
+cost = 660
 effect = {
 "per_mult": {
-"cannons": 0.16
+"cannons": 0.35
 }
 }

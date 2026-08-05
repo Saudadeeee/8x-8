@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_drill_tyrant"
 name = "Drill Tyrant"
 rarity = "legendary"
-desc = "Any formation is sloppy. THREE is discipline. +130% damage with 3+ different formations, -15% damage while any formation is active."
+desc = "Any formation is sloppy. THREE is discipline. +130% damage with 3+ different formations, -15% damage while 2+ formations are active."
 cost = 470
 effect = {
 "cond_mult": {

@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_cathedral"
 name = "Cathedral"
 rarity = "epic"
-desc = "Bishops draw power from consecrated ground. +30% with 6 or more veins, +9.0% per Bishop."
+desc = "Bishops draw power from consecrated ground. +30% with 8 or more veins, +9.0% per Bishop."
 cost = 340
 effect = {
 "cond_mult": {

@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_siege_train"
 name = "Siege Train"
 rarity = "rare"
-desc = "Rooks roll better in company. +9.0% damage per Rook."
-cost = 190
+desc = "Rooks roll better in company. +20.0% damage per Rook beyond the first 2."
+cost = 290
 effect = {
 "per_mult": {
-"rooks": 0.09
+"rooks": 0.2
 }
 }

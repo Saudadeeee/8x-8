@@ -7,10 +7,10 @@ script = ExtResource("1_gen")
 id = "rl_desperation"
 name = "Desperation"
 rarity = "epic"
-desc = "Nothing left to spend, nothing left to lose. +65% damage while holding 30 gold or less."
-cost = 320
+desc = "Nothing left to spend, nothing left to lose. +95% damage while holding 30 gold or less."
+cost = 390
 effect = {
 "cond_mult": {
-"broke": 0.65
+"broke": 0.95
 }
 }

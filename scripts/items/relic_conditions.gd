@@ -25,17 +25,17 @@ extends Object
 
 # ── Bảng tra cho UI (tên đọc được) ──────────────────────────────────────────
 const COND_LABELS := {
-	"few_pieces": "with 8 or fewer pieces",
-	"many_pieces": "with 15 or more pieces",
+	"few_pieces": "with 9 or fewer pieces",
+	"many_pieces": "with 14 or more pieces",
 	"full_board": "when your army is at its cap",
 	"no_veins": "while you own no elemental veins",
-	"many_veins": "with 6 or more veins",
-	"has_formation": "while any formation is active",
+	"many_veins": "with 5 or more veins",
+	"has_formation": "while 2+ formations are active",
 	"three_formations": "with 3+ different formations",
 	"boss_wave": "on Rival King waves",
 	"odd_wave": "on odd-numbered waves",
 	"even_wave": "on even-numbered waves",
-	"rich": "while holding 300+ gold",
+	"rich": "while holding 400+ gold",
 	"broke": "while holding 30 gold or less",
 	"has_star3": "while any piece is ★3",
 	"all_star2": "while every piece is ★2 or better",
@@ -48,19 +48,19 @@ const COND_LABELS := {
 }
 
 const COUNT_LABELS := {
-	"pieces": "piece on the board",
-	"empty_squares": "empty square",
-	"formations": "active formation",
-	"formation_kinds": "different formation type",
-	"veins": "elemental vein",
-	"vein_levels": "vein level",
-	"elements": "different element on the board",
-	"stars": "star above ★1",
-	"pawns": "Pawn", "rooks": "Rook", "knights": "Knight",
-	"bishops": "Bishop", "queens": "Queen", "cannons": "Cannon",
-	"relics": "relic you own",
-	"wave": "wave survived",
-	"path_covered": "path square your army covers",
+	"pieces": "piece on the board beyond the first 10",
+	"empty_squares": "empty square beyond the first 22",
+	"formations": "active formation beyond the first 1",
+	"formation_kinds": "different formation type beyond the first 1",
+	"veins": "elemental vein beyond the first 2",
+	"vein_levels": "vein level beyond the first 3",
+	"elements": "different element on the board beyond the first 2",
+	"stars": "star above ★1 beyond the first 2",
+	"pawns": "Pawn beyond the first 2", "rooks": "Rook beyond the first 2", "knights": "Knight beyond the first 1",
+	"bishops": "Bishop beyond the first 1", "queens": "Queen", "cannons": "Cannon beyond the first 1",
+	"relics": "relic you own beyond the first 2",
+	"wave": "wave survived beyond the first 7",
+	"path_covered": "path square your army covers beyond the first 12",
 }
 
 # ── Ảnh chụp trạng thái bàn ─────────────────────────────────────────────────
@@ -196,22 +196,27 @@ static func _build(map: Node) -> Dictionary:
 ## Điều kiện có thoả không. Tên lạ → false (di vật vô hại, không làm hỏng ván).
 static func test(cond_id: String, f: Dictionary) -> bool:
 	match cond_id:
-		"few_pieces":       return int(f.get("pieces", 0)) <= 8
-		"many_pieces":      return int(f.get("pieces", 0)) >= 15
-		"full_board":       return int(f.get("max_units", 0)) > 0 \
-			and int(f.get("pieces", 0)) >= int(f.get("max_units", 0))
+		# ── NGƯỠNG ĐƯỢC SIẾT (2026-08-05) ────────────────────────────────
+		# Đo được: bot mua BỪA 5 di vật vẫn đạt Bội ×3.11, tức điều kiện dễ
+		# thoả tới mức không cần chọn. Ngưỡng dưới đây đòi một CAM KẾT thật:
+		# ≤6 quân là chơi mỏng có chủ đích, ≥8 ô là dồn hẳn vào nguyên tố.
+		"few_pieces":       return int(f.get("pieces", 0)) <= 9
+		"many_pieces":      return int(f.get("pieces", 0)) >= 14
+		"full_board":       return int(f.get("max_units", 0)) > 0 			and int(f.get("pieces", 0)) >= int(f.get("max_units", 0))
 		"no_veins":         return int(f.get("veins", 0)) == 0
-		"many_veins":       return int(f.get("veins", 0)) >= 6
-		"has_formation":    return int(f.get("formations", 0)) >= 1
+		"many_veins":       return int(f.get("veins", 0)) >= 5
+		# "có thế cờ nào đó" gần như LUÔN đúng ⇒ nó là quà miễn phí, không phải
+		# lựa chọn. Đòi HAI thế đang bật cùng lúc.
+		"has_formation":    return int(f.get("formations", 0)) >= 2
 		"three_formations": return int(f.get("formation_kinds", 0)) >= 3
 		"boss_wave":        return bool(f.get("boss_wave", false))
 		"odd_wave":         return int(f.get("wave", 1)) % 2 == 1
 		"even_wave":        return int(f.get("wave", 1)) % 2 == 0
-		"rich":             return int(f.get("gold", 0)) >= 300
+		"rich":             return int(f.get("gold", 0)) >= 400
 		"broke":            return int(f.get("gold", 0)) <= 30
 		"has_star3":        return int(f.get("max_star", 0)) >= 3
-		"all_star2":        return int(f.get("pieces", 0)) > 0 and int(f.get("min_star", 0)) >= 2
-		"single_kind":      return int(f.get("pieces", 0)) > 0 and int(f.get("kinds", 0)) == 1
+		"all_star2":        return int(f.get("pieces", 0)) >= 4 and int(f.get("min_star", 0)) >= 2
+		"single_kind":      return int(f.get("pieces", 0)) >= 4 and int(f.get("kinds", 0)) == 1
 		"five_kinds":       return int(f.get("kinds", 0)) >= 5
 		"king_hurt":        return float(f.get("hp", 1)) < float(f.get("hp_max", 1)) * 0.5
 		"full_hp":          return int(f.get("hp", 0)) >= int(f.get("hp_max", 1))
@@ -220,13 +225,29 @@ static func test(cond_id: String, f: Dictionary) -> bool:
 	return false
 
 
-## Giá trị bộ đếm. Tên lạ → 0 (di vật không cộng gì).
+## SÀN của mỗi bộ đếm — chỉ phần VƯỢT sàn mới được tính.
+##
+## Không có sàn thì di vật bộ đếm là gậy chỉ số vô điều kiện: `pieces`, `stars`,
+## `relics`, `wave` luôn > 0 nên mua món nào cũng có lãi. Đo được: bot mua BỪA 5
+## di vật đạt Bội ×3.23, còn bot CHỌN LỌC chỉ ×2.42 — chọn lọc bị phạt vì nó
+## mua ít món hơn. Đúng ngược với ý định thiết kế.
+##
+## Có sàn thì mỗi món thành một CAM KẾT: 2 Mã không cho gì, 6 Mã cho gấp bốn.
+const COUNT_FLOOR := {
+	"pieces": 10, "empty_squares": 22, "formations": 1, "formation_kinds": 1,
+	"veins": 2, "vein_levels": 3, "elements": 2, "stars": 2,
+	"pawns": 2, "rooks": 2, "knights": 1, "bishops": 1, "queens": 0,
+	"cannons": 1, "relics": 2, "wave": 7, "path_covered": 12,
+}
+
+## Giá trị bộ đếm, ĐÃ TRỪ SÀN. Tên lạ → 0 (di vật không cộng gì).
 static func count(counter_id: String, f: Dictionary) -> float:
-	if f.has(counter_id):
-		var v = f[counter_id]
-		if v is int or v is float:
-			return float(v)
-	return 0.0
+	if not f.has(counter_id):
+		return 0.0
+	var v = f[counter_id]
+	if not (v is int or v is float):
+		return 0.0
+	return maxf(0.0, float(v) - float(COUNT_FLOOR.get(counter_id, 0)))
 
 
 ## Mô tả người chơi đọc — sinh THẲNG từ hiệu ứng nên mô tả không bao giờ lệch

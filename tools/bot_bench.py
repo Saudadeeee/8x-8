@@ -24,12 +24,16 @@ RE_ROW = re.compile(r"^(\d+),(-?\d+),(-?\d+),(\d+),([\d.]+),")
 RE_BOSS = re.compile(r"^(\d+),.*BOSS ([\d.]+)/([\d.]+)=([\d.]+).*?,(-?\d+),lot=")
 
 
+RELIC_MODE = "any"
+BUILD = ""
+
+
 def one_run(deck: str, i: int) -> dict:
     """Mot van. Tra ve ket qua + duong cong HP."""
     try:
         p = subprocess.run(
             [GODOT, "--headless", "--script", "res://tools/bot_run.gd",
-             "--", "deck=" + deck],
+             "--", "deck=" + deck, "relics=" + RELIC_MODE, "build=" + BUILD],
             cwd=ROOT, capture_output=True, text=True, timeout=900,
             encoding="utf-8", errors="replace")
         out = p.stdout or ""
@@ -54,7 +58,14 @@ def one_run(deck: str, i: int) -> dict:
 
 
 def main() -> int:
+    global RELIC_MODE
     args = sys.argv[1:]
+    # `python tools/bot_bench.py 5 relics=fit` — do gia tri cua viec CHON dung
+    # di vat. Neu `any` va `fit` thang bang nhau thi lua chon dang vo nghia.
+    args = [a for a in args if not (a.startswith("relics=")
+                                    and _set_mode(a.split("=", 1)[1]))]
+    args = [a for a in args if not (a.startswith("build=")
+                                    and _set_build(a.split("=", 1)[1]))]
     n = 3
     if args and args[0].isdigit():
         n = int(args[0])
@@ -64,7 +75,8 @@ def main() -> int:
         for f in glob.glob(os.path.join(ROOT, "res/decks/*.tres")))
 
     jobs = [(d, i) for d in decks for i in range(n)]
-    print("chay %d van (%d bo x %d lan)..." % (len(jobs), len(decks), n))
+    print("chay %d van (%d bo x %d lan) — di vat: %s"
+          % (len(jobs), len(decks), n, RELIC_MODE + ("/" + BUILD if BUILD else "")))
     results = []
     with cf.ThreadPoolExecutor(max_workers=4) as ex:
         futs = {ex.submit(one_run, d, i): (d, i) for d, i in jobs}
@@ -136,6 +148,18 @@ def main() -> int:
         if ok_b and sum(ok_b)/len(ok_b) < 1.0:
             print("=> mo hinh boss BI QUAN: bao khong ha noi ma van ha duoc.")
     return 0
+
+
+def _set_build(b: str) -> bool:
+    global BUILD
+    BUILD = b
+    return True
+
+
+def _set_mode(m: str) -> bool:
+    global RELIC_MODE
+    RELIC_MODE = m
+    return True
 
 
 if __name__ == "__main__":
