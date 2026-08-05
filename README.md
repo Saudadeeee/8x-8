@@ -1,3 +1,5 @@
+> Làm việc với repo này bằng AI agent? Đọc **[docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md)** trước.
+
 # 8x-8
 
 Roguelike Tower Defense lai Auto-Battler, làm bằng **Godot 4.7** (GDScript, Forward+).

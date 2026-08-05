@@ -1,5 +1,11 @@
 # Project Instructions: 8x-8
 
+> **AGENT MỚI VÀO ĐỌC [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) TRƯỚC.**
+> File đó là THAM CHIẾU (kiến trúc · bất biến · cách thêm nội dung · cách đo ·
+> bảng bẫy). File này là NHẬT KÝ: vì sao từng quyết định được đưa ra, kèm số đo.
+> Sửa gameplay xong thì cập nhật CẢ HAI.
+
+
 ## Tools
 
 ### Aseprite MCP — Pixel Art
