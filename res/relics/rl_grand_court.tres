@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_grand_court"
 name = "Grand Court"
 rarity = "epic"
-desc = "Five different movement types - a court of specialists. +105% damage with 5+ different movement types."
-cost = 410
+desc = "Five different movement types - a court of specialists. +140% damage with 5+ different movement types."
+cost = 490
 effect = {
 "cond_mult": {
-"five_kinds": 1.05
+"five_kinds": 1.4,
+"single_kind": -0.56
 }
 }

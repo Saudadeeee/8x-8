@@ -7,10 +7,13 @@ script = ExtResource("1_gen")
 id = "rl_muster_horn"
 name = "Muster Horn"
 rarity = "rare"
-desc = "Every piece on the board lends a little strength to the rest. +1.0% damage per piece on the board beyond the first 10."
+desc = "Every piece on the board lends a little strength to the rest. +1.0% damage per piece on the board beyond the first 14."
 cost = 120
 effect = {
 "per_mult": {
 "pieces": 0.01
+},
+"cond_mult": {
+"always": -0.03
 }
 }

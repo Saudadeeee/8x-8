@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_full_muster"
 name = "Full Muster"
 rarity = "epic"
-desc = "When the army is at its legal cap, every piece fights like two. +100% damage when your army is at its cap."
-cost = 400
+desc = "When the army is at its legal cap, every piece fights like two. +135% damage when your army is at its cap."
+cost = 480
 effect = {
 "cond_mult": {
-"full_board": 1.0
+"full_board": 1.35,
+"few_pieces": -0.54
 }
 }

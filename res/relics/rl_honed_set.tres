@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_honed_set"
 name = "Honed Set"
 rarity = "epic"
-desc = "A thin set means every draw is a good one. +105% damage while your set holds 10 pieces or fewer."
-cost = 410
+desc = "A thin set means every draw is a good one. +140% damage while your set holds 9 pieces or fewer."
+cost = 490
 effect = {
 "cond_mult": {
-"deck_thin": 1.05
+"deck_thin": 1.4,
+"many_pieces": -0.56
 }
 }

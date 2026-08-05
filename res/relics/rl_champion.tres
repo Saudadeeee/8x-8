@@ -11,6 +11,7 @@ desc = "One ★3 piece sets the standard for everyone else. +20% damage while an
 cost = 140
 effect = {
 "cond_mult": {
-"has_star3": 0.2
+"has_star3": 0.2,
+"few_pieces": -0.08
 }
 }

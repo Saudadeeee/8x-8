@@ -209,7 +209,7 @@ func calculate_enemies_for_wave(wave: int, boost: bool = false) -> int:
 ## Cả hai đều vô hình với người chơi. Nay tổng máu bị NẮN về đường cong này, còn
 ## bể loài chỉ quyết định wave đó CẢM GIÁC ra sao (nhanh/chậm/giáp/hồi máu).
 const WAVE_HP_BASE: float = 900.0
-const WAVE_HP_GROWTH: float = 1.322
+const WAVE_HP_GROWTH: float = 1.335
 ## Wave boss ít lính nhưng phải là ĐỈNH của đoạn, không phải chỗ trũng.
 const BOSS_WAVE_HP_MULT: float = 1.15
 
@@ -358,8 +358,8 @@ func is_boss_pending() -> bool:
 ##
 ## Hai hằng dưới đây được CHỈNH BẰNG ĐO, không suy ra từ lý thuyết: chạy
 ## `python tools/bot_bench.py` rồi đọc cột `BOSS .../...=tỉ_lệ`.
-const BOSS_HP_BASE: float = 385.0
-const BOSS_HP_GROWTH: float = 1.305
+const BOSS_HP_BASE: float = 390.0
+const BOSS_HP_GROWTH: float = 1.315
 const BOSS_REF_SPEED: float = 11.0
 ## Phần đường cong wave mà đàn hộ vệ của wave boss chiếm (phần còn lại là boss).
 const BOSS_HP_SHARE: float = 0.30

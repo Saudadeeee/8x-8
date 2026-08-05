@@ -11,6 +11,7 @@ desc = "An untouched King is a rallying banner. +12% damage while your King is a
 cost = 200
 effect = {
 "cond_mult": {
-"full_hp": 0.12
+"full_hp": 0.12,
+"king_hurt": -0.048
 }
 }

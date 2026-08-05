@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_wild_hunt"
 name = "Wild Hunt"
 rarity = "epic"
-desc = "A small pack of Knights runs faster than a crowd. +35% with 6 or fewer pieces, +10.0% per Knight."
+desc = "A small pack of Knights runs faster than a crowd. +35% with 8 or fewer pieces, +10.0% per Knight beyond the first 3."
 cost = 370
 effect = {
 "cond_mult": {

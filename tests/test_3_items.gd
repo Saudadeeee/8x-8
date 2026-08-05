@@ -224,7 +224,31 @@ func _run() -> void:
 			lie += str(cnt3) + " "
 	ok(lie == "", "nhan cua bo dem co san deu noi ro 'beyond the first N'", lie)
 
-	# (6) MAT TRAI phai that: di vat danh doi co gia tri AM cho dieu kien xau.
+	# (6) PHAN LON di vat phai co MAT TRAI. Khong co mat trai thi mua bua chi la
+	# nuoc di KEM HIEU QUA chu khong TE — ma khong te thi "chon dung di vat"
+	# van khong bat buoc. Do duoc: khong mat trai, bot mua bua thang 50%.
+	var n_malus := 0
+	var n_engine := 0
+	for rid in rs2._catalog:
+		var e4: Dictionary = rs2._catalog[rid].get("effect", {})
+		var cm4 = e4.get("cond_mult", {})
+		var pm4 = e4.get("per_mult", {})
+		if not (cm4 is Dictionary and not (cm4 as Dictionary).is_empty()) \
+				and not (pm4 is Dictionary and not (pm4 as Dictionary).is_empty()):
+			continue
+		n_engine += 1
+		if cm4 is Dictionary:
+			for k4 in (cm4 as Dictionary):
+				if float((cm4 as Dictionary)[k4]) < 0.0:
+					n_malus += 1
+					break
+	ok(n_engine > 0 and float(n_malus) / float(n_engine) >= 0.7,
+		"it nhat 70% di vat dung engine co MAT TRAI",
+		"%d/%d" % [n_malus, n_engine])
+	# Dieu kien "always" LUON dung — no la mat trai co dinh cua di vat bo dem.
+	ok(RelicConditions.test("always", {}), "'always' luon dung (mat trai co dinh)")
+
+	# (7) MAT TRAI phai that: di vat danh doi co gia tri AM cho dieu kien xau.
 	var has_malus := false
 	for rid in rs2._catalog:
 		var e3: Dictionary = rs2._catalog[rid].get("effect", {})

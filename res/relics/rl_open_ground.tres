@@ -7,10 +7,13 @@ script = ExtResource("1_gen")
 id = "rl_open_ground"
 name = "Open Ground"
 rarity = "rare"
-desc = "Room to manoeuvre. Empty squares are not wasted squares. +4.5% damage per empty square beyond the first 22."
-cost = 150
+desc = "Room to manoeuvre. Empty squares are not wasted squares. +9.0% damage per empty square beyond the first 26."
+cost = 190
 effect = {
 "per_mult": {
-"empty_squares": 0.045
+"empty_squares": 0.09
+},
+"cond_mult": {
+"always": -0.27
 }
 }

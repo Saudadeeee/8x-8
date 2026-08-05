@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_leyweaver"
 name = "Ley Weaver"
 rarity = "epic"
-desc = "Six veins or more and the network starts feeding itself. +130% damage with 5 or more veins."
-cost = 470
+desc = "Six veins or more and the network starts feeding itself. +170% damage with 6 or more veins."
+cost = 560
 effect = {
 "cond_mult": {
-"many_veins": 1.3
+"many_veins": 1.7,
+"no_veins": -0.68
 }
 }

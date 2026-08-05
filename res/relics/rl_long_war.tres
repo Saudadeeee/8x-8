@@ -11,6 +11,7 @@ desc = "From wave 8 on, your army has learned the enemy's habits. +12% damage fr
 cost = 200
 effect = {
 "cond_mult": {
-"late_wave": 0.12
+"late_wave": 0.12,
+"always": -0.048
 }
 }

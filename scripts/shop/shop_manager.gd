@@ -345,7 +345,7 @@ const EQUIP_GOLD_PER_RD: float = 40.0
 const RELIC_GOLD_PER_RD: float = 60.0
 ## Wave tối thiểu để di vật xuất hiện — di vật đổi luật chơi, ra sớm quá thì
 ## run bị quyết định trước khi người chơi kịp hiểu bàn cờ.
-const RELIC_MIN_WAVE: int = 5
+const RELIC_MIN_WAVE: int = 3
 
 var equipment_system: Node = null
 var relic_system: Node = null

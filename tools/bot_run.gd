@@ -182,10 +182,14 @@ func _relic_fits(item) -> bool:
 		# se lap day roi ban di sau. Khong co dong nay thi bot "fit" thua bot
 		# "any" chi vi no mua it mon hon — do la loi cua CONG CU DO, khong phai
 		# ket luan ve can bang.
-		var rs_n: int = (rs.get("_owned") as Array).size() if rs.get("_owned") is Array else 0
 		if hit >= 0.30:
 			return true
-		return rs_n < 2 and score >= 0.20
+		# Nguoi choi that KHONG de o di vat trong toi cuoi van cho mon hoan hao.
+		# Uu tien mon khop, nhung tu wave 8 thi lap day bang bat cu gi con duong.
+		# Ban dau bot chi lap 2 o roi doi mai => no doi Boi x4 tren giay ma thua
+		# tren ban, va do la loi CONG CU DO chu khong phai ket luan can bang.
+		var w_now: int = int(map.phase_controller.wave_number)
+		return w_now >= 8 and score >= 0.0
 	return score >= 0.25  # duoi nguong nay thi no gan nhu khong lam gi
 
 
@@ -263,8 +267,17 @@ func _place_all_tiles() -> void:
 		var spots: Array[Vector2i] = map.territory_manager.get_placeable_tiles(gc.grid_data, key)
 		if spots.is_empty():
 			return
+		# Build "element" phai CHONG CAP o, khong chi rai ra. `vein_levels` co san
+		# 6 — rai moi o mot cap thi khong bao gio vuot san, va ca engine nguyen to
+		# nam im. Uu tien o co the nang cap.
+		var target: Vector2i = spots[0]
+		if build == "element":
+			for sp in spots:
+				if map.territory_manager.is_upgrade_target(sp, key):
+					target = sp
+					break
 		map.select_territory(key)
-		map.territory_manager.try_place(spots[0], gc.grid_data, map.king_manager)
+		map.territory_manager.try_place(target, gc.grid_data, map.king_manager)
 		map.territory_manager.cancel()
 		await process_frame
 

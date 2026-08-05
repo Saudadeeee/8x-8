@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_monoculture"
 name = "Monoculture"
 rarity = "epic"
-desc = "Every piece moving the same way makes one perfectly drilled machine. +160% damage while every piece moves the same way."
-cost = 540
+desc = "Every piece moving the same way makes one perfectly drilled machine. +200% damage while every piece moves the same way."
+cost = 630
 effect = {
 "cond_mult": {
-"single_kind": 1.6
+"single_kind": 2.0,
+"five_kinds": -0.8
 }
 }

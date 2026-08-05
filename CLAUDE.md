@@ -1212,6 +1212,31 @@ có. Cắm hết vào `attack_pattern` và `EFFECT_KEYS` sẵn có — **không 
   Panel cũng hiện **tầm HIỆU DỤNG** (kèm tầm gốc nếu khác) thay vì chỉ tầm .tres.
   Cao độ y = 0.14, trên overlay hình thế nguyên tố (0.12) và thế cờ (0.13).
 
+*Di vật có MẶT TRÁI — và giới hạn của công cụ đo (2026-08-05, đợt 2):*
+- **Không phạt thì mua bừa vẫn là nước đi an toàn.** Sàn bộ đếm chỉ khiến món
+  chưa cam kết "không cho gì"; nó vẫn không TỆ. Đo được: bot mua bừa thắng 50%.
+- Nay **52/69 di vật dùng engine có mặt trái**:
+  · di vật ĐIỀU KIỆN nhận thêm phạt ở điều kiện ĐỐI LẬP (−40% mặt phải):
+	Lean Army = +150% khi ≤8 quân, **−60% khi ≥15 quân**
+  · di vật BỘ ĐẾM nhận phạt CỐ ĐỊNH qua điều kiện mới `"always"` (luôn đúng):
+	Cavalry Horn = +42% mỗi Mã vượt 3, **−45% mọi lúc** → 3 Mã là lỗ, 6 Mã mới lãi
+- `"always"` là điều kiện luôn đúng, sinh ra riêng cho việc này. Đừng dùng nó
+  làm mặt PHẢI — thế thì lại thành quà miễn phí.
+- **GIỚI HẠN CHƯA VƯỢT QUA — đọc trước khi tin số liệu cân bằng di vật:**
+  `tools/bot_run.gd` chế độ `relics=fit` **KHÔNG phải mô hình người chơi giỏi**.
+  Nó chỉ KÉN HƠN khi mua, mà kén thì để trống ô di vật ⇒ nó thua cả bot mua bừa.
+  Đã thử ba lần vá (lấp ô từ wave 8, chồng cấp ô nguyên tố, cho di vật từ wave
+  3) — vẫn không tách được. Muốn chứng minh "chọn đúng thì thắng" phải viết một
+  bot BIẾT XÂY: dồn ô nguyên tố lên cấp 3, ghép sao, xếp thế cờ theo chủ đích.
+  Chưa có nó thì mọi con số về `fit` chỉ là nhiễu.
+- **Tỉ lệ thắng có nhiễu ±9 điểm ở n=30.** Ba lần liên tiếp tôi đọc chênh lệch
+  10-20 điểm thành "có ý nghĩa" rồi bị lần đo sau bác bỏ. Khi cần chính xác thì
+  đo **Bội** (`divat=n/xM` trong CSV của bot) — nó đo thẳng cơ chế.
+- Dial độ khó nằm ở MỘT hằng: `WaveSpawner.WAVE_HP_GROWTH`. Đo được (bot n=30,
+  chế độ `relics=any`): 1.285 → 30% · 1.335 → 16% · 1.405 → 20-26%.
+  Muốn ép xuống 0-5% thì nâng tiếp, NHƯNG chưa có bằng chứng đường thắng còn
+  tồn tại ở mức đó — cần bot biết xây hoặc một buổi chơi thử.
+
 *Cân bằng di vật: CHỌN ĐÚNG mới thắng (2026-08-05):*
 - **Bộ đếm PHẢI có SÀN** (`RelicConditions.COUNT_FLOOR`) — chỉ phần VƯỢT sàn mới
   tính. Không có sàn thì di vật bộ đếm là gậy chỉ số VÔ ĐIỀU KIỆN: `pieces`,

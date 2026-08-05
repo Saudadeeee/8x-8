@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_relic_hunter"
 name = "Relic Hunter"
 rarity = "epic"
-desc = "The vault gets louder the longer the war runs. +30% from wave 8 onward, +10.0% per relic you own."
+desc = "The vault gets louder the longer the war runs. +30% from wave 8 onward, +10.0% per relic you own beyond the first 4."
 cost = 360
 effect = {
 "cond_mult": {

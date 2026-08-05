@@ -25,17 +25,17 @@ extends Object
 
 # ── Bảng tra cho UI (tên đọc được) ──────────────────────────────────────────
 const COND_LABELS := {
-	"few_pieces": "with 9 or fewer pieces",
-	"many_pieces": "with 14 or more pieces",
+	"few_pieces": "with 8 or fewer pieces",
+	"many_pieces": "with 15 or more pieces",
 	"full_board": "when your army is at its cap",
 	"no_veins": "while you own no elemental veins",
-	"many_veins": "with 5 or more veins",
+	"many_veins": "with 6 or more veins",
 	"has_formation": "while 2+ formations are active",
 	"three_formations": "with 3+ different formations",
 	"boss_wave": "on Rival King waves",
 	"odd_wave": "on odd-numbered waves",
 	"even_wave": "on even-numbered waves",
-	"rich": "while holding 400+ gold",
+	"rich": "while holding 500+ gold",
 	"broke": "while holding 30 gold or less",
 	"has_star3": "while any piece is ★3",
 	"all_star2": "while every piece is ★2 or better",
@@ -43,24 +43,25 @@ const COND_LABELS := {
 	"five_kinds": "with 5+ different movement types",
 	"king_hurt": "while your King is below half HP",
 	"full_hp": "while your King is at full HP",
-	"deck_thin": "while your set holds 10 pieces or fewer",
+	"deck_thin": "while your set holds 9 pieces or fewer",
 	"late_wave": "from wave 8 onward",
+	"always": "at all times",
 }
 
 const COUNT_LABELS := {
-	"pieces": "piece on the board beyond the first 10",
-	"empty_squares": "empty square beyond the first 22",
-	"formations": "active formation beyond the first 1",
-	"formation_kinds": "different formation type beyond the first 1",
-	"veins": "elemental vein beyond the first 2",
-	"vein_levels": "vein level beyond the first 3",
-	"elements": "different element on the board beyond the first 2",
-	"stars": "star above ★1 beyond the first 2",
-	"pawns": "Pawn beyond the first 2", "rooks": "Rook beyond the first 2", "knights": "Knight beyond the first 1",
-	"bishops": "Bishop beyond the first 1", "queens": "Queen", "cannons": "Cannon beyond the first 1",
-	"relics": "relic you own beyond the first 2",
-	"wave": "wave survived beyond the first 7",
-	"path_covered": "path square your army covers beyond the first 12",
+	"pieces": "piece on the board beyond the first 14",
+	"empty_squares": "empty square beyond the first 26",
+	"formations": "active formation beyond the first 2",
+	"formation_kinds": "different formation type beyond the first 2",
+	"veins": "elemental vein beyond the first 4",
+	"vein_levels": "vein level beyond the first 6",
+	"elements": "different element on the board beyond the first 3",
+	"stars": "star above ★1 beyond the first 4",
+	"pawns": "Pawn beyond the first 4", "rooks": "Rook beyond the first 4", "knights": "Knight beyond the first 3",
+	"bishops": "Bishop beyond the first 3", "queens": "Queen beyond the first 1", "cannons": "Cannon beyond the first 2",
+	"relics": "relic you own beyond the first 4",
+	"wave": "wave survived beyond the first 9",
+	"path_covered": "path square your army covers beyond the first 18",
 }
 
 # ── Ảnh chụp trạng thái bàn ─────────────────────────────────────────────────
@@ -200,11 +201,11 @@ static func test(cond_id: String, f: Dictionary) -> bool:
 		# Đo được: bot mua BỪA 5 di vật vẫn đạt Bội ×3.11, tức điều kiện dễ
 		# thoả tới mức không cần chọn. Ngưỡng dưới đây đòi một CAM KẾT thật:
 		# ≤6 quân là chơi mỏng có chủ đích, ≥8 ô là dồn hẳn vào nguyên tố.
-		"few_pieces":       return int(f.get("pieces", 0)) <= 9
-		"many_pieces":      return int(f.get("pieces", 0)) >= 14
+		"few_pieces":       return int(f.get("pieces", 0)) <= 8
+		"many_pieces":      return int(f.get("pieces", 0)) >= 15
 		"full_board":       return int(f.get("max_units", 0)) > 0 			and int(f.get("pieces", 0)) >= int(f.get("max_units", 0))
 		"no_veins":         return int(f.get("veins", 0)) == 0
-		"many_veins":       return int(f.get("veins", 0)) >= 5
+		"many_veins":       return int(f.get("veins", 0)) >= 6
 		# "có thế cờ nào đó" gần như LUÔN đúng ⇒ nó là quà miễn phí, không phải
 		# lựa chọn. Đòi HAI thế đang bật cùng lúc.
 		"has_formation":    return int(f.get("formations", 0)) >= 2
@@ -212,7 +213,7 @@ static func test(cond_id: String, f: Dictionary) -> bool:
 		"boss_wave":        return bool(f.get("boss_wave", false))
 		"odd_wave":         return int(f.get("wave", 1)) % 2 == 1
 		"even_wave":        return int(f.get("wave", 1)) % 2 == 0
-		"rich":             return int(f.get("gold", 0)) >= 400
+		"rich":             return int(f.get("gold", 0)) >= 500
 		"broke":            return int(f.get("gold", 0)) <= 30
 		"has_star3":        return int(f.get("max_star", 0)) >= 3
 		"all_star2":        return int(f.get("pieces", 0)) >= 4 and int(f.get("min_star", 0)) >= 2
@@ -220,8 +221,13 @@ static func test(cond_id: String, f: Dictionary) -> bool:
 		"five_kinds":       return int(f.get("kinds", 0)) >= 5
 		"king_hurt":        return float(f.get("hp", 1)) < float(f.get("hp_max", 1)) * 0.5
 		"full_hp":          return int(f.get("hp", 0)) >= int(f.get("hp_max", 1))
-		"deck_thin":        return int(f.get("deck_size", 99)) <= 10
+		"deck_thin":        return int(f.get("deck_size", 99)) <= 9
 		"late_wave":        return int(f.get("wave", 1)) >= 8
+		# LUÔN đúng — dùng làm MẶT TRÁI cố định cho di vật bộ đếm: món chỉ có
+		# lãi khi bộ đếm đã vượt sàn đủ xa. Không có nó thì di vật bộ đếm chỉ
+		# "không cho gì" khi chưa cam kết, chứ không PHẠT — mà không phạt thì
+		# mua bừa vẫn là nước đi an toàn.
+		"always":           return true
 	return false
 
 
@@ -234,11 +240,25 @@ static func test(cond_id: String, f: Dictionary) -> bool:
 ##
 ## Có sàn thì mỗi món thành một CAM KẾT: 2 Mã không cho gì, 6 Mã cho gấp bốn.
 const COUNT_FLOOR := {
-	"pieces": 10, "empty_squares": 22, "formations": 1, "formation_kinds": 1,
-	"veins": 2, "vein_levels": 3, "elements": 2, "stars": 2,
-	"pawns": 2, "rooks": 2, "knights": 1, "bishops": 1, "queens": 0,
-	"cannons": 1, "relics": 2, "wave": 7, "path_covered": 12,
+	"pieces": 14,
+	"empty_squares": 26,
+	"formations": 2,
+	"formation_kinds": 2,
+	"veins": 4,
+	"vein_levels": 6,
+	"elements": 3,
+	"stars": 4,
+	"pawns": 4,
+	"rooks": 4,
+	"knights": 3,
+	"bishops": 3,
+	"queens": 1,
+	"cannons": 2,
+	"relics": 4,
+	"wave": 9,
+	"path_covered": 18,
 }
+
 
 ## Giá trị bộ đếm, ĐÃ TRỪ SÀN. Tên lạ → 0 (di vật không cộng gì).
 static func count(counter_id: String, f: Dictionary) -> float:

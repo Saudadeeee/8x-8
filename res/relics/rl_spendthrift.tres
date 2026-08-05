@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_spendthrift"
 name = "Spendthrift"
 rarity = "epic"
-desc = "An empty purse means everything went into the war. +90% damage while holding 30 gold or less, -35% damage while holding 400+ gold."
+desc = "An empty purse means everything went into the war. +90% damage while holding 30 gold or less, -35% damage while holding 500+ gold."
 cost = 290
 effect = {
 "cond_mult": {

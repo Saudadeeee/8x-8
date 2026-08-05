@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_grand_design"
 name = "Grand Design"
 rarity = "legendary"
-desc = "A full board is only worth it if it is ARRANGED. +45% when your army is at its cap, +8.0% per active formation."
+desc = "A full board is only worth it if it is ARRANGED. +45% when your army is at its cap, +8.0% per active formation beyond the first 2."
 cost = 510
 effect = {
 "cond_mult": {

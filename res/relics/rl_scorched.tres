@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_scorched"
 name = "Scorched Earth"
 rarity = "epic"
-desc = "Refuse the elements entirely and the land itself stops slowing you down. +110% damage while you own no elemental veins."
-cost = 430
+desc = "Refuse the elements entirely and the land itself stops slowing you down. +145% damage while you own no elemental veins."
+cost = 510
 effect = {
 "cond_mult": {
-"no_veins": 1.1
+"no_veins": 1.45,
+"many_veins": -0.58
 }
 }

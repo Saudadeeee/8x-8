@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_veterans"
 name = "Veterans"
 rarity = "epic"
-desc = "An army with no raw recruits. +120% damage while every piece is *2 or better."
-cost = 450
+desc = "An army with no raw recruits. +160% damage while every piece is *2 or better."
+cost = 540
 effect = {
 "cond_mult": {
-"all_star2": 1.2
+"all_star2": 1.6,
+"few_pieces": -0.64
 }
 }

@@ -7,10 +7,13 @@ script = ExtResource("1_gen")
 id = "rl_vein_tithe"
 name = "Vein Tithe"
 rarity = "rare"
-desc = "The land pays tribute for every vein you hold. +16.0% damage per elemental vein beyond the first 2."
-cost = 260
+desc = "The land pays tribute for every vein you hold. +30.0% damage per elemental vein beyond the first 4."
+cost = 380
 effect = {
 "per_mult": {
-"veins": 0.16
+"veins": 0.3
+},
+"cond_mult": {
+"always": -0.45
 }
 }

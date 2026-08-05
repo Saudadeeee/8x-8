@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_barren_oath"
 name = "Barren Oath"
 rarity = "legendary"
-desc = "Swear off the elements entirely, or do not swear at all. +125% damage while you own no elemental veins, -40% damage with 8 or more veins."
+desc = "Swear off the elements entirely, or do not swear at all. +125% damage while you own no elemental veins, -40% damage with 6 or more veins."
 cost = 460
 effect = {
 "cond_mult": {

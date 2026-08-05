@@ -24,43 +24,43 @@ BASE_COST = {"rare": 150, "epic": 230, "legendary": 320}
 # ── DI VAT DIEU KIEN: manh khi mot dieu kien dung ───────────────────────────
 # (id, ten, bac, dieu_kien, cong_them, mo_ta)
 COND = [
-    ("rl_lean_army",   "Lean Army",        "rare",      "few_pieces",      1.1,
+    ("rl_lean_army",   "Lean Army",        "rare",      "few_pieces",      1.5,
      "A small board hits harder - your officers are not tripping over each other."),
-    ("rl_horde",       "The Horde",        "rare",      "many_pieces",     0.8,
+    ("rl_horde",       "The Horde",        "rare",      "many_pieces",     1.1,
      "Numbers win wars. A crowded board rewards you for every extra body."),
-    ("rl_full_muster", "Full Muster",      "epic",      "full_board",      1.0,
+    ("rl_full_muster", "Full Muster",      "epic",      "full_board",      1.35,
      "When the army is at its legal cap, every piece fights like two."),
-    ("rl_scorched",    "Scorched Earth",   "epic",      "no_veins",        1.1,
+    ("rl_scorched",    "Scorched Earth",   "epic",      "no_veins",        1.45,
      "Refuse the elements entirely and the land itself stops slowing you down."),
-    ("rl_leyweaver",   "Ley Weaver",       "epic",      "many_veins",      1.3,
+    ("rl_leyweaver",   "Ley Weaver",       "epic",      "many_veins",      1.7,
      "Six veins or more and the network starts feeding itself."),
-    ("rl_drillmaster", "Drillmaster",      "rare",      "has_formation",   0.7,
+    ("rl_drillmaster", "Drillmaster",      "rare",      "has_formation",   1.0,
      "Any formation at all sharpens the whole army."),
-    ("rl_grand_march", "Grand March",      "legendary", "three_formations", 1.6,
+    ("rl_grand_march", "Grand March",      "legendary", "three_formations", 2.0,
      "Three different formations at once - the board reads like a real battle plan."),
-    ("rl_regicide",    "Regicide",         "epic",      "boss_wave",       1.1,
+    ("rl_regicide",    "Regicide",         "epic",      "boss_wave",       1.45,
      "Your army saves its best work for kings."),
     ("rl_odd_omen",    "Odd Omen",         "rare",      "odd_wave",        0.1,
      "The odd waves belong to you."),
     ("rl_even_keel",   "Even Keel",        "rare",      "even_wave",       0.1,
      "The even waves belong to you."),
-    ("rl_war_chest",   "War Chest",        "rare",      "rich",            0.8,
+    ("rl_war_chest",   "War Chest",        "rare",      "rich",            1.1,
      "Gold in the vault is confidence in the ranks."),
-    ("rl_desperation", "Desperation",      "epic",      "broke",           0.95,
+    ("rl_desperation", "Desperation",      "epic",      "broke",           1.25,
      "Nothing left to spend, nothing left to lose."),
-    ("rl_veterans",    "Veterans",         "epic",      "all_star2",       1.2,
+    ("rl_veterans",    "Veterans",         "epic",      "all_star2",       1.6,
      "An army with no raw recruits."),
     ("rl_champion",    "Champion",         "rare",      "has_star3",       0.2,
      "One ★3 piece sets the standard for everyone else."),
-    ("rl_monoculture", "Monoculture",      "epic",      "single_kind",     1.6,
+    ("rl_monoculture", "Monoculture",      "epic",      "single_kind",     2.0,
      "Every piece moving the same way makes one perfectly drilled machine."),
-    ("rl_grand_court", "Grand Court",      "epic",      "five_kinds",      1.05,
+    ("rl_grand_court", "Grand Court",      "epic",      "five_kinds",      1.4,
      "Five different movement types - a court of specialists."),
     ("rl_last_stand",  "Last Stand",       "legendary", "king_hurt",       1.0,
      "With the King bleeding, the army fights like it means it."),
     ("rl_unbroken",    "Unbroken Line",    "epic",      "full_hp",         0.12,
      "An untouched King is a rallying banner."),
-    ("rl_honed_set",   "Honed Set",        "epic",      "deck_thin",       1.05,
+    ("rl_honed_set",   "Honed Set",        "epic",      "deck_thin",       1.4,
      "A thin set means every draw is a good one."),
     ("rl_long_war",    "The Long War",     "epic",      "late_wave",       0.12,
      "From wave 8 on, your army has learned the enemy's habits."),
@@ -71,31 +71,31 @@ COND = [
 PER = [
     ("rl_muster_horn",  "Muster Horn",      "rare",      "pieces",          0.01,
      "Every piece on the board lends a little strength to the rest."),
-    ("rl_open_ground",  "Open Ground",      "rare",      "empty_squares",   0.045,
+    ("rl_open_ground",  "Open Ground",      "rare",      "empty_squares",   0.09,
      "Room to manoeuvre. Empty squares are not wasted squares."),
-    ("rl_banner_line",  "Banner Line",      "epic",      "formations",      0.24,
+    ("rl_banner_line",  "Banner Line",      "epic",      "formations",      0.45,
      "Each active formation raises another banner."),
-    ("rl_war_college",  "War College",      "epic",      "formation_kinds", 0.45,
+    ("rl_war_college",  "War College",      "epic",      "formation_kinds", 0.8,
      "Breadth of doctrine, not depth."),
-    ("rl_vein_tithe",   "Vein Tithe",       "rare",      "veins",           0.16,
+    ("rl_vein_tithe",   "Vein Tithe",       "rare",      "veins",           0.3,
      "The land pays tribute for every vein you hold."),
-    ("rl_deep_roots",   "Deep Roots",       "epic",      "vein_levels",     0.11,
+    ("rl_deep_roots",   "Deep Roots",       "epic",      "vein_levels",     0.22,
      "Levelled veins run deeper than wide ones."),
-    ("rl_prism",        "Prism",            "epic",      "elements",        0.3,
+    ("rl_prism",        "Prism",            "epic",      "elements",        0.55,
      "Each distinct element refracts into the others."),
-    ("rl_constellation","Constellation",    "epic",      "stars",           0.2,
+    ("rl_constellation","Constellation",    "epic",      "stars",           0.34,
      "Every star above the first burns for the whole board."),
-    ("rl_pawn_choir",   "Pawn Choir",       "rare",      "pawns",           0.15,
+    ("rl_pawn_choir",   "Pawn Choir",       "rare",      "pawns",           0.26,
      "Pawns sing loudest in numbers."),
-    ("rl_siege_train",  "Siege Train",      "rare",      "rooks",           0.2,
+    ("rl_siege_train",  "Siege Train",      "rare",      "rooks",           0.34,
      "Rooks roll better in company."),
-    ("rl_cavalry_horn", "Cavalry Horn",     "rare",      "knights",         0.25,
+    ("rl_cavalry_horn", "Cavalry Horn",     "rare",      "knights",         0.42,
      "Knights answer each other across the board."),
-    ("rl_cloister",     "Cloister",         "rare",      "bishops",         0.25,
+    ("rl_cloister",     "Cloister",         "rare",      "bishops",         0.42,
      "Bishops pray in chorus."),
-    ("rl_court_of_queens","Court of Queens","legendary", "queens",          0.55,
+    ("rl_court_of_queens","Court of Queens","legendary", "queens",          0.75,
      "Queens do not share power gladly - but they do share strength."),
-    ("rl_powder_line",  "Powder Line",      "epic",      "cannons",         0.35,
+    ("rl_powder_line",  "Powder Line",      "epic",      "cannons",         0.55,
      "One Cannon is a threat. Several are a doctrine."),
     ("rl_hoard",        "Reliquary",        "epic",      "relics",          0.06,
      "Relics resonate with one another in the vault."),
@@ -215,6 +215,9 @@ HYBRID = [
 ]
 
 
+OPPOSITE = {'few_pieces': 'many_pieces', 'many_pieces': 'few_pieces', 'no_veins': 'many_veins', 'many_veins': 'no_veins', 'single_kind': 'five_kinds', 'five_kinds': 'single_kind', 'rich': 'broke', 'broke': 'rich', 'full_hp': 'king_hurt', 'king_hurt': 'full_hp', 'odd_wave': 'even_wave', 'even_wave': 'odd_wave', 'full_board': 'few_pieces', 'deck_thin': 'many_pieces', 'all_star2': 'few_pieces', 'has_star3': 'few_pieces', 'three_formations': 'always', 'has_formation': 'always', 'boss_wave': 'always', 'late_wave': 'always'}
+
+
 def price(rarity: str, strength: float) -> int:
     """Gia = gia goc x do manh. Tranh chuyen mon manh nhat lai re nhat."""
     return int(round((BASE_COST[rarity] * (0.75 + strength)) / 10.0) * 10)
@@ -253,7 +256,14 @@ def main() -> int:
         if rid in seen:
             dupes.append(rid)
             continue
-        eff = '"cond_mult": {\n"%s": %s\n}' % (cond, val)
+        # MAT TRAI o dieu kien DOI LAP — day la thu bien "mua bua" thanh nuoc
+        # di TE, khong chi kem hieu qua. Mat trai bang ~40% mat phai.
+        opp = OPPOSITE.get(cond)
+        if opp and opp != cond:
+            eff = ('"cond_mult": {\n"%s": %s,\n"%s": %s\n}'
+                   % (cond, val, opp, -round(val * 0.40, 3)))
+        else:
+            eff = '"cond_mult": {\n"%s": %s\n}' % (cond, val)
         full = "%s +%d%% damage %s." % (
             desc, round(val * 100), _COND_TEXT.get(cond, cond))
         io.open(os.path.join(OUT, rid + ".tres"), "w", encoding="utf-8", newline="").write(
@@ -265,7 +275,12 @@ def main() -> int:
         if rid in seen:
             dupes.append(rid)
             continue
-        eff = '"per_mult": {\n"%s": %s\n}' % (counter, val)
+        # Mat trai CO DINH: mon chi co lai khi bo dem da vuot san du xa.
+        # Khong co no thi di vat bo dem chi "khong cho gi" luc chua cam ket
+        # chu khong PHAT — ma khong phat thi mua bua van an toan.
+        malus = round(min(0.45, val * 3.0), 3)
+        eff = ('"per_mult": {\n"%s": %s\n},\n"cond_mult": {\n"always": %s\n}'
+               % (counter, val, -malus))
         full = "%s +%.1f%% damage per %s." % (
             desc, val * 100, _COUNT_TEXT.get(counter, counter))
         io.open(os.path.join(OUT, rid + ".tres"), "w", encoding="utf-8", newline="").write(
@@ -316,17 +331,17 @@ def main() -> int:
 
 # Van ban mo ta — PHAI khop voi COND_LABELS/COUNT_LABELS ben relic_conditions.gd.
 _COND_TEXT = {
-    "few_pieces": "with 9 or fewer pieces",
-    "many_pieces": "with 14 or more pieces",
+    "few_pieces": "with 8 or fewer pieces",
+    "many_pieces": "with 15 or more pieces",
     "full_board": "when your army is at its cap",
     "no_veins": "while you own no elemental veins",
-    "many_veins": "with 5 or more veins",
+    "many_veins": "with 6 or more veins",
     "has_formation": "while 2+ formations are active",
     "three_formations": "with 3+ different formations",
     "boss_wave": "on Rival King waves",
     "odd_wave": "on odd-numbered waves",
     "even_wave": "on even-numbered waves",
-    "rich": "while holding 400+ gold",
+    "rich": "while holding 500+ gold",
     "broke": "while holding 30 gold or less",
     "has_star3": "while any piece is *3",
     "all_star2": "while every piece is *2 or better",
@@ -334,23 +349,23 @@ _COND_TEXT = {
     "five_kinds": "with 5+ different movement types",
     "king_hurt": "while your King is below half HP",
     "full_hp": "while your King is at full HP",
-    "deck_thin": "while your set holds 10 pieces or fewer",
+    "deck_thin": "while your set holds 9 pieces or fewer",
     "late_wave": "from wave 8 onward",
 }
 _COUNT_TEXT = {
-    "pieces": "piece on the board beyond the first 10",
-    "empty_squares": "empty square beyond the first 22",
-    "formations": "active formation beyond the first 1",
-    "formation_kinds": "different formation type beyond the first 1",
-    "veins": "elemental vein beyond the first 2",
-    "vein_levels": "vein level beyond the first 3",
-    "elements": "different element on the board beyond the first 2",
-    "stars": "star above *1 beyond the first 2",
-    "pawns": "Pawn beyond the first 2", "rooks": "Rook beyond the first 2", "knights": "Knight beyond the first 1",
-    "bishops": "Bishop beyond the first 1", "queens": "Queen", "cannons": "Cannon beyond the first 1",
-    "relics": "relic you own beyond the first 2",
-    "wave": "wave survived beyond the first 7",
-    "path_covered": "path square your army covers beyond the first 12",
+    "pieces": "piece on the board beyond the first 14",
+    "empty_squares": "empty square beyond the first 26",
+    "formations": "active formation beyond the first 2",
+    "formation_kinds": "different formation type beyond the first 2",
+    "veins": "elemental vein beyond the first 4",
+    "vein_levels": "vein level beyond the first 6",
+    "elements": "different element on the board beyond the first 3",
+    "stars": "star above *1 beyond the first 4",
+    "pawns": "Pawn beyond the first 4", "rooks": "Rook beyond the first 4", "knights": "Knight beyond the first 3",
+    "bishops": "Bishop beyond the first 3", "queens": "Queen", "cannons": "Cannon beyond the first 2",
+    "relics": "relic you own beyond the first 4",
+    "wave": "wave survived beyond the first 9",
+    "path_covered": "path square your army covers beyond the first 18",
 }
 
 

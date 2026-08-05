@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_grand_march"
 name = "Grand March"
 rarity = "legendary"
-desc = "Three different formations at once - the board reads like a real battle plan. +160% damage with 3+ different formations."
-cost = 750
+desc = "Three different formations at once - the board reads like a real battle plan. +200% damage with 3+ different formations."
+cost = 880
 effect = {
 "cond_mult": {
-"three_formations": 1.6
+"three_formations": 2.0,
+"always": -0.8
 }
 }

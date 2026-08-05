@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_hoarder"
 name = "Hoarder's Curse"
 rarity = "epic"
-desc = "Wealth is power - and spending it is weakness. +85% damage while holding 400+ gold, -40% damage while holding 30 gold or less."
+desc = "Wealth is power - and spending it is weakness. +85% damage while holding 500+ gold, -40% damage while holding 30 gold or less."
 cost = 280
 effect = {
 "cond_mult": {

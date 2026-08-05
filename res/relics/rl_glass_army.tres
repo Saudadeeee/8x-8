@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_glass_army"
 name = "Glass Army"
 rarity = "legendary"
-desc = "Keep the army small and it is devastating. Let it swell and it shatters. +120% damage with 6 or fewer pieces, -35% damage with 16 or more pieces."
+desc = "Keep the army small and it is devastating. Let it swell and it shatters. +120% damage with 8 or fewer pieces, -35% damage with 15 or more pieces."
 cost = 450
 effect = {
 "cond_mult": {

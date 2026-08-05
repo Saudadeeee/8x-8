@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_artillery"
 name = "Artillery Command"
 rarity = "epic"
-desc = "Cannons need a plan behind them. +35% with 3+ different formations, +13.0% per Cannon."
+desc = "Cannons need a plan behind them. +35% with 3+ different formations, +13.0% per Cannon beyond the first 2."
 cost = 400
 effect = {
 "cond_mult": {

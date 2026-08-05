@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_horde"
 name = "The Horde"
 rarity = "rare"
-desc = "Numbers win wars. A crowded board rewards you for every extra body. +80% damage with 14 or more pieces."
-cost = 230
+desc = "Numbers win wars. A crowded board rewards you for every extra body. +110% damage with 15 or more pieces."
+cost = 280
 effect = {
 "cond_mult": {
-"many_pieces": 0.8
+"many_pieces": 1.1,
+"few_pieces": -0.44
 }
 }

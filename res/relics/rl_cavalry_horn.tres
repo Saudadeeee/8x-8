@@ -7,10 +7,13 @@ script = ExtResource("1_gen")
 id = "rl_cavalry_horn"
 name = "Cavalry Horn"
 rarity = "rare"
-desc = "Knights answer each other across the board. +25.0% damage per Knight beyond the first 1."
-cost = 340
+desc = "Knights answer each other across the board. +42.0% damage per Knight beyond the first 3."
+cost = 490
 effect = {
 "per_mult": {
-"knights": 0.25
+"knights": 0.42
+},
+"cond_mult": {
+"always": -0.45
 }
 }

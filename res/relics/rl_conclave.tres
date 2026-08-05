@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_conclave"
 name = "Conclave"
 rarity = "epic"
-desc = "Many voices, many doctrines, one board. +30% with 5+ different movement types, +16.0% per different formation type."
+desc = "Many voices, many doctrines, one board. +30% with 5+ different movement types, +16.0% per different formation type beyond the first 2."
 cost = 430
 effect = {
 "cond_mult": {

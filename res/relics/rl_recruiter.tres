@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_recruiter"
 name = "Iron Recruiter"
 rarity = "epic"
-desc = "A real army, not a duelling club. +80% damage with 16 or more pieces, -40% damage with 6 or fewer pieces."
+desc = "A real army, not a duelling club. +80% damage with 15 or more pieces, -40% damage with 8 or fewer pieces."
 cost = 270
 effect = {
 "cond_mult": {

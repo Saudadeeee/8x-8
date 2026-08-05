@@ -7,10 +7,13 @@ script = ExtResource("1_gen")
 id = "rl_field_control"
 name = "Field Control"
 rarity = "epic"
-desc = "The more of the road you watch, the harder every watcher hits. +1.2% damage per path square your army covers beyond the first 12."
+desc = "The more of the road you watch, the harder every watcher hits. +1.2% damage per path square your army covers beyond the first 18."
 cost = 190
 effect = {
 "per_mult": {
 "path_covered": 0.012
+},
+"cond_mult": {
+"always": -0.036
 }
 }

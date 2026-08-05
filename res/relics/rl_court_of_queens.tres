@@ -7,10 +7,13 @@ script = ExtResource("1_gen")
 id = "rl_court_of_queens"
 name = "Court of Queens"
 rarity = "legendary"
-desc = "Queens do not share power gladly - but they do share strength. +55.0% damage per Queen."
-cost = 1300
+desc = "Queens do not share power gladly - but they do share strength. +75.0% damage per Queen."
+cost = 1680
 effect = {
 "per_mult": {
-"queens": 0.55
+"queens": 0.75
+},
+"cond_mult": {
+"always": -0.45
 }
 }

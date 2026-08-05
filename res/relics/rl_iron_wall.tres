@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_iron_wall"
 name = "Iron Wall"
 rarity = "epic"
-desc = "An untouched King behind a wall of Pawns. +30% while your King is at full HP, +6.0% per Pawn."
+desc = "An untouched King behind a wall of Pawns. +30% while your King is at full HP, +6.0% per Pawn beyond the first 4."
 cost = 310
 effect = {
 "cond_mult": {

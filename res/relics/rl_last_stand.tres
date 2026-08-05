@@ -11,6 +11,7 @@ desc = "With the King bleeding, the army fights like it means it. +100% damage w
 cost = 560
 effect = {
 "cond_mult": {
-"king_hurt": 1.0
+"king_hurt": 1.0,
+"full_hp": -0.4
 }
 }

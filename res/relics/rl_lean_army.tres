@@ -7,10 +7,11 @@ script = ExtResource("1_gen")
 id = "rl_lean_army"
 name = "Lean Army"
 rarity = "rare"
-desc = "A small board hits harder - your officers are not tripping over each other. +110% damage with 9 or fewer pieces."
-cost = 280
+desc = "A small board hits harder - your officers are not tripping over each other. +150% damage with 8 or fewer pieces."
+cost = 340
 effect = {
 "cond_mult": {
-"few_pieces": 1.1
+"few_pieces": 1.5,
+"many_pieces": -0.6
 }
 }

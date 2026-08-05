@@ -11,6 +11,7 @@ desc = "The odd waves belong to you. +10% damage on odd-numbered waves."
 cost = 130
 effect = {
 "cond_mult": {
-"odd_wave": 0.1
+"odd_wave": 0.1,
+"even_wave": -0.04
 }
 }

@@ -7,7 +7,7 @@ script = ExtResource("1_gen")
 id = "rl_veteran_core"
 name = "Veteran Core"
 rarity = "epic"
-desc = "Every star compounds when nobody is raw. +35% while every piece is *2 or better, +6.0% per star above *1."
+desc = "Every star compounds when nobody is raw. +35% while every piece is *2 or better, +6.0% per star above *1 beyond the first 4."
 cost = 320
 effect = {
 "cond_mult": {
